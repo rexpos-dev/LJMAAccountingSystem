@@ -1,0 +1,190 @@
+import { PrismaClient } from '@prisma/client'
+import { PrismaMariaDb } from '@prisma/adapter-mariadb'
+import { mockTransactions, mockAuditLogs } from '../src/lib/mock-data'
+
+const connectionString = process.env.DATABASE_URL!
+
+const prisma = new PrismaClient({
+  adapter: new PrismaMariaDb(connectionString),
+})
+
+async function main() {
+  console.log('Seeding database...')
+
+  // Seed accounts
+  const accounts = [
+    { number: 1110, name: 'Checking Account', balance: 50000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { number: 1120, name: 'Savings Account', balance: 100000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { number: 1150, name: 'Undeposited Funds', balance: 0, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { number: 1190, name: 'Petty Cash', balance: 5000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { number: 1210, name: 'Accounts Receivable', balance: 25000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
+    { number: 1310, name: 'Inventory', balance: 75000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
+    { number: 2110, name: 'Credit Card', balance: -15000, type: 'Liability', header: 'No', bank: 'Yes', category: 'Liabilities' },
+    { number: 2150, name: 'Loan', balance: -50000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
+    { number: 2210, name: 'Accounts Payable', balance: -30000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
+  ]
+
+  for (const account of accounts) {
+    await prisma.account.upsert({
+      where: { number: account.number },
+      update: {},
+      create: account,
+    })
+  }
+
+  // Seed transactions from mock data
+  const transactions = JSON.parse(mockTransactions)
+  for (const transaction of transactions) {
+    await prisma.transaction.create({
+      data: {
+        seq: parseInt(transaction.transaction_id.split('_')[1]),
+        ledger: 'General',
+        transNo: transaction.transaction_id,
+        code: transaction.transaction_id,
+        accountNumber: transaction.from_account,
+        date: new Date(transaction.date),
+        particulars: transaction.description,
+        debit: transaction.amount,
+        credit: 0,
+        balance: 0,
+        user: 'system',
+        approval: 'Auto',
+      },
+    })
+  }
+
+  // Delete existing loyalty point settings to avoid conflicts
+  await prisma.loyaltyPointSetting.deleteMany({})
+
+  // Seed loyalty point settings
+  const loyaltySettings = [
+    { description: 'Every P100 = 1 point', amount: 100, equivalentPoint: 1 },
+    { description: 'Every P200 = 3 points', amount: 200, equivalentPoint: 3 },
+    { description: 'Every P500 = 10 points', amount: 500, equivalentPoint: 10 },
+  ]
+
+  const createdSettings = []
+  for (const setting of loyaltySettings) {
+    const createdSetting = await prisma.loyaltyPointSetting.create({
+      data: setting,
+    })
+    createdSettings.push(createdSetting)
+  }
+
+  // Seed customers
+  const customers = [
+    {
+      code: 'CUST001',
+      customerName: 'John Doe',
+      contactFirstName: 'John',
+      address: '123 Main St, City',
+      phonePrimary: '+1234567890',
+      email: 'john.doe@example.com',
+      isActive: true,
+      creditLimit: 50000,
+      isTaxExempt: false,
+      paymentTerms: '30',
+      paymentTermsValue: '30',
+      salesperson: 'Sales Team',
+      customerGroup: 'Regular',
+      isEntitledToLoyaltyPoints: true,
+      pointSetting: '1',
+      loyaltyCalculationMethod: 'automatic',
+      loyaltyCardNumber: '1234567890123',
+    },
+    {
+      code: 'CUST002',
+      customerName: 'Jane Smith',
+      contactFirstName: 'Jane',
+      address: '456 Oak Ave, Town',
+      phonePrimary: '+1234567891',
+      email: 'jane.smith@example.com',
+      isActive: true,
+      creditLimit: 75000,
+      isTaxExempt: false,
+      paymentTerms: '15',
+      paymentTermsValue: '15',
+      salesperson: 'Sales Team',
+      customerGroup: 'VIP',
+      isEntitledToLoyaltyPoints: true,
+      pointSetting: '2',
+      loyaltyCalculationMethod: 'automatic',
+      loyaltyCardNumber: '9876543210987',
+    },
+    {
+      code: 'CUST003',
+      customerName: 'Bob Johnson',
+      contactFirstName: 'Bob',
+      address: '789 Pine Rd, Village',
+      phonePrimary: '+1234567892',
+      email: 'bob.johnson@example.com',
+      isActive: true,
+      creditLimit: 25000,
+      isTaxExempt: false,
+      paymentTerms: '30',
+      paymentTermsValue: '30',
+      salesperson: 'Sales Team',
+      customerGroup: 'Regular',
+      isEntitledToLoyaltyPoints: false,
+      pointSetting: null,
+      loyaltyCalculationMethod: 'automatic',
+      loyaltyCardNumber: null,
+    },
+  ]
+
+  // Store created/updated customers to get their IDs
+  const createdCustomers = []
+  for (const customer of customers) {
+    const createdCustomer = await prisma.customer.upsert({
+      where: { code: customer.code },
+      update: customer,
+      create: customer,
+    })
+    createdCustomers.push(createdCustomer)
+  }
+
+  // Delete existing loyalty points to avoid conflicts
+  await prisma.loyaltyPoint.deleteMany({})
+
+  // Seed loyalty points using the actual customer and setting IDs
+  const loyaltyPoints = [
+    {
+      customerId: createdCustomers[0].id, // John Doe
+      loyaltyCardId: '1234567890123',
+      totalPoints: 150,
+      pointSettingId: createdSettings[0].id, // First setting
+      expiryDate: new Date('2026-12-31'),
+    },
+    {
+      customerId: createdCustomers[1].id, // Jane Smith
+      loyaltyCardId: '9876543210987',
+      totalPoints: 450,
+      pointSettingId: createdSettings[1].id, // Second setting
+      expiryDate: new Date('2026-12-31'),
+    },
+    {
+      customerId: createdCustomers[0].id, // John Doe
+      loyaltyCardId: '1234567890123',
+      totalPoints: 75,
+      pointSettingId: createdSettings[0].id, // First setting
+      expiryDate: new Date('2025-12-31'),
+    },
+  ]
+
+  for (const point of loyaltyPoints) {
+    await prisma.loyaltyPoint.create({
+      data: point,
+    })
+  }
+
+  console.log('Database seeded successfully!')
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

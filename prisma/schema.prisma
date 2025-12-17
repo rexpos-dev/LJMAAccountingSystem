@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  number    Int      @unique
+  name      String
+  balance   Float?   @default(0)
+  type      String
+  header    String
+  bank      String
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id                 String    @id @default(cuid())
+  seq                Int?
+  ledger             String?
+  transNo            String?
+  code               String?
+  accountNumber      String?
+  date               DateTime?
+  invoiceNumber      String?
+  particulars        String?
+  debit              Float?    @default(0)
+  credit             Float?    @default(0)
+  balance            Float?    @default(0)
+  checkAccountNumber String?
+  checkNumber        String?
+  dateMatured        DateTime?
+  accountName        String?
+  bankName           String?
+  bankBranch         String?
+  user               String?
+  isCoincide         Boolean?
+  dailyClosing       Int?
+  approval           String?
+  ftToLedger         String?
+  ftToAccount        String?
+  ssma_timestamp     DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@map("transactions")
+}
+
+model LoyaltyPointSetting {
+  id              String   @id @default(cuid())
+  description     String
+  amount          Float    @default(0)
+  equivalentPoint Float    @default(0)
+  loyaltyPoints   LoyaltyPoint[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("loyalty_point_setting")
+}
+
+model Customer {
+  id                        String   @id @default(cuid())
+  code                      String   @unique
+  customerName              String
+  contactFirstName          String?
+  address                   String?
+  phonePrimary              String?
+  phoneAlternative          String?
+  email                     String?
+  isActive                  Boolean  @default(true)
+  creditLimit               Float?   @default(0)
+  isTaxExempt               Boolean  @default(false)
+  paymentTerms              String?  @default("days")
+  paymentTermsValue         String?  @default("30")
+  salesperson                String?
+  customerGroup             String?  @default("default")
+  isEntitledToLoyaltyPoints Boolean  @default(false)
+  pointSetting              String?
+  loyaltyCalculationMethod  String?  @default("automatic")
+  loyaltyCardNumber         String?
+  loyaltyPoints             LoyaltyPoint[]
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@map("customer")
+}
+
+model LoyaltyPoint {
+  id              String   @id @default(cuid())
+  customerId      String
+  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  loyaltyCardId   String
+  totalPoints     Float    @default(0)
+  pointSettingId  String
+  pointSetting    LoyaltyPointSetting @relation(fields: [pointSettingId], references: [id])
+  expiryDate      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("loyalty_point")
+}
+
+model Product {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  name            String
+  barcode         String?
+  description     String?
+  category        String?
+  unitPrice       Float     @default(0)
+  costPrice       Float     @default(0)
+  stockQuantity   Int       @default(0)
+  minStockLevel   Int       @default(0)
+  maxStockLevel   Int?
+  isActive        Boolean   @default(true)
+  salesOrder      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("product")
+}
+
+model Reminder {
+  id          String   @id @default(cuid())
+  title       String
+  memo        String?
+  date        DateTime
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("reminder")
+}

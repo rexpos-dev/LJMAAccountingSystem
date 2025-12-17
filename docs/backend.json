@@ -1,0 +1,360 @@
+{
+  "entities": {
+    "GeneralLedger": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GeneralLedger",
+      "type": "object",
+      "description": "Represents a general ledger entry for financial transactions.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the general ledger entry."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of the transaction.",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the transaction."
+        },
+        "account": {
+          "type": "string",
+          "description": "Account associated with the transaction (e.g., Cash, Bank, Expense)."
+        },
+        "debit": {
+          "type": "number",
+          "description": "Debit amount for the transaction."
+        },
+        "credit": {
+          "type": "number",
+          "description": "Credit amount for the transaction."
+        }
+      },
+      "required": ["id", "date", "description", "account", "debit", "credit"]
+    },
+    "BankAccount": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BankAccount",
+      "type": "object",
+      "description": "Represents a bank account.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the bank account."
+        },
+        "accountName": {
+          "type": "string",
+          "description": "Name of the bank account."
+        },
+        "bankName": {
+          "type": "string",
+          "description": "Name of the bank."
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Account number."
+        },
+        "balance": {
+          "type": "number",
+          "description": "Current balance of the bank account."
+        }
+      },
+      "required": ["id", "accountName", "bankName", "accountNumber", "balance"]
+    },
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product in the inventory.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the product."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the product."
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the product."
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the product in stock."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the product."
+        }
+      },
+      "required": ["id", "name", "description", "price", "quantity", "category"]
+    },
+    "StoreRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StoreRecord",
+      "type": "object",
+      "description": "Represents a store record for sales, purchases, or other store-related activities.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the store record."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of the record.",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of store record (e.g., POS Sale, Purchase, Damaged Product)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the store record."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount associated with the store record."
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to Product. (Relationship: Product 1:N StoreRecord)"
+        }
+      },
+      "required": ["id", "date", "type", "description", "amount", "productId"]
+    },
+    "CheckEncashment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CheckEncashment",
+      "type": "object",
+      "description": "Represents a check encashment transaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the check encashment transaction."
+        },
+        "checkNumber": {
+          "type": "string",
+          "description": "Check number."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of encashment.",
+          "format": "date-time"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount of the check."
+        },
+        "bankAccountId": {
+          "type": "string",
+          "description": "Reference to BankAccount. (Relationship: BankAccount 1:N CheckEncashment)"
+        }
+      },
+      "required": ["id", "checkNumber", "date", "amount", "bankAccountId"]
+    },
+    "AuditLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AuditLog",
+      "type": "object",
+      "description": "Represents an audit log entry for system activities.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the audit log entry."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of the event.",
+          "format": "date-time"
+        },
+        "action": {
+          "type": "string",
+          "description": "Action performed (e.g., Login, Create Record, Update Record)."
+        },
+        "module": {
+          "type": "string",
+          "description": "Module where the action occurred (e.g., General Ledger, Store Records)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the event."
+        }
+      },
+      "required": ["id", "timestamp", "action", "module", "description"]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role of the user (e.g., Admin, Cashier, Auditor)."
+        }
+      },
+      "required": ["id", "username", "email", "role"]
+    },
+    "Reminder": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reminder",
+      "type": "object",
+      "description": "Represents a reminder or notification for a task or deadline.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reminder."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the reminder."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the reminder."
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "Due date for the reminder.",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "title", "description", "dueDate"]
+    },
+    "ChartOfAccount": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChartOfAccount",
+      "type": "object",
+      "description": "Represents an account in the chart of accounts.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the account."
+        },
+        "number": {
+          "type": "integer",
+          "description": "The account number."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the account."
+        },
+        "balance": {
+          "type": "number",
+          "description": "The current balance of the account."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["Asset", "Liability", "Equity", "Income", "Expense"],
+          "description": "The type of the account."
+        },
+        "header": {
+          "type": "string",
+          "enum": ["Yes", "No"],
+          "description": "Indicates if the account is a header account."
+        },
+        "bank": {
+          "type": "string",
+          "enum": ["Yes", "No"],
+          "description": "Indicates if the account is a bank account."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the account."
+        }
+      },
+      "required": ["id", "number", "name", "type", "header", "bank"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "type": "object",
+      "description": "Represents a single ledger transaction from the imported data.",
+      "properties": {
+        "id": { "type": "string" },
+        "seq": { "type": "number" },
+        "ledger": { "type": "string" },
+        "transNo": { "type": "string" },
+        "code": { "type": "string" },
+        "accountNumber": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "invoiceNumber": { "type": "string" },
+        "particulars": { "type": "string" },
+        "debit": { "type": "number" },
+        "credit": { "type": "number" },
+        "balance": { "type": "number" },
+        "checkAccountNumber": { "type": "string" },
+        "checkNumber": { "type": "string" },
+        "dateMatured": { "type": "string", "format": "date-time" },
+        "accountName": { "type": "string" },
+        "bankName": { "type": "string" },
+        "bankBranch": { "type": "string" },
+        "user": { "type": "string" },
+        "time": { "type": "string" },
+        "isCoincide": { "type": ["boolean", "null"] },
+        "dailyClosing": { "type": "number" },
+        "approval": { "type": ["string", "null"] },
+        "ftToLedger": { "type": ["string", "null"] },
+        "ftToAccount": { "type": ["string", "null"] }
+      },
+      "required": ["seq", "ledger", "date", "debit", "credit"]
+    }
+  },
+  "auth": {
+    "providers": ["password", "anonymous"]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/entities/User"
+          },
+          "description": "Collection of user profiles. User documents are created via Firebase Authentication."
+        }
+      },
+      {
+        "path": "/users/{userId}/charts_of_accounts/{chartOfAccountId}",
+        "definition": {
+            "entityName": "ChartOfAccount",
+            "schema": {
+                "$ref": "#/entities/ChartOfAccount"
+            },
+            "description": "Collection of chart of accounts for a specific user."
+        }
+      },
+      {
+        "path": "/imported_transactions/{transactionId}",
+        "definition": {
+            "entityName": "Transaction",
+            "schema": {
+                "$ref": "#/entities/Transaction"
+            },
+            "description": "Collection of imported ledger transactions."
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,273 @@
+
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Sidebar,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+  SidebarContent,
+  SidebarFooter,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { navItems, type NavItem } from "@/lib/navigation";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronsUpDown, Bell, PanelsTopLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { UserNav } from "./user-nav";
+import { MainMenu } from "./main-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useDialog } from "./dialog-provider";
+import dynamic from 'next/dynamic';
+import NewAccountDialog from "../configuration/new-account-dialog";
+import EditTransactionDialog from "../transactions/edit-transaction-dialog";
+import ViewTransactionDialog from "../transactions/view-transaction-dialog";
+import { AddCustomerDialog } from "../customer/add-customer-dialog";
+import { AddLoyaltySettingDialog } from "../customer/add-loyalty-setting-dialog";
+import { Account } from "@/types/account";
+import { Transaction } from "@/types/transaction";
+import AddPointsDialog from "../customer/add-points-dialog";
+
+// Dynamically import pages (server components) on the client to avoid client->server import errors
+const CreateInvoicePage = dynamic(() => import('@/app/todo/create-invoice/page').then(m => m.default), { ssr: false });
+const EnterPaymentPage = dynamic(() => import('@/app/todo/enter-payment/page').then(m => m.default), { ssr: false });
+const ChartOfAccountsPage = dynamic(() => import('@/app/configuration/chart-of-accounts/page').then(m => m.default), { ssr: false });
+const EnterApPage = dynamic(() => import('@/app/purchases/enter-ap/page').then(m => m.default), { ssr: false });
+const ReconcileAccountPage = dynamic(() => import('@/app/banking/reconcile/page').then(m => m.default), { ssr: false });
+const ReceiptsDepositsPage = dynamic(() => import('@/app/banking/receipts-deposits/page').then(m => m.default), { ssr: false });
+const AccountTransferPage = dynamic(() => import('@/app/banking/transfer/page').then(m => m.default), { ssr: false });
+const ViewJournalPage = dynamic(() => import('@/app/transactions/view-journal/page').then(m => m.default), { ssr: false });
+const JournalEntryPage = dynamic(() => import('@/app/transactions/journal-entry/page').then(m => m.default), { ssr: false });
+const IncomeStatementPage = dynamic(() => import('@/app/reports/income-statement/page').then(m => m.default), { ssr: false });
+const BalanceSheetPage = dynamic(() => import('@/app/reports/balance-sheet/page').then(m => m.default), { ssr: false });
+const BalanceSheetReport = dynamic(() => import('../reports/balance-sheet-report').then(m => m.default), { ssr: false });
+const CustomerListPage = dynamic(() => import('@/app/customer/list/page').then(m => m.default), { ssr: false });
+const CustomerBalancePage = dynamic(() => import('@/app/customer/balance/page').then(m => m.default), { ssr: false });
+const CustomerPaymentPage = dynamic(() => import('@/app/customer/payment/page').then(m => m.default), { ssr: false });
+const CustomerLoyaltyPointsPage = dynamic(() => import('@/app/customer/loyalty-points/page').then(m => m.default), { ssr: false });
+const LoyaltySettingsPage = dynamic(() => import('@/app/customer/loyalty-settings/page').then(m => m.default), { ssr: false });
+import { AddLoyaltyCardDialog } from "../customer/add-loyalty-card-dialog";
+import { InventoryDialog } from "../inventory/inventory-dialog";
+
+function SidebarNav() {
+  const pathname = usePathname();
+  const { openDialog } = useDialog();
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+    dialogId?: string
+  ) => {
+    if (dialogId) {
+      e.preventDefault();
+      openDialog(dialogId);
+    }
+  };
+
+  const renderNavItem = (item: NavItem) => {
+    if (!isMounted) return null;
+    const isActive = item.subItems
+      ? item.subItems.some((sub) => pathname.startsWith(sub.href))
+      : pathname.startsWith(item.href);
+
+    if (item.subItems) {
+      return (
+        <Collapsible key={item.title} defaultOpen={isActive} className="w-full">
+          <SidebarMenuItem className="w-full">
+            <CollapsibleTrigger asChild>
+              <div className="relative flex w-full items-center">
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  className="w-full justify-start"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </div>
+                    <ChevronsUpDown className="h-4 w-4" />
+                  </div>
+                </SidebarMenuButton>
+              </div>
+            </CollapsibleTrigger>
+          </SidebarMenuItem>
+          <CollapsibleContent>
+            <SidebarMenuSub>
+              {item.subItems.map((subItem) => (
+                <SidebarMenuSubItem key={subItem.title}>
+                  <SidebarMenuSubButton
+                    asChild
+                    isActive={pathname === subItem.href}
+                    onClick={(e: any) =>
+                      handleNavClick(e, subItem.href, subItem.dialogId)
+                    }
+                  >
+                    <Link href={subItem.href}>{subItem.title}</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              ))}
+            </SidebarMenuSub>
+          </CollapsibleContent>
+        </Collapsible>
+      );
+    }
+
+    return (
+      <SidebarMenuItem key={item.title}>
+        <Link
+          href={item.href}
+          passHref
+          onClick={(e) => handleNavClick(e, item.href, item.dialogId)}
+        >
+          <SidebarMenuButton
+            isActive={isActive}
+            className="w-full justify-start"
+          >
+            <item.icon className="h-4 w-4" />
+            <span>{item.title}</span>
+            {item.label && (
+              <span className="ml-auto bg-accent text-accent-foreground text-xs px-2 py-0.5 rounded-full">
+                {item.label}
+              </span>
+            )}
+          </SidebarMenuButton>
+        </Link>
+      </SidebarMenuItem>
+    );
+  };
+
+  return <SidebarMenu>{navItems.map((item) => renderNavItem(item))}</SidebarMenu>;
+}
+
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+   const [isMounted, setIsMounted] = React.useState(false);
+   const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(null);
+   const [selectedTransaction, setSelectedTransaction] = React.useState<Transaction | null>(null);
+   const [reportDate, setReportDate] = React.useState<Date | null>(null);
+   const { openDialogs, openDialog, closeDialog } = useDialog();
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+  const handleAccountSelect = (account: Account | null) => {
+    setSelectedAccount(account);
+  };
+  
+  const handleTransactionSelect = (transaction: Transaction | null) => {
+    setSelectedTransaction(transaction);
+  };
+  
+  const handleShowReport = (date: Date) => {
+    setReportDate(date);
+    openDialog('balance-sheet-report');
+  }
+
+
+  return (
+    <>
+      <SidebarProvider>
+        <Sidebar>
+          <SidebarHeader>
+            <div className="flex items-center gap-2 p-2 pr-4">
+              <PanelsTopLeft className="w-8 h-8 text-primary" />
+              <h1 className="text-xl font-bold font-headline">LJMA FinancePro</h1>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarNav />
+          </SidebarContent>
+          <SidebarFooter>{/* Footer content if any */}</SidebarFooter>
+        </Sidebar>
+        <SidebarInset className="flex flex-col">
+          <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <SidebarTrigger className="md:hidden" />
+            <MainMenu />
+            <div className="flex items-center gap-2 ml-auto">
+              <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">Toggle notifications</span>
+              </Button>
+              <UserNav />
+            </div>
+          </header>
+          <main>
+             {React.Children.map(children, (child, index) => {
+              if (React.isValidElement(child)) {
+                let additionalProps = {};
+                if (child.type === ChartOfAccountsPage) {
+                  additionalProps = {
+                    onAccountSelect: handleAccountSelect,
+                    selectedAccount: selectedAccount
+                  };
+                } else if (child.type === ViewJournalPage) {
+                  additionalProps = { onTransactionSelect: handleTransactionSelect };
+                } else if (child.type === BalanceSheetPage) {
+                  additionalProps = { onViewReport: handleShowReport };
+                }
+                return React.cloneElement(child, { key: `child-${index}`, ...additionalProps });
+              }
+              return <div key={`child-${index}`}>{child}</div>;
+            })}
+            {openDialogs['create-invoice'] && <CreateInvoicePage />}
+            {openDialogs['enter-payment'] && <EnterPaymentPage />}
+            {openDialogs['chart-of-accounts'] && <ChartOfAccountsPage onAccountSelect={handleAccountSelect} selectedAccount={selectedAccount} />}
+            {openDialogs['new-account'] && <NewAccountDialog />}
+            {openDialogs['enter-ap'] && <EnterApPage />}
+            {openDialogs['reconcile-account'] && <ReconcileAccountPage />}
+            {openDialogs['receipts-deposits'] && <ReceiptsDepositsPage />}
+            {openDialogs['account-transfer'] && <AccountTransferPage />}
+            {openDialogs['view-journal'] && <ViewJournalPage onTransactionSelect={handleTransactionSelect} />}
+            {openDialogs['journal-entry'] && <JournalEntryPage />}
+            {openDialogs['income-statement'] && <IncomeStatementPage />}
+            {openDialogs['balance-sheet'] && <BalanceSheetPage onViewReport={handleShowReport} />}
+            {openDialogs['balance-sheet-report'] && reportDate && <BalanceSheetReport reportDate={reportDate} />}
+            {openDialogs['edit-transaction'] && <EditTransactionDialog transaction={selectedTransaction} />}
+            {openDialogs['view-transaction'] && <ViewTransactionDialog transaction={selectedTransaction} />}
+            {openDialogs['customer-list'] && <CustomerListPage />}
+            {openDialogs['customer-balance'] && <CustomerBalancePage />}
+            {openDialogs['customer-payment'] && <CustomerPaymentPage />}
+            {openDialogs['customer-loyalty-points'] && <CustomerLoyaltyPointsPage />}
+            {openDialogs['add-customer'] && <AddCustomerDialog />}
+            {openDialogs['loyalty-settings'] && <LoyaltySettingsPage />}
+            {openDialogs['add-loyalty-setting'] && <AddLoyaltySettingDialog />}
+            {openDialogs['add-loyalty-card'] && <AddLoyaltyCardDialog />}
+            {openDialogs['add-loyalty-points'] && <AddPointsDialog />}
+            {openDialogs['inventory'] && <InventoryDialog />}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
+  );
+}
