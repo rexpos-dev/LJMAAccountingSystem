@@ -93,6 +93,11 @@ import {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="general">Payments</SelectItem>
+                    <SelectItem value="general">Receipts</SelectItem>
+                    <SelectItem value="general">Sales</SelectItem>
+                    <SelectItem value="general">Purchases</SelectItem>
+                    <SelectItem value="general">Inventory</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

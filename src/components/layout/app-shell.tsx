@@ -68,6 +68,7 @@ const CustomerLoyaltyPointsPage = dynamic(() => import('@/app/customer/loyalty-p
 const LoyaltySettingsPage = dynamic(() => import('@/app/customer/loyalty-settings/page').then(m => m.default), { ssr: false });
 import { AddLoyaltyCardDialog } from "../customer/add-loyalty-card-dialog";
 import { InventoryDialog } from "../inventory/inventory-dialog";
+import { AddProductDialog } from "../inventory/add-product-dialog";
 
 function SidebarNav() {
   const pathname = usePathname();
@@ -265,6 +266,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {openDialogs['add-loyalty-card'] && <AddLoyaltyCardDialog />}
             {openDialogs['add-loyalty-points'] && <AddPointsDialog />}
             {openDialogs['inventory'] && <InventoryDialog />}
+            {openDialogs['add-product'] && <AddProductDialog />}
           </main>
         </SidebarInset>
       </SidebarProvider>

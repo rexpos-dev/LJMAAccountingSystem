@@ -13,7 +13,7 @@ async function setupDatabase() {
     console.log('✅ Old database dropped (if existed)');
 
     // Create new database if not exists
-    await connection.execute('CREATE DATABASE IF NOT EXISTS ljma');
+    await connection.execute('CREATE DATABASE IF NOT EXISTS ljma_accounting');
     console.log('✅ New database created');
 
   } catch (error) {

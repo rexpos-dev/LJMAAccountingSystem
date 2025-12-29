@@ -7,18 +7,19 @@ datasource db {
 }
 
 model Account {
-  id        String   @id @default(cuid())
-  number    Int      @unique
-  name      String
-  balance   Float?   @default(0)
-  type      String
-  header    String
-  bank      String
-  category  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  accnt_no       Int      @unique
+  accnt_type_no  Int      @default(1)
+  name           String
+  balance        Float?   @default(0)
+  type           String
+  header         String
+  bank           String
+  category       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  @@map("accounts")
+  @@map("chart_of_account")
 }
 
 model Transaction {
@@ -113,7 +114,13 @@ model Product {
   name            String
   barcode         String?
   description     String?
+  additionalDescription String?
   category        String?
+  categoryId      String?
+  subcategoryId   String?
+  brandId         String?
+  supplierId      String?
+  unitOfMeasureId String?
   unitPrice       Float     @default(0)
   costPrice       Float     @default(0)
   stockQuantity   Int       @default(0)
@@ -121,10 +128,74 @@ model Product {
   maxStockLevel   Int?
   isActive        Boolean   @default(true)
   salesOrder      String?
+  autoCreateChildren Boolean @default(false)
+  initialStock    Int       @default(0)
+  reorderPoint    Int       @default(0)
+  incomeAccountId String?
+  expenseAccountId String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@map("product")
+}
+
+model ConversionFactor {
+  id              String    @id @default(cuid())
+  productId       String
+  unitName        String
+  factor          Float
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("conversion_factor")
+}
+
+model Brand {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  description     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("brand")
+}
+
+model Category {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  description     String?
+  parentCategoryId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("category")
+}
+
+model Supplier {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  contactPerson   String?
+  email           String?
+  phone           String?
+  address         String?
+  paymentTerms    String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("supplier")
+}
+
+model UnitOfMeasure {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  name            String    @unique
+  description     String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("unit_of_measure")
 }
 
 model Reminder {

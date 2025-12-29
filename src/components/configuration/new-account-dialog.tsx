@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,14 +14,7 @@ import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
@@ -36,53 +29,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useAccounts } from '@/hooks/use-accounts';
 
-const standardAccounts = [
-  {
-    number: 1542,
-    name: 'Checking Account #1',
-    type: 'Asset',
-    header: 'No',
-    bank: 'Yes',
-    cr: '',
-    dr: '',
-  },
-  {
-    number: 1542,
-    name: 'Cheque Account #1',
-    type: 'Asset',
-    header: 'No',
-    bank: 'Yes',
-    cr: '',
-    dr: '',
-  },
-  {
-    number: 3998,
-    name: 'Issued Capital #1',
-    type: 'Equity',
-    header: 'No',
-    bank: 'No',
-    cr: '',
-    dr: '',
-  },
-  {
-    number: 4911,
-    name: 'General Sales #1',
-    type: 'Income',
-    header: 'No',
-    bank: 'No',
-    cr: '',
-    dr: '',
-  },
-  {
-    number: 6921,
-    name: 'General Products Purchased #1',
-    type: 'Expense',
-    header: 'No',
-    bank: 'No',
-    cr: '',
-    dr: '',
-  },
-];
+
 
 type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense';
 
@@ -93,13 +40,71 @@ export default function NewAccountDialog() {
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const [accntTypeNo, setAccntTypeNo] = useState('');
+  const [openingBalance, setOpeningBalance] = useState('0.00');
   const [type, setType] = useState<AccountType>('Asset');
   const [subType, setSubType] = useState('');
   const [isHeader, setIsHeader] = useState(false);
   const [isBank, setIsBank] = useState(false);
-  const [editingRow, setEditingRow] = useState<number | null>(null);
-  const [editingField, setEditingField] = useState<'cr' | 'dr' | null>(null);
-  const [accounts, setAccounts] = useState(standardAccounts);
+  const [linkedAccount, setLinkedAccount] = useState('');
+
+  // Effect to handle Income type specific settings
+  useEffect(() => {
+    if (type === 'Income') {
+      setIsHeader(false); // Disable header account
+      setIsBank(true); // Select cash postable by default
+    } else {
+      // Reset for other types
+      setIsHeader(false);
+      setIsBank(false);
+    }
+  }, [type]);
+
+  // Generate unique account number and type number based on type
+  const generateAccountNumber = async (accountType: AccountType) => {
+    try {
+      const response = await fetch('/api/accounts');
+      const accounts = await response.json();
+
+      const typeRanges = {
+        Asset: [1000, 1999],
+        Liability: [2000, 2999],
+        Equity: [3000, 3999],
+        Income: [4000, 4999],
+        Expense: [5000, 5999],
+      };
+
+      const [min, max] = typeRanges[accountType];
+      const existingNumbers = accounts
+        .filter((acc: any) => acc.type === accountType)
+        .map((acc: any) => acc.number)
+        .sort((a: number, b: number) => a - b);
+
+      // Find the next available number in the range
+      for (let num = min; num <= max; num++) {
+        if (!existingNumbers.includes(num)) {
+          return { accnt_no: num, accnt_type_no: existingNumbers.length + 1 };
+        }
+      }
+
+      // If all numbers in range are taken, use the next available
+      const nextNum = Math.max(...existingNumbers, max) + 1;
+      return { accnt_no: nextNum, accnt_type_no: existingNumbers.length + 1 };
+    } catch (error) {
+      // Fallback to basic numbering
+      const baseNumbers = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, Expense: 5000 };
+      return { accnt_no: baseNumbers[accountType], accnt_type_no: 1 };
+    }
+  };
+
+  // Update account number when type changes
+  const handleTypeChange = async (newType: AccountType) => {
+    setType(newType);
+    const { accnt_no, accnt_type_no } = await generateAccountNumber(newType);
+    setNumber(accnt_no.toString());
+    setAccntTypeNo(accnt_type_no.toString());
+  };
+
 
   const handleAddAccount = async () => {
     if (!name || !number || !type) {
@@ -119,12 +124,13 @@ export default function NewAccountDialog() {
         },
         body: JSON.stringify({
           name,
-          number: parseInt(number, 10),
+          accnt_no: parseInt(number, 10),
+          accnt_type_no: parseInt(accntTypeNo, 10),
           type,
           header: isHeader ? 'Yes' : 'No',
           bank: isBank ? 'Yes' : 'No',
           category: type, // Using main type as category for simplicity
-          balance: 0,
+          balance: parseFloat(openingBalance) || 0,
         }),
       });
 
@@ -138,10 +144,13 @@ export default function NewAccountDialog() {
       // Reset form
       setName('');
       setNumber('');
+      setAccntTypeNo('');
+      setOpeningBalance('0.00');
       setType('Asset');
       setSubType('');
       setIsHeader(false);
       setIsBank(false);
+      setLinkedAccount('');
 
       toast({
         title: "Account Added",
@@ -161,34 +170,6 @@ export default function NewAccountDialog() {
 
   const isFormValid = name.trim() !== '' && number.trim() !== '';
 
-  const handleRowDoubleClick = (index: number) => {
-    setEditingRow(index);
-    setEditingField('cr'); // Start with CR field
-  };
-
-  const handleCrChange = (index: number, value: string) => {
-    const updatedAccounts = [...accounts];
-    updatedAccounts[index].cr = value;
-    // Auto-set DR to the same value as CR
-    updatedAccounts[index].dr = value;
-    setAccounts(updatedAccounts);
-    // Move to DR field after CR is set
-    setEditingField('dr');
-  };
-
-  const handleDrChange = (index: number, value: string) => {
-    const updatedAccounts = [...accounts];
-    updatedAccounts[index].dr = value;
-    // Auto-set CR to the same value as DR
-    updatedAccounts[index].cr = value;
-    setAccounts(updatedAccounts);
-  };
-
-  const handleInputBlur = () => {
-    setEditingRow(null);
-    setEditingField(null);
-  };
-
   return (
     <Dialog open={openDialogs['new-account']} onOpenChange={() => closeDialog('new-account')}>
       <DialogContent className="max-w-2xl">
@@ -198,68 +179,6 @@ export default function NewAccountDialog() {
         <ScrollArea className="max-h-[70vh] pr-6 -mr-6">
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-white mb-2">Use Standard Default Accounts</h3>
-              <div className="border rounded-md">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12"></TableHead>
-                      <TableHead>Number</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Header</TableHead>
-                      <TableHead>Bank</TableHead>
-                      <TableHead>CR</TableHead>
-                      <TableHead>DR</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {accounts.map((account, index) => (
-                      <TableRow key={account.name} onDoubleClick={() => handleRowDoubleClick(index)}>
-                        <TableCell>
-                          <Checkbox />
-                        </TableCell>
-                        <TableCell>{account.number}</TableCell>
-                        <TableCell>{account.name}</TableCell>
-                        <TableCell>{account.type}</TableCell>
-                        <TableCell>{account.header}</TableCell>
-                        <TableCell>{account.bank}</TableCell>
-                        <TableCell>
-                          {editingRow === index && editingField === 'cr' ? (
-                            <Input
-                              defaultValue={account.cr}
-                              onChange={(e) => handleCrChange(index, e.target.value)}
-                              onBlur={handleInputBlur}
-                              autoFocus
-                              className="w-20"
-                            />
-                          ) : (
-                            account.cr
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {editingRow === index && editingField === 'dr' ? (
-                            <Input
-                              defaultValue={account.dr}
-                              onChange={(e) => handleDrChange(index, e.target.value)}
-                              onBlur={handleInputBlur}
-                              className="w-20"
-                            />
-                          ) : (
-                            account.dr
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <Button disabled className="mt-4">
-                Add Account(s)
-              </Button>
-            </div>
-
-            <div className="border-t pt-6">
               <h3 className="text-lg font-medium text-white mb-4">Create New Account</h3>
               <div className="space-y-4">
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -273,7 +192,7 @@ export default function NewAccountDialog() {
                   <div className="col-span-3">
                     <RadioGroup
                       value={type}
-                      onValueChange={(value) => setType(value as AccountType)}
+                      onValueChange={handleTypeChange}
                       className="space-y-2"
                     >
                       <div className="flex items-center gap-2">
@@ -366,21 +285,42 @@ export default function NewAccountDialog() {
                   <Label htmlFor="account-number" className="text-right">
                     Account Number:
                   </Label>
-                  <Input id="account-number" className="col-span-3" value={number} onChange={(e) => setNumber(e.target.value)} />
+                  <Input id="account-number" className="col-span-3" value={number} readOnly />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="linked-account" className="text-right">
                     Default Linked Account for:
                   </Label>
-                   <Select>
+                   <Select value={linkedAccount} onValueChange={setLinkedAccount}>
                     <SelectTrigger id="linked-account" className="col-span-3">
                       <SelectValue placeholder="--- None ---" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">--- None ---</SelectItem>
-                      <SelectItem value="deposit-account">DEPOSIT ACCOUNT</SelectItem>
-                      <SelectItem value="accounts-receivable">ACCOUNTS RECEIVABLE</SelectItem>
-                      <SelectItem value="sales-tax-paid">SALES TAX PAID</SelectItem>
+                      {type === 'Income' ? (
+                        <>
+                          <SelectItem value="income-account">Income Account</SelectItem>
+                          <SelectItem value="freight-collected">Freight Collected</SelectItem>
+                        </>
+                      ) : type === 'Expense' ? (
+                        <>
+                          <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
+                          <SelectItem value="freight-paid">Freight Paid</SelectItem>
+                          <SelectItem value="expense-account">Expense Account</SelectItem>
+                        </>
+                      ) : type === 'Liability' ? (
+                        <>
+                          <SelectItem value="sales-tax-collected">Sales Tax Collected</SelectItem>
+                          <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
+                          <SelectItem value="accounts-payable">Accounts Payables</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="none">--- None ---</SelectItem>
+                          <SelectItem value="deposit-account">DEPOSIT ACCOUNT</SelectItem>
+                          <SelectItem value="accounts-receivable">ACCOUNTS RECEIVABLE</SelectItem>
+                          <SelectItem value="sales-tax-paid">SALES TAX PAID</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -388,7 +328,7 @@ export default function NewAccountDialog() {
                   <Label htmlFor="opening-balance" className="text-right">
                     Opening Balance:
                   </Label>
-                  <Input id="opening-balance" defaultValue="₱0.00" className="col-span-3" readOnly />
+                  <Input id="opening-balance" value={openingBalance} onChange={(e) => setOpeningBalance(e.target.value)} className="col-span-3" />
                 </div>
 
                 <div className="grid grid-cols-4 items-start gap-4">
@@ -396,7 +336,7 @@ export default function NewAccountDialog() {
                     <div className="col-span-3 space-y-2">
                         <div className="flex items-center gap-4">
                             <div className="flex items-center space-x-2">
-                                <Checkbox id="header-account" checked={isHeader} onCheckedChange={(checked) => setIsHeader(checked as boolean)} />
+                                <Checkbox id="header-account" checked={isHeader} onCheckedChange={(checked) => setIsHeader(checked as boolean)} disabled={type === 'Income'} />
                                 <Label htmlFor="header-account" className="font-normal">Account is just a Header Account</Label>
                             </div>
                              <div className="flex items-center space-x-2">
@@ -405,7 +345,7 @@ export default function NewAccountDialog() {
                             </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="tax-included" />
+                            <Checkbox id="tax-included" disabled={type === 'Liability'} />
                             <Label htmlFor="tax-included" className="font-normal">Tax Included</Label>
                         </div>
                     </div>

@@ -40,7 +40,7 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
 export function InventoryDialog() {
-  const { openDialogs, closeDialog } = useDialog();
+  const { openDialogs, closeDialog, openDialog } = useDialog();
   const { toast } = useToast();
   const [search, setSearch] = useState('');
   const [filterBy, setFilterBy] = useState('');
@@ -131,7 +131,7 @@ export function InventoryDialog() {
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Stock Products</DialogTitle>
-            <Button onClick={() => console.log('Add products clicked')} variant="outline">
+            <Button onClick={() => openDialog('add-product')} variant="outline">
               <Plus className="h-4 w-4 mr-2" />
               Add Products
             </Button>
@@ -262,8 +262,8 @@ export function InventoryDialog() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    externalProducts.map((product: ExternalProduct) => (
-                      <TableRow key={product.sku}>
+                    externalProducts.map((product: ExternalProduct, index: number) => (
+                      <TableRow key={`${product.sku}-${index}`}>
                         <TableCell className="w-16">
                           <input
                             type="radio"

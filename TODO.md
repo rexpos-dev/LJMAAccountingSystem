@@ -1,14 +1,9 @@
-# TODO: Implement Stock Products Table Enhancements
+# TODO: Replace "number" with "accnt_no" in Account Model
 
 ## Tasks
-- [x] Rename dialog title from "External Products" to "Stock Products" in `src/components/inventory/inventory-dialog.tsx`
-- [x] Modify `useExternalProducts` hook in `src/hooks/use-products.ts` to accept pagination parameters (page, limit) and fetch with offset
-- [x] Add pagination controls below the table in `src/components/inventory/inventory-dialog.tsx` using a pagination component
-- [x] Add a new first column "Action" with radio buttons for each row in the table for edit/view/update actions
-- [x] Add an "Add Products" button in the dialog header section
-- [x] Add a "Close" button at the bottom of the dialog content
-
-## Followup Steps
-- [ ] Test pagination functionality
-- [ ] Implement handlers for radio button actions (edit/view/update) - currently placeholders
-- [ ] Implement handler for "Add Products" button - currently a placeholder
+- [x] Update `prisma/schema.prisma` to change field name from "number" to "accnt_no"
+- [x] Update `src/app/api/accounts/route.ts` to use "accnt_no" instead of "number"
+- [x] Update `src/lib/database.ts` to change "number" to "accnt_no" in types and queries
+- [x] Run Prisma migration to update database schema
+- [x] Regenerate Prisma client
+- [ ] Test account creation and updates

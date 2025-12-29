@@ -35,6 +35,7 @@ import {
   Trash2,
   Undo,
   HelpCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { Account } from '@/types/account';
 import { cn } from '@/lib/utils';
@@ -56,7 +57,7 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
    const { openDialogs, closeDialog, openDialog } = useDialog();
 
   // Use database data instead of mock data
-  const { data: accountsData, isLoading, error } = useAccounts();
+  const { data: accountsData, isLoading, error, refetch } = useAccounts();
 
   const groupedAccounts = useMemo(() => {
     if (!accountsData) return [];
@@ -74,6 +75,7 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
     return Object.entries(groups).map(([category, accounts]) => ({
       category,
       accounts,
+      totalBalance: accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0),
     }));
 
   }, [accountsData]);
@@ -186,7 +188,17 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                   <Undo className="h-6 w-6" />
                   <span>Restore</span>
                 </Button>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-col h-auto"
+                    onClick={refetch}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className={`h-6 w-6 ${isLoading ? 'animate-spin' : ''}`} />
+                    <span>Refresh</span>
+                  </Button>
                   <Button variant="ghost" size="sm" className="flex-col h-auto">
                     <HelpCircle className="h-6 w-6" />
                     <span>Help</span>
@@ -239,7 +251,12 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                     groupedAccounts.map((group) => (
                       <Fragment key={group.category}>
                         <TableRow className="bg-muted/40">
-                          <TableCell colSpan={6} className="font-bold text-white">{group.category}</TableCell>
+                          <TableCell></TableCell>
+                          <TableCell className="font-bold text-white">{group.category}</TableCell>
+                          <TableCell className="text-right font-bold text-white">{formatCurrency(group.totalBalance)}</TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
                         </TableRow>
                         {group.accounts.map(renderAccountRow)}
                       </Fragment>

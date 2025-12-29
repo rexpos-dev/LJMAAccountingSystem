@@ -42,12 +42,14 @@ export function useCustomers(limit?: number, offset?: number) {
 
       const url = `/api/customers${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await fetch(url);
+      let data: any = [];
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch customers: ${response.statusText}`);
+        const errBody = await response.json().catch(() => null);
+        throw new Error(errBody?.error || response.statusText || 'Failed to fetch customers');
       }
 
-      const data = await response.json();
+      data = await response.json();
       setCustomers(data);
     } catch (err) {
       setError(err as Error);
@@ -166,12 +168,14 @@ export function useCustomer(id: string) {
       // For now, we'll fetch all customers and find the one with the matching ID
       // In a real application, you'd want a dedicated endpoint for fetching a single customer
       const response = await fetch('/api/customers');
+      let customers: any[] = [];
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch customer: ${response.statusText}`);
+        const errBody = await response.json().catch(() => null);
+        throw new Error(errBody?.error || response.statusText || 'Failed to fetch customer');
       }
 
-      const customers = await response.json();
+      customers = await response.json();
       const foundCustomer = customers.find((c: Customer) => c.id === id);
 
       if (!foundCustomer) {

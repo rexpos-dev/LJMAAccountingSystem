@@ -34,9 +34,13 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { CalendarIcon, UserPlus, Pencil } from 'lucide-react';
+import { CalendarIcon, UserPlus, Pencil, Search, Trash } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useExternalProducts } from '@/hooks/use-products';
+import { useAccounts } from '@/hooks/use-accounts';
+import { useCustomers } from '@/hooks/use-customers';
+import { AddCustomerDialog } from '@/components/customer/add-customer-dialog';
 import { format } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useDialog } from '@/components/layout/dialog-provider';
@@ -44,9 +48,88 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function CreateInvoicePage() {
   const [date, setDate] = useState<Date | undefined>(new Date(2025, 9, 7));
-  const { openDialogs, closeDialog } = useDialog();
+  const { openDialogs, closeDialog, openDialog } = useDialog();
+  const [productQuery, setProductQuery] = useState<string>('');
+  const { externalProducts: products, isLoading: productsLoading } = useExternalProducts(1, 10, productQuery);
+  const [items, setItems] = useState<any[]>([]);
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+  const resultsRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { data: accounts, isLoading: accountsLoading } = useAccounts();
+  const [selectedDepositAccount, setSelectedDepositAccount] = useState<string>('');
+  const { customers, refetch: refetchCustomers } = useCustomers();
+  const [selectedCustomer, setSelectedCustomer] = useState<string>('');
+
+  const addItem = (product: any) => {
+    setItems(prev => {
+      const existing = prev.find(it => it.id === product.id);
+      if (existing) {
+        return prev.map(it => it.id === product.id ? { ...it, qty: (it.qty || 0) + 1 } : it);
+      }
+
+      return [
+        ...prev,
+        {
+          id: product.id,
+          lineId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+          name: product.name || product.code || product.sku || 'Product',
+          description: product.description || product.description || '',
+          qty: 1,
+          unitPrice: Number(product.price) || 0,
+        },
+      ];
+    });
+    setProductQuery('');
+    setHighlightedIndex(null);
+  };
+
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!products || products.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex(prev => {
+        const next = prev === null ? 0 : Math.min(products.length - 1, prev + 1);
+        return next;
+      });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex(prev => {
+        const next = prev === null ? products.length - 1 : Math.max(0, prev - 1);
+        return next;
+      });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const idx = highlightedIndex ?? 0;
+      const p = products[idx];
+      if (p) addItem(p);
+    } else if (e.key === 'Escape') {
+      setProductQuery('');
+      setHighlightedIndex(null);
+    }
+  };
+
+  useEffect(() => {
+    if (resultsRef.current && highlightedIndex !== null) {
+      const nodes = resultsRef.current.querySelectorAll('li');
+      const node = nodes[highlightedIndex] as HTMLElement | undefined;
+      node?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [highlightedIndex]);
+
+  const updateQty = (lineId: string, value: number) => {
+    setItems(prev => prev.map(it => it.lineId === lineId ? { ...it, qty: value } : it));
+  };
+
+  const deleteItem = (lineId: string) => {
+    setItems(prev => prev.filter(it => it.lineId !== lineId));
+  };
+
+  const subtotal = items.reduce((s, it) => s + (it.qty || 0) * (it.unitPrice || 0), 0);
 
   return (
+    <>
+      <AddCustomerDialog />
      <Dialog open={openDialogs['create-invoice']} onOpenChange={() => closeDialog('create-invoice')}>
       <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
@@ -56,8 +139,8 @@ export default function CreateInvoicePage() {
           <div className="space-y-4">
             <Card>
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  <div className="lg:col-span-4">
                     <Tabs defaultValue="billing">
                       <TabsList>
                         <TabsTrigger value="billing">Billing</TabsTrigger>
@@ -68,17 +151,19 @@ export default function CreateInvoicePage() {
                           <div className="grid gap-2">
                             <label>Customer</label>
                             <div className="flex gap-2">
-                              <Select>
+                              <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select a customer" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="customer1">
-                                    Customer 1
-                                  </SelectItem>
+                                  {customers.map(customer => (
+                                    <SelectItem key={customer.id} value={customer.id}>
+                                      {customer.customerName}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
-                              <Button variant="outline" size="icon">
+                              <Button variant="outline" size="icon" onClick={() => openDialog('add-customer')}>
                                 <UserPlus className="h-4 w-4" />
                               </Button>
                               <Button variant="outline" size="icon">
@@ -150,7 +235,7 @@ export default function CreateInvoicePage() {
                     </Tabs>
                   </div>
 
-                  <Card className="bg-muted/30">
+                  <Card className="bg-muted/30 lg:col-span-8">
                     <CardHeader>
                       <CardTitle className="text-lg font-headline">Invoice</CardTitle>
                     </CardHeader>
@@ -226,14 +311,24 @@ export default function CreateInvoicePage() {
                       </div>
                       <div className="grid grid-cols-2 items-center gap-4">
                         <Label>Deposit Account</Label>
-                        <Select>
+                        <Select value={selectedDepositAccount} onValueChange={setSelectedDepositAccount}>
                           <SelectTrigger>
-                            <SelectValue placeholder="-- Create a new account --" />
+                            <SelectValue placeholder="-- Select account --" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="new-account">
-                              -- Create a new account --
-                            </SelectItem>
+                            {accountsLoading ? (
+                              <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                            ) : accounts.length === 0 ? (
+                              <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                            ) : (
+                              <>
+                                {accounts.filter(acc => acc.bank === 'Yes' || acc.type === 'Asset').map(account => (
+                                  <SelectItem key={account.id || account.name} value={account.id || account.name}>
+                                    {account.name}
+                                  </SelectItem>
+                                ))}
+                              </>
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
@@ -248,6 +343,46 @@ export default function CreateInvoicePage() {
                     <CardTitle>Items</CardTitle>
                 </CardHeader>
               <CardContent>
+                <div className="mb-4">
+                  <label className="sr-only">Search products</label>
+                  <div className="relative">
+                    <Input
+                      placeholder="Search products"
+                      value={productQuery}
+                      onChange={(e) => setProductQuery(e.target.value)}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <Search className="h-4 w-4" />
+                    </div>
+
+                    {productQuery && (
+                      <div ref={resultsRef} className="absolute left-0 right-0 mt-1 bg-popover border rounded shadow z-50 max-h-60 overflow-auto">
+                        {productsLoading ? (
+                          <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                        ) : products.length === 0 ? (
+                          <div className="p-2 text-sm text-muted-foreground">No products found</div>
+                        ) : (
+                          <ul>
+                            {products.map((p: any, idx: number) => (
+                              <li
+                                key={`${p.id}-${idx}`}
+                                className={`p-2 cursor-pointer ${highlightedIndex === idx ? 'bg-muted' : 'hover:bg-muted'}`}
+                                onMouseEnter={() => setHighlightedIndex(idx)}
+                                onMouseLeave={() => setHighlightedIndex(null)}
+                                onClick={() => addItem(p)}
+                                role="option"
+                                aria-selected={highlightedIndex === idx}
+                              >
+                                <div className="font-medium">{p.name || p.sku || p.barcode}</div>
+                                <div className="text-sm text-muted-foreground">{p.description || p.category || ''}</div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -260,49 +395,61 @@ export default function CreateInvoicePage() {
                         </TableHead>
                         <TableHead className="w-[100px] text-right">Tax</TableHead>
                         <TableHead className="w-[120px] text-right">Total</TableHead>
+                        <TableHead className="w-[48px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                          Click here to add items to this invoice.
-                        </TableCell>
-                      </TableRow>
+                      {items.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                            Click here to add items to this invoice.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        items.map(item => (
+                          <TableRow key={item.lineId ?? item.id}>
+                            <TableCell className="w-[80px]">
+                              <Input
+                                type="number"
+                                value={String(item.qty)}
+                                onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
+                                className="w-20"
+                              />
+                            </TableCell>
+                            <TableCell className="w-[200px]">{item.name}</TableCell>
+                            <TableCell>{item.description}</TableCell>
+                            <TableCell className="w-[120px] text-right">{item.unitPrice.toFixed(2)}</TableCell>
+                            <TableCell className="w-[100px] text-right">0.00</TableCell>
+                            <TableCell className="w-[120px] text-right">{(item.qty * item.unitPrice).toFixed(2)}</TableCell>
+                            <TableCell className="w-[48px] text-right">
+                              <Button variant="ghost" size="icon" onClick={() => deleteItem(item.lineId ?? item.id)}>
+                                <Trash className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
                 <div className="flex items-center gap-2 pt-4">
                   <Button variant="outline">Add Item</Button>
                   <Button variant="outline" disabled>Remove Item</Button>
-                  <Button variant="outline">Add Discount...</Button>
                 </div>
               </CardContent>
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <Tabs defaultValue="comments">
-                  <TabsList>
-                    <TabsTrigger value="comments">Comments</TabsTrigger>
-                    <TabsTrigger value="private-comments">
-                      Private Comments
-                    </TabsTrigger>
-                    <TabsTrigger value="note-comment">Note Comment</TabsTrigger>
-                    <TabsTrigger value="foot-comment">Foot Comment</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="comments" className="pt-4">
-                    <Textarea placeholder="Enter invoice notes" />
-                  </TabsContent>
-                </Tabs>
               </div>
               <div className="space-y-2 text-right">
                 <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal:</span>
-                    <span className="font-medium">₱0.00</span>
+                    <span className="font-medium">₱{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg">
                     <span>Total:</span>
-                    <span>₱0.00</span>
+                    <span>₱{subtotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -320,5 +467,6 @@ export default function CreateInvoicePage() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

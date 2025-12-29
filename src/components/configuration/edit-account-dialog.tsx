@@ -127,7 +127,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
             <Label htmlFor="number" className="text-right">
               Number:
             </Label>
-            <Input id="number" value={formData.number || ''} onChange={(e) => handleInputChange('number', parseInt(e.target.value, 10) || 0)} className="col-span-2" />
+            <Input id="number" value={formData.number || ''} readOnly className="col-span-2" />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="type" className="text-right">
@@ -168,7 +168,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
           </div>
           <div className="col-start-2 col-span-2 space-y-2">
              <div className="flex items-center space-x-2">
-                <Checkbox id="header-account" checked={formData.header === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('header', checked as boolean)} />
+                <Checkbox id="header-account" checked={formData.header === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('header', checked as boolean)} disabled={formData.type === 'Income'} />
                 <Label htmlFor="header-account" className="font-normal">Header account (for subtotals only, no posting)</Label>
             </div>
             <div className="flex items-center space-x-2">
@@ -176,7 +176,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
                 <Label htmlFor="cash-postable" className="font-normal">Cash postable (e.g., bank or credit card)</Label>
             </div>
              <div className="flex items-center space-x-2">
-                <Checkbox id="tax-included" />
+                <Checkbox id="tax-included" disabled={formData.type === 'Liability'} />
                 <Label htmlFor="tax-included" className="font-normal">Tax included</Label>
             </div>
           </div>
@@ -195,10 +195,31 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
                 <SelectValue placeholder="--- None ---" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">--- None ---</SelectItem>
-                <SelectItem value="deposit-account">DEPOSIT ACCOUNT</SelectItem>
-                <SelectItem value="accounts-receivable">ACCOUNTS RECEIVABLE</SelectItem>
-                <SelectItem value="sales-tax-paid">SALES TAX PAID</SelectItem>
+                {formData.type === 'Income' ? (
+                  <>
+                    <SelectItem value="income-account">Income Account</SelectItem>
+                    <SelectItem value="freight-collected">Freight Collected</SelectItem>
+                  </>
+                ) : formData.type === 'Expense' ? (
+                  <>
+                    <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
+                    <SelectItem value="freight-paid">Freight Paid</SelectItem>
+                    <SelectItem value="expense-account">Expense Account</SelectItem>
+                  </>
+                ) : formData.type === 'Liability' ? (
+                  <>
+                    <SelectItem value="sales-tax-collected">Sales Tax Collected</SelectItem>
+                    <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
+                    <SelectItem value="accounts-payable">Account Payables</SelectItem>
+                  </>
+                ) : (
+                  <>
+                    <SelectItem value="none">--- None ---</SelectItem>
+                    <SelectItem value="deposit-account">DEPOSIT ACCOUNT</SelectItem>
+                    <SelectItem value="accounts-receivable">ACCOUNTS RECEIVABLE</SelectItem>
+                    <SelectItem value="sales-tax-paid">SALES TAX PAID</SelectItem>
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>

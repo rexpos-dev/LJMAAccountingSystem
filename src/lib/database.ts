@@ -3,7 +3,7 @@ import { prisma } from './prisma'
 // Account operations
 export const getAccounts = async () => {
   return await prisma.account.findMany({
-    orderBy: { number: 'asc' },
+    orderBy: { accnt_no: 'asc' },
   })
 }
 
@@ -21,7 +21,8 @@ export const updateAccountBalance = async (id: string, balance: number) => {
 }
 
 export const createAccount = async (data: {
-  number: number;
+  accnt_no: number;
+  accnt_type_no: number;
   name: string;
   type: string;
   header: string;
@@ -68,5 +69,40 @@ export const getTransactionsByAccount = async (accountNumber: string) => {
   return await prisma.transaction.findMany({
     where: { accountNumber },
     orderBy: { date: 'desc' },
+  })
+}
+
+// Conversion Factor operations
+export const getConversionFactors = async (productId?: string) => {
+  return await prisma.conversionFactor.findMany({
+    where: productId ? { productId } : undefined,
+    orderBy: { createdAt: 'desc' },
+  })
+}
+
+export const createConversionFactor = async (data: {
+  productId: string;
+  unitName: string;
+  factor: number;
+}) => {
+  return await prisma.conversionFactor.create({
+    data,
+  })
+}
+
+export const updateConversionFactor = async (id: string, data: {
+  productId?: string;
+  unitName?: string;
+  factor?: number;
+}) => {
+  return await prisma.conversionFactor.update({
+    where: { id },
+    data,
+  })
+}
+
+export const deleteConversionFactor = async (id: string) => {
+  return await prisma.conversionFactor.delete({
+    where: { id },
   })
 }

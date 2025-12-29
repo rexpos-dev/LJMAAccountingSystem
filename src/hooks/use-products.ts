@@ -49,20 +49,18 @@ export interface ExternalProductResponse {
 
 export function useProducts(search?: string, filterBy?: string, filterValue?: string) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchProducts = async () => {
+  const fetchAllProducts = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const params = new URLSearchParams();
-      if (search) params.append('search', search);
-      if (filterBy) params.append('filterBy', filterBy);
-      if (filterValue) params.append('filterValue', filterValue);
-
-      const url = `/api/products${params.toString() ? `?${params.toString()}` : ''}`;
+      // Always fetch all products without search filter to populate the base set
+      const url = `/api/products`;
+      console.debug('[useProducts] fetching all from', url);
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -70,13 +68,43 @@ export function useProducts(search?: string, filterBy?: string, filterValue?: st
       }
 
       const data = await response.json();
-      setProducts(data);
+      console.debug('[useProducts] received all', Array.isArray(data) ? `${data.length} items` : typeof data, data);
+      setAllProducts(data || []);
+
+      // Apply local filtering
+      let filtered = data || [];
+
+      // Apply search filter locally
+      if (search) {
+        const searchLower = search.toLowerCase();
+        filtered = filtered.filter((p: Product) =>
+          (p.name && p.name.toLowerCase().includes(searchLower)) ||
+          (p.code && p.code.toLowerCase().includes(searchLower)) ||
+          (p.description && p.description.toLowerCase().includes(searchLower)) ||
+          (p.barcode && p.barcode.toLowerCase().includes(searchLower))
+        );
+      }
+
+      // Apply other filters if provided
+      if (filterBy && filterValue) {
+        const filterLower = filterValue.toLowerCase();
+        filtered = filtered.filter((p: Product) => {
+          const fieldValue = p[filterBy as keyof Product];
+          return fieldValue && String(fieldValue).toLowerCase().includes(filterLower);
+        });
+      }
+
+      setProducts(filtered);
     } catch (err) {
       setError(err as Error);
       console.error('Error fetching products:', err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchProducts = () => {
+    fetchAllProducts();
   };
 
   const createProduct = async (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {

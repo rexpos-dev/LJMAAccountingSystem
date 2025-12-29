@@ -66,7 +66,13 @@ export async function POST(request: Request) {
       name,
       barcode,
       description,
+      additionalDescription,
       category,
+      categoryId,
+      subcategoryId,
+      brandId,
+      supplierId,
+      unitOfMeasureId,
       unitPrice,
       costPrice,
       stockQuantity,
@@ -74,6 +80,7 @@ export async function POST(request: Request) {
       maxStockLevel,
       isActive,
       salesOrder,
+      autoCreateChildren,
     } = body;
 
     // Validate required fields
@@ -84,37 +91,32 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create product record using raw SQL
-    await prisma.$queryRaw`
-      INSERT INTO product (
-        id, code, name, barcode, description, category, unitPrice, costPrice,
-        stockQuantity, minStockLevel, maxStockLevel, isActive, salesOrder,
-        createdAt, updatedAt
-      ) VALUES (
-        ${crypto.randomUUID()},
-        ${code.trim()},
-        ${name.trim()},
-        ${barcode?.trim() || null},
-        ${description?.trim() || null},
-        ${category?.trim() || null},
-        ${unitPrice ? parseFloat(unitPrice) : 0},
-        ${costPrice ? parseFloat(costPrice) : 0},
-        ${stockQuantity ? parseInt(stockQuantity) : 0},
-        ${minStockLevel ? parseInt(minStockLevel) : 0},
-        ${maxStockLevel ? parseInt(maxStockLevel) : null},
-        ${isActive ?? true},
-        ${salesOrder?.trim() || null},
-        NOW(),
-        NOW()
-      )
-    `;
+    // Create product record using Prisma
+    const product = await prisma.product.create({
+      data: {
+        code: code.trim(),
+        name: name.trim(),
+        barcode: barcode?.trim() || null,
+        description: description?.trim() || null,
+        additionalDescription: additionalDescription?.trim() || null,
+        category: category?.trim() || null,
+        categoryId: categoryId || null,
+        subcategoryId: subcategoryId || null,
+        brandId: brandId || null,
+        supplierId: supplierId || null,
+        unitOfMeasureId: unitOfMeasureId || null,
+        unitPrice: unitPrice ? parseFloat(unitPrice) : 0,
+        costPrice: costPrice ? parseFloat(costPrice) : 0,
+        stockQuantity: stockQuantity ? parseInt(stockQuantity) : 0,
+        minStockLevel: minStockLevel ? parseInt(minStockLevel) : 0,
+        maxStockLevel: maxStockLevel ? parseInt(maxStockLevel) : null,
+        isActive: isActive ?? true,
+        salesOrder: salesOrder?.trim() || null,
+        autoCreateChildren: autoCreateChildren ?? false,
+      },
+    });
 
-    // Fetch the created product
-    const product = await prisma.$queryRaw`
-      SELECT * FROM product WHERE code = ${code.trim()}
-    `;
-
-    return NextResponse.json((product as any)[0], { status: 201 });
+    return NextResponse.json(product, { status: 201 });
   } catch (error: any) {
     console.error('Error creating product:', error);
 

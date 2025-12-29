@@ -183,8 +183,8 @@ export default function CustomerLoyaltyPointsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                loyaltyPoints.map((point) => (
-                  <TableRow key={point.id}>
+                loyaltyPoints.map((point, index) => (
+                  <TableRow key={`${point.id}-${index}`}>
                     <TableCell>
                       <input
                         type="radio"

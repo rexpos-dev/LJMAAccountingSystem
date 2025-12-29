@@ -5,12 +5,18 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const bank = searchParams.get('bank');
+    const type = searchParams.get('type');
 
     let accounts;
     if (bank === 'yes') {
       accounts = await getBankAccounts();
     } else {
       accounts = await getAccounts();
+    }
+
+    // Filter by type if provided
+    if (type) {
+      accounts = accounts.filter((acc: any) => acc.type === type);
     }
 
     return NextResponse.json(accounts);
@@ -23,14 +29,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { number, name, type, header, bank, category, balance } = body;
+    const { accnt_no, accnt_type_no, name, type, header, bank, category, balance } = body;
 
-    if (!number || !name || !type) {
-      return NextResponse.json({ error: 'Missing required fields: number, name, type' }, { status: 400 });
+    if (!accnt_no || !accnt_type_no || !name || !type) {
+      return NextResponse.json({ error: 'Missing required fields: accnt_no, accnt_type_no, name, type' }, { status: 400 });
     }
 
     const account = await createAccount({
-      number: parseInt(number, 10),
+      accnt_no: parseInt(accnt_no, 10),
+      accnt_type_no: parseInt(accnt_type_no, 10),
       name,
       type,
       header: header || 'No',
@@ -52,14 +59,14 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, number, name, type, header, bank, category, balance } = body;
+    const { id, accnt_no, name, type, header, bank, category, balance } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
     }
 
     const updateData: any = {};
-    if (number !== undefined) updateData.number = parseInt(number, 10);
+    if (accnt_no !== undefined) updateData.accnt_no = parseInt(accnt_no, 10);
     if (name !== undefined) updateData.name = name;
     if (type !== undefined) updateData.type = type;
     if (header !== undefined) updateData.header = header;

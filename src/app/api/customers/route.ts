@@ -42,28 +42,42 @@ async function generateEN13Code(): Promise<string> {
 
 export async function GET(request: Request) {
   try {
+    console.log('Starting to fetch customers...');
+
     // First get customers
     const customers = await prisma.customer.findMany({
       orderBy: { createdAt: 'desc' },
     });
 
+    console.log(`Found ${customers.length} customers`);
+
     // Then get loyalty points for each customer
     const customersWithBalance = await Promise.all(
       customers.map(async (customer: any) => {
-        const loyaltyPoints = await prisma.loyaltyPoint.findMany({
-          where: { customerId: customer.id },
-          select: { totalPoints: true },
-        });
+        try {
+          const loyaltyPoints = await prisma.loyaltyPoint.findMany({
+            where: { customerId: customer.id },
+            select: { totalPoints: true },
+          });
 
-        const totalBalance = loyaltyPoints.reduce((sum: number, point: any) => sum + point.totalPoints, 0);
+          const totalBalance = loyaltyPoints.reduce((sum: number, point: any) => sum + point.totalPoints, 0);
 
-        return {
-          ...customer,
-          loyaltyPointsBalance: totalBalance,
-        };
+          return {
+            ...customer,
+            loyaltyPointsBalance: totalBalance,
+          };
+        } catch (loyaltyError: any) {
+          console.error(`Error fetching loyalty points for customer ${customer.id}:`, loyaltyError);
+          // Return customer with 0 balance if loyalty points fail
+          return {
+            ...customer,
+            loyaltyPointsBalance: 0,
+          };
+        }
       })
     );
 
+    console.log('Successfully processed customers with loyalty balances');
     return NextResponse.json(customersWithBalance);
   } catch (error: any) {
     console.error('Error fetching customers:', error);
