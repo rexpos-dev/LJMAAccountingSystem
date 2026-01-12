@@ -21,7 +21,7 @@ export function MainMenu() {
         <MenubarTrigger>Customer</MenubarTrigger>
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('customer-list')}>Customer List</MenubarItem>
-          <MenubarItem onClick={() => openDialog('customer-balance')}>Customer Balances</MenubarItem>
+          <MenubarItem onClick={() => openDialog('customer-balance' as any)}>Customer Balances</MenubarItem>
           <MenubarItem onClick={() => openDialog('customer-payment')}>Customer Payment</MenubarItem>
           <MenubarItem onClick={() => openDialog('customer-loyalty-points')}>Customer Loyalty Points</MenubarItem>
           <MenubarItem onClick={() => openDialog('loyalty-settings')}>Loyalty Points Settings</MenubarItem>
@@ -32,6 +32,20 @@ export function MainMenu() {
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('inventory')}>Inventory</MenubarItem>
           <MenubarItem>Placeholder</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
+        <MenubarTrigger>Configuration</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={() => openDialog('chart-of-accounts')}>Chart of Accounts</MenubarItem>
+          <MenubarItem onClick={() => openDialog('sales-users')}>Sales Users</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
+        <MenubarTrigger>Setting</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={() => openDialog('business-setup')}>Business Setup</MenubarItem>
+          <MenubarItem onClick={() => openDialog('backup-scheduler')}>Back up Data</MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

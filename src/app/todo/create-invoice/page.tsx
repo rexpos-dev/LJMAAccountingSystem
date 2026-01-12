@@ -41,7 +41,7 @@ import { useExternalProducts } from '@/hooks/use-products';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useCustomers } from '@/hooks/use-customers';
 import { AddCustomerDialog } from '@/components/customer/add-customer-dialog';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -50,7 +50,11 @@ export default function CreateInvoicePage() {
   const [date, setDate] = useState<Date | undefined>(new Date(2025, 9, 7));
   const { openDialogs, closeDialog, openDialog } = useDialog();
   const [productQuery, setProductQuery] = useState<string>('');
-  const { externalProducts: products, isLoading: productsLoading } = useExternalProducts(1, 10, productQuery);
+  const {
+    externalProducts: products,
+    isLoading: productsLoading,
+    error: productsError,
+  } = useExternalProducts(1, 10, productQuery);
   const [items, setItems] = useState<any[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const resultsRef = useRef<HTMLDivElement | null>(null);
@@ -71,7 +75,7 @@ export default function CreateInvoicePage() {
         ...prev,
         {
           id: product.id,
-          lineId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+          lineId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
           name: product.name || product.code || product.sku || 'Product',
           description: product.description || product.description || '',
           qty: 1,
@@ -130,132 +134,132 @@ export default function CreateInvoicePage() {
   return (
     <>
       <AddCustomerDialog />
-     <Dialog open={openDialogs['create-invoice']} onOpenChange={() => closeDialog('create-invoice')}>
-      <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>New Invoice</DialogTitle>
-        </DialogHeader>
-        <ScrollArea className="flex-1 pr-6 -mr-6">
-          <div className="space-y-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  <div className="lg:col-span-4">
-                    <Tabs defaultValue="billing">
-                      <TabsList>
-                        <TabsTrigger value="billing">Billing</TabsTrigger>
-                        <TabsTrigger value="shipping">Shipping</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="billing" className="pt-4">
-                        <div className="space-y-4">
-                          <div className="grid gap-2">
-                            <label>Customer</label>
-                            <div className="flex gap-2">
-                              <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a customer" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {customers.map(customer => (
-                                    <SelectItem key={customer.id} value={customer.id}>
-                                      {customer.customerName}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <Button variant="outline" size="icon" onClick={() => openDialog('add-customer')}>
-                                <UserPlus className="h-4 w-4" />
-                              </Button>
-                              <Button variant="outline" size="icon">
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="grid gap-2">
-                            <label>Bill To</label>
-                            <Textarea placeholder="Enter billing address" />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
+      <Dialog open={openDialogs['create-invoice']} onOpenChange={() => closeDialog('create-invoice')}>
+        <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>New Invoice</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="flex-1 pr-6 -mr-6">
+            <div className="space-y-4">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-4">
+                      <Tabs defaultValue="billing">
+                        <TabsList>
+                          <TabsTrigger value="billing">Billing</TabsTrigger>
+                          <TabsTrigger value="shipping">Shipping</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="billing" className="pt-4">
+                          <div className="space-y-4">
                             <div className="grid gap-2">
-                              <label>Customer PO No.</label>
-                              <Input />
+                              <label>Customer</label>
+                              <div className="flex gap-2">
+                                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a customer" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {customers.map(customer => (
+                                      <SelectItem key={customer.id} value={customer.id}>
+                                        {customer.customerName}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Button variant="outline" size="icon" onClick={() => openDialog('add-customer')}>
+                                  <UserPlus className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="icon">
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                             <div className="grid gap-2">
-                              <label>Customer Tax</label>
-                              <Select defaultValue="default">
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="default">Default</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <label>Bill To</label>
+                              <Textarea placeholder="Enter billing address" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="grid gap-2">
+                                <label>Customer PO No.</label>
+                                <Input />
+                              </div>
+                              <div className="grid gap-2">
+                                <label>Customer Tax</label>
+                                <Select defaultValue="default">
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="default">Default</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="shipping" className="pt-4">
-                        <div className="space-y-4">
-                          <div className="grid gap-2">
-                            <Label htmlFor="shipping-address">Ship To</Label>
-                            <Textarea id="shipping-address" placeholder="Enter shipping address" />
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="same-as-billing" />
-                            <Label htmlFor="same-as-billing" className="font-normal">Same as billing</Label>
-                          </div>
-                           <div className="grid grid-cols-2 gap-4">
+                        </TabsContent>
+                        <TabsContent value="shipping" className="pt-4">
+                          <div className="space-y-4">
                             <div className="grid gap-2">
+                              <Label htmlFor="shipping-address">Ship To</Label>
+                              <Textarea id="shipping-address" placeholder="Enter shipping address" />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox id="same-as-billing" />
+                              <Label htmlFor="same-as-billing" className="font-normal">Same as billing</Label>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="grid gap-2">
                                 <Label htmlFor="ship-by">Ship By</Label>
                                 <Input id="ship-by" />
-                            </div>
-                            <div className="grid gap-2">
+                              </div>
+                              <div className="grid gap-2">
                                 <Label htmlFor="tracking-ref">Tracking Ref No.</Label>
                                 <Input id="tracking-ref" />
+                              </div>
+                            </div>
+                            <div className="grid gap-2">
+                              <Label>Shipping Costs/Tax</Label>
+                              <div className="flex gap-2">
+                                <Input type="number" placeholder="0.00" />
+                                <Select defaultValue="none">
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="none">
+                                      None
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
                           </div>
-                           <div className="grid gap-2">
-                            <Label>Shipping Costs/Tax</Label>
-                            <div className="flex gap-2">
-                              <Input type="number" placeholder="0.00" />
-                              <Select defaultValue="none">
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">
-                                    None
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  </div>
+                        </TabsContent>
+                      </Tabs>
+                    </div>
 
-                  <Card className="bg-muted/30 lg:col-span-8">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-headline">Invoice</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        <Label>Create From</Label>
-                        <Select defaultValue="new-invoice">
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="new-invoice">
-                              [New Invoice]
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        <Label>Date</Label>
-                         <Popover>
+                    <Card className="bg-muted/30 lg:col-span-8">
+                      <CardHeader>
+                        <CardTitle className="text-lg font-headline">Invoice</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 items-center gap-4">
+                          <Label>Create From</Label>
+                          <Select defaultValue="new-invoice">
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="new-invoice">
+                                [New Invoice]
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid grid-cols-2 items-center gap-4">
+                          <Label>Date</Label>
+                          <Popover>
                             <PopoverTrigger asChild>
                               <Button
                                 variant={"outline"}
@@ -277,185 +281,187 @@ export default function CreateInvoicePage() {
                               />
                             </PopoverContent>
                           </Popover>
-                      </div>
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        <Label>Terms</Label>
-                        <div className="flex gap-2">
-                          <Select defaultValue="pay-in-days">
+                        </div>
+                        <div className="grid grid-cols-2 items-center gap-4">
+                          <Label>Terms</Label>
+                          <div className="flex gap-2">
+                            <Select defaultValue="pay-in-days">
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="pay-in-days">
+                                  Pay in Days
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Input type="number" defaultValue="30" className="w-20" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 items-center gap-4">
+                          <Label>Salesperson</Label>
+                          <Select>
                             <SelectTrigger>
-                              <SelectValue />
+                              <SelectValue placeholder="Select salesperson" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="pay-in-days">
-                                Pay in Days
-                              </SelectItem>
+                              <SelectItem value="sp1">Salesperson 1</SelectItem>
                             </SelectContent>
                           </Select>
-                          <Input type="number" defaultValue="30" className="w-20" />
                         </div>
-                      </div>
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        <Label>Salesperson</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select salesperson" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="sp1">Salesperson 1</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        <Label>Invoice Number</Label>
-                        <Input defaultValue="10000" />
-                      </div>
-                      <div className="grid grid-cols-2 items-center gap-4">
-                        <Label>Deposit Account</Label>
-                        <Select value={selectedDepositAccount} onValueChange={setSelectedDepositAccount}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="-- Select account --" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {accountsLoading ? (
-                              <div className="p-2 text-sm text-muted-foreground">Loading...</div>
-                            ) : accounts.length === 0 ? (
-                              <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
-                            ) : (
-                              <>
-                                {accounts.filter(acc => acc.bank === 'Yes' || acc.type === 'Asset').map(account => (
-                                  <SelectItem key={account.id || account.name} value={account.id || account.name}>
-                                    {account.name}
-                                  </SelectItem>
-                                ))}
-                              </>
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Items</CardTitle>
-                </CardHeader>
-              <CardContent>
-                <div className="mb-4">
-                  <label className="sr-only">Search products</label>
-                  <div className="relative">
-                    <Input
-                      placeholder="Search products"
-                      value={productQuery}
-                      onChange={(e) => setProductQuery(e.target.value)}
-                    />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      <Search className="h-4 w-4" />
-                    </div>
-
-                    {productQuery && (
-                      <div ref={resultsRef} className="absolute left-0 right-0 mt-1 bg-popover border rounded shadow z-50 max-h-60 overflow-auto">
-                        {productsLoading ? (
-                          <div className="p-2 text-sm text-muted-foreground">Loading...</div>
-                        ) : products.length === 0 ? (
-                          <div className="p-2 text-sm text-muted-foreground">No products found</div>
-                        ) : (
-                          <ul>
-                            {products.map((p: any, idx: number) => (
-                              <li
-                                key={`${p.id}-${idx}`}
-                                className={`p-2 cursor-pointer ${highlightedIndex === idx ? 'bg-muted' : 'hover:bg-muted'}`}
-                                onMouseEnter={() => setHighlightedIndex(idx)}
-                                onMouseLeave={() => setHighlightedIndex(null)}
-                                onClick={() => addItem(p)}
-                                role="option"
-                                aria-selected={highlightedIndex === idx}
-                              >
-                                <div className="font-medium">{p.name || p.sku || p.barcode}</div>
-                                <div className="text-sm text-muted-foreground">{p.description || p.category || ''}</div>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    )}
+                        <div className="grid grid-cols-2 items-center gap-4">
+                          <Label>Invoice Number</Label>
+                          <Input defaultValue="10000" />
+                        </div>
+                        <div className="grid grid-cols-2 items-center gap-4">
+                          <Label>Deposit Account</Label>
+                          <Select value={selectedDepositAccount} onValueChange={setSelectedDepositAccount}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="-- Select account --" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {accountsLoading ? (
+                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                              ) : accounts.length === 0 ? (
+                                <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                              ) : (
+                                <>
+                                  {accounts.filter(acc => acc.bank === 'Yes' || acc.type === 'Asset').map(account => (
+                                    <SelectItem key={account.id || account.name} value={account.id || account.name}>
+                                      {account.name}
+                                    </SelectItem>
+                                  ))}
+                                </>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[80px]">Qty</TableHead>
-                        <TableHead className="w-[200px]">Item</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead className="w-[120px] text-right">
-                          Unit Price
-                        </TableHead>
-                        <TableHead className="w-[100px] text-right">Tax</TableHead>
-                        <TableHead className="w-[120px] text-right">Total</TableHead>
-                        <TableHead className="w-[48px]"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {items.length === 0 ? (
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Items</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <label className="sr-only">Search products</label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Search products"
+                        value={productQuery}
+                        onChange={(e) => setProductQuery(e.target.value)}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        <Search className="h-4 w-4" />
+                      </div>
+
+                      {productQuery && (
+                        <div ref={resultsRef} className="absolute left-0 right-0 mt-1 bg-popover border rounded shadow z-50 max-h-60 overflow-auto">
+                          {productsLoading ? (
+                            <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                          ) : productsError ? (
+                            <div className="p-2 text-sm text-red-500">No Products Fetch</div>
+                          ) : products.length === 0 ? (
+                            <div className="p-2 text-sm text-muted-foreground">No products found</div>
+                          ) : (
+                            <ul>
+                              {products.map((p: any, idx: number) => (
+                                <li
+                                  key={`${p.id}-${idx}`}
+                                  className={`p-2 cursor-pointer ${highlightedIndex === idx ? 'bg-muted' : 'hover:bg-muted'}`}
+                                  onMouseEnter={() => setHighlightedIndex(idx)}
+                                  onMouseLeave={() => setHighlightedIndex(null)}
+                                  onClick={() => addItem(p)}
+                                  role="option"
+                                  aria-selected={highlightedIndex === idx}
+                                >
+                                  <div className="font-medium">{p.name || p.sku || p.barcode}</div>
+                                  <div className="text-sm text-muted-foreground">{p.description || p.category || ''}</div>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                            Click here to add items to this invoice.
-                          </TableCell>
+                          <TableHead className="w-[80px]">Qty</TableHead>
+                          <TableHead className="w-[200px]">Item</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="w-[120px] text-right">
+                            Unit Price
+                          </TableHead>
+                          <TableHead className="w-[100px] text-right">Tax</TableHead>
+                          <TableHead className="w-[120px] text-right">Total</TableHead>
+                          <TableHead className="w-[48px]"></TableHead>
                         </TableRow>
-                      ) : (
-                        items.map(item => (
-                          <TableRow key={item.lineId ?? item.id}>
-                            <TableCell className="w-[80px]">
-                              <Input
-                                type="number"
-                                value={String(item.qty)}
-                                onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
-                                className="w-20"
-                              />
-                            </TableCell>
-                            <TableCell className="w-[200px]">{item.name}</TableCell>
-                            <TableCell>{item.description}</TableCell>
-                            <TableCell className="w-[120px] text-right">{item.unitPrice.toFixed(2)}</TableCell>
-                            <TableCell className="w-[100px] text-right">0.00</TableCell>
-                            <TableCell className="w-[120px] text-right">{(item.qty * item.unitPrice).toFixed(2)}</TableCell>
-                            <TableCell className="w-[48px] text-right">
-                              <Button variant="ghost" size="icon" onClick={() => deleteItem(item.lineId ?? item.id)}>
-                                <Trash className="h-4 w-4 text-destructive" />
-                              </Button>
+                      </TableHeader>
+                      <TableBody>
+                        {items.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                              Click here to add items to this invoice.
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <div className="flex items-center gap-2 pt-4">
-                  <Button variant="outline">Add Item</Button>
-                  <Button variant="outline" disabled>Remove Item</Button>
-                </div>
-              </CardContent>
-            </Card>
+                        ) : (
+                          items.map(item => (
+                            <TableRow key={item.lineId ?? item.id}>
+                              <TableCell className="w-[80px]">
+                                <Input
+                                  type="number"
+                                  value={String(item.qty)}
+                                  onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
+                                  className="w-20"
+                                />
+                              </TableCell>
+                              <TableCell className="w-[200px]">{item.name}</TableCell>
+                              <TableCell>{item.description}</TableCell>
+                              <TableCell className="w-[120px] text-right">{item.unitPrice.toFixed(2)}</TableCell>
+                              <TableCell className="w-[100px] text-right">0.00</TableCell>
+                              <TableCell className="w-[120px] text-right">{(item.qty * item.unitPrice).toFixed(2)}</TableCell>
+                              <TableCell className="w-[48px] text-right">
+                                <Button variant="ghost" size="icon" onClick={() => deleteItem(item.lineId ?? item.id)}>
+                                  <Trash className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <div className="flex items-center gap-2 pt-4">
+                    <Button variant="outline">Add Item</Button>
+                    <Button variant="outline" disabled>Remove Item</Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-              </div>
-              <div className="space-y-2 text-right">
-                <div className="flex justify-between">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                </div>
+                <div className="space-y-2 text-right">
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal:</span>
                     <span className="font-medium">₱{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg">
+                  </div>
+                  <div className="flex justify-between font-bold text-lg">
                     <span>Total:</span>
                     <span>₱{subtotal.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </ScrollArea>
-        <DialogFooter className="border-t pt-4">
+          </ScrollArea>
+          <DialogFooter className="border-t pt-4">
             <Button variant="outline">Invoice Options...</Button>
             <div className="flex gap-2 ml-auto">
               <DialogClose asChild>
@@ -464,9 +470,9 @@ export default function CreateInvoicePage() {
               <Button>Record</Button>
               <Button variant="secondary">Help</Button>
             </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

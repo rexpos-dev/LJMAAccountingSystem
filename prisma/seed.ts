@@ -13,20 +13,20 @@ async function main() {
 
   // Seed accounts
   const accounts = [
-    { number: 1110, name: 'Checking Account', balance: 50000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { number: 1120, name: 'Savings Account', balance: 100000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { number: 1150, name: 'Undeposited Funds', balance: 0, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { number: 1190, name: 'Petty Cash', balance: 5000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { number: 1210, name: 'Accounts Receivable', balance: 25000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
-    { number: 1310, name: 'Inventory', balance: 75000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
-    { number: 2110, name: 'Credit Card', balance: -15000, type: 'Liability', header: 'No', bank: 'Yes', category: 'Liabilities' },
-    { number: 2150, name: 'Loan', balance: -50000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
-    { number: 2210, name: 'Accounts Payable', balance: -30000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
+    { accnt_no: 1110, name: 'Checking Account', balance: 50000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { accnt_no: 1120, name: 'Savings Account', balance: 100000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { accnt_no: 1150, name: 'Undeposited Funds', balance: 0, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { accnt_no: 1190, name: 'Petty Cash', balance: 5000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
+    { accnt_no: 1210, name: 'Accounts Receivable', balance: 25000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
+    { accnt_no: 1310, name: 'Inventory', balance: 75000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
+    { accnt_no: 2110, name: 'Credit Card', balance: -15000, type: 'Liability', header: 'No', bank: 'Yes', category: 'Liabilities' },
+    { accnt_no: 2150, name: 'Loan', balance: -50000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
+    { accnt_no: 2210, name: 'Accounts Payable', balance: -30000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
   ]
 
   for (const account of accounts) {
     await prisma.account.upsert({
-      where: { number: account.number },
+      where: { accnt_no: account.accnt_no },
       update: {},
       create: account,
     })
@@ -176,6 +176,34 @@ async function main() {
       data: point,
     })
   }
+
+  // Seed admin user
+  const adminUser = {
+    username: 'admin@ljma.com',
+    firstName: 'Super',
+    lastName: 'Admin',
+    designation: 'Administrator',
+    userAccess: 'Full Access',
+    accountType: 'Admin',
+    password: 'admin123',
+    permissions: JSON.stringify([
+      'Dashboard', 'Inventory', 'Stocks', 'Stock movement', 'Stock Adjustment', 'Adjustment History',
+      'Purchases', 'Warehouse', 'Product Brand', 'Category', 'Price Type', 'Unit of Measure',
+      'Sales', 'Customers', 'Suppliers', 'Setup', 'Cashier Admin', 'Backup Database',
+      'Positive Adjustment', 'Negative Adjustment', 'Transfer Stocks',
+      'Add Purchase Order', 'Approve Purchase Order', 'Receive Purchase Order', 'Void Purchase Order', 'Add/Edit Purchase Cost',
+      'Add/Edit Category', 'Add/Edit Price Type',
+      'Customer List', 'Customer Balances', 'Customer Payment', 'Customer Loyalty Points', 'Loyalty Points Setting',
+      'Add/Edit user'
+    ]),
+    isActive: true,
+  }
+
+  await prisma.userPermission.upsert({
+    where: { username: adminUser.username },
+    update: adminUser,
+    create: adminUser,
+  })
 
   console.log('Database seeded successfully!')
 }

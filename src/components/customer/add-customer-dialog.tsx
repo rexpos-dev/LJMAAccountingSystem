@@ -25,6 +25,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { Phone, Mail, Folder } from 'lucide-react';
+import { useSalesUsers } from '@/hooks/use-sales-users';
 
 interface LoyaltySetting {
   id: string;
@@ -65,6 +66,7 @@ interface AddCustomerDialogProps {
 export function AddCustomerDialog() {
   const { openDialogs, closeDialog, getDialogData } = useDialog();
   const { toast } = useToast();
+  const { data: salesUsers = [], isLoading: salesUsersLoading } = useSalesUsers();
 
   const editCustomer = getDialogData('add-customer');
   const isEditing = !!editCustomer;
@@ -74,7 +76,7 @@ export function AddCustomerDialog() {
     return `CUST-${Math.floor(Math.random() * 1000000)}`;
   };
 
-  const [code, setCode] = useState(generateCustomerCode());
+  const [code, setCode] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [contactFirstName, setContactFirstName] = useState('');
   const [address, setAddress] = useState('');
@@ -405,7 +407,19 @@ export function AddCustomerDialog() {
               <div className="space-y-2">
                 <Label>Payment terms</Label>
                 <div className="flex gap-2">
-                  <Select value={paymentTerms} onValueChange={setPaymentTerms}>
+                  <Select
+                    value={paymentTerms}
+                    onValueChange={(value) => {
+                      setPaymentTerms(value);
+                      if (value === 'due') {
+                        const now = new Date();
+                        const year = now.getFullYear();
+                        const month = String(now.getMonth() + 1).padStart(2, '0');
+                        const day = String(now.getDate()).padStart(2, '0');
+                        setPaymentTermsValue(`${year}-${month}-${day}`);
+                      }
+                    }}
+                  >
                     <SelectTrigger className="w-[140px]">
                       <SelectValue />
                     </SelectTrigger>
@@ -425,14 +439,29 @@ export function AddCustomerDialog() {
 
               <div className="space-y-2">
                 <Label htmlFor="salesperson">Salesperson</Label>
-                <Select value={salesperson} onValueChange={setSalesperson}>
+                <Select
+                  value={salesperson}
+                  onValueChange={setSalesperson}
+                  disabled={salesUsersLoading}
+                >
                   <SelectTrigger id="salesperson">
-                    <SelectValue placeholder="Select salesperson" />
+                    <SelectValue
+                      placeholder={
+                        salesUsersLoading
+                          ? 'Loading sales users...'
+                          : 'Select salesperson'
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="john">John Doe</SelectItem>
-                    <SelectItem value="jane">Jane Smith</SelectItem>
-                    <SelectItem value="bob">Bob Johnson</SelectItem>
+                    {salesUsers.map((user) => (
+                      <SelectItem
+                        key={user.id}
+                        value={user.complete_name || user.name}
+                      >
+                        {user.complete_name || user.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

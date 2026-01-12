@@ -17,10 +17,12 @@ import {
 } from "@/components/ui/card";
 
 import { StatCard } from "./stat-card";
-import { Overview } from "./overview";
 import { PesoIcon } from "@/components/icons/peso-icon";
-import { SummaryCards } from "./summary-cards";
-import { FinancialDonut } from "./financial-donut";
+import dynamic from 'next/dynamic';
+
+const Overview = dynamic(() => import('./overview').then(m => m.Overview), { ssr: false });
+const SummaryCards = dynamic(() => import('./summary-cards').then(m => m.SummaryCards), { ssr: false });
+const FinancialDonut = dynamic(() => import('./financial-donut').then(m => m.FinancialDonut), { ssr: false });
 
 export function Dashboard() {
   const [recentCustomers, setRecentCustomers] = useState<Array<any>>([]);
@@ -37,18 +39,18 @@ export function Dashboard() {
         }
 
         data = await response.json();
-        
+
         // Sort by creation date (most recent first) and take top 5
         const sorted = Array.isArray(data)
           ? data
-              .sort((a: any, b: any) => {
-                const dateA = new Date(a.createdAt || 0).getTime();
-                const dateB = new Date(b.createdAt || 0).getTime();
-                return dateB - dateA;
-              })
-              .slice(0, 5)
+            .sort((a: any, b: any) => {
+              const dateA = new Date(a.createdAt || 0).getTime();
+              const dateB = new Date(b.createdAt || 0).getTime();
+              return dateB - dateA;
+            })
+            .slice(0, 5)
           : [];
-        
+
         setRecentCustomers(sorted);
       } catch (error) {
         console.error('Error fetching recent customers:', error);
@@ -101,7 +103,7 @@ export function Dashboard() {
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {recentCustomers.map((customer: any, idx: number) => (
-                  <div key={customer.id ?? customer.code ?? `${(customer.customerName || customer.name || 'cust')}-${idx}` } className="flex items-center gap-3 p-3 rounded-lg border">
+                  <div key={customer.id ?? customer.code ?? `${(customer.customerName || customer.name || 'cust')}-${idx}`} className="flex items-center gap-3 p-3 rounded-lg border">
                     <Avatar className="h-9 w-9">
                       <AvatarFallback>{(customer.customerName || customer.name || "C").charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>

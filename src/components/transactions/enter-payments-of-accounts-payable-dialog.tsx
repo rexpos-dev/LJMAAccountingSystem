@@ -37,7 +37,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CalendarIcon, UserPlus, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockAccounts } from '@/app/configuration/chart-of-accounts/mock-accounts';
 
@@ -149,7 +149,7 @@ export function EnterPaymentsOfAccountsPayableDialog() {
                 </div>
                 <div className="grid grid-cols-3 items-center gap-4">
                   <Label htmlFor="amount">Amount:</Label>
-                  <Input id="amount" value={`₱${amount}`} onChange={(e) => setAmount(e.target.value.replace('₱', ''))} className="col-span-2"/>
+                  <Input id="amount" value={`₱${amount}`} onChange={(e) => setAmount(e.target.value.replace('₱', ''))} className="col-span-2" />
                 </div>
                 <div className="grid grid-cols-3 items-start gap-4">
                   <Label htmlFor="journal-memo">Journal memo:</Label>

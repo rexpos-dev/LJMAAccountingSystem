@@ -1,5 +1,7 @@
 
-import { Flowchart } from "@/components/flowchart/flowchart";
+"use client";
+import dynamic from 'next/dynamic';
+const Flowchart = dynamic(() => import("@/components/flowchart/flowchart").then(m => m.Flowchart), { ssr: false });
 
 export default function AccountingFlowchartPage() {
   return (

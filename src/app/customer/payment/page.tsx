@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,15 @@ export default function CustomerPaymentPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [customerFilter, setCustomerFilter] = useState('all');
   const [paymentType, setPaymentType] = useState('all');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+
+  useEffect(() => {
+    if (openDialogs['customer-payment']) {
+      if (!fromDate) setFromDate(new Date().toISOString().slice(0, 10));
+      if (!toDate) setToDate(new Date().toISOString().slice(0, 10));
+    }
+  }, [openDialogs['customer-payment']]);
 
   const handleAdd = () => {
     // open add payment dialog or route
@@ -73,11 +82,11 @@ export default function CustomerPaymentPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <label className="text-sm text-muted-foreground">From Date</label>
-              <Input type="date" defaultValue={new Date().toISOString().slice(0,10)} />
+              <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
             </div>
             <div className="flex items-center gap-2">
               <label className="text-sm text-muted-foreground">To Date</label>
-              <Input type="date" defaultValue={new Date().toISOString().slice(0,10)} />
+              <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
             </div>
 
             <div className="w-40">

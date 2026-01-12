@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAccounts, getBankAccounts, createAccount, updateAccount } from '@/lib/database';
+import { getAccounts, getBankAccounts, createAccount, updateAccount, deleteAccount } from '@/lib/database';
 
 export async function GET(request: Request) {
   try {
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, accnt_no, name, type, header, bank, category, balance } = body;
+    const { id, accnt_no, accnt_type_no, name, type, header, bank, category, balance } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
@@ -86,5 +86,26 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Account not found' }, { status: 404 });
     }
     return NextResponse.json({ error: 'Failed to update account' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
+    }
+
+    await deleteAccount(id);
+
+    return NextResponse.json({ message: 'Account deleted successfully' });
+  } catch (error: any) {
+    console.error('Error deleting account:', error);
+    if (error.code === 'P2025') {
+      return NextResponse.json({ error: 'Account not found' }, { status: 404 });
+    }
+    return NextResponse.json({ error: 'Failed to delete account' }, { status: 500 });
   }
 }

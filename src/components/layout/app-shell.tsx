@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { navItems, type NavItem } from "@/lib/navigation";
 import {
@@ -29,7 +30,13 @@ import {
 import { ChevronsUpDown, Bell, PanelsTopLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserNav } from "./user-nav";
-import { MainMenu } from "./main-menu";
+import { Breadcrumbs } from "./breadcrumbs";
+
+// ... (keep surrounding imports if range allows, but aiming for cleaner replacement)
+// Actually, I can't modify imports easily with a single chunk if they are far apart.
+// I'll do this in two steps or use MultiReplace if imports are far.
+// Let's replace the usage first.
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,6 +54,7 @@ import { AddLoyaltySettingDialog } from "../customer/add-loyalty-setting-dialog"
 import { Account } from "@/types/account";
 import { Transaction } from "@/types/transaction";
 import AddPointsDialog from "../customer/add-points-dialog";
+import { useBusinessProfile } from "@/hooks/use-business-profile";
 
 // Dynamically import pages (server components) on the client to avoid client->server import errors
 const CreateInvoicePage = dynamic(() => import('@/app/todo/create-invoice/page').then(m => m.default), { ssr: false });
@@ -67,8 +75,9 @@ const CustomerPaymentPage = dynamic(() => import('@/app/customer/payment/page').
 const CustomerLoyaltyPointsPage = dynamic(() => import('@/app/customer/loyalty-points/page').then(m => m.default), { ssr: false });
 const LoyaltySettingsPage = dynamic(() => import('@/app/customer/loyalty-settings/page').then(m => m.default), { ssr: false });
 import { AddLoyaltyCardDialog } from "../customer/add-loyalty-card-dialog";
-import { InventoryDialog } from "../inventory/inventory-dialog";
+import InventoryDialog from "../inventory/inventory-dialog";
 import { AddProductDialog } from "../inventory/add-product-dialog";
+import BackupSchedulerDialog from "../backup/backup-scheduler-dialog";
 
 function SidebarNav() {
   const pathname = usePathname();
@@ -86,7 +95,7 @@ function SidebarNav() {
   ) => {
     if (dialogId) {
       e.preventDefault();
-      openDialog(dialogId);
+      openDialog(dialogId as any);
     }
   };
 
@@ -126,7 +135,7 @@ function SidebarNav() {
                     asChild
                     isActive={pathname === subItem.href}
                     onClick={(e: any) =>
-                      handleNavClick(e, subItem.href, subItem.dialogId)
+                      handleNavClick(e, subItem.href, subItem.dialogId as any)
                     }
                   >
                     <Link href={subItem.href}>{subItem.title}</Link>
@@ -168,11 +177,12 @@ function SidebarNav() {
 
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-   const [isMounted, setIsMounted] = React.useState(false);
-   const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(null);
-   const [selectedTransaction, setSelectedTransaction] = React.useState<Transaction | null>(null);
-   const [reportDate, setReportDate] = React.useState<Date | null>(null);
-   const { openDialogs, openDialog, closeDialog } = useDialog();
+  const [isMounted, setIsMounted] = React.useState(false);
+  const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = React.useState<Transaction | null>(null);
+  const [reportDate, setReportDate] = React.useState<Date | null>(null);
+  const { openDialogs, openDialog, closeDialog } = useDialog();
+  const { profile, isLoading } = useBusinessProfile();
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -185,14 +195,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const handleAccountSelect = (account: Account | null) => {
     setSelectedAccount(account);
   };
-  
+
   const handleTransactionSelect = (transaction: Transaction | null) => {
     setSelectedTransaction(transaction);
   };
-  
+
   const handleShowReport = (date: Date) => {
     setReportDate(date);
-    openDialog('balance-sheet-report');
+    openDialog('balance-sheet-report' as any);
   }
 
 
@@ -203,18 +213,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2 pr-4">
               <PanelsTopLeft className="w-8 h-8 text-primary" />
-              <h1 className="text-xl font-bold font-headline">LJMA FinancePro</h1>
+              {isLoading ? (
+                <Skeleton className="h-7 w-40" />
+              ) : (
+                <h1 className="text-xl font-bold font-headline truncate max-w-[200px]" title={profile?.businessName || "LJMA FinancePro"}>
+                  {profile?.businessName || "LJMA FinancePro"}
+                </h1>
+              )}
             </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarNav />
           </SidebarContent>
           <SidebarFooter>{/* Footer content if any */}</SidebarFooter>
-        </Sidebar>
+        </Sidebar >
         <SidebarInset className="flex flex-col">
           <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <SidebarTrigger className="md:hidden" />
-            <MainMenu />
+            <Breadcrumbs />
             <div className="flex items-center gap-2 ml-auto">
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
@@ -224,7 +240,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
           <main>
-             {React.Children.map(children, (child, index) => {
+            {React.Children.map(children, (child, index) => {
               if (React.isValidElement(child)) {
                 let additionalProps = {};
                 if (child.type === ChartOfAccountsPage) {
@@ -243,13 +259,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             })}
             {openDialogs['create-invoice'] && <CreateInvoicePage />}
             {openDialogs['enter-payment'] && <EnterPaymentPage />}
-            {openDialogs['chart-of-accounts'] && <ChartOfAccountsPage onAccountSelect={handleAccountSelect} selectedAccount={selectedAccount} />}
+
             {openDialogs['new-account'] && <NewAccountDialog />}
             {openDialogs['enter-ap'] && <EnterApPage />}
-            {openDialogs['reconcile-account'] && <ReconcileAccountPage />}
             {openDialogs['receipts-deposits'] && <ReceiptsDepositsPage />}
-            {openDialogs['account-transfer'] && <AccountTransferPage />}
-            {openDialogs['view-journal'] && <ViewJournalPage onTransactionSelect={handleTransactionSelect} />}
+
             {openDialogs['journal-entry'] && <JournalEntryPage />}
             {openDialogs['income-statement'] && <IncomeStatementPage />}
             {openDialogs['balance-sheet'] && <BalanceSheetPage onViewReport={handleShowReport} />}
@@ -267,9 +281,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {openDialogs['add-loyalty-points'] && <AddPointsDialog />}
             {openDialogs['inventory'] && <InventoryDialog />}
             {openDialogs['add-product'] && <AddProductDialog />}
+            {openDialogs['backup-scheduler'] && <BackupSchedulerDialog />}
           </main>
         </SidebarInset>
-      </SidebarProvider>
+      </SidebarProvider >
     </>
   );
 }

@@ -24,9 +24,13 @@ export default function CustomerBalancePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+
   useEffect(() => {
     if (openDialogs['customer-balance']) {
-      // fetch balances if API exists
+      if (!fromDate) setFromDate(new Date().toISOString().slice(0, 10));
+      if (!toDate) setToDate(new Date().toISOString().slice(0, 10));
     }
   }, [openDialogs['customer-balance']]);
 
@@ -49,11 +53,11 @@ export default function CustomerBalancePage() {
 
             <div className="flex items-center gap-2">
               <label className="text-sm text-muted-foreground">From Date</label>
-              <Input type="date" defaultValue={new Date().toISOString().slice(0,10)} />
+              <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
             </div>
             <div className="flex items-center gap-2">
               <label className="text-sm text-muted-foreground">To Date</label>
-              <Input type="date" defaultValue={new Date().toISOString().slice(0,10)} />
+              <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
             </div>
 
             <div className="flex items-center gap-3 ml-4">

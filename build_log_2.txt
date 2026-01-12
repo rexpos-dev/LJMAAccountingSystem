@@ -1,0 +1,24 @@
+
+> nextn@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+Failed to compile.
+
+TypeError: The argument 'path' must be a string, Uint8Array, or URL without null bytes. Received 'D:\\SOFTWARE\\\x00#FIREBASE PROJECT\\LJMAAccounting\\node_modules\\next\\dist\\pages\\_app.js'
+    at Object.readlink (node:fs:1772:20)
+    at CacheBackend.provide (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\webpack\bundle5.js:1:168325)
+    at D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\build\webpack\plugins\next-trace-entrypoints-plugin.js:405:53
+    at new Promise (<anonymous>)
+    at Job.readlink (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\build\webpack\plugins\next-trace-entrypoints-plugin.js:403:34)
+    at Job.realpath (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\@vercel\nft\index.js:1:38303)
+    at Job.emitFile (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\@vercel\nft\index.js:1:38650)
+    at D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\@vercel\nft\index.js:1:35735
+    at Array.map (<anonymous>)
+    at nodeFileTrace (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\@vercel\nft\index.js:1:35687)
+
+
+> Build failed because of webpack errors

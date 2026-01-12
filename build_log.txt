@@ -1,0 +1,28 @@
+
+> nextn@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+node:fs:387
+  binding.open(getValidatedPath(path), flagsNumber, 0o666, req);
+               ^
+
+TypeError: The argument 'path' must be a string, Uint8Array, or URL without null bytes. Received 'D:\\SOFTWARE\\\x00#FIREBASE PROJECT\\LJMAAccounting\\node_modules\\date-fns\\esm\\constants\\index.js'
+    at readFile (node:fs:387:16)
+    at go$readFile (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\webpack\bundle5.js:1:267674)
+    at Object.readFile (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\webpack\bundle5.js:1:267618)
+    at CacheBackend.provide (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\compiled\webpack\bundle5.js:1:168325)
+    at source (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js:143:16)
+    at new Promise (<anonymous>)
+    at getMatches (D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js:142:30)
+    at D:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js:177:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Promise.all (index 0) {
+  code: 'ERR_INVALID_ARG_VALUE'
+}
+
+Node.js v22.18.0
+Next.js build worker exited with code: 1 and signal: null

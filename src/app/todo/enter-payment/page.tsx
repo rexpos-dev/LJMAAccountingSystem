@@ -36,7 +36,7 @@ import { Label } from '@/components/ui/label';
 import { CalendarIcon, UserPlus, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -142,7 +142,7 @@ export default function EnterPaymentPage() {
 
             </div>
 
-             <div className="space-y-4">
+            <div className="space-y-4">
 
               <div className="grid grid-cols-3 items-center gap-4">
                 <Label htmlFor="method">Method:</Label>
@@ -203,7 +203,7 @@ export default function EnterPaymentPage() {
                 <TableBody>
                   <TableRow>
                     <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
-                       Click here to allocate an amount to account(s).
+                      Click here to allocate an amount to account(s).
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -211,16 +211,16 @@ export default function EnterPaymentPage() {
             </div>
           </div>
         </ScrollArea>
-          <DialogFooter className="border-t pt-4">
-            <Button variant="outline">Use Template...</Button>
-            <div className="flex gap-2 ml-auto">
-              <Button>Record</Button>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button variant="secondary">Help</Button>
-            </div>
-          </DialogFooter>
+        <DialogFooter className="border-t pt-4">
+          <Button variant="outline">Use Template...</Button>
+          <div className="flex gap-2 ml-auto">
+            <Button>Record</Button>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button variant="secondary">Help</Button>
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

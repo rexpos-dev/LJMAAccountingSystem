@@ -1,4 +1,3 @@
-
 import type { LucideIcon } from "lucide-react";
 import {
   ListChecks,
@@ -8,9 +7,11 @@ import {
   Landmark,
   FileText,
   Settings,
+  Settings2,
   LayoutDashboard,
   Network,
-  Users
+  Users,
+  ClipboardList
 } from "lucide-react";
 
 export interface NavItem {
@@ -53,7 +54,6 @@ export const navItems: NavItem[] = [
       { title: "Create first invoice", href: "/todo/create-invoice", dialogId: "create-invoice" },
       { title: "Enter your first payment", href: "/todo/enter-payment", dialogId: "enter-payment" },
       { title: "Run statements", href: "/todo/run-statements" },
-      { title: "Set Up Web Access", href: "/todo/web-access" },
     ],
   },
   {
@@ -92,8 +92,8 @@ export const navItems: NavItem[] = [
     href: "#",
     icon: Landmark,
     subItems: [
-        { title: "Bank reconciliation", href: "/banking/reconcile", dialogId: "reconcile-account"},
-        { title: "Account transfer", href: "/banking/transfer", dialogId: "account-transfer"},
+      { title: "Bank reconciliation", href: "/banking/reconcile", dialogId: "reconcile-account" },
+      { title: "Account transfer", href: "/banking/transfer", dialogId: "account-transfer" },
     ]
   },
   {
@@ -101,19 +101,33 @@ export const navItems: NavItem[] = [
     href: "#",
     icon: FileText,
     subItems: [
-        { title: "Income Statement", href: "/reports/income-statement", dialogId: "income-statement"},
-        { title: "Balance Sheet", href: "/reports/balance-sheet", dialogId: "balance-sheet"},
+      { title: "Income Statement", href: "/reports/income-statement", dialogId: "income-statement" },
+      { title: "Balance Sheet", href: "/reports/balance-sheet", dialogId: "balance-sheet" },
     ]
+  },
+  {
+    title: "Audit",
+    href: "/audit",
+    icon: ClipboardList,
   },
   {
     title: "Configuration",
     href: "#",
     icon: Settings,
     subItems: [
-        { title: "Chart Of Accounts", href: "/configuration/chart-of-accounts", dialogId: "chart-of-accounts" },
-        { title: "Back up data", href: "/todo/backup" },
+      { title: "Chart Of Accounts", href: "/configuration/chart-of-accounts", dialogId: "chart-of-accounts" },
+      { title: "Sales User", href: "/configuration/sales-users", dialogId: "sales-users" },
+      { title: "User Permissions", href: "/configuration/user-permissions", dialogId: "user-permissions" },
+    ]
+  },
+  {
+    title: "Setting",
+    href: "#",
+    icon: Settings2,
+    subItems: [
+      { title: "Business Setup", href: "/setting/business-setup", dialogId: "business-setup" },
+      { title: "Set Up Web Access", href: "/todo/web-access" },
+      { title: "Back up data", href: "/todo/backup", dialogId: "backup-scheduler" },
     ]
   }
 ];
-
-    

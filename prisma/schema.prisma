@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -209,4 +210,62 @@ model Reminder {
   updatedAt   DateTime @updatedAt
 
   @@map("reminder")
+}
+
+model SalesUser {
+  id          String   @id @default(cuid())
+  name        String
+  uniqueId    String   @unique
+  username    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("sales_user")
+}
+
+model UserPermission {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  firstName    String
+  middleName   String?
+  lastName     String
+  designation  String
+  userAccess   String
+  contactNo    String?
+  accountType  String
+  password     String?
+  permissions  String   @db.Text // JSON string containing permissions
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("user_permission")
+}
+
+model BusinessProfile {
+  id           String   @id @default(cuid())
+  businessName String
+  address      String?
+  owner        String?
+  contactPhone String?
+  contactTel   String?
+  email        String?
+  tin          String?
+  permit       String?
+  logo         String?  @db.LongText
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("business_profile")
+}
+
+model BackupSchedule {
+  id          String   @id @default(cuid())
+  backupTime  DateTime
+  frequency   String   // "week", "month", "custom"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("backup_schedule")
 }

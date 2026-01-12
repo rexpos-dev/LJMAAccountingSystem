@@ -13,9 +13,9 @@ export function Flowchart() {
 
   const handleNodeClick = (action?: string, type: 'dialog' | 'route' = 'dialog') => {
     if (!action) return;
-    
+
     if (type === 'dialog') {
-      openDialog(action);
+      openDialog(action as any);
     } else if (type === 'route') {
       router.push(action);
     }
@@ -23,12 +23,12 @@ export function Flowchart() {
 
   const nodes = [
     // Customer Facing
-    { id: "non-invoiced-cash-sale", content: "Non-Invoiced Cash Sale", position: { top: 0, left: 50 }, color: "bg-gray-600", size: { width: 200, height: 100 } },
+    { id: "non-invoiced-cash-sale", content: "Non-Invoiced Cash Sale", position: { top: 0, left: 50 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-cash-sale") },
     { id: "create-new-invoice", content: "Create New Invoice", position: { top: 150, left: 50 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("create-invoice") },
     { id: "invoices", content: "Invoices", position: { top: 300, left: 0 }, color: "bg-gray-700", size: { width: 150, height: 80 }, disabled: true },
     { id: "customers", content: "Customers", position: { top: 300, left: 175 }, color: "bg-gray-700", size: { width: 150, height: 80 } },
     { id: "apply-customer-payment", content: "Apply Customer's Payment", position: { top: 430, left: 50 }, color: "bg-gray-800", size: { width: 200, height: 100 }, disabled: true },
-    
+
     // Accounts Payable
     { id: "immediate-payment", content: "Immediate Payment Or Purchase", position: { top: 0, left: 400 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-payment") },
     { id: "enter-new-ap", content: "Enter New Accounts Payable", position: { top: 150, left: 400 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-ap") },
@@ -40,7 +40,7 @@ export function Flowchart() {
     { id: "income-statement", content: "Income Statement", position: { top: 0, left: 700 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("income-statement") },
     { id: "journal", content: "Journal", position: { top: 0, left: 870 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick('view-journal') },
     { id: "balance-sheet", content: "Balance Sheet", position: { top: 150, left: 780 }, color: "bg-gray-800", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("balance-sheet") },
-    
+
     // Budgets & Chart of Accounts
     { id: "manage-budgets", content: "Manage Budgets", position: { top: 300, left: 700 }, color: "bg-gray-700", size: { width: 150, height: 80 }, disabled: true },
     { id: "chart-of-accounts", content: "Chart Of Accounts", position: { top: 300, left: 870 }, color: "bg-gray-600", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("chart-of-accounts") },
@@ -48,7 +48,7 @@ export function Flowchart() {
     // Reconciliation
     { id: "reconcile-accounts", content: "Reconcile Accounts", position: { top: 430, left: 700 }, color: "bg-yellow-600", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("reconcile-account") },
     { id: "transfer-between-accounts", content: "Transfer Between Accounts", position: { top: 430, left: 870 }, color: "bg-yellow-600", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("account-transfer") },
-    
+
     // Options
     { id: "configure-express-accounts", content: "Configure Express Accounts (Options)", position: { top: 0, left: 1040 }, color: "bg-gray-600", size: { width: 200, height: 100 } },
   ];
@@ -59,7 +59,7 @@ export function Flowchart() {
     { from: "create-new-invoice", to: "customers", fromDirection: 'bottom', toDirection: 'top' },
     { from: "invoices", to: "apply-customer-payment", fromDirection: 'bottom', toDirection: 'top' },
     { from: "customers", to: "apply-customer-payment", fromDirection: 'bottom', toDirection: 'top' },
-    
+
     // AP Arrows
     { from: "enter-new-ap", to: "suppliers", fromDirection: 'bottom', toDirection: 'top' },
     { from: "enter-new-ap", to: "accounts-payable", fromDirection: 'bottom', toDirection: 'top' },

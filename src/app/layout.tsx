@@ -4,14 +4,23 @@ import { AppShell } from '@/components/layout/app-shell';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { DialogProvider } from '@/components/layout/dialog-provider';
+import { QueryProvider } from '@/components/providers/query-provider';
 import { EnterPaymentsDialog } from '@/components/transactions/enter-payments-dialog';
 import { EnterPaymentsOfAccountsPayableDialog } from '@/components/transactions/enter-payments-of-accounts-payable-dialog';
 import { EnterDirectPaymentsDialog } from '@/components/transactions/enter-direct-payments-dialog';
+import AddUserPermissionDialog from '@/components/configuration/add-user-permission-dialog';
+import EditUserPermissionDialog from '@/components/configuration/edit-user-permission-dialog';
+import DeleteUserPermissionDialog from '@/components/configuration/delete-user-permission-dialog';
+import UserPermissionsDialog from '@/components/configuration/user-permissions-dialog';
 
 export const metadata: Metadata = {
   title: 'LJMA FinancePro',
   description: 'Accounting and Financial Management System for THE LJMA MERCHANDISE CORPORATION',
 };
+
+import { AppShellWrapper } from '@/components/layout/app-shell-wrapper';
+
+import { AuthProvider } from '@/components/providers/auth-provider';
 
 export default function RootLayout({
   children,
@@ -28,20 +37,19 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
-        <DialogProvider>
-          <AppShell>
-            {React.Children.map(children, (child, index) => {
-              if (React.isValidElement(child)) {
-                return React.cloneElement(child, { key: `page-${index}` });
-              }
-              return <div key={`page-${index}`}>{child}</div>;
-            })}
-          </AppShell>
-          <EnterPaymentsDialog />
-          <EnterPaymentsOfAccountsPayableDialog />
-          <EnterDirectPaymentsDialog />
-        </DialogProvider>
+      <body className="font-body antialiased" suppressHydrationWarning>
+        <AuthProvider>
+          <QueryProvider>
+            <DialogProvider>
+              <AppShellWrapper>
+                {children}
+              </AppShellWrapper>
+              <EnterPaymentsDialog />
+              <EnterPaymentsOfAccountsPayableDialog />
+              <EnterDirectPaymentsDialog />
+            </DialogProvider>
+          </QueryProvider>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

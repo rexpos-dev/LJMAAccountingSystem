@@ -1,7 +1,12 @@
 const { PrismaClient } = require('@prisma/client');
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+
+const connectionString = process.env.DATABASE_URL;
 
 async function testConnection() {
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient({
+    adapter: new PrismaMariaDb(connectionString),
+  });
 
   try {
     console.log('Testing database connection...');

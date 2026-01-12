@@ -2,12 +2,16 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker as DayPickerType } from "react-day-picker"
+import params from 'react-day-picker';
+import dynamic from 'next/dynamic';
+
+const DayPicker = dynamic(() => import("react-day-picker").then(m => m.DayPicker), { ssr: false });
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPickerType>
 
 function Calendar({
   className,

@@ -36,7 +36,7 @@ export const createAccount = async (data: {
 }
 
 export const updateAccount = async (id: string, data: {
-  number?: number;
+  accnt_no?: number;
   name?: string;
   type?: string;
   header?: string;
@@ -47,6 +47,12 @@ export const updateAccount = async (id: string, data: {
   return await prisma.account.update({
     where: { id },
     data,
+  })
+}
+
+export const deleteAccount = async (id: string) => {
+  return await prisma.account.delete({
+    where: { id },
   })
 }
 

@@ -12,23 +12,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useAuth } from "@/components/providers/auth-provider";
+
 export function UserNav() {
+  const { user, logout } = useAuth();
+
+  if (!user) return null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src="https://picsum.photos/seed/user-avatar/40/40" alt="Super Admin" />
-            <AvatarFallback>SA</AvatarFallback>
+            <AvatarImage src={`https://picsum.photos/seed/${user.username}/40/40`} alt={user.firstName} />
+            <AvatarFallback>{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none font-headline">Super Admin</p>
+            <p className="text-sm font-medium leading-none font-headline">{user.firstName} {user.lastName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              admin@ljma.com
+              {user.username}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -38,7 +44,7 @@ export function UserNav() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

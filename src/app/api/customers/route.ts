@@ -42,49 +42,57 @@ async function generateEN13Code(): Promise<string> {
 
 export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const limitParam = searchParams.get('limit');
+    const offsetParam = searchParams.get('offset');
+
+    // Parse query params if provided
+    const take = limitParam ? parseInt(limitParam) : undefined;
+    const skip = offsetParam ? parseInt(offsetParam) : undefined;
+
     console.log('Starting to fetch customers...');
 
-    // First get customers
+    // Fetch customers with their loyalty points in a single query
     const customers = await prisma.customer.findMany({
       orderBy: { createdAt: 'desc' },
+      take,
+      skip,
+      include: {
+        loyaltyPoints: {
+          select: {
+            totalPoints: true
+          }
+        }
+      }
     });
 
     console.log(`Found ${customers.length} customers`);
 
-    // Then get loyalty points for each customer
-    const customersWithBalance = await Promise.all(
-      customers.map(async (customer: any) => {
-        try {
-          const loyaltyPoints = await prisma.loyaltyPoint.findMany({
-            where: { customerId: customer.id },
-            select: { totalPoints: true },
-          });
+    // Calculate total balance in memory
+    const customersWithBalance = customers.map((customer) => {
+      const totalBalance = customer.loyaltyPoints.reduce(
+        (sum, point) => sum + point.totalPoints,
+        0
+      );
 
-          const totalBalance = loyaltyPoints.reduce((sum: number, point: any) => sum + point.totalPoints, 0);
+      // Remove the raw loyaltyPoints array from the response to keep it clean
+      // and match the expected response shape
+      const { loyaltyPoints, ...customerData } = customer;
 
-          return {
-            ...customer,
-            loyaltyPointsBalance: totalBalance,
-          };
-        } catch (loyaltyError: any) {
-          console.error(`Error fetching loyalty points for customer ${customer.id}:`, loyaltyError);
-          // Return customer with 0 balance if loyalty points fail
-          return {
-            ...customer,
-            loyaltyPointsBalance: 0,
-          };
-        }
-      })
-    );
+      return {
+        ...customerData,
+        loyaltyPointsBalance: totalBalance,
+      };
+    });
 
     console.log('Successfully processed customers with loyalty balances');
     return NextResponse.json(customersWithBalance);
   } catch (error: any) {
-    console.error('Error fetching customers:', error);
+    console.error('Error fetching customers detailed:', error);
     return NextResponse.json(
       {
         error: 'Failed to fetch customers',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        details: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
       },
       { status: 500 }
     );

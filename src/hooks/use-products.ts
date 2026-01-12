@@ -229,50 +229,64 @@ export function useExternalProducts(page: number = 1, limit: number = 10, search
 
       const data: ExternalProductResponse = await response.json();
 
-      if (data.success) {
-        setAllProducts(data.data);
-
-        // Apply local filtering for enhanced search
-        let filteredProducts = data.data;
-
-        // Apply search filtering (enhanced to include category and brand)
-        if (search) {
-          const searchLower = search.toLowerCase();
-          filteredProducts = filteredProducts.filter(product =>
-            product.name?.toLowerCase().includes(searchLower) ||
-            product.sku?.toLowerCase().includes(searchLower) ||
-            product.barcode?.toLowerCase().includes(searchLower) ||
-            product.category?.toLowerCase().includes(searchLower) || // Enhanced: include category
-            product.brand?.toLowerCase().includes(searchLower) ||     // Enhanced: include brand
-            product.description?.toLowerCase().includes(searchLower)
-          );
-        }
-
-        // Apply additional filtering
-        if (filterBy && filterValue) {
-          filteredProducts = filteredProducts.filter(product => {
-            const value = product[filterBy as keyof ExternalProduct];
-            if (filterBy === 'date') {
-              return value && new Date(value as string).toDateString() === new Date(filterValue).toDateString();
-            }
-            return value && String(value).toLowerCase().includes(filterValue.toLowerCase());
-          });
-        }
-
-        // Apply pagination to filtered results
-        const offset = (page - 1) * limit;
-        const paginatedProducts = filteredProducts.slice(offset, offset + limit);
-
-        setExternalProducts(paginatedProducts);
+      // If the backend reports failure (e.g. external service down), keep the
+      // error handled on the server and simply return an empty list here so
+      // the frontend continues to work without throwing.
+      if (!data.success) {
+        console.warn(
+          '[useExternalProducts] backend reported failure; returning empty external products list'
+        );
+        setAllProducts([]);
+        setExternalProducts([]);
         setPagination({
-          total: filteredProducts.length,
-          limit: limit,
-          offset: offset,
-          hasMore: offset + limit < filteredProducts.length,
+          total: 0,
+          limit,
+          offset: 0,
+          hasMore: false,
         });
-      } else {
-        throw new Error('API response indicates failure');
+        return;
       }
+
+      setAllProducts(data.data);
+
+      // Apply local filtering for enhanced search
+      let filteredProducts = data.data;
+
+      // Apply search filtering (enhanced to include category and brand)
+      if (search) {
+        const searchLower = search.toLowerCase();
+        filteredProducts = filteredProducts.filter(product =>
+          product.name?.toLowerCase().includes(searchLower) ||
+          product.sku?.toLowerCase().includes(searchLower) ||
+          product.barcode?.toLowerCase().includes(searchLower) ||
+          product.category?.toLowerCase().includes(searchLower) || // Enhanced: include category
+          product.brand?.toLowerCase().includes(searchLower) ||     // Enhanced: include brand
+          product.description?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Apply additional filtering
+      if (filterBy && filterValue) {
+        filteredProducts = filteredProducts.filter(product => {
+          const value = product[filterBy as keyof ExternalProduct];
+          if (filterBy === 'date') {
+            return value && new Date(value as string).toDateString() === new Date(filterValue).toDateString();
+          }
+          return value && String(value).toLowerCase().includes(filterValue.toLowerCase());
+        });
+      }
+
+      // Apply pagination to filtered results
+      const offset = (page - 1) * limit;
+      const paginatedProducts = filteredProducts.slice(offset, offset + limit);
+
+      setExternalProducts(paginatedProducts);
+      setPagination({
+        total: filteredProducts.length,
+        limit: limit,
+        offset: offset,
+        hasMore: offset + limit < filteredProducts.length,
+      });
     } catch (err) {
       setError(err as Error);
       console.error('Error fetching external products:', err);

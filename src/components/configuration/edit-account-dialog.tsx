@@ -27,11 +27,13 @@ import { useAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
 
 
-export default function EditAccountDialog({ account }: { account?: Account | null }) {
-  const { openDialogs, closeDialog } = useDialog();
+export default function EditAccountDialog() {
+  const { openDialogs, closeDialog, getDialogData } = useDialog();
   const { refetch } = useAccounts();
   const { toast } = useToast();
-  
+
+  const account = getDialogData('edit-account');
+
   // This state will hold the form data and will be updated as the user types.
   const [formData, setFormData] = useState<Partial<Account>>({});
 
@@ -44,7 +46,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
       // If no account is selected (e.g., dialog is closed), reset the form.
       setFormData({});
     }
-  }, [account]);
+  }, [account, openDialogs['edit-account']]);
 
   // Handles changes for regular input fields.
   const handleInputChange = (field: keyof Account, value: any) => {
@@ -71,7 +73,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
         },
         body: JSON.stringify({
           id: formData.id,
-          number: formData.number,
+          accnt_no: formData.accnt_no,
           name: formData.name,
           type: formData.type,
           header: formData.header,
@@ -95,7 +97,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
       });
 
       // Refresh accounts list
-      refetch();
+      window.dispatchEvent(new CustomEvent('accounts-refresh'));
 
       handleClose(); // Close the dialog after saving.
     } catch (error: any) {
@@ -127,7 +129,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
             <Label htmlFor="number" className="text-right">
               Number:
             </Label>
-            <Input id="number" value={formData.number || ''} readOnly className="col-span-2" />
+            <Input id="number" value={formData.accnt_no || ''} readOnly className="col-span-2" />
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="type" className="text-right">
@@ -153,7 +155,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
               <SelectTrigger id="cash-flow" className="col-span-2">
                 <SelectValue placeholder="--- Select Classification ---" />
               </SelectTrigger>
-               <SelectContent>
+              <SelectContent>
                 <SelectItem value="operating">Operating</SelectItem>
                 <SelectItem value="investing">Investing</SelectItem>
                 <SelectItem value="financing">Financing</SelectItem>
@@ -167,17 +169,17 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
             <Input id="name" value={formData.name || ''} onChange={(e) => handleInputChange('name', e.target.value)} className="col-span-2" />
           </div>
           <div className="col-start-2 col-span-2 space-y-2">
-             <div className="flex items-center space-x-2">
-                <Checkbox id="header-account" checked={formData.header === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('header', checked as boolean)} disabled={formData.type === 'Income'} />
-                <Label htmlFor="header-account" className="font-normal">Header account (for subtotals only, no posting)</Label>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="header-account" checked={formData.header === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('header', checked as boolean)} disabled={formData.type === 'Income'} />
+              <Label htmlFor="header-account" className="font-normal">Header account (for subtotals only, no posting)</Label>
             </div>
             <div className="flex items-center space-x-2">
-                <Checkbox id="cash-postable" checked={formData.bank === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('bank', checked as boolean)} />
-                <Label htmlFor="cash-postable" className="font-normal">Cash postable (e.g., bank or credit card)</Label>
+              <Checkbox id="cash-postable" checked={formData.bank === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('bank', checked as boolean)} />
+              <Label htmlFor="cash-postable" className="font-normal">Cash postable (e.g., bank or credit card)</Label>
             </div>
-             <div className="flex items-center space-x-2">
-                <Checkbox id="tax-included" disabled={formData.type === 'Liability'} />
-                <Label htmlFor="tax-included" className="font-normal">Tax included</Label>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="tax-included" disabled={formData.type === 'Liability'} />
+              <Label htmlFor="tax-included" className="font-normal">Tax included</Label>
             </div>
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
@@ -186,7 +188,7 @@ export default function EditAccountDialog({ account }: { account?: Account | nul
             </Label>
             <Input id="opening-balance" type="number" value={formData.balance ?? 0} onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)} className="col-span-2" />
           </div>
-           <div className="grid grid-cols-3 items-center gap-4">
+          <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="linked-account" className="text-right">
               Default linked account for:
             </Label>

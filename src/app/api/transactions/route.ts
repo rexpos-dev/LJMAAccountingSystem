@@ -29,60 +29,73 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const {
-      seq,
-      ledger,
-      transNo,
-      code,
-      accountNumber,
-      date,
-      invoiceNumber,
-      particulars,
-      debit,
-      credit,
-      balance,
-      checkAccountNumber,
-      checkNumber,
-      dateMatured,
-      accountName,
-      bankName,
-      bankBranch,
-      user,
-      isCoincide,
-      dailyClosing,
-      approval,
-      ftToLedger,
-      ftToAccount
-    } = body;
+    
+    // Handle both single transaction and multiple transactions (for journal entries)
+    const transactions = Array.isArray(body.transactions) ? body.transactions : [body];
+    
+    const createdTransactions = [];
+    
+    for (const transactionBody of transactions) {
+      const {
+        seq,
+        ledger,
+        transNo,
+        code,
+        accountNumber,
+        date,
+        invoiceNumber,
+        particulars,
+        debit,
+        credit,
+        balance,
+        checkAccountNumber,
+        checkNumber,
+        dateMatured,
+        accountName,
+        bankName,
+        bankBranch,
+        user,
+        isCoincide,
+        dailyClosing,
+        approval,
+        ftToLedger,
+        ftToAccount
+      } = transactionBody;
 
-    const transactionData: any = {};
-    if (seq !== undefined) transactionData.seq = parseInt(seq, 10);
-    if (ledger !== undefined) transactionData.ledger = ledger;
-    if (transNo !== undefined) transactionData.transNo = transNo;
-    if (code !== undefined) transactionData.code = code;
-    if (accountNumber !== undefined) transactionData.accountNumber = accountNumber;
-    if (date !== undefined) transactionData.date = new Date(date);
-    if (invoiceNumber !== undefined) transactionData.invoiceNumber = invoiceNumber;
-    if (particulars !== undefined) transactionData.particulars = particulars;
-    if (debit !== undefined) transactionData.debit = parseFloat(debit) || 0;
-    if (credit !== undefined) transactionData.credit = parseFloat(credit) || 0;
-    if (balance !== undefined) transactionData.balance = parseFloat(balance) || 0;
-    if (checkAccountNumber !== undefined) transactionData.checkAccountNumber = checkAccountNumber;
-    if (checkNumber !== undefined) transactionData.checkNumber = checkNumber;
-    if (dateMatured !== undefined) transactionData.dateMatured = new Date(dateMatured);
-    if (accountName !== undefined) transactionData.accountName = accountName;
-    if (bankName !== undefined) transactionData.bankName = bankName;
-    if (bankBranch !== undefined) transactionData.bankBranch = bankBranch;
-    if (user !== undefined) transactionData.user = user;
-    if (isCoincide !== undefined) transactionData.isCoincide = Boolean(isCoincide);
-    if (dailyClosing !== undefined) transactionData.dailyClosing = parseInt(dailyClosing, 10);
-    if (approval !== undefined) transactionData.approval = approval;
-    if (ftToLedger !== undefined) transactionData.ftToLedger = ftToLedger;
-    if (ftToAccount !== undefined) transactionData.ftToAccount = ftToAccount;
+      const transactionData: any = {};
+      if (seq !== undefined) transactionData.seq = parseInt(seq, 10);
+      if (ledger !== undefined) transactionData.ledger = ledger;
+      if (transNo !== undefined) transactionData.transNo = transNo;
+      if (code !== undefined) transactionData.code = code;
+      if (accountNumber !== undefined) transactionData.accountNumber = accountNumber;
+      if (date !== undefined) transactionData.date = new Date(date);
+      if (invoiceNumber !== undefined) transactionData.invoiceNumber = invoiceNumber;
+      if (particulars !== undefined) transactionData.particulars = particulars;
+      if (debit !== undefined) transactionData.debit = parseFloat(debit) || 0;
+      if (credit !== undefined) transactionData.credit = parseFloat(credit) || 0;
+      if (balance !== undefined) transactionData.balance = parseFloat(balance) || 0;
+      if (checkAccountNumber !== undefined) transactionData.checkAccountNumber = checkAccountNumber;
+      if (checkNumber !== undefined) transactionData.checkNumber = checkNumber;
+      if (dateMatured !== undefined) transactionData.dateMatured = new Date(dateMatured);
+      if (accountName !== undefined) transactionData.accountName = accountName;
+      if (bankName !== undefined) transactionData.bankName = bankName;
+      if (bankBranch !== undefined) transactionData.bankBranch = bankBranch;
+      if (user !== undefined) transactionData.user = user;
+      if (isCoincide !== undefined) transactionData.isCoincide = Boolean(isCoincide);
+      if (dailyClosing !== undefined) transactionData.dailyClosing = parseInt(dailyClosing, 10);
+      if (approval !== undefined) transactionData.approval = approval;
+      if (ftToLedger !== undefined) transactionData.ftToLedger = ftToLedger;
+      if (ftToAccount !== undefined) transactionData.ftToAccount = ftToAccount;
 
-    const transaction = await createTransaction(transactionData);
+      const transaction = await createTransaction(transactionData);
+      createdTransactions.push(transaction);
+    }
 
-    return NextResponse.json(transaction, { status: 201 });
+    // Return single transaction if only one was created, otherwise return array
+    return NextResponse.json(
+      createdTransactions.length === 1 ? createdTransactions[0] : createdTransactions,
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating transaction:', error);
     return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });

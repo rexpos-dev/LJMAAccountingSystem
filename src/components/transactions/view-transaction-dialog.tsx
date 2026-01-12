@@ -11,7 +11,7 @@ import {
 import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import type { Transaction } from '@/types/transaction';
 
 export default function ViewTransactionDialog({ transaction }: { transaction?: Transaction | null }) {

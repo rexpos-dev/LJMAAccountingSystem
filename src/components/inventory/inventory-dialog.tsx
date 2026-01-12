@@ -36,10 +36,10 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import { useToast } from '@/hooks/use-toast';
 
-export function InventoryDialog() {
+export default function InventoryDialog() {
   const { openDialogs, closeDialog, openDialog } = useDialog();
   const { toast } = useToast();
   const [search, setSearch] = useState('');
@@ -51,7 +51,13 @@ export function InventoryDialog() {
   const [selectedProducts, setSelectedProducts] = useState<string>('');
   const [selectedActions, setSelectedActions] = useState<Record<string, string>>({});
 
-  const { externalProducts, isLoading, error, pagination, refreshExternalProducts } = useExternalProducts(currentPage, pageSize, search, filterBy, filterValue);
+  const { externalProducts, isLoading, error, pagination, refreshExternalProducts } = useExternalProducts(
+    currentPage,
+    pageSize,
+    search,
+    filterBy,
+    filterValue
+  );
 
   // Calculate summary totals
   const summaryTotals = externalProducts.reduce(
@@ -253,6 +259,12 @@ export function InventoryDialog() {
                     <TableRow>
                       <TableCell colSpan={10} className="text-center py-8">
                         Loading products...
+                      </TableCell>
+                    </TableRow>
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell colSpan={10} className="text-center py-8 text-red-500">
+                        No Products Fetch
                       </TableCell>
                     </TableRow>
                   ) : externalProducts.length === 0 ? (

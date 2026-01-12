@@ -75,21 +75,21 @@ export default function NewAccountDialog() {
       };
 
       const [min, max] = typeRanges[accountType];
-      const existingNumbers = accounts
-        .filter((acc: any) => acc.type === accountType)
-        .map((acc: any) => acc.number)
+      const accountsOfType = accounts.filter((acc: any) => acc.type === accountType);
+      const existingNumbers = accountsOfType
+        .map((acc: any) => acc.accnt_no)
         .sort((a: number, b: number) => a - b);
 
       // Find the next available number in the range
       for (let num = min; num <= max; num++) {
         if (!existingNumbers.includes(num)) {
-          return { accnt_no: num, accnt_type_no: existingNumbers.length + 1 };
+          return { accnt_no: num, accnt_type_no: accountsOfType.length + 1 };
         }
       }
 
       // If all numbers in range are taken, use the next available
       const nextNum = Math.max(...existingNumbers, max) + 1;
-      return { accnt_no: nextNum, accnt_type_no: existingNumbers.length + 1 };
+      return { accnt_no: nextNum, accnt_type_no: accountsOfType.length + 1 };
     } catch (error) {
       // Fallback to basic numbering
       const baseNumbers = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, Expense: 5000 };
@@ -108,12 +108,12 @@ export default function NewAccountDialog() {
 
   const handleAddAccount = async () => {
     if (!name || !number || !type) {
-        toast({
-            variant: "destructive",
-            title: "Missing required fields",
-            description: "Please fill in all required fields to create a new account.",
-        });
-        return;
+      toast({
+        variant: "destructive",
+        title: "Missing required fields",
+        description: "Please fill in all required fields to create a new account.",
+      });
+      return;
     }
 
     try {
@@ -158,7 +158,7 @@ export default function NewAccountDialog() {
       });
 
       // Refresh accounts list
-      refetch();
+      window.dispatchEvent(new CustomEvent('accounts-refresh'));
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -256,7 +256,7 @@ export default function NewAccountDialog() {
                           <SelectTrigger>
                             <SelectValue placeholder="--- Select Type ---" />
                           </SelectTrigger>
-                           <SelectContent>
+                          <SelectContent>
                             <SelectItem value="cost-of-sales">Cost of Sales</SelectItem>
                             <SelectItem value="operating-expenses">Operating Expenses</SelectItem>
                             <SelectItem value="non-operating-expense">Non-Operating Expense</SelectItem>
@@ -266,7 +266,7 @@ export default function NewAccountDialog() {
                     </RadioGroup>
                   </div>
                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="cash-flow" className="text-right">
                     Classification for Cash Flow:
                   </Label>
@@ -277,7 +277,7 @@ export default function NewAccountDialog() {
                     <SelectContent>
                       <SelectItem value="operating">Operating</SelectItem>
                       <SelectItem value="investing">Investing</SelectItem>
-                       <SelectItem value="financing">Financing</SelectItem>
+                      <SelectItem value="financing">Financing</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -291,7 +291,7 @@ export default function NewAccountDialog() {
                   <Label htmlFor="linked-account" className="text-right">
                     Default Linked Account for:
                   </Label>
-                   <Select value={linkedAccount} onValueChange={setLinkedAccount}>
+                  <Select value={linkedAccount} onValueChange={setLinkedAccount}>
                     <SelectTrigger id="linked-account" className="col-span-3">
                       <SelectValue placeholder="--- None ---" />
                     </SelectTrigger>
@@ -332,23 +332,23 @@ export default function NewAccountDialog() {
                 </div>
 
                 <div className="grid grid-cols-4 items-start gap-4">
-                    <div/>
-                    <div className="col-span-3 space-y-2">
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center space-x-2">
-                                <Checkbox id="header-account" checked={isHeader} onCheckedChange={(checked) => setIsHeader(checked as boolean)} disabled={type === 'Income'} />
-                                <Label htmlFor="header-account" className="font-normal">Account is just a Header Account</Label>
-                            </div>
-                             <div className="flex items-center space-x-2">
-                                <Checkbox id="cash-postable" checked={isBank} onCheckedChange={(checked) => setIsBank(checked as boolean)} />
-                                <Label htmlFor="cash-postable" className="font-normal">Cash Postable</Label>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="tax-included" disabled={type === 'Liability'} />
-                            <Label htmlFor="tax-included" className="font-normal">Tax Included</Label>
-                        </div>
+                  <div />
+                  <div className="col-span-3 space-y-2">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="header-account" checked={isHeader} onCheckedChange={(checked) => setIsHeader(checked as boolean)} disabled={type === 'Income'} />
+                        <Label htmlFor="header-account" className="font-normal">Account is just a Header Account</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="cash-postable" checked={isBank} onCheckedChange={(checked) => setIsBank(checked as boolean)} />
+                        <Label htmlFor="cash-postable" className="font-normal">Cash Postable</Label>
+                      </div>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="tax-included" disabled={type === 'Liability'} />
+                      <Label htmlFor="tax-included" className="font-normal">Tax Included</Label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

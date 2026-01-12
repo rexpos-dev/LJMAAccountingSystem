@@ -28,25 +28,31 @@ import {
 } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState, useMemo } from 'react';
-import { format } from 'date-fns';
+import { useState, useMemo, useEffect } from 'react';
+import format from '@/lib/date-format';
 import type { Account } from '@/types/account';
 import { useToast } from '@/hooks/use-toast';
 import { recordAccountTransfer } from '@/ai/flows/account-transfer-flow';
 import { mockAccounts } from '@/app/configuration/chart-of-accounts/mock-accounts';
 
 const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-    }).format(amount);
+  return new Intl.NumberFormat('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+  }).format(amount);
 };
 
 
 export default function AccountTransferPage() {
   const { openDialogs, closeDialog } = useDialog();
   const { toast } = useToast();
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
+
+  useEffect(() => {
+    if (openDialogs['account-transfer'] && !date) {
+      setDate(new Date());
+    }
+  }, [openDialogs['account-transfer']]);
   const [amount, setAmount] = useState(0);
 
   const [fromAccountId, setFromAccountId] = useState<string | undefined>();
@@ -84,35 +90,35 @@ export default function AccountTransferPage() {
     }
 
     try {
-        // Mock implementation - just log and show success
-        console.log('Mock account transfer:', {
-            fromAccountId: selectedFromAccount.id!,
-            toAccountId: selectedToAccount.id!,
-            amount,
-            date,
-            fromAccountName: selectedFromAccount.name,
-            toAccountName: selectedToAccount.name,
-        });
+      // Mock implementation - just log and show success
+      console.log('Mock account transfer:', {
+        fromAccountId: selectedFromAccount.id!,
+        toAccountId: selectedToAccount.id!,
+        amount,
+        date,
+        fromAccountName: selectedFromAccount.name,
+        toAccountName: selectedToAccount.name,
+      });
 
-        toast({
-            title: 'Success',
-            description: 'Account transfer recorded successfully.',
-        });
+      toast({
+        title: 'Success',
+        description: 'Account transfer recorded successfully.',
+      });
 
-        // Reset form
-        setFromAccountId(undefined);
-        setToAccountId(undefined);
-        setAmount(0);
-        setDate(new Date());
-        closeDialog('account-transfer');
+      // Reset form
+      setFromAccountId(undefined);
+      setToAccountId(undefined);
+      setAmount(0);
+      setDate(new Date());
+      closeDialog('account-transfer');
 
     } catch (error) {
-        console.error('Failed to record transfer:', error);
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Failed to record account transfer. Please try again.',
-        });
+      console.error('Failed to record transfer:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to record account transfer. Please try again.',
+      });
     }
   };
 
@@ -143,50 +149,50 @@ export default function AccountTransferPage() {
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="from-account" className="text-right">Transfer from account:</Label>
             <div className="col-span-2 flex items-center gap-2">
-                <Select value={fromAccountId} onValueChange={setFromAccountId}>
-                  <SelectTrigger id="from-account" className="flex-1">
-                    <SelectValue placeholder="Select an account">{selectedFromAccount?.name}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {isLoading ? (
-                        <SelectItem value="loading" disabled>Loading...</SelectItem>
-                    ) : (
-                        bankAccounts?.map(account => (
-                            <SelectItem key={account.id} value={account.id!}>{account.name}</SelectItem>
-                        ))
-                    )}
-                  </SelectContent>
-                </Select>
-                <Label htmlFor="from-balance">Balance:</Label>
-                <Input id="from-balance" defaultValue={selectedFromAccount?.balance ? formatCurrency(selectedFromAccount.balance) : '₱0.00'} disabled readOnly className="w-32 text-right" />
+              <Select value={fromAccountId} onValueChange={setFromAccountId}>
+                <SelectTrigger id="from-account" className="flex-1">
+                  <SelectValue placeholder="Select an account">{selectedFromAccount?.name}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoading ? (
+                    <SelectItem value="loading" disabled>Loading...</SelectItem>
+                  ) : (
+                    bankAccounts?.map(account => (
+                      <SelectItem key={account.id} value={account.id!}>{account.name}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <Label htmlFor="from-balance">Balance:</Label>
+              <Input id="from-balance" defaultValue={selectedFromAccount?.balance ? formatCurrency(selectedFromAccount.balance) : '₱0.00'} disabled readOnly className="w-32 text-right" />
             </div>
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="to-account" className="text-right">Transfer to account:</Label>
-             <div className="col-span-2 flex items-center gap-2">
-                <Select value={toAccountId} onValueChange={setToAccountId}>
-                  <SelectTrigger id="to-account" className="flex-1">
-                     <SelectValue placeholder="Select an account">{selectedToAccount?.name}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {isLoading ? (
-                        <SelectItem value="loading" disabled>Loading...</SelectItem>
-                    ) : (
-                        bankAccounts?.filter(acc => acc.id !== fromAccountId).map(account => (
-                            <SelectItem key={account.id} value={account.id!}>{account.name}</SelectItem>
-                        ))
-                    )}
-                  </SelectContent>
-                </Select>
-                <Label htmlFor="to-balance">Balance:</Label>
-                <Input id="to-balance" defaultValue={selectedToAccount?.balance ? formatCurrency(selectedToAccount.balance) : '₱0.00'} disabled readOnly className="w-32 text-right" />
+            <div className="col-span-2 flex items-center gap-2">
+              <Select value={toAccountId} onValueChange={setToAccountId}>
+                <SelectTrigger id="to-account" className="flex-1">
+                  <SelectValue placeholder="Select an account">{selectedToAccount?.name}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoading ? (
+                    <SelectItem value="loading" disabled>Loading...</SelectItem>
+                  ) : (
+                    bankAccounts?.filter(acc => acc.id !== fromAccountId).map(account => (
+                      <SelectItem key={account.id} value={account.id!}>{account.name}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <Label htmlFor="to-balance">Balance:</Label>
+              <Input id="to-balance" defaultValue={selectedToAccount?.balance ? formatCurrency(selectedToAccount.balance) : '₱0.00'} disabled readOnly className="w-32 text-right" />
             </div>
           </div>
-           <div className="grid grid-cols-3 items-center gap-4">
+          <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="amount" className="text-right">Amount to transfer:</Label>
-             <div className="relative col-span-2">
-               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₱</span>
-                <Input id="amount" value={formattedAmount} onChange={handleAmountChange} className="pl-7 text-right" />
+            <div className="relative col-span-2">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">₱</span>
+              <Input id="amount" value={formattedAmount} onChange={handleAmountChange} className="pl-7 text-right" />
             </div>
           </div>
           <div className="grid grid-cols-3 items-center gap-4">

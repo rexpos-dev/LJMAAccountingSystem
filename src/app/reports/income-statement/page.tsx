@@ -28,7 +28,7 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 
 export default function IncomeStatementPage() {
   const { openDialogs, closeDialog } = useDialog();
@@ -65,59 +65,59 @@ export default function IncomeStatementPage() {
               Start date:
             </Label>
             <div className='col-span-2'>
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={'outline'}
-                        id="start-date"
-                        className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !startDate && 'text-muted-foreground'
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    id="start-date"
+                    className={cn(
+                      'w-full justify-start text-left font-normal',
+                      !startDate && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="end-date" className="text-right">
               End date:
             </Label>
-             <div className='col-span-2'>
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={'outline'}
-                        id="end-date"
-                        className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !endDate && 'text-muted-foreground'
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={setEndDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
+            <div className='col-span-2'>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    id="end-date"
+                    className={cn(
+                      'w-full justify-start text-left font-normal',
+                      !endDate && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>

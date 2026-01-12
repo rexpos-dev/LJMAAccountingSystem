@@ -37,7 +37,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CalendarIcon, UserPlus, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { mockAccounts } from '@/app/configuration/chart-of-accounts/mock-accounts';
 
@@ -183,7 +183,7 @@ export function EnterDirectPaymentsDialog() {
                 </div>
                 <div className="grid grid-cols-3 items-center gap-4">
                   <Label htmlFor="account-balance">Account Balance:</Label>
-                  <Input id="account-balance" value="₱0.00" disabled className="col-span-2"/>
+                  <Input id="account-balance" value="₱0.00" disabled className="col-span-2" />
                 </div>
                 <div className="grid grid-cols-3 items-start gap-4">
                   <Label htmlFor="journal-memo">Journal memo:</Label>
@@ -206,7 +206,7 @@ export function EnterDirectPaymentsDialog() {
                 </div>
                 <div className="grid grid-cols-3 items-center gap-4">
                   <Label htmlFor="amount">Amount:</Label>
-                  <Input id="amount" value={`₱${amount}`} onChange={(e) => setAmount(e.target.value.replace('₱', ''))} className="col-span-2"/>
+                  <Input id="amount" value={`₱${amount}`} onChange={(e) => setAmount(e.target.value.replace('₱', ''))} className="col-span-2" />
                 </div>
                 <div className="grid grid-cols-3 items-center gap-4">
                   <Label htmlFor="reference-number">Reference number:</Label>
@@ -214,7 +214,7 @@ export function EnterDirectPaymentsDialog() {
                 </div>
                 <div className="grid grid-cols-3 items-center gap-4">
                   <Label htmlFor="transaction-reference">Transaction reference:</Label>
-                  <Input id="transaction-reference" value="PMT [AUTO]" disabled className="col-span-1"/>
+                  <Input id="transaction-reference" value="PMT [AUTO]" disabled className="col-span-1" />
                   <Label htmlFor="check-no" className="text-right">Check no.:</Label>
                   <Input id="check-no" className="col-span-1" value={checkNumber} onChange={(e) => setCheckNumber(e.target.value)} />
                 </div>

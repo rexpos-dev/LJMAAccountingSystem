@@ -29,7 +29,7 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import format from '@/lib/date-format';
 import type { Transaction } from '@/types/transaction';
 
 import { Timestamp } from 'firebase/firestore';
@@ -55,11 +55,11 @@ export default function EditTransactionDialog({ transaction }: { transaction?: T
   const handleInputChange = (field: keyof Transaction, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  
+
   const handleDateChange = (newDate: Date | undefined) => {
     setDate(newDate);
     if (newDate) {
-        handleInputChange('date', Timestamp.fromDate(newDate));
+      handleInputChange('date', Timestamp.fromDate(newDate));
     }
   }
 
@@ -83,75 +83,75 @@ export default function EditTransactionDialog({ transaction }: { transaction?: T
         <div className="space-y-4 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
             <div className="space-y-4">
-                <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="account-number" className="text-right">Account#</Label>
-                    <Input id="account-number" value={formData.accountNumber || ''} onChange={(e) => handleInputChange('accountNumber', e.target.value)} className="col-span-2" />
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="account-name" className="text-right">Account Name</Label>
-                    <Input id="account-name" value={formData.accountName || ''} onChange={(e) => handleInputChange('accountName', e.target.value)} className="col-span-2" />
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="group" className="text-right">Group</Label>
-                    <Select value={formData.ledger} onValueChange={(value) => handleInputChange('ledger', value)}>
-                        <SelectTrigger id="group" className="col-span-2">
-                            <SelectValue placeholder="Select a group" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Check">Check</SelectItem>
-                            <SelectItem value="Cash & Checks">Cash & Checks</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="account-number" className="text-right">Account#</Label>
+                <Input id="account-number" value={formData.accountNumber || ''} onChange={(e) => handleInputChange('accountNumber', e.target.value)} className="col-span-2" />
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="account-name" className="text-right">Account Name</Label>
+                <Input id="account-name" value={formData.accountName || ''} onChange={(e) => handleInputChange('accountName', e.target.value)} className="col-span-2" />
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="group" className="text-right">Group</Label>
+                <Select value={formData.ledger} onValueChange={(value) => handleInputChange('ledger', value)}>
+                  <SelectTrigger id="group" className="col-span-2">
+                    <SelectValue placeholder="Select a group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Check">Check</SelectItem>
+                    <SelectItem value="Cash & Checks">Cash & Checks</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-             <div className="space-y-4">
-                <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="ctrl-number" className="text-right">Ctrl#</Label>
-                    <Input id="ctrl-number" value={formData.transNo || ''} onChange={(e) => handleInputChange('transNo', e.target.value)} className="col-span-2" />
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="date-created" className="text-right">DateCreated</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                        <Button
-                            variant={'outline'}
-                            id="date-created"
-                            className={cn(
-                            'w-full justify-start text-left font-normal col-span-2',
-                            !date && 'text-muted-foreground'
-                            )}
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
-                        </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                        <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={handleDateChange}
-                            initialFocus
-                        />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="account-status" className="text-right">Account Status</Label>
-                    <Select value={formData.approval || undefined} onValueChange={(value) => handleInputChange('approval', value)}>
-                        <SelectTrigger id="account-status" className="col-span-2">
-                            <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="Inactive">Inactive</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                 <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="user" className="text-right">User</Label>
-                    <Input id="user" value={formData.user || ''} onChange={(e) => handleInputChange('user', e.target.value)} className="col-span-2" />
-                </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="ctrl-number" className="text-right">Ctrl#</Label>
+                <Input id="ctrl-number" value={formData.transNo || ''} onChange={(e) => handleInputChange('transNo', e.target.value)} className="col-span-2" />
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="date-created" className="text-right">DateCreated</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={'outline'}
+                      id="date-created"
+                      className={cn(
+                        'w-full justify-start text-left font-normal col-span-2',
+                        !date && 'text-muted-foreground'
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="account-status" className="text-right">Account Status</Label>
+                <Select value={formData.approval || undefined} onValueChange={(value) => handleInputChange('approval', value)}>
+                  <SelectTrigger id="account-status" className="col-span-2">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-3 items-center gap-4">
+                <Label htmlFor="user" className="text-right">User</Label>
+                <Input id="user" value={formData.user || ''} onChange={(e) => handleInputChange('user', e.target.value)} className="col-span-2" />
+              </div>
             </div>
           </div>
         </div>

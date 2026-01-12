@@ -19,14 +19,43 @@ import { Info } from 'lucide-react';
 import type { Account } from '@/types/account';
 
 
-export default function DeleteAccountDialog({ account, onDeleted }: { account?: Account | null, onDeleted: () => void }) {
-  const { openDialogs, closeDialog } = useDialog();
+import { useToast } from '@/hooks/use-toast';
+import { useAccounts } from '@/hooks/use-accounts';
 
-  const handleDelete = () => {
-    // For mock data, just log and close
-    console.log('Mock account delete:', account?.id);
-    onDeleted();
-    closeDialog('delete-account');
+export default function DeleteAccountDialog() {
+  const { openDialogs, closeDialog, getDialogData } = useDialog();
+  const { toast } = useToast();
+  const { refetch } = useAccounts();
+
+  const account = getDialogData('delete-account');
+
+  const handleDelete = async () => {
+    if (!account?.id) return;
+
+    try {
+      const response = await fetch(`/api/accounts?id=${account.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete account');
+      }
+
+      toast({
+        title: "Account Deleted",
+        description: `Account "${account.name}" has been successfully deleted.`,
+      });
+
+      window.dispatchEvent(new CustomEvent('accounts-refresh'));
+      closeDialog('delete-account');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to delete account",
+      });
+    }
   };
 
   const handleClose = () => {
@@ -43,16 +72,16 @@ export default function DeleteAccountDialog({ account, onDeleted }: { account?: 
           <AlertDialogTitle>Confirm delete</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className='flex items-center gap-4 pt-4'>
-                <Info className='w-8 h-8 text-primary flex-shrink-0' />
-                <p>
-                Are you sure you want to delete account "{account?.number}"?
-                </p>
+              <Info className='w-8 h-8 text-primary flex-shrink-0' />
+              <p>
+                Are you sure you want to delete account "{account?.accnt_no}"?
+              </p>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center space-x-2">
-            <Checkbox id="dont-show" />
-            <Label htmlFor="dont-show" className="font-normal">Don't show this message again</Label>
+          <Checkbox id="dont-show" />
+          <Label htmlFor="dont-show" className="font-normal">Don't show this message again</Label>
         </div>
         <AlertDialogFooter className='mt-4'>
           <AlertDialogAction asChild>

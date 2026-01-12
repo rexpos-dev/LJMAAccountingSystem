@@ -29,7 +29,7 @@ export function AddLoyaltyCardDialog() {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [loyaltyCardNumber, setLoyaltyCardNumber] = useState('');
   const [code, setCode] = useState('');
-  const [expiryDate, setExpiryDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [expiryDate, setExpiryDate] = useState<string>('');
   const [pointSetting, setPointSetting] = useState<string>('');
   const [initialPoints, setInitialPoints] = useState<string>('0');
   const [loyaltySettings, setLoyaltySettings] = useState<Array<any>>([]);
@@ -38,6 +38,9 @@ export function AddLoyaltyCardDialog() {
   useEffect(() => {
     if (!openDialogs['add-loyalty-card']) return;
 
+    if (!expiryDate) {
+      setExpiryDate(new Date().toISOString().slice(0, 10));
+    }
     let mounted = true;
     (async () => {
       try {

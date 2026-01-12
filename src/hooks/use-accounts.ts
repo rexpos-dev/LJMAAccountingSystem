@@ -33,6 +33,16 @@ export function useAccounts() {
     fetchAccounts();
   }, []);
 
+  useEffect(() => {
+    const handleRefresh = () => {
+      fetchAccounts();
+    };
+    window.addEventListener('accounts-refresh', handleRefresh);
+    return () => {
+      window.removeEventListener('accounts-refresh', handleRefresh);
+    };
+  }, []);
+
   return { data, isLoading, error, refetch: fetchAccounts };
 }
 

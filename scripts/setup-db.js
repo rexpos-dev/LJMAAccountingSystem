@@ -8,13 +8,9 @@ async function setupDatabase() {
   });
 
   try {
-    // Drop old database if exists
-    await connection.execute('DROP DATABASE IF EXISTS ljma_accounting');
-    console.log('✅ Old database dropped (if existed)');
-
-    // Create new database if not exists
+    // Create database if not exists (preserve existing data)
     await connection.execute('CREATE DATABASE IF NOT EXISTS ljma_accounting');
-    console.log('✅ New database created');
+    console.log('✅ Database created (if not existed)');
 
   } catch (error) {
     console.error('Error:', error);
