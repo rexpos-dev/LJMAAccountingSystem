@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/generated/client'
+import { PrismaClient } from '@prisma/client'
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 
 const connectionString = process.env.DATABASE_URL!
@@ -12,6 +12,7 @@ let prismaInstance = globalForPrisma.prisma
 // Aggressive refresh in dev mode if salesUser is missing
 if (process.env.NODE_ENV !== 'production' && prismaInstance && !(prismaInstance as any).salesUser) {
   console.log('🔄 [Prisma] SalesUser model missing from cached instance. FORCING REFRESH...');
+  console.log('🔄 [Prisma] Notifications enabled.'); // Trigger reload
   prismaInstance = undefined
 }
 
@@ -24,7 +25,6 @@ if (!prismaInstance) {
 
 if (typeof window === 'undefined') {
   const models = Object.keys(prismaInstance).filter(k => k[0] === k[0].toLowerCase() && !k.startsWith('_'));
-  console.log('🚀 [Prisma] models:', models);
   if (!(prismaInstance as any).salesUser) {
     console.error('❌ [Prisma] ERROR: salesUser model is missing from the client!');
   } else {

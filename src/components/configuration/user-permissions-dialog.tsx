@@ -34,8 +34,7 @@ export default function UserPermissionsDialog() {
   const filteredUsers = userPermissions.filter((user) =>
     (user.username || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (user.firstName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (user.lastName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (user.designation || '').toLowerCase().includes(searchQuery.toLowerCase())
+    (user.lastName || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const paginatedUsers = filteredUsers.slice(
@@ -121,7 +120,6 @@ export default function UserPermissionsDialog() {
               <TableRow>
                 <TableHead className="w-24">Username</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Designation</TableHead>
                 <TableHead>Account Type</TableHead>
                 <TableHead className="w-20">Status</TableHead>
               </TableRow>
@@ -153,15 +151,13 @@ export default function UserPermissionsDialog() {
                     onClick={() => setSelectedUser(user)}
                   >
                     <TableCell className="font-medium text-sm">{user.username}</TableCell>
-                    <TableCell className="text-sm">{user.firstName} {user.middleName} {user.lastName}</TableCell>
-                    <TableCell className="text-sm">{user.designation}</TableCell>
+                    <TableCell className="text-sm">{user.firstName} {user.lastName}</TableCell>
                     <TableCell className="text-sm">{user.accountType}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-0.5 rounded text-xs ${
-                        user.isActive
+                      <span className={`px-2 py-0.5 rounded text-xs ${user.isActive
                           ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
-                      }`}>
+                        }`}>
                         {user.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </TableCell>

@@ -14,6 +14,7 @@ import CustomerListDialog from '@/components/customer/customer-list-dialog';
 import { AddCustomerDialog } from '@/components/customer/add-customer-dialog';
 
 import CustomerPaymentDialog from '@/components/customer/customer-payment-dialog';
+import AddCustomerPaymentDialog from '@/components/customer/add-customer-payment-dialog';
 import CustomerLoyaltyPointsDialog from '@/components/customer/customer-loyalty-points-dialog';
 import LoyaltySettingsDialog from '@/components/customer/loyalty-settings-dialog';
 import AddLoyaltyCardDialog from '@/components/customer/add-loyalty-card-dialog';
@@ -50,6 +51,7 @@ const dialogComponents = {
   'add-customer': AddCustomerDialog,
 
   'customer-payment': CustomerPaymentDialog,
+  'add-customer-payment': AddCustomerPaymentDialog,
   'customer-loyalty-points': CustomerLoyaltyPointsDialog,
   'loyalty-settings': LoyaltySettingsDialog,
   'add-loyalty-card': AddLoyaltyCardDialog,

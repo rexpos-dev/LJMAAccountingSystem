@@ -35,10 +35,7 @@ export default function EditUserPermissionDialog() {
     id: '',
     username: '',
     firstName: '',
-    middleName: '',
     lastName: '',
-    designation: '',
-    userAccess: '',
     contactNo: '',
     accountType: '',
     password: '',
@@ -81,10 +78,7 @@ export default function EditUserPermissionDialog() {
         id: userData.id || '',
         username: userData.username || '',
         firstName: userData.firstName || '',
-        middleName: userData.middleName || '',
         lastName: userData.lastName || '',
-        designation: userData.designation || '',
-        userAccess: userData.userAccess || '',
         contactNo: userData.contactNo || '',
         accountType: userData.accountType || '',
         password: '',
@@ -140,10 +134,7 @@ export default function EditUserPermissionDialog() {
       id: '',
       username: '',
       firstName: '',
-      middleName: '',
       lastName: '',
-      designation: '',
-      userAccess: '',
       contactNo: '',
       accountType: '',
       password: '',
@@ -249,7 +240,7 @@ export default function EditUserPermissionDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
@@ -257,16 +248,6 @@ export default function EditUserPermissionDialog() {
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   placeholder="Enter first name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="middleName">Middle Name</Label>
-                <Input
-                  id="middleName"
-                  value={formData.middleName}
-                  onChange={(e) => handleInputChange('middleName', e.target.value)}
-                  placeholder="Enter middle name"
                 />
               </div>
 
@@ -281,32 +262,7 @@ export default function EditUserPermissionDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="designation">Designation</Label>
-                <Input
-                  id="designation"
-                  value={formData.designation}
-                  onChange={(e) => handleInputChange('designation', e.target.value)}
-                  placeholder="Enter designation"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="userAccess">User Access</Label>
-                <Select value={formData.userAccess} onValueChange={(value) => handleInputChange('userAccess', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select access level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Full Access">Full Access</SelectItem>
-                    <SelectItem value="Limited Access">Limited Access</SelectItem>
-                    <SelectItem value="Read Only">Read Only</SelectItem>
-                    <SelectItem value="Sales Only">Sales Only</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="accountType">Account Type</Label>
                 <Select value={formData.accountType} onValueChange={(value) => handleInputChange('accountType', value)}>

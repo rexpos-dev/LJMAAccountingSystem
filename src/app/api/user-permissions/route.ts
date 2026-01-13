@@ -20,9 +20,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { username, firstName, middleName, lastName, designation, userAccess, contactNo, accountType, password, permissions } = body;
+    const { username, firstName, lastName, contactNo, accountType, password, permissions } = body;
 
-    if (!username || !firstName || !lastName || !designation || !userAccess || !accountType || permissions === undefined) {
+    if (!username || !firstName || !lastName || !accountType || permissions === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -30,10 +30,7 @@ export async function POST(request: Request) {
       data: {
         username,
         firstName,
-        middleName: middleName || null,
         lastName,
-        designation,
-        userAccess,
         contactNo: contactNo || null,
         accountType,
         password: password || null,
@@ -59,9 +56,9 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
 
-    const { id, username, firstName, middleName, lastName, designation, userAccess, contactNo, accountType, password, permissions, isActive } = body;
+    const { id, username, firstName, lastName, contactNo, accountType, password, permissions, isActive } = body;
 
-    if (!id || !username || !firstName || !lastName || !designation || !userAccess || !accountType || permissions === undefined) {
+    if (!id || !username || !firstName || !lastName || !accountType || permissions === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -70,10 +67,7 @@ export async function PUT(request: Request) {
       data: {
         username,
         firstName,
-        middleName: middleName || null,
         lastName,
-        designation,
-        userAccess,
         contactNo: contactNo || null,
         accountType,
         password: password !== undefined ? password : undefined,

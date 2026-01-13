@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getTransactions, getTransactionsByAccount } from '@/lib/database';
 import type { Transaction } from '@/types/transaction';
 
 export function useTransactions(limit?: number, offset?: number) {
@@ -13,7 +12,16 @@ export function useTransactions(limit?: number, offset?: number) {
     const fetchTransactions = async () => {
       try {
         setIsLoading(true);
-        const data = await getTransactions(limit, offset);
+        const params = new URLSearchParams();
+        if (limit !== undefined) params.append('limit', limit.toString());
+        if (offset !== undefined) params.append('offset', offset.toString());
+
+        const response = await fetch(`/api/transactions?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch transactions');
+        }
+
+        const data = await response.json();
         // Ensure seq is non-nullable to satisfy Transaction type
         setTransactions(Array.isArray(data) ? data.map((t: any) => ({ ...t, seq: t.seq ?? 0 })) : []);
       } catch (err) {
@@ -38,7 +46,15 @@ export function useTransactionsByAccount(accountNumber: string) {
     const fetchTransactions = async () => {
       try {
         setIsLoading(true);
-        const data = await getTransactionsByAccount(accountNumber);
+        const params = new URLSearchParams();
+        params.append('accountNumber', accountNumber);
+
+        const response = await fetch(`/api/transactions?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch transactions by account');
+        }
+
+        const data = await response.json();
         setTransactions(Array.isArray(data) ? data.map((t: any) => ({ ...t, seq: t.seq ?? 0 })) : []);
       } catch (err) {
         setError(err as Error);

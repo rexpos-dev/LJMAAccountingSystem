@@ -23,6 +23,7 @@ import { useDialog } from '@/components/layout/dialog-provider';
 import { useCreateUserPermission } from '@/hooks/use-user-permissions';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AddUserPermissionDialog() {
   const { openDialogs, closeDialog } = useDialog();
@@ -60,10 +61,7 @@ export default function AddUserPermissionDialog() {
   const [formData, setFormData] = useState({
     username: '',
     firstName: '',
-    middleName: '',
     lastName: '',
-    designation: '',
-    userAccess: '',
     contactNo: '',
     accountType: '',
     password: '',
@@ -71,16 +69,16 @@ export default function AddUserPermissionDialog() {
     permissions: [] as string[],
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const handleClose = () => {
     if (createUserPermission.isPending) return;
     closeDialog('add-user-permission');
     setFormData({
       username: '',
       firstName: '',
-      middleName: '',
       lastName: '',
-      designation: '',
-      userAccess: '',
       contactNo: '',
       accountType: '',
       password: '',
@@ -177,7 +175,7 @@ export default function AddUserPermissionDialog() {
           <div className="space-y-6 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Username <span className="text-red-500">*</span></Label>
                 <Input
                   id="username"
                   value={formData.username}
@@ -199,44 +197,57 @@ export default function AddUserPermissionDialog() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Enter password"
-                />
+                <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="Enter password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  placeholder="Confirm password"
-                />
+                <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    placeholder="Confirm password"
+                    className={formData.confirmPassword && formData.password !== formData.confirmPassword ? "border-red-500 focus-visible:ring-red-500 pr-10" : "pr-10"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-xs text-red-500">Passwords do not match</p>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
                   placeholder="First name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="middleName">Middle Name</Label>
-                <Input
-                  id="middleName"
-                  value={formData.middleName}
-                  onChange={(e) => handleInputChange('middleName', e.target.value)}
-                  placeholder="Middle name"
                 />
               </div>
               <div className="space-y-2">
@@ -250,40 +261,9 @@ export default function AddUserPermissionDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="designation">Designation</Label>
-                <Select value={formData.designation} onValueChange={(value) => handleInputChange('designation', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select designation" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Administrator">Administrator</SelectItem>
-                    <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Accountant">Accountant</SelectItem>
-                    <SelectItem value="Clerk">Clerk</SelectItem>
-                    <SelectItem value="Sales Representative">Sales Representative</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="userAccess">User Access</Label>
-                <Select value={formData.userAccess} onValueChange={(value) => handleInputChange('userAccess', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select access level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Full Access">Full Access</SelectItem>
-                    <SelectItem value="Limited Access">Limited Access</SelectItem>
-                    <SelectItem value="Read Only">Read Only</SelectItem>
-                    <SelectItem value="Sales Only">Sales Only</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="accountType">Account Type</Label>
+                <Label htmlFor="accountType">Account Type <span className="text-red-500">*</span></Label>
                 <Select value={formData.accountType} onValueChange={(value) => handleInputChange('accountType', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select account type" />
@@ -300,7 +280,7 @@ export default function AddUserPermissionDialog() {
             </div>
 
             <div className="space-y-4">
-              <Label className="text-lg font-semibold">Account Permissions</Label>
+              <Label className="text-lg font-semibold">Account Permissions <span className="text-red-500">*</span></Label>
               <div className="columns-2 lg:columns-3 gap-6 space-y-6">
                 {permissionGroups.map((group) => (
                   <div key={group.title} className="break-inside-avoid space-y-3 p-4 border rounded-lg bg-gradient-to-b from-gray-50 to-gray-100 mb-6">

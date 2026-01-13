@@ -23,6 +23,7 @@ import dynamic from 'next/dynamic';
 const Overview = dynamic(() => import('./overview').then(m => m.Overview), { ssr: false });
 const SummaryCards = dynamic(() => import('./summary-cards').then(m => m.SummaryCards), { ssr: false });
 const FinancialDonut = dynamic(() => import('./financial-donut').then(m => m.FinancialDonut), { ssr: false });
+const CalendarCard = dynamic(() => import('./calendar-card').then(m => m.CalendarCard), { ssr: false });
 
 export function Dashboard() {
   const [recentCustomers, setRecentCustomers] = useState<Array<any>>([]);
@@ -75,6 +76,11 @@ export function Dashboard() {
             <Overview />
           </CardContent>
         </Card>
+        <div className="col-span-1 lg:col-span-3 h-full">
+          <CalendarCard />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
         <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
             <CardTitle className="font-headline">Financial Summary</CardTitle>
@@ -86,9 +92,7 @@ export function Dashboard() {
             <FinancialDonut />
           </CardContent>
         </Card>
-      </div>
-      <div className="grid grid-cols-1 gap-4">
-        <Card>
+        <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle className="font-headline">Newly Added Customers</CardTitle>
             <CardDescription>
@@ -101,7 +105,7 @@ export function Dashboard() {
             ) : recentCustomers.length === 0 ? (
               <div className="text-center text-sm text-muted-foreground py-8">No customers yet.</div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {recentCustomers.map((customer: any, idx: number) => (
                   <div key={customer.id ?? customer.code ?? `${(customer.customerName || customer.name || 'cust')}-${idx}`} className="flex items-center gap-3 p-3 rounded-lg border">
                     <Avatar className="h-9 w-9">

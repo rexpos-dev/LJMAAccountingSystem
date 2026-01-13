@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -206,6 +205,7 @@ model Reminder {
   date        DateTime
   endDate     DateTime?
   isActive    Boolean  @default(true)
+  isRead      Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -228,10 +228,7 @@ model UserPermission {
   id           String   @id @default(cuid())
   username     String   @unique
   firstName    String
-  middleName   String?
   lastName     String
-  designation  String
-  userAccess   String
   contactNo    String?
   accountType  String
   password     String?
@@ -268,4 +265,16 @@ model BackupSchedule {
   updatedAt   DateTime @updatedAt
 
   @@map("backup_schedule")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // e.g., "reminder_create", "reminder_update"
+  title     String
+  message   String?
+  entityId  String?  // ID of the related object (reminder id)
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notification")
 }

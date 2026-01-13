@@ -88,6 +88,16 @@ export type UserPermission = $Result.DefaultSelection<Prisma.$UserPermissionPayl
  * 
  */
 export type BusinessProfile = $Result.DefaultSelection<Prisma.$BusinessProfilePayload>
+/**
+ * Model BackupSchedule
+ * 
+ */
+export type BackupSchedule = $Result.DefaultSelection<Prisma.$BackupSchedulePayload>
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -355,6 +365,26 @@ export class PrismaClient<
     * ```
     */
   get businessProfile(): Prisma.BusinessProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.backupSchedule`: Exposes CRUD operations for the **BackupSchedule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BackupSchedules
+    * const backupSchedules = await prisma.backupSchedule.findMany()
+    * ```
+    */
+  get backupSchedule(): Prisma.BackupScheduleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
+    * ```
+    */
+  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -803,7 +833,9 @@ export namespace Prisma {
     Reminder: 'Reminder',
     SalesUser: 'SalesUser',
     UserPermission: 'UserPermission',
-    BusinessProfile: 'BusinessProfile'
+    BusinessProfile: 'BusinessProfile',
+    BackupSchedule: 'BackupSchedule',
+    Notification: 'Notification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -819,7 +851,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "transaction" | "loyaltyPointSetting" | "customer" | "loyaltyPoint" | "product" | "conversionFactor" | "brand" | "category" | "supplier" | "unitOfMeasure" | "reminder" | "salesUser" | "userPermission" | "businessProfile"
+      modelProps: "account" | "transaction" | "loyaltyPointSetting" | "customer" | "loyaltyPoint" | "product" | "conversionFactor" | "brand" | "category" | "supplier" | "unitOfMeasure" | "reminder" | "salesUser" | "userPermission" | "businessProfile" | "backupSchedule" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1813,6 +1845,138 @@ export namespace Prisma {
           }
         }
       }
+      BackupSchedule: {
+        payload: Prisma.$BackupSchedulePayload<ExtArgs>
+        fields: Prisma.BackupScheduleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BackupScheduleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BackupScheduleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>
+          }
+          findFirst: {
+            args: Prisma.BackupScheduleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BackupScheduleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>
+          }
+          findMany: {
+            args: Prisma.BackupScheduleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>[]
+          }
+          create: {
+            args: Prisma.BackupScheduleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>
+          }
+          createMany: {
+            args: Prisma.BackupScheduleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.BackupScheduleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>
+          }
+          update: {
+            args: Prisma.BackupScheduleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>
+          }
+          deleteMany: {
+            args: Prisma.BackupScheduleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BackupScheduleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BackupScheduleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BackupSchedulePayload>
+          }
+          aggregate: {
+            args: Prisma.BackupScheduleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBackupSchedule>
+          }
+          groupBy: {
+            args: Prisma.BackupScheduleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BackupScheduleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BackupScheduleCountArgs<ExtArgs>
+            result: $Utils.Optional<BackupScheduleCountAggregateOutputType> | number
+          }
+        }
+      }
+      Notification: {
+        payload: Prisma.$NotificationPayload<ExtArgs>
+        fields: Prisma.NotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.NotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          update: {
+            args: Prisma.NotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.NotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotification>
+          }
+          groupBy: {
+            args: Prisma.NotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1936,6 +2100,8 @@ export namespace Prisma {
     salesUser?: SalesUserOmit
     userPermission?: UserPermissionOmit
     businessProfile?: BusinessProfileOmit
+    backupSchedule?: BackupScheduleOmit
+    notification?: NotificationOmit
   }
 
   /* Types for Logging */
@@ -13141,6 +13307,7 @@ export namespace Prisma {
     date: Date | null
     endDate: Date | null
     isActive: boolean | null
+    isRead: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -13152,6 +13319,7 @@ export namespace Prisma {
     date: Date | null
     endDate: Date | null
     isActive: boolean | null
+    isRead: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -13163,6 +13331,7 @@ export namespace Prisma {
     date: number
     endDate: number
     isActive: number
+    isRead: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -13176,6 +13345,7 @@ export namespace Prisma {
     date?: true
     endDate?: true
     isActive?: true
+    isRead?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -13187,6 +13357,7 @@ export namespace Prisma {
     date?: true
     endDate?: true
     isActive?: true
+    isRead?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -13198,6 +13369,7 @@ export namespace Prisma {
     date?: true
     endDate?: true
     isActive?: true
+    isRead?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -13282,6 +13454,7 @@ export namespace Prisma {
     date: Date
     endDate: Date | null
     isActive: boolean
+    isRead: boolean
     createdAt: Date
     updatedAt: Date
     _count: ReminderCountAggregateOutputType | null
@@ -13310,6 +13483,7 @@ export namespace Prisma {
     date?: boolean
     endDate?: boolean
     isActive?: boolean
+    isRead?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["reminder"]>
@@ -13323,11 +13497,12 @@ export namespace Prisma {
     date?: boolean
     endDate?: boolean
     isActive?: boolean
+    isRead?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ReminderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "memo" | "date" | "endDate" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
+  export type ReminderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "memo" | "date" | "endDate" | "isActive" | "isRead" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
 
   export type $ReminderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Reminder"
@@ -13339,6 +13514,7 @@ export namespace Prisma {
       date: Date
       endDate: Date | null
       isActive: boolean
+      isRead: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["reminder"]>
@@ -13716,6 +13892,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Reminder", 'DateTime'>
     readonly endDate: FieldRef<"Reminder", 'DateTime'>
     readonly isActive: FieldRef<"Reminder", 'Boolean'>
+    readonly isRead: FieldRef<"Reminder", 'Boolean'>
     readonly createdAt: FieldRef<"Reminder", 'DateTime'>
     readonly updatedAt: FieldRef<"Reminder", 'DateTime'>
   }
@@ -16884,6 +17061,1792 @@ export namespace Prisma {
 
 
   /**
+   * Model BackupSchedule
+   */
+
+  export type AggregateBackupSchedule = {
+    _count: BackupScheduleCountAggregateOutputType | null
+    _min: BackupScheduleMinAggregateOutputType | null
+    _max: BackupScheduleMaxAggregateOutputType | null
+  }
+
+  export type BackupScheduleMinAggregateOutputType = {
+    id: string | null
+    backupTime: Date | null
+    frequency: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BackupScheduleMaxAggregateOutputType = {
+    id: string | null
+    backupTime: Date | null
+    frequency: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BackupScheduleCountAggregateOutputType = {
+    id: number
+    backupTime: number
+    frequency: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BackupScheduleMinAggregateInputType = {
+    id?: true
+    backupTime?: true
+    frequency?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BackupScheduleMaxAggregateInputType = {
+    id?: true
+    backupTime?: true
+    frequency?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BackupScheduleCountAggregateInputType = {
+    id?: true
+    backupTime?: true
+    frequency?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BackupScheduleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BackupSchedule to aggregate.
+     */
+    where?: BackupScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupSchedules to fetch.
+     */
+    orderBy?: BackupScheduleOrderByWithRelationInput | BackupScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BackupScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupSchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BackupSchedules
+    **/
+    _count?: true | BackupScheduleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BackupScheduleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BackupScheduleMaxAggregateInputType
+  }
+
+  export type GetBackupScheduleAggregateType<T extends BackupScheduleAggregateArgs> = {
+        [P in keyof T & keyof AggregateBackupSchedule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBackupSchedule[P]>
+      : GetScalarType<T[P], AggregateBackupSchedule[P]>
+  }
+
+
+
+
+  export type BackupScheduleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BackupScheduleWhereInput
+    orderBy?: BackupScheduleOrderByWithAggregationInput | BackupScheduleOrderByWithAggregationInput[]
+    by: BackupScheduleScalarFieldEnum[] | BackupScheduleScalarFieldEnum
+    having?: BackupScheduleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BackupScheduleCountAggregateInputType | true
+    _min?: BackupScheduleMinAggregateInputType
+    _max?: BackupScheduleMaxAggregateInputType
+  }
+
+  export type BackupScheduleGroupByOutputType = {
+    id: string
+    backupTime: Date
+    frequency: string
+    createdAt: Date
+    updatedAt: Date
+    _count: BackupScheduleCountAggregateOutputType | null
+    _min: BackupScheduleMinAggregateOutputType | null
+    _max: BackupScheduleMaxAggregateOutputType | null
+  }
+
+  type GetBackupScheduleGroupByPayload<T extends BackupScheduleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BackupScheduleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BackupScheduleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BackupScheduleGroupByOutputType[P]>
+            : GetScalarType<T[P], BackupScheduleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BackupScheduleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    backupTime?: boolean
+    frequency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["backupSchedule"]>
+
+
+
+  export type BackupScheduleSelectScalar = {
+    id?: boolean
+    backupTime?: boolean
+    frequency?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BackupScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "backupTime" | "frequency" | "createdAt" | "updatedAt", ExtArgs["result"]["backupSchedule"]>
+
+  export type $BackupSchedulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BackupSchedule"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      backupTime: Date
+      frequency: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["backupSchedule"]>
+    composites: {}
+  }
+
+  type BackupScheduleGetPayload<S extends boolean | null | undefined | BackupScheduleDefaultArgs> = $Result.GetResult<Prisma.$BackupSchedulePayload, S>
+
+  type BackupScheduleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BackupScheduleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BackupScheduleCountAggregateInputType | true
+    }
+
+  export interface BackupScheduleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BackupSchedule'], meta: { name: 'BackupSchedule' } }
+    /**
+     * Find zero or one BackupSchedule that matches the filter.
+     * @param {BackupScheduleFindUniqueArgs} args - Arguments to find a BackupSchedule
+     * @example
+     * // Get one BackupSchedule
+     * const backupSchedule = await prisma.backupSchedule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BackupScheduleFindUniqueArgs>(args: SelectSubset<T, BackupScheduleFindUniqueArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BackupSchedule that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BackupScheduleFindUniqueOrThrowArgs} args - Arguments to find a BackupSchedule
+     * @example
+     * // Get one BackupSchedule
+     * const backupSchedule = await prisma.backupSchedule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BackupScheduleFindUniqueOrThrowArgs>(args: SelectSubset<T, BackupScheduleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BackupSchedule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleFindFirstArgs} args - Arguments to find a BackupSchedule
+     * @example
+     * // Get one BackupSchedule
+     * const backupSchedule = await prisma.backupSchedule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BackupScheduleFindFirstArgs>(args?: SelectSubset<T, BackupScheduleFindFirstArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BackupSchedule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleFindFirstOrThrowArgs} args - Arguments to find a BackupSchedule
+     * @example
+     * // Get one BackupSchedule
+     * const backupSchedule = await prisma.backupSchedule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BackupScheduleFindFirstOrThrowArgs>(args?: SelectSubset<T, BackupScheduleFindFirstOrThrowArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BackupSchedules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BackupSchedules
+     * const backupSchedules = await prisma.backupSchedule.findMany()
+     * 
+     * // Get first 10 BackupSchedules
+     * const backupSchedules = await prisma.backupSchedule.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const backupScheduleWithIdOnly = await prisma.backupSchedule.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BackupScheduleFindManyArgs>(args?: SelectSubset<T, BackupScheduleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BackupSchedule.
+     * @param {BackupScheduleCreateArgs} args - Arguments to create a BackupSchedule.
+     * @example
+     * // Create one BackupSchedule
+     * const BackupSchedule = await prisma.backupSchedule.create({
+     *   data: {
+     *     // ... data to create a BackupSchedule
+     *   }
+     * })
+     * 
+     */
+    create<T extends BackupScheduleCreateArgs>(args: SelectSubset<T, BackupScheduleCreateArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BackupSchedules.
+     * @param {BackupScheduleCreateManyArgs} args - Arguments to create many BackupSchedules.
+     * @example
+     * // Create many BackupSchedules
+     * const backupSchedule = await prisma.backupSchedule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BackupScheduleCreateManyArgs>(args?: SelectSubset<T, BackupScheduleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a BackupSchedule.
+     * @param {BackupScheduleDeleteArgs} args - Arguments to delete one BackupSchedule.
+     * @example
+     * // Delete one BackupSchedule
+     * const BackupSchedule = await prisma.backupSchedule.delete({
+     *   where: {
+     *     // ... filter to delete one BackupSchedule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BackupScheduleDeleteArgs>(args: SelectSubset<T, BackupScheduleDeleteArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BackupSchedule.
+     * @param {BackupScheduleUpdateArgs} args - Arguments to update one BackupSchedule.
+     * @example
+     * // Update one BackupSchedule
+     * const backupSchedule = await prisma.backupSchedule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BackupScheduleUpdateArgs>(args: SelectSubset<T, BackupScheduleUpdateArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BackupSchedules.
+     * @param {BackupScheduleDeleteManyArgs} args - Arguments to filter BackupSchedules to delete.
+     * @example
+     * // Delete a few BackupSchedules
+     * const { count } = await prisma.backupSchedule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BackupScheduleDeleteManyArgs>(args?: SelectSubset<T, BackupScheduleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BackupSchedules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BackupSchedules
+     * const backupSchedule = await prisma.backupSchedule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BackupScheduleUpdateManyArgs>(args: SelectSubset<T, BackupScheduleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BackupSchedule.
+     * @param {BackupScheduleUpsertArgs} args - Arguments to update or create a BackupSchedule.
+     * @example
+     * // Update or create a BackupSchedule
+     * const backupSchedule = await prisma.backupSchedule.upsert({
+     *   create: {
+     *     // ... data to create a BackupSchedule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BackupSchedule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BackupScheduleUpsertArgs>(args: SelectSubset<T, BackupScheduleUpsertArgs<ExtArgs>>): Prisma__BackupScheduleClient<$Result.GetResult<Prisma.$BackupSchedulePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BackupSchedules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleCountArgs} args - Arguments to filter BackupSchedules to count.
+     * @example
+     * // Count the number of BackupSchedules
+     * const count = await prisma.backupSchedule.count({
+     *   where: {
+     *     // ... the filter for the BackupSchedules we want to count
+     *   }
+     * })
+    **/
+    count<T extends BackupScheduleCountArgs>(
+      args?: Subset<T, BackupScheduleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BackupScheduleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BackupSchedule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BackupScheduleAggregateArgs>(args: Subset<T, BackupScheduleAggregateArgs>): Prisma.PrismaPromise<GetBackupScheduleAggregateType<T>>
+
+    /**
+     * Group by BackupSchedule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BackupScheduleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BackupScheduleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BackupScheduleGroupByArgs['orderBy'] }
+        : { orderBy?: BackupScheduleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BackupScheduleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBackupScheduleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BackupSchedule model
+   */
+  readonly fields: BackupScheduleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BackupSchedule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BackupScheduleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BackupSchedule model
+   */
+  interface BackupScheduleFieldRefs {
+    readonly id: FieldRef<"BackupSchedule", 'String'>
+    readonly backupTime: FieldRef<"BackupSchedule", 'DateTime'>
+    readonly frequency: FieldRef<"BackupSchedule", 'String'>
+    readonly createdAt: FieldRef<"BackupSchedule", 'DateTime'>
+    readonly updatedAt: FieldRef<"BackupSchedule", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BackupSchedule findUnique
+   */
+  export type BackupScheduleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupSchedule to fetch.
+     */
+    where: BackupScheduleWhereUniqueInput
+  }
+
+  /**
+   * BackupSchedule findUniqueOrThrow
+   */
+  export type BackupScheduleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupSchedule to fetch.
+     */
+    where: BackupScheduleWhereUniqueInput
+  }
+
+  /**
+   * BackupSchedule findFirst
+   */
+  export type BackupScheduleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupSchedule to fetch.
+     */
+    where?: BackupScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupSchedules to fetch.
+     */
+    orderBy?: BackupScheduleOrderByWithRelationInput | BackupScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BackupSchedules.
+     */
+    cursor?: BackupScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupSchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BackupSchedules.
+     */
+    distinct?: BackupScheduleScalarFieldEnum | BackupScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * BackupSchedule findFirstOrThrow
+   */
+  export type BackupScheduleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupSchedule to fetch.
+     */
+    where?: BackupScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupSchedules to fetch.
+     */
+    orderBy?: BackupScheduleOrderByWithRelationInput | BackupScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BackupSchedules.
+     */
+    cursor?: BackupScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupSchedules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BackupSchedules.
+     */
+    distinct?: BackupScheduleScalarFieldEnum | BackupScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * BackupSchedule findMany
+   */
+  export type BackupScheduleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * Filter, which BackupSchedules to fetch.
+     */
+    where?: BackupScheduleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BackupSchedules to fetch.
+     */
+    orderBy?: BackupScheduleOrderByWithRelationInput | BackupScheduleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BackupSchedules.
+     */
+    cursor?: BackupScheduleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BackupSchedules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BackupSchedules.
+     */
+    skip?: number
+    distinct?: BackupScheduleScalarFieldEnum | BackupScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * BackupSchedule create
+   */
+  export type BackupScheduleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * The data needed to create a BackupSchedule.
+     */
+    data: XOR<BackupScheduleCreateInput, BackupScheduleUncheckedCreateInput>
+  }
+
+  /**
+   * BackupSchedule createMany
+   */
+  export type BackupScheduleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BackupSchedules.
+     */
+    data: BackupScheduleCreateManyInput | BackupScheduleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BackupSchedule update
+   */
+  export type BackupScheduleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * The data needed to update a BackupSchedule.
+     */
+    data: XOR<BackupScheduleUpdateInput, BackupScheduleUncheckedUpdateInput>
+    /**
+     * Choose, which BackupSchedule to update.
+     */
+    where: BackupScheduleWhereUniqueInput
+  }
+
+  /**
+   * BackupSchedule updateMany
+   */
+  export type BackupScheduleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BackupSchedules.
+     */
+    data: XOR<BackupScheduleUpdateManyMutationInput, BackupScheduleUncheckedUpdateManyInput>
+    /**
+     * Filter which BackupSchedules to update
+     */
+    where?: BackupScheduleWhereInput
+    /**
+     * Limit how many BackupSchedules to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BackupSchedule upsert
+   */
+  export type BackupScheduleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * The filter to search for the BackupSchedule to update in case it exists.
+     */
+    where: BackupScheduleWhereUniqueInput
+    /**
+     * In case the BackupSchedule found by the `where` argument doesn't exist, create a new BackupSchedule with this data.
+     */
+    create: XOR<BackupScheduleCreateInput, BackupScheduleUncheckedCreateInput>
+    /**
+     * In case the BackupSchedule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BackupScheduleUpdateInput, BackupScheduleUncheckedUpdateInput>
+  }
+
+  /**
+   * BackupSchedule delete
+   */
+  export type BackupScheduleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+    /**
+     * Filter which BackupSchedule to delete.
+     */
+    where: BackupScheduleWhereUniqueInput
+  }
+
+  /**
+   * BackupSchedule deleteMany
+   */
+  export type BackupScheduleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BackupSchedules to delete
+     */
+    where?: BackupScheduleWhereInput
+    /**
+     * Limit how many BackupSchedules to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BackupSchedule without action
+   */
+  export type BackupScheduleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BackupSchedule
+     */
+    select?: BackupScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BackupSchedule
+     */
+    omit?: BackupScheduleOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Notification
+   */
+
+  export type AggregateNotification = {
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  export type NotificationMinAggregateOutputType = {
+    id: string | null
+    type: string | null
+    title: string | null
+    message: string | null
+    entityId: string | null
+    isRead: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationMaxAggregateOutputType = {
+    id: string | null
+    type: string | null
+    title: string | null
+    message: string | null
+    entityId: string | null
+    isRead: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationCountAggregateOutputType = {
+    id: number
+    type: number
+    title: number
+    message: number
+    entityId: number
+    isRead: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NotificationMinAggregateInputType = {
+    id?: true
+    type?: true
+    title?: true
+    message?: true
+    entityId?: true
+    isRead?: true
+    createdAt?: true
+  }
+
+  export type NotificationMaxAggregateInputType = {
+    id?: true
+    type?: true
+    title?: true
+    message?: true
+    entityId?: true
+    isRead?: true
+    createdAt?: true
+  }
+
+  export type NotificationCountAggregateInputType = {
+    id?: true
+    type?: true
+    title?: true
+    message?: true
+    entityId?: true
+    isRead?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notification to aggregate.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Notifications
+    **/
+    _count?: true | NotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotification[P]>
+      : GetScalarType<T[P], AggregateNotification[P]>
+  }
+
+
+
+
+  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
+    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
+    having?: NotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationCountAggregateInputType | true
+    _min?: NotificationMinAggregateInputType
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type NotificationGroupByOutputType = {
+    id: string
+    type: string
+    title: string
+    message: string | null
+    entityId: string | null
+    isRead: boolean
+    createdAt: Date
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    entityId?: boolean
+    isRead?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["notification"]>
+
+
+
+  export type NotificationSelectScalar = {
+    id?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    entityId?: boolean
+    isRead?: boolean
+    createdAt?: boolean
+  }
+
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "title" | "message" | "entityId" | "isRead" | "createdAt", ExtArgs["result"]["notification"]>
+
+  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Notification"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: string
+      title: string
+      message: string | null
+      entityId: string | null
+      isRead: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["notification"]>
+    composites: {}
+  }
+
+  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
+
+  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationCountAggregateInputType | true
+    }
+
+  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
+    /**
+     * Find zero or one Notification that matches the filter.
+     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notification.findMany()
+     * 
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notification.
+     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
+     * @example
+     * // Create one Notification
+     * const Notification = await prisma.notification.create({
+     *   data: {
+     *     // ... data to create a Notification
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Notification.
+     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
+     * @example
+     * // Delete one Notification
+     * const Notification = await prisma.notification.delete({
+     *   where: {
+     *     // ... filter to delete one Notification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notification.
+     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
+     * @example
+     * // Update one Notification
+     * const notification = await prisma.notification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Notification.
+     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
+     * @example
+     * // Update or create a Notification
+     * const notification = await prisma.notification.upsert({
+     *   create: {
+     *     // ... data to create a Notification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notification.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationCountArgs>(
+      args?: Subset<T, NotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
+
+    /**
+     * Group by Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Notification model
+   */
+  readonly fields: NotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Notification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Notification model
+   */
+  interface NotificationFieldRefs {
+    readonly id: FieldRef<"Notification", 'String'>
+    readonly type: FieldRef<"Notification", 'String'>
+    readonly title: FieldRef<"Notification", 'String'>
+    readonly message: FieldRef<"Notification", 'String'>
+    readonly entityId: FieldRef<"Notification", 'String'>
+    readonly isRead: FieldRef<"Notification", 'Boolean'>
+    readonly createdAt: FieldRef<"Notification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Notification findUnique
+   */
+  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findUniqueOrThrow
+   */
+  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findFirst
+   */
+  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findFirstOrThrow
+   */
+  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findMany
+   */
+  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notifications to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification create
+   */
+  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Notification.
+     */
+    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+  }
+
+  /**
+   * Notification createMany
+   */
+  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification update
+   */
+  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Notification.
+     */
+    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+    /**
+     * Choose, which Notification to update.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification updateMany
+   */
+  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification upsert
+   */
+  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Notification to update in case it exists.
+     */
+    where: NotificationWhereUniqueInput
+    /**
+     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
+     */
+    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+    /**
+     * In case the Notification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * Notification delete
+   */
+  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter which Notification to delete.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification deleteMany
+   */
+  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notifications to delete
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification without action
+   */
+  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -17103,6 +19066,7 @@ export namespace Prisma {
     date: 'date',
     endDate: 'endDate',
     isActive: 'isActive',
+    isRead: 'isRead',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -17159,6 +19123,30 @@ export namespace Prisma {
   };
 
   export type BusinessProfileScalarFieldEnum = (typeof BusinessProfileScalarFieldEnum)[keyof typeof BusinessProfileScalarFieldEnum]
+
+
+  export const BackupScheduleScalarFieldEnum: {
+    id: 'id',
+    backupTime: 'backupTime',
+    frequency: 'frequency',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BackupScheduleScalarFieldEnum = (typeof BackupScheduleScalarFieldEnum)[keyof typeof BackupScheduleScalarFieldEnum]
+
+
+  export const NotificationScalarFieldEnum: {
+    id: 'id',
+    type: 'type',
+    title: 'title',
+    message: 'message',
+    entityId: 'entityId',
+    isRead: 'isRead',
+    createdAt: 'createdAt'
+  };
+
+  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -17372,6 +19360,25 @@ export namespace Prisma {
   };
 
   export type BusinessProfileOrderByRelevanceFieldEnum = (typeof BusinessProfileOrderByRelevanceFieldEnum)[keyof typeof BusinessProfileOrderByRelevanceFieldEnum]
+
+
+  export const BackupScheduleOrderByRelevanceFieldEnum: {
+    id: 'id',
+    frequency: 'frequency'
+  };
+
+  export type BackupScheduleOrderByRelevanceFieldEnum = (typeof BackupScheduleOrderByRelevanceFieldEnum)[keyof typeof BackupScheduleOrderByRelevanceFieldEnum]
+
+
+  export const NotificationOrderByRelevanceFieldEnum: {
+    id: 'id',
+    type: 'type',
+    title: 'title',
+    message: 'message',
+    entityId: 'entityId'
+  };
+
+  export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByRelevanceFieldEnum)[keyof typeof NotificationOrderByRelevanceFieldEnum]
 
 
   /**
@@ -18426,6 +20433,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Reminder"> | Date | string
     endDate?: DateTimeNullableFilter<"Reminder"> | Date | string | null
     isActive?: BoolFilter<"Reminder"> | boolean
+    isRead?: BoolFilter<"Reminder"> | boolean
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
   }
@@ -18437,6 +20445,7 @@ export namespace Prisma {
     date?: SortOrder
     endDate?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _relevance?: ReminderOrderByRelevanceInput
@@ -18452,6 +20461,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Reminder"> | Date | string
     endDate?: DateTimeNullableFilter<"Reminder"> | Date | string | null
     isActive?: BoolFilter<"Reminder"> | boolean
+    isRead?: BoolFilter<"Reminder"> | boolean
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
   }, "id">
@@ -18463,6 +20473,7 @@ export namespace Prisma {
     date?: SortOrder
     endDate?: SortOrderInput | SortOrder
     isActive?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ReminderCountOrderByAggregateInput
@@ -18480,6 +20491,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
     endDate?: DateTimeNullableWithAggregatesFilter<"Reminder"> | Date | string | null
     isActive?: BoolWithAggregatesFilter<"Reminder"> | boolean
+    isRead?: BoolWithAggregatesFilter<"Reminder"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
   }
@@ -18731,6 +20743,122 @@ export namespace Prisma {
     logo?: StringNullableWithAggregatesFilter<"BusinessProfile"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"BusinessProfile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BusinessProfile"> | Date | string
+  }
+
+  export type BackupScheduleWhereInput = {
+    AND?: BackupScheduleWhereInput | BackupScheduleWhereInput[]
+    OR?: BackupScheduleWhereInput[]
+    NOT?: BackupScheduleWhereInput | BackupScheduleWhereInput[]
+    id?: StringFilter<"BackupSchedule"> | string
+    backupTime?: DateTimeFilter<"BackupSchedule"> | Date | string
+    frequency?: StringFilter<"BackupSchedule"> | string
+    createdAt?: DateTimeFilter<"BackupSchedule"> | Date | string
+    updatedAt?: DateTimeFilter<"BackupSchedule"> | Date | string
+  }
+
+  export type BackupScheduleOrderByWithRelationInput = {
+    id?: SortOrder
+    backupTime?: SortOrder
+    frequency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _relevance?: BackupScheduleOrderByRelevanceInput
+  }
+
+  export type BackupScheduleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BackupScheduleWhereInput | BackupScheduleWhereInput[]
+    OR?: BackupScheduleWhereInput[]
+    NOT?: BackupScheduleWhereInput | BackupScheduleWhereInput[]
+    backupTime?: DateTimeFilter<"BackupSchedule"> | Date | string
+    frequency?: StringFilter<"BackupSchedule"> | string
+    createdAt?: DateTimeFilter<"BackupSchedule"> | Date | string
+    updatedAt?: DateTimeFilter<"BackupSchedule"> | Date | string
+  }, "id">
+
+  export type BackupScheduleOrderByWithAggregationInput = {
+    id?: SortOrder
+    backupTime?: SortOrder
+    frequency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BackupScheduleCountOrderByAggregateInput
+    _max?: BackupScheduleMaxOrderByAggregateInput
+    _min?: BackupScheduleMinOrderByAggregateInput
+  }
+
+  export type BackupScheduleScalarWhereWithAggregatesInput = {
+    AND?: BackupScheduleScalarWhereWithAggregatesInput | BackupScheduleScalarWhereWithAggregatesInput[]
+    OR?: BackupScheduleScalarWhereWithAggregatesInput[]
+    NOT?: BackupScheduleScalarWhereWithAggregatesInput | BackupScheduleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BackupSchedule"> | string
+    backupTime?: DateTimeWithAggregatesFilter<"BackupSchedule"> | Date | string
+    frequency?: StringWithAggregatesFilter<"BackupSchedule"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"BackupSchedule"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BackupSchedule"> | Date | string
+  }
+
+  export type NotificationWhereInput = {
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringNullableFilter<"Notification"> | string | null
+    entityId?: StringNullableFilter<"Notification"> | string | null
+    isRead?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+  }
+
+  export type NotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrderInput | SortOrder
+    entityId?: SortOrderInput | SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+    _relevance?: NotificationOrderByRelevanceInput
+  }
+
+  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    type?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringNullableFilter<"Notification"> | string | null
+    entityId?: StringNullableFilter<"Notification"> | string | null
+    isRead?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+  }, "id">
+
+  export type NotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrderInput | SortOrder
+    entityId?: SortOrderInput | SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+    _count?: NotificationCountOrderByAggregateInput
+    _max?: NotificationMaxOrderByAggregateInput
+    _min?: NotificationMinOrderByAggregateInput
+  }
+
+  export type NotificationScalarWhereWithAggregatesInput = {
+    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    OR?: NotificationScalarWhereWithAggregatesInput[]
+    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Notification"> | string
+    type?: StringWithAggregatesFilter<"Notification"> | string
+    title?: StringWithAggregatesFilter<"Notification"> | string
+    message?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    entityId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
   }
 
   export type AccountCreateInput = {
@@ -19908,6 +22036,7 @@ export namespace Prisma {
     date: Date | string
     endDate?: Date | string | null
     isActive?: boolean
+    isRead?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19919,6 +22048,7 @@ export namespace Prisma {
     date: Date | string
     endDate?: Date | string | null
     isActive?: boolean
+    isRead?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19930,6 +22060,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19941,6 +22072,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19952,6 +22084,7 @@ export namespace Prisma {
     date: Date | string
     endDate?: Date | string | null
     isActive?: boolean
+    isRead?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19963,6 +22096,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19974,6 +22108,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20270,6 +22405,132 @@ export namespace Prisma {
     logo?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BackupScheduleCreateInput = {
+    id?: string
+    backupTime: Date | string
+    frequency: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BackupScheduleUncheckedCreateInput = {
+    id?: string
+    backupTime: Date | string
+    frequency: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BackupScheduleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    backupTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BackupScheduleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    backupTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BackupScheduleCreateManyInput = {
+    id?: string
+    backupTime: Date | string
+    frequency: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BackupScheduleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    backupTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BackupScheduleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    backupTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateInput = {
+    id?: string
+    type: string
+    title: string
+    message?: string | null
+    entityId?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUncheckedCreateInput = {
+    id?: string
+    type: string
+    title: string
+    message?: string | null
+    entityId?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyInput = {
+    id?: string
+    type: string
+    title: string
+    message?: string | null
+    entityId?: string | null
+    isRead?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -21206,6 +23467,7 @@ export namespace Prisma {
     date?: SortOrder
     endDate?: SortOrder
     isActive?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21217,6 +23479,7 @@ export namespace Prisma {
     date?: SortOrder
     endDate?: SortOrder
     isActive?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21228,6 +23491,7 @@ export namespace Prisma {
     date?: SortOrder
     endDate?: SortOrder
     isActive?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21374,6 +23638,72 @@ export namespace Prisma {
     logo?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type BackupScheduleOrderByRelevanceInput = {
+    fields: BackupScheduleOrderByRelevanceFieldEnum | BackupScheduleOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type BackupScheduleCountOrderByAggregateInput = {
+    id?: SortOrder
+    backupTime?: SortOrder
+    frequency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BackupScheduleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    backupTime?: SortOrder
+    frequency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BackupScheduleMinOrderByAggregateInput = {
+    id?: SortOrder
+    backupTime?: SortOrder
+    frequency?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationOrderByRelevanceInput = {
+    fields: NotificationOrderByRelevanceFieldEnum | NotificationOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type NotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityId?: SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityId?: SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityId?: SortOrder
+    isRead?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type StringFieldUpdateOperationsInput = {

@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
+import { useSalesUsers } from '@/hooks/use-sales-users';
 import { Search, RefreshCw } from 'lucide-react';
 
 export default function CustomerBalancePage() {
@@ -23,6 +24,8 @@ export default function CustomerBalancePage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: salesUsers } = useSalesUsers();
 
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -40,7 +43,7 @@ export default function CustomerBalancePage() {
   };
 
   return (
-    <Dialog open={openDialogs['customer-balance']} onOpenChange={() => closeDialog('customer-balance')}>
+    <Dialog open={openDialogs['customer-balance']} onOpenChange={() => closeDialog('customer-balance' as any)}>
       <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Customer Balances</DialogTitle>
@@ -105,6 +108,11 @@ export default function CustomerBalancePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All</SelectItem>
+                  {salesUsers?.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -140,7 +148,7 @@ export default function CustomerBalancePage() {
 
         <DialogFooter className="border-t pt-4">
           <div className="flex items-center justify-end w-full gap-2">
-            <Button variant="outline" onClick={() => closeDialog('customer-balance')}>Close</Button>
+            <Button variant="outline" onClick={() => closeDialog('customer-balance' as any)}>Close</Button>
           </div>
         </DialogFooter>
       </DialogContent>

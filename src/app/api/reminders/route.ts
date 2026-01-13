@@ -44,6 +44,20 @@ export async function POST(request: Request) {
       },
     });
 
+    // Create Notification
+    try {
+      await prisma.notification.create({
+        data: {
+          type: 'reminder_create',
+          title: 'New Reminder',
+          message: reminder.title,
+          entityId: reminder.id,
+        },
+      });
+    } catch (notifError: any) {
+      console.error('Notification Error:', notifError);
+    }
+
     return NextResponse.json(reminder, { status: 201 });
   } catch (error: any) {
     console.error('Error creating reminder:', error);
@@ -63,23 +77,43 @@ export async function PUT(request: Request) {
     const { id, title, memo, date, endDate, isActive } = body;
 
     // Validate required fields
-    if (!id || !title || !date) {
-      return NextResponse.json(
-        { error: 'ID, title and date are required' },
-        { status: 400 }
-      );
+    if (!id) {
+      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
     const reminder = await prisma.reminder.update({
       where: { id },
       data: {
-        title: title.trim(),
-        memo: memo?.trim() || null,
-        date: new Date(date),
-        endDate: endDate ? new Date(endDate) : null,
-        isActive: isActive ?? true,
+        title: title ? title.trim() : undefined,
+        memo: memo !== undefined ? memo?.trim() || null : undefined,
+        date: date ? new Date(date) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
+        isActive: isActive ?? undefined,
+        isRead: body.isRead ?? undefined,
       },
     });
+
+    // Create Notification only if not just marking as read (avoid infinite loop if marking as read triggers update)
+    // Actually, "Mark as Read" calls this PUT. If we create a notification for "Mark as Read", we spam.
+    // We should ONLY create notification if TITLE or DATE changed, or ISACTIVE changed?
+    // User said: "update of the calendar and notes".
+    // I should check if `body.isRead` is the ONLY change.
+    const isReadUpdate = Object.keys(body).length === 2 && body.isRead !== undefined && body.id;
+
+    if (!isReadUpdate) {
+      try {
+        await prisma.notification.create({
+          data: {
+            type: 'reminder_update',
+            title: 'Reminder Updated',
+            message: reminder.title,
+            entityId: reminder.id,
+          },
+        });
+      } catch (notifError: any) {
+        // console.error('Notification Update Error:', notifError);
+      }
+    }
 
     return NextResponse.json(reminder);
   } catch (error: any) {
@@ -117,6 +151,16 @@ export async function DELETE(request: Request) {
     await prisma.reminder.update({
       where: { id },
       data: { isActive: false },
+    });
+
+    // Create Notification
+    await prisma.notification.create({
+      data: {
+        type: 'reminder_delete',
+        title: 'Reminder Deleted',
+        message: 'A reminder was deleted',
+        entityId: id,
+      },
     });
 
     return NextResponse.json({ message: 'Reminder deleted successfully' });

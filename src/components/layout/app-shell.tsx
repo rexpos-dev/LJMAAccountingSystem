@@ -30,6 +30,8 @@ import {
 import { ChevronsUpDown, Bell, PanelsTopLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserNav } from "./user-nav";
+import { NotificationBell } from "./notification-bell";
+import { EmailButton } from "./email-button";
 import { Breadcrumbs } from "./breadcrumbs";
 
 // ... (keep surrounding imports if range allows, but aiming for cleaner replacement)
@@ -232,10 +234,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarTrigger className="md:hidden" />
             <Breadcrumbs />
             <div className="flex items-center gap-2 ml-auto">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-                <span className="sr-only">Toggle notifications</span>
-              </Button>
+              <EmailButton />
+              <NotificationBell />
               <UserNav />
             </div>
           </header>
@@ -272,7 +272,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {openDialogs['view-transaction'] && <ViewTransactionDialog transaction={selectedTransaction} />}
             {openDialogs['customer-list'] && <CustomerListPage />}
             {openDialogs['customer-balance'] && <CustomerBalancePage />}
-            {openDialogs['customer-payment'] && <CustomerPaymentPage />}
+            {/* CustomerPaymentPage removed as it is now handled by DialogProvider as CustomerPaymentDialog (Form) and CustomerPaymentsListDialog */}
             {openDialogs['customer-loyalty-points'] && <CustomerLoyaltyPointsPage />}
             {openDialogs['add-customer'] && <AddCustomerDialog />}
             {openDialogs['loyalty-settings'] && <LoyaltySettingsPage />}

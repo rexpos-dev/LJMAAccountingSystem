@@ -293,6 +293,7 @@ exports.Prisma.ReminderScalarFieldEnum = {
   date: 'date',
   endDate: 'endDate',
   isActive: 'isActive',
+  isRead: 'isRead',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -337,6 +338,24 @@ exports.Prisma.BusinessProfileScalarFieldEnum = {
   logo: 'logo',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BackupScheduleScalarFieldEnum = {
+  id: 'id',
+  backupTime: 'backupTime',
+  frequency: 'frequency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  entityId: 'entityId',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -501,6 +520,19 @@ exports.Prisma.BusinessProfileOrderByRelevanceFieldEnum = {
   logo: 'logo'
 };
 
+exports.Prisma.BackupScheduleOrderByRelevanceFieldEnum = {
+  id: 'id',
+  frequency: 'frequency'
+};
+
+exports.Prisma.NotificationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  entityId: 'entityId'
+};
+
 
 exports.Prisma.ModelName = {
   Account: 'Account',
@@ -517,7 +549,9 @@ exports.Prisma.ModelName = {
   Reminder: 'Reminder',
   SalesUser: 'SalesUser',
   UserPermission: 'UserPermission',
-  BusinessProfile: 'BusinessProfile'
+  BusinessProfile: 'BusinessProfile',
+  BackupSchedule: 'BackupSchedule',
+  Notification: 'Notification'
 };
 
 /**
