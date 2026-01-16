@@ -202,8 +202,8 @@ export default function EnterApPage() {
                         <SelectValue placeholder="Select supplier" />
                       </SelectTrigger>
                       <SelectContent>
-                        {accounts.filter(account => account.type === 'Liability').map(account => (
-                          <SelectItem key={account.number} value={account.number?.toString() ?? ''}>
+                        {accounts.filter(account => account.type === 'Liability' && account.number).map(account => (
+                          <SelectItem key={account.id ?? account.number} value={account.number!.toString()}>
                             {account.name}
                           </SelectItem>
                         ))}
@@ -230,8 +230,8 @@ export default function EnterApPage() {
                       <SelectValue placeholder="Select Accounts Payable account" />
                     </SelectTrigger>
                     <SelectContent>
-                      {accounts.map(account => (
-                        <SelectItem key={account.number} value={account.number?.toString() ?? ''}>
+                      {accounts.filter(account => account.number).map(account => (
+                        <SelectItem key={account.id ?? account.number} value={account.number!.toString()}>
                           {account.name}
                         </SelectItem>
                       ))}
@@ -287,10 +287,10 @@ export default function EnterApPage() {
                               <SelectContent>
                                 {accounts
                                   .filter(account =>
-                                    account.name.toLowerCase().includes(accountNameFilter.toLowerCase())
+                                    account.name.toLowerCase().includes(accountNameFilter.toLowerCase()) && account.number
                                   )
                                   .map(account => (
-                                    <SelectItem key={account.number} value={account.number?.toString() ?? ''}>
+                                    <SelectItem key={account.id ?? account.number} value={account.number!.toString()}>
                                       {account.number}
                                     </SelectItem>
                                   ))}
@@ -311,7 +311,7 @@ export default function EnterApPage() {
                                     account.name.toLowerCase().includes(accountNameFilter.toLowerCase())
                                   )
                                   .map(account => (
-                                    <SelectItem key={account.name} value={account.name}>
+                                    <SelectItem key={account.id ?? account.number ?? account.name} value={account.name}>
                                       {account.name}
                                     </SelectItem>
                                   ))}

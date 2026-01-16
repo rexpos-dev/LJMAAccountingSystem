@@ -69,6 +69,10 @@ export default function EditUserPermissionDialog() {
     {
       title: 'User Management',
       items: ['Add/Edit user']
+    },
+    {
+      title: 'Reports',
+      items: ['Reports', 'Income Statement', 'Balance Sheet']
     }
   ];
 
@@ -101,6 +105,31 @@ export default function EditUserPermissionDialog() {
     'Void Purchase Order'
   ];
 
+  const MANAGER_PERMISSIONS = ALL_PERMISSIONS.filter(permission =>
+    !['Setup', 'Backup Database', 'Add/Edit user'].includes(permission)
+  );
+
+  const ADMIN_STAFF_PERMISSIONS = [
+    'Dashboard',
+    'Inventory',
+    'Stocks',
+    'Stock movement',
+    'Stock Adjustment',
+    'Adjustment History',
+    'Purchases',
+    'Product Brand',
+    'Category',
+    'Price Type',
+    'Unit of Measure',
+    'Positive Adjustment',
+    'Negative Adjustment',
+    'Transfer Stocks',
+    'Add Purchase Order',
+    'Add/Edit Purchase Cost',
+    'Add/Edit Category',
+    'Add/Edit Price Type'
+  ];
+
   const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => {
       const updates: any = { [field]: value };
@@ -108,6 +137,10 @@ export default function EditUserPermissionDialog() {
       if (field === 'accountType') {
         if (value === 'Auditor') {
           updates.permissions = AUDITOR_PERMISSIONS;
+        } else if (value === 'Manager') {
+          updates.permissions = MANAGER_PERMISSIONS;
+        } else if (value === 'AdminStaff') {
+          updates.permissions = ADMIN_STAFF_PERMISSIONS;
         } else if (value === 'Admin') {
           updates.permissions = ALL_PERMISSIONS;
         }
@@ -272,8 +305,8 @@ export default function EditUserPermissionDialog() {
                   <SelectContent>
                     <SelectItem value="Admin">Admin</SelectItem>
                     <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Employee">Employee</SelectItem>
-                    <SelectItem value="Cashier">Cashier</SelectItem>
+                    <SelectItem value="AdminStaff">Admin Staff</SelectItem>
+
                     <SelectItem value="Auditor">Auditor</SelectItem>
                   </SelectContent>
                 </Select>

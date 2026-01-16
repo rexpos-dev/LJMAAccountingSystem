@@ -45,11 +45,16 @@ import UserPermissionsDialog from '@/components/configuration/user-permissions-d
 import BusinessSetupDialog from '@/components/configuration/business-setup-dialog';
 
 import EnterCashSaleDialog from '@/components/transactions/enter-cash-sale-dialog';
+import CreatePurchaseOrderDialog from '@/components/purchases/create-purchase-order-dialog';
+import SupplierListDialog from '@/components/purchases/supplier-list-dialog';
+import AddSupplierDialog from '@/components/purchases/add-supplier-dialog';
+
+import PurchaseOrderListDialog from '@/components/purchases/purchase-order-list-dialog';
+import ViewPurchaseOrderDialog from '@/components/purchases/view-purchase-order-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
   'add-customer': AddCustomerDialog,
-
   'customer-payment': CustomerPaymentDialog,
   'add-customer-payment': AddCustomerPaymentDialog,
   'customer-loyalty-points': CustomerLoyaltyPointsDialog,
@@ -81,6 +86,11 @@ const dialogComponents = {
   'delete-user-permission': DeleteUserPermissionDialog,
   'user-permissions': UserPermissionsDialog,
   'business-setup': BusinessSetupDialog,
+  'create-purchase-order': CreatePurchaseOrderDialog,
+  'supplier-list': SupplierListDialog,
+  'add-supplier': AddSupplierDialog,
+  'purchase-order-list': PurchaseOrderListDialog,
+  'view-purchase-order': ViewPurchaseOrderDialog,
 };
 
 type DialogId = keyof typeof dialogComponents;

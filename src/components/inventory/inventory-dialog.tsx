@@ -38,10 +38,12 @@ import {
 import { cn } from '@/lib/utils';
 import format from '@/lib/date-format';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/components/providers/auth-provider';
 
 export default function InventoryDialog() {
   const { openDialogs, closeDialog, openDialog } = useDialog();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [filterBy, setFilterBy] = useState('');
   const [filterValue, setFilterValue] = useState('');
@@ -50,6 +52,8 @@ export default function InventoryDialog() {
   const [pageSize] = useState(10);
   const [selectedProducts, setSelectedProducts] = useState<string>('');
   const [selectedActions, setSelectedActions] = useState<Record<string, string>>({});
+
+  const isAuditor = user?.accountType === 'Auditor';
 
   const { externalProducts, isLoading, error, pagination, refreshExternalProducts } = useExternalProducts(
     currentPage,
@@ -137,10 +141,12 @@ export default function InventoryDialog() {
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Stock Products</DialogTitle>
-            <Button onClick={() => openDialog('add-product')} variant="outline">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Products
-            </Button>
+            {!isAuditor && (
+              <Button onClick={() => openDialog('add-product' as any)} variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Products
+              </Button>
+            )}
           </div>
         </DialogHeader>
 
@@ -303,9 +309,9 @@ export default function InventoryDialog() {
                               <SelectValue placeholder="Action" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="edit">Edit</SelectItem>
+                              {!isAuditor && <SelectItem value="edit">Edit</SelectItem>}
                               <SelectItem value="view">View</SelectItem>
-                              <SelectItem value="update">Update</SelectItem>
+                              {!isAuditor && <SelectItem value="update">Update</SelectItem>}
                             </SelectContent>
                           </Select>
                         </TableCell>

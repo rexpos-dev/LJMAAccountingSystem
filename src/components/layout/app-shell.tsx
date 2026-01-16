@@ -81,9 +81,12 @@ import InventoryDialog from "../inventory/inventory-dialog";
 import { AddProductDialog } from "../inventory/add-product-dialog";
 import BackupSchedulerDialog from "../backup/backup-scheduler-dialog";
 
+import { useAuth } from "../providers/auth-provider";
+
 function SidebarNav() {
   const pathname = usePathname();
   const { openDialog } = useDialog();
+  const { user } = useAuth();
   const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -101,13 +104,52 @@ function SidebarNav() {
     }
   };
 
+  const hasAccess = (item: { hideForRoles?: string[], permissions?: string[], accountType?: string }) => {
+    if (!user) return false;
+
+    // Check role restrictions
+    if (item.hideForRoles && item.hideForRoles.includes(user.accountType)) {
+      return false;
+    }
+
+    // Check individual permissions
+    if (item.permissions) {
+      let userPermissions: string[] = [];
+      try {
+        userPermissions = typeof user.permissions === 'string'
+          ? JSON.parse(user.permissions)
+          : user.permissions;
+      } catch (e) {
+        console.error('Failed to parse permissions', e);
+        userPermissions = [];
+      }
+
+      const hasPermission = item.permissions.some(p => userPermissions.includes(p));
+      if (!hasPermission) return false;
+    }
+
+    return true;
+  };
+
   const renderNavItem = (item: NavItem) => {
     if (!isMounted) return null;
+    if (!hasAccess(item)) return null;
+
+    // Filter sub-items if they exist
+    const visibleSubItems = item.subItems?.filter(hasAccess);
+
+    // If item has subItems but none are visible, and the item itself doesn't have a direct href (is just a grouper), hide it
+    // But if it has a direct href (like Dashboard), show it without subitems? 
+    // Usually groupers have href="#"
+    if (item.subItems && (!visibleSubItems || visibleSubItems.length === 0) && item.href === '#') {
+      return null;
+    }
+
     const isActive = item.subItems
       ? item.subItems.some((sub) => pathname.startsWith(sub.href))
       : pathname.startsWith(item.href);
 
-    if (item.subItems) {
+    if (item.subItems && visibleSubItems && visibleSubItems.length > 0) {
       return (
         <Collapsible key={item.title} defaultOpen={isActive} className="w-full">
           <SidebarMenuItem className="w-full">
@@ -131,7 +173,7 @@ function SidebarNav() {
           </SidebarMenuItem>
           <CollapsibleContent>
             <SidebarMenuSub>
-              {item.subItems.map((subItem) => (
+              {visibleSubItems.map((subItem) => (
                 <SidebarMenuSubItem key={subItem.title}>
                   <SidebarMenuSubButton
                     asChild

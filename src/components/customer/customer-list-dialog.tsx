@@ -21,6 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/components/providers/auth-provider';
 
 interface Customer {
   id: string;
@@ -50,12 +51,15 @@ interface Customer {
 export default function CustomerListDialog() {
   const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+
+  const isAuditor = user?.accountType === 'Auditor';
 
   const fetchCustomers = async () => {
     setIsLoading(true);
@@ -181,26 +185,30 @@ export default function CustomerListDialog() {
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
-            <Button className="bg-primary hover:bg-primary/90" onClick={() => openDialog('add-customer')}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Customer
-            </Button>
-            <Button
-              variant="outline"
-              disabled={!selectedCustomer}
-              onClick={handleEdit}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              disabled={!selectedCustomer}
-              onClick={handleDelete}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Remove
-            </Button>
+            {!isAuditor && (
+              <>
+                <Button className="bg-primary hover:bg-primary/90" onClick={() => openDialog('add-customer')}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Customer
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={!selectedCustomer}
+                  onClick={handleEdit}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={!selectedCustomer}
+                  onClick={handleDelete}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remove
+                </Button>
+              </>
+            )}
           </div>
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -259,11 +267,10 @@ export default function CustomerListDialog() {
                     <TableCell>{customer.phonePrimary || '-'}</TableCell>
                     <TableCell>{customer.email || '-'}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        customer.isActive
+                      <span className={`px-2 py-1 rounded-full text-xs ${customer.isActive
                           ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
-                      }`}>
+                        }`}>
                         {customer.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </TableCell>

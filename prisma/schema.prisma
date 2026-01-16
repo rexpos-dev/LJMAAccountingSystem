@@ -7,17 +7,17 @@ datasource db {
 }
 
 model Account {
-  id             String   @id @default(cuid())
-  accnt_no       Int      @unique
-  accnt_type_no  Int      @default(1)
-  name           String
-  balance        Float?   @default(0)
-  type           String
-  header         String
-  bank           String
-  category       String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(cuid())
+  accnt_no      Int      @unique
+  accnt_type_no Int      @default(1)
+  name          String
+  balance       Float?   @default(0)
+  type          String
+  header        String
+  bank          String
+  category      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("chart_of_account")
 }
@@ -55,187 +55,198 @@ model Transaction {
 }
 
 model LoyaltyPointSetting {
-  id              String   @id @default(cuid())
+  id              String         @id @default(cuid())
   description     String
-  amount          Float    @default(0)
-  equivalentPoint Float    @default(0)
+  amount          Float          @default(0)
+  equivalentPoint Float          @default(0)
   loyaltyPoints   LoyaltyPoint[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   @@map("loyalty_point_setting")
 }
 
 model Customer {
-  id                        String   @id @default(cuid())
-  code                      String   @unique
+  id                        String         @id @default(cuid())
+  code                      String         @unique
   customerName              String
   contactFirstName          String?
   address                   String?
   phonePrimary              String?
   phoneAlternative          String?
   email                     String?
-  isActive                  Boolean  @default(true)
-  creditLimit               Float?   @default(0)
-  isTaxExempt               Boolean  @default(false)
-  paymentTerms              String?  @default("days")
-  paymentTermsValue         String?  @default("30")
-  salesperson                String?
-  customerGroup             String?  @default("default")
-  isEntitledToLoyaltyPoints Boolean  @default(false)
+  isActive                  Boolean        @default(true)
+  creditLimit               Float?         @default(0)
+  isTaxExempt               Boolean        @default(false)
+  paymentTerms              String?        @default("days")
+  paymentTermsValue         String?        @default("30")
+  salesperson               String?
+  customerGroup             String?        @default("default")
+  isEntitledToLoyaltyPoints Boolean        @default(false)
   pointSetting              String?
-  loyaltyCalculationMethod  String?  @default("automatic")
+  loyaltyCalculationMethod  String?        @default("automatic")
   loyaltyCardNumber         String?
   loyaltyPoints             LoyaltyPoint[]
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
+  createdAt                 DateTime       @default(now())
+  updatedAt                 DateTime       @updatedAt
 
   @@map("customer")
 }
 
 model LoyaltyPoint {
-  id              String   @id @default(cuid())
-  customerId      String
-  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  loyaltyCardId   String
-  totalPoints     Float    @default(0)
-  pointSettingId  String
-  pointSetting    LoyaltyPointSetting @relation(fields: [pointSettingId], references: [id])
-  expiryDate      DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String              @id @default(cuid())
+  customerId     String
+  customer       Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  loyaltyCardId  String
+  totalPoints    Float               @default(0)
+  pointSettingId String
+  pointSetting   LoyaltyPointSetting @relation(fields: [pointSettingId], references: [id])
+  expiryDate     DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
   @@map("loyalty_point")
 }
 
 model Product {
-  id              String    @id @default(cuid())
-  code            String    @unique
-  name            String
-  barcode         String?
-  description     String?
+  id                    String   @id @default(cuid())
+  code                  String   @unique
+  name                  String
+  barcode               String?
+  description           String?
   additionalDescription String?
-  category        String?
-  categoryId      String?
-  subcategoryId   String?
-  brandId         String?
-  supplierId      String?
-  unitOfMeasureId String?
-  unitPrice       Float     @default(0)
-  costPrice       Float     @default(0)
-  stockQuantity   Int       @default(0)
-  minStockLevel   Int       @default(0)
-  maxStockLevel   Int?
-  isActive        Boolean   @default(true)
-  salesOrder      String?
-  autoCreateChildren Boolean @default(false)
-  initialStock    Int       @default(0)
-  reorderPoint    Int       @default(0)
-  incomeAccountId String?
-  expenseAccountId String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  category              String?
+  categoryId            String?
+  subcategoryId         String?
+  brandId               String?
+  supplierId            String?
+  unitOfMeasureId       String?
+  unitPrice             Float    @default(0)
+  costPrice             Float    @default(0)
+  stockQuantity         Int      @default(0)
+  minStockLevel         Int      @default(0)
+  maxStockLevel         Int?
+  isActive              Boolean  @default(true)
+  salesOrder            String?
+  autoCreateChildren    Boolean  @default(false)
+  initialStock          Int      @default(0)
+  reorderPoint          Int      @default(0)
+  incomeAccountId       String?
+  expenseAccountId      String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  purchaseOrderItems PurchaseOrderItem[]
 
   @@map("product")
 }
 
 model ConversionFactor {
-  id              String    @id @default(cuid())
-  productId       String
-  unitName        String
-  factor          Float
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  productId String
+  unitName  String
+  factor    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("conversion_factor")
 }
 
 model Brand {
-  id              String    @id @default(cuid())
-  name            String    @unique
-  description     String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("brand")
 }
 
 model Category {
-  id              String    @id @default(cuid())
-  name            String    @unique
-  description     String?
+  id               String   @id @default(cuid())
+  name             String   @unique
+  description      String?
   parentCategoryId String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@map("category")
 }
 
 model Supplier {
-  id              String    @id @default(cuid())
-  name            String    @unique
-  contactPerson   String?
-  email           String?
-  phone           String?
-  address         String?
-  paymentTerms    String?
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                String   @id @default(cuid())
+  name              String   @unique
+  contactPerson     String?
+  contactFirstName  String?
+  email             String?
+  phone             String?
+  phoneAlternative  String?
+  fax               String?
+  address           String?
+  paymentTerms      String?
+  paymentTermsValue String?
+  vatInfo           String?
+  isTaxExempt       Boolean  @default(false)
+  additionalInfo    String?
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  purchaseOrders PurchaseOrder[]
 
   @@map("supplier")
 }
 
 model UnitOfMeasure {
-  id              String    @id @default(cuid())
-  code            String    @unique
-  name            String    @unique
-  description     String?
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("unit_of_measure")
 }
 
 model Reminder {
-  id          String   @id @default(cuid())
-  title       String
-  memo        String?
-  date        DateTime
-  endDate     DateTime?
-  isActive    Boolean  @default(true)
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String    @id @default(cuid())
+  title     String
+  memo      String?
+  date      DateTime
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("reminder")
 }
 
 model SalesUser {
-  id          String   @id @default(cuid())
-  name        String
-  uniqueId    String   @unique
-  username    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  uniqueId  String   @unique
+  username  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sales_user")
 }
 
 model UserPermission {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  firstName    String
-  lastName     String
-  contactNo    String?
-  accountType  String
-  password     String?
-  permissions  String   @db.Text // JSON string containing permissions
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  username    String   @unique
+  firstName   String
+  lastName    String
+  contactNo   String?
+  accountType String
+  password    String?
+  permissions String   @db.Text // JSON string containing permissions
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("user_permission")
 }
@@ -258,23 +269,75 @@ model BusinessProfile {
 }
 
 model BackupSchedule {
-  id          String   @id @default(cuid())
-  backupTime  DateTime
-  frequency   String   // "week", "month", "custom"
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  backupTime DateTime
+  frequency  String // "week", "month", "custom"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("backup_schedule")
 }
 
 model Notification {
   id        String   @id @default(cuid())
-  type      String   // e.g., "reminder_create", "reminder_update"
+  type      String // e.g., "reminder_create", "reminder_update"
   title     String
   message   String?
-  entityId  String?  // ID of the related object (reminder id)
+  entityId  String? // ID of the related object (reminder id)
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@map("notification")
+}
+
+model BackupJob {
+  id          String    @id @default(cuid())
+  status      String // PENDING, RUNNING, COMPLETED, FAILED
+  filePath    String?
+  fileName    String?
+  fileSize    String?
+  createdBy   String?
+  log         String?   @db.Text
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@map("backup_job")
+}
+
+model PurchaseOrder {
+  id              String              @id @default(cuid())
+  supplierId      String
+  supplier        Supplier            @relation(fields: [supplierId], references: [id])
+  date            DateTime
+  vendorAddress   String?             @db.Text
+  shippingAddress String?             @db.Text
+  taxType         String?             @default("default")
+  comments        String?             @db.Text
+  privateComments String?             @db.Text
+  subtotal        Float               @default(0)
+  taxTotal        Float               @default(0)
+  total           Float               @default(0)
+  status          String              @default("Open") // Draft, Open, Closed, Void
+  items           PurchaseOrderItem[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@map("purchase_order")
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId       String?
+  product         Product?      @relation(fields: [productId], references: [id])
+  itemDescription String
+  quantity        Int
+  unitPrice       Float
+  tax             Float?
+  total           Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("purchase_order_item")
 }

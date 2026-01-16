@@ -53,6 +53,9 @@ async function main() {
     })
   }
 
+  // Delete existing loyalty points to avoid conflicts
+  await prisma.loyaltyPoint.deleteMany({})
+
   // Delete existing loyalty point settings to avoid conflicts
   await prisma.loyaltyPointSetting.deleteMany({})
 
@@ -143,8 +146,6 @@ async function main() {
     createdCustomers.push(createdCustomer)
   }
 
-  // Delete existing loyalty points to avoid conflicts
-  await prisma.loyaltyPoint.deleteMany({})
 
   // Seed loyalty points using the actual customer and setting IDs
   const loyaltyPoints = [
@@ -182,8 +183,6 @@ async function main() {
     username: 'admin@ljma.com',
     firstName: 'Super',
     lastName: 'Admin',
-    designation: 'Administrator',
-    userAccess: 'Full Access',
     accountType: 'Admin',
     password: 'admin123',
     permissions: JSON.stringify([

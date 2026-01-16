@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { setSession } from '@/lib/auth-server';
 
 export async function POST(request: Request) {
     try {
@@ -38,8 +39,8 @@ export async function POST(request: Request) {
         // Return user data (excluding password)
         const { password: _, ...userWithoutPassword } = user;
 
-        // In a real app, you'd set a session cookie here. 
-        // For this migration, we'll return the user object to be stored in context.
+        // Set secure session cookie
+        await setSession(userWithoutPassword);
 
         return NextResponse.json({
             user: userWithoutPassword,

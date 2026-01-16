@@ -32,7 +32,7 @@ export function Flowchart() {
     // Accounts Payable
     { id: "immediate-payment", content: "Immediate Payment Or Purchase", position: { top: 0, left: 400 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-payment") },
     { id: "enter-new-ap", content: "Enter New Accounts Payable", position: { top: 150, left: 400 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-ap") },
-    { id: "suppliers", content: "Suppliers", position: { top: 300, left: 350 }, color: "bg-gray-700", size: { width: 120, height: 80 }, disabled: true },
+    { id: "suppliers", content: "Suppliers", position: { top: 300, left: 350 }, color: "bg-gray-700", size: { width: 120, height: 80 }, onClick: () => handleNodeClick("supplier-list") },
     { id: "accounts-payable", content: "Accounts Payable", position: { top: 300, left: 510 }, color: "bg-gray-700", size: { width: 120, height: 80 }, disabled: true },
     { id: "pay-bill", content: "Pay A Bill Previously Entered", position: { top: 430, left: 400 }, color: "bg-gray-800", size: { width: 200, height: 100 }, disabled: true },
 

@@ -55,6 +55,10 @@ export default function AddUserPermissionDialog() {
     {
       title: 'User Management',
       items: ['Add/Edit user']
+    },
+    {
+      title: 'Reports',
+      items: ['Reports', 'Income Statement', 'Balance Sheet']
     }
   ];
 
@@ -131,12 +135,21 @@ export default function AddUserPermissionDialog() {
 
   const AUDITOR_PERMISSIONS = [
     'Dashboard',
-    'Adjustment History',
+    'Inventory',
+    'Stocks',
     'Stock movement',
-    'Customer Balances',
+    'Adjustment History',
     'Purchases',
-    'Void Purchase Order'
+    'Sales',
+    'Customers',
+    'Reports',
+    'Income Statement',
+    'Balance Sheet'
   ];
+
+  const MANAGER_PERMISSIONS = ALL_PERMISSIONS.filter(permission =>
+    !['Setup', 'Backup Database', 'Add/Edit user'].includes(permission)
+  );
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
@@ -145,7 +158,9 @@ export default function AddUserPermissionDialog() {
       if (field === 'accountType') {
         if (value === 'Auditor') {
           updates.permissions = AUDITOR_PERMISSIONS;
-        } else if (value === 'Admin') {
+        } else if (value === 'Manager') {
+          updates.permissions = MANAGER_PERMISSIONS;
+        } else if (value === 'Administrator') {
           updates.permissions = ALL_PERMISSIONS;
         }
       }
@@ -269,10 +284,9 @@ export default function AddUserPermissionDialog() {
                     <SelectValue placeholder="Select account type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
+                    <SelectItem value="Administrator">Administrator</SelectItem>
                     <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Employee">Employee</SelectItem>
-                    <SelectItem value="Cashier">Cashier</SelectItem>
+                    <SelectItem value="AdminStaff">Admin Staff</SelectItem>
                     <SelectItem value="Auditor">Auditor</SelectItem>
                   </SelectContent>
                 </Select>

@@ -14,7 +14,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import {
     Popover,
     PopoverContent,
@@ -23,30 +22,90 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, HardDrive, Clock, ShieldCheck, Download, FileArchive, Activity, AlertCircle, CheckCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Calendar as CalendarIcon, HardDrive, Clock, ShieldCheck, Download, FileArchive, Activity, AlertCircle, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { useToast } from "@/hooks/use-toast"; // Assuming hooks path, will adjust if needed
+
+interface BackupJob {
+    id: string;
+    status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+    fileName?: string;
+    fileSize?: string;
+    createdAt: string;
+    completedAt?: string;
+    log?: string;
+}
 
 export default function BackupSchedulerDialog() {
     const { openDialogs, closeDialog } = useDialog();
+    const { toast } = useToast();
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [time, setTime] = useState("00:00");
     const [frequency, setFrequency] = useState("week");
     const [isAutoBackupEnabled, setIsAutoBackupEnabled] = useState(false);
 
+    const [jobs, setJobs] = useState<BackupJob[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isRunning, setIsRunning] = useState(false);
+
+    const fetchJobs = useCallback(async () => {
+        try {
+            const res = await fetch('/api/backup');
+            if (res.ok) {
+                const data = await res.json();
+                setJobs(data);
+                // Check if any job is running
+                const running = data.some((j: BackupJob) => j.status === 'RUNNING' || j.status === 'PENDING');
+                setIsRunning(running);
+            }
+        } catch (error) {
+            console.error('Failed to fetch jobs', error);
+        }
+    }, []);
+
     useEffect(() => {
-        if (openDialogs["backup-scheduler"]) console.log("Backup Scheduler Mounted");
-    }, [openDialogs]);
+        if (openDialogs["backup-scheduler"]) {
+            fetchJobs();
+            const interval = setInterval(fetchJobs, 3000); // Poll every 3s
+            return () => clearInterval(interval);
+        }
+    }, [openDialogs, fetchJobs]);
+
+    const handleRunNow = async () => {
+        if (isRunning) return;
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/backup', {
+                method: 'POST',
+            });
+            if (res.ok) {
+                toast({ title: "Backup Initiated", description: "The backup process has started in the background." });
+                fetchJobs();
+            } else {
+                const err = await res.json();
+                toast({ title: "Error", description: err.error || "Failed to start backup", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Error", description: "Network error", variant: "destructive" });
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleDownload = (id: string, fileName: string) => {
+        window.open(`/api/backup/download/${id}`, '_blank');
+    }
 
     const handleSave = () => {
+        // TODO: Implement schedule saving API
+        setIsAutoBackupEnabled(isAutoBackupEnabled); // Mock save
+        toast({ title: "Settings Saved", description: "Backup schedule updated." });
         closeDialog("backup-scheduler" as any);
     };
 
-    const handleRunNow = () => {
-        alert("Manual backup process started (Mock).");
-    }
+    const latestSuccess = jobs.find(j => j.status === 'COMPLETED');
 
     return (
         <Dialog
@@ -83,8 +142,8 @@ export default function BackupSchedulerDialog() {
                                             <Activity className="w-4 h-4 text-primary" />
                                             System Status
                                         </CardTitle>
-                                        <Badge variant={isAutoBackupEnabled ? "default" : "secondary"}>
-                                            {isAutoBackupEnabled ? "Active" : "Idle"}
+                                        <Badge variant={isRunning ? "default" : "secondary"} className={cn(isRunning && "animate-pulse bg-blue-500")}>
+                                            {isRunning ? "Backup in Progress..." : "Ready"}
                                         </Badge>
                                     </div>
                                 </CardHeader>
@@ -92,18 +151,22 @@ export default function BackupSchedulerDialog() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-muted/50 p-3 rounded-lg border">
                                             <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total Backups</span>
-                                            <div className="text-2xl font-bold mt-1">12</div>
+                                            <div className="text-2xl font-bold mt-1">{jobs.filter(j => j.status === 'COMPLETED').length}</div>
                                         </div>
                                         <div className="bg-muted/50 p-3 rounded-lg border">
-                                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Storage Used</span>
-                                            <div className="text-2xl font-bold mt-1">542 MB</div>
+                                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Latest Size</span>
+                                            <div className="text-2xl font-bold mt-1">{latestSuccess?.fileSize || '0 MB'}</div>
                                         </div>
                                         <div className="col-span-2 bg-muted/50 p-3 rounded-lg border flex items-center justify-between">
                                             <div>
                                                 <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold block">Last Successful Backup</span>
-                                                <div className="text-sm font-medium mt-0.5">Jan 09, 2026 • 10:30 AM</div>
+                                                <div className="text-sm font-medium mt-0.5">
+                                                    {latestSuccess
+                                                        ? format(new Date(latestSuccess.createdAt), "MMM dd, yyyy • h:mm a")
+                                                        : "No backups yet"}
+                                                </div>
                                             </div>
-                                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                            {latestSuccess && <CheckCircle2 className="w-5 h-5 text-green-500" />}
                                         </div>
                                     </div>
                                 </CardContent>
@@ -192,10 +255,11 @@ export default function BackupSchedulerDialog() {
                             <Button
                                 className="w-full h-11"
                                 onClick={handleRunNow}
+                                disabled={isLoading || isRunning}
                             >
                                 <div className="flex items-center justify-center gap-2">
-                                    <ShieldCheck className="w-4 h-4" />
-                                    Run Immediate Backup
+                                    {(isLoading || isRunning) ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                                    {isRunning ? "Backup Running..." : "Run Immediate Backup"}
                                 </div>
                             </Button>
                         </div>
@@ -213,29 +277,36 @@ export default function BackupSchedulerDialog() {
                                 </CardHeader>
                                 <div className="flex-1 overflow-y-auto max-h-[400px] p-2">
                                     <div className="space-y-1">
-                                        {[
-                                            { name: "backup_v2.4_final.sql", date: "Today, 10:30 AM", size: "45.2 MB", type: "Full" },
-                                            { name: "backup_v2.3_week_02.sql", date: "Jan 03, 9:00 AM", size: "44.8 MB", type: "Scheduled" },
-                                            { name: "backup_v2.3_week_01.sql", date: "Dec 27, 9:00 AM", size: "43.5 MB", type: "Scheduled" },
-                                            { name: "manual_pre_update.sql", date: "Dec 24, 2:15 PM", size: "42.1 MB", type: "Manual" },
-                                            { name: "backup_v2.2_week_52.sql", date: "Dec 20, 9:00 AM", size: "41.8 MB", type: "Scheduled" },
-                                            { name: "backup_v2.2_week_51.sql", date: "Dec 13, 9:00 AM", size: "41.6 MB", type: "Scheduled" },
-                                        ].map((file, i) => (
-                                            <div key={i} className="group flex items-center justify-between p-3 rounded-md hover:bg-muted/50 transition-all border border-transparent hover:border-muted cursor-default">
+                                        {jobs.length === 0 && (
+                                            <div className="text-center p-4 text-muted-foreground text-sm">No backups found.</div>
+                                        )}
+                                        {jobs.map((job) => (
+                                            <div key={job.id} className="group flex items-center justify-between p-3 rounded-md hover:bg-muted/50 transition-all border border-transparent hover:border-muted cursor-default">
                                                 <div className="flex items-center gap-3 overflow-hidden">
-                                                    <div className={cn("w-2 h-2 rounded-full flex-shrink-0", file.type === 'Full' ? "bg-purple-500" : file.type === 'Manual' ? "bg-blue-500" : "bg-slate-400")} />
+                                                    <div className={cn(
+                                                        "w-2 h-2 rounded-full flex-shrink-0",
+                                                        job.status === 'COMPLETED' ? "bg-green-500" :
+                                                            job.status === 'FAILED' ? "bg-red-500" :
+                                                                "bg-blue-500 animate-pulse"
+                                                    )} />
                                                     <div className="min-w-0">
-                                                        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{file.name}</p>
+                                                        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                                                            {job.fileName || `Backup ${job.status}`}
+                                                        </p>
                                                         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                                                            <span>{file.date}</span>
+                                                            <span>{format(new Date(job.createdAt), "MMM dd, h:mm a")}</span>
                                                             <span className="w-0.5 h-0.5 bg-muted-foreground/50 rounded-full" />
-                                                            <span>{file.size}</span>
+                                                            <span>{job.fileSize || '-'}</span>
+                                                            {job.status === 'FAILED' && <span className="text-red-500">({job.log})</span>}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <Button variant="ghost" size="icon" className="w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => alert(`Downloading...`)}>
-                                                    <Download className="w-4 h-4 text-muted-foreground hover:text-primary" />
-                                                </Button>
+                                                {job.status === 'COMPLETED' && (
+                                                    <Button variant="ghost" size="icon" className="w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDownload(job.id, job.fileName!)}>
+                                                        <Download className="w-4 h-4 text-muted-foreground hover:text-primary" />
+                                                    </Button>
+                                                )}
+                                                {job.status === 'FAILED' && <XCircle className="w-4 h-4 text-red-500" />}
                                             </div>
                                         ))}
                                     </div>

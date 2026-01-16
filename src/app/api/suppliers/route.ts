@@ -17,7 +17,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, contactPerson, email, phone, address, paymentTerms } = body;
+    const {
+      name, contactPerson, contactFirstName, email, phone,
+      phoneAlternative, fax, address, paymentTerms,
+      paymentTermsValue, vatInfo, isTaxExempt, additionalInfo
+    } = body;
 
     if (!name || !name.trim()) {
       return NextResponse.json({ error: 'Supplier name is required' }, { status: 400 });
@@ -27,10 +31,17 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         contactPerson: contactPerson?.trim() || null,
+        contactFirstName: contactFirstName?.trim() || null,
         email: email?.trim() || null,
         phone: phone?.trim() || null,
+        phoneAlternative: phoneAlternative?.trim() || null,
+        fax: fax?.trim() || null,
         address: address?.trim() || null,
         paymentTerms: paymentTerms?.trim() || null,
+        paymentTermsValue: paymentTermsValue?.trim() || null,
+        vatInfo: vatInfo?.trim() || null,
+        isTaxExempt: Boolean(isTaxExempt),
+        additionalInfo: additionalInfo?.trim() || null,
       },
     });
 
@@ -47,7 +58,11 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, name, contactPerson, email, phone, address, paymentTerms, isActive } = body;
+    const {
+      id, name, contactPerson, contactFirstName, email, phone,
+      phoneAlternative, fax, address, paymentTerms,
+      paymentTermsValue, vatInfo, isTaxExempt, additionalInfo, isActive
+    } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Supplier ID is required' }, { status: 400 });
@@ -59,27 +74,20 @@ export async function PUT(request: NextRequest) {
 
     const updateData: any = {
       name: name.trim(),
+      isTaxExempt: isTaxExempt !== undefined ? Boolean(isTaxExempt) : undefined,
     };
 
-    if (contactPerson !== undefined) {
-      updateData.contactPerson = contactPerson?.trim() || null;
-    }
+    const optionalFields = [
+      'contactPerson', 'contactFirstName', 'email', 'phone',
+      'phoneAlternative', 'fax', 'address', 'paymentTerms',
+      'paymentTermsValue', 'vatInfo', 'additionalInfo'
+    ];
 
-    if (email !== undefined) {
-      updateData.email = email?.trim() || null;
-    }
-
-    if (phone !== undefined) {
-      updateData.phone = phone?.trim() || null;
-    }
-
-    if (address !== undefined) {
-      updateData.address = address?.trim() || null;
-    }
-
-    if (paymentTerms !== undefined) {
-      updateData.paymentTerms = paymentTerms?.trim() || null;
-    }
+    optionalFields.forEach(field => {
+      if (body[field] !== undefined) {
+        updateData[field] = body[field]?.trim() || null;
+      }
+    });
 
     if (isActive !== undefined) {
       updateData.isActive = Boolean(isActive);
