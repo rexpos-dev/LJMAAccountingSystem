@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -23,11 +23,35 @@ export default function AddSalesUserDialog() {
   const [spId, setSpId] = useState('');
   const [username, setUsername] = useState('');
   const [completeName, setCompleteName] = useState('');
+  const [isLoadingId, setIsLoadingId] = useState(false);
+
+  const isOpen = openDialogs['add-sales-user'];
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchNextId = async () => {
+        setIsLoadingId(true);
+        try {
+          const response = await fetch('/api/sales-users?action=next-id');
+          if (response.ok) {
+            const data = await response.json();
+            setSpId(data.nextId);
+          }
+        } catch (error) {
+          console.error('Failed to fetch next SP ID', error);
+        } finally {
+          setIsLoadingId(false);
+        }
+      };
+
+      fetchNextId();
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     if (createSalesUser.isPending) return;
     closeDialog('add-sales-user');
-    setSpId('');
+    setSpId(''); // Will be reset on next open
     setUsername('');
     setCompleteName('');
   };
@@ -65,7 +89,7 @@ export default function AddSalesUserDialog() {
   };
 
   return (
-    <Dialog open={openDialogs['add-sales-user']} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add Sales User</DialogTitle>
@@ -73,12 +97,13 @@ export default function AddSalesUserDialog() {
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="sp-id">SP ID</Label>
+            <Label htmlFor="sp-id">SP ID {isLoadingId && <span className="text-xs text-muted-foreground">(Generating...)</span>}</Label>
             <Input
               id="sp-id"
               value={spId}
-              onChange={(e) => setSpId(e.target.value)}
-              placeholder="Enter salesperson ID"
+              readOnly
+              disabled
+              className="bg-muted font-mono"
             />
           </div>
 
@@ -107,7 +132,7 @@ export default function AddSalesUserDialog() {
           <Button variant="outline" onClick={handleClose} disabled={createSalesUser.isPending}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={createSalesUser.isPending}>
+          <Button onClick={handleSave} disabled={createSalesUser.isPending || isLoadingId}>
             {createSalesUser.isPending ? 'Saving...' : 'Save'}
           </Button>
         </DialogFooter>

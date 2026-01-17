@@ -5,8 +5,11 @@ import { useAccounts } from "@/hooks/use-accounts";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { useDialog } from "@/components/layout/dialog-provider";
+
 export function PendingInvoicesWidget() {
     const { data: accounts, isLoading } = useAccounts();
+    const { openDialog } = useDialog();
 
     const data = useMemo(() => {
         if (!accounts) return { count: 0, total: 0 };
@@ -53,7 +56,12 @@ export function PendingInvoicesWidget() {
                 <div className="text-xs text-muted-foreground mt-1 text-right font-medium">
                     Total Receivables
                 </div>
-                {/* <div className="text-xs text-blue-500 mt-2 cursor-pointer hover:underline text-right">View All</div> */}
+                <div
+                    className="text-xs text-blue-500 mt-2 cursor-pointer hover:underline text-right"
+                    onClick={() => openDialog('invoice-list')}
+                >
+                    View All
+                </div>
             </CardContent>
         </Card>
     );
