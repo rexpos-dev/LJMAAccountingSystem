@@ -31,7 +31,6 @@ import ReconcileAccountDialog from '@/components/banking/reconcile-account-dialo
 import AccountTransferDialog from '@/components/banking/account-transfer-dialog';
 import IncomeStatementDialog from '@/components/reports/income-statement-dialog';
 import BalanceSheetDialog from '@/components/reports/balance-sheet-dialog';
-import EnterAccountsPayableDialog from '@/components/purchases/enter-accounts-payable-dialog';
 import CreateInvoiceDialog from '@/components/todo/create-invoice-dialog';
 import AddSalesUserDialog from '@/components/configuration/add-sales-user-dialog';
 import EditSalesUserDialog from '@/components/configuration/edit-sales-user-dialog';
@@ -44,6 +43,7 @@ import UserPermissionsDialog from '@/components/configuration/user-permissions-d
 import BusinessSetupDialog from '@/components/configuration/business-setup-dialog';
 
 import EnterCashSaleDialog from '@/components/transactions/enter-cash-sale-dialog';
+import { EnterPaymentsOfAccountsPayableDialog } from '@/components/transactions/enter-payments-of-accounts-payable-dialog';
 import CreatePurchaseOrderDialog from '@/components/purchases/create-purchase-order-dialog';
 import SupplierListDialog from '@/components/purchases/supplier-list-dialog';
 import AddSupplierDialog from '@/components/purchases/add-supplier-dialog';
@@ -51,6 +51,11 @@ import AddSupplierDialog from '@/components/purchases/add-supplier-dialog';
 import PurchaseOrderListDialog from '@/components/purchases/purchase-order-list-dialog';
 import ViewPurchaseOrderDialog from '@/components/purchases/view-purchase-order-dialog';
 import InvoiceListDialog from '@/components/invoices/invoice-list-dialog';
+
+import AccountsPayableListDialog from '@/components/purchases/accounts-payable-list-dialog';
+import { EnterAccountsPayableDialog } from '@/components/purchases/enter-accounts-payable-dialog';
+
+/* ... */
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -73,7 +78,6 @@ const dialogComponents = {
   'account-transfer': AccountTransferDialog,
   'income-statement': IncomeStatementDialog,
   'balance-sheet': BalanceSheetDialog,
-  'enter-ap': EnterAccountsPayableDialog,
   'create-invoice': CreateInvoiceDialog,
   'enter-cash-sale': EnterCashSaleDialog,
   'add-sales-user': AddSalesUserDialog,
@@ -91,6 +95,9 @@ const dialogComponents = {
   'purchase-order-list': PurchaseOrderListDialog,
   'view-purchase-order': ViewPurchaseOrderDialog,
   'invoice-list': InvoiceListDialog,
+  'accounts-payable': AccountsPayableListDialog,
+  'enter-payments-of-accounts-payable': EnterPaymentsOfAccountsPayableDialog,
+  'enter-ap': EnterAccountsPayableDialog,
 };
 
 type DialogId = keyof typeof dialogComponents;

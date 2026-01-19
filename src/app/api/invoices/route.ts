@@ -116,14 +116,7 @@ export async function GET(req: Request) {
             include: {
                 customer: {
                     select: {
-                        name: true,
                         customerName: true
-                    }
-                },
-                salespersonUser: {
-                    select: {
-                        username: true,
-                        name: true
                     }
                 },
                 items: true
@@ -137,7 +130,7 @@ export async function GET(req: Request) {
         const formattedInvoices = invoices.map(inv => ({
             ...inv,
             customerName: inv.customer?.customerName || inv.customer?.name || 'Unknown',
-            salespersonName: inv.salespersonUser?.name || inv.salespersonUser?.username || inv.salesperson || '',
+            salespersonName: inv.salesperson || '',
         }));
 
         return NextResponse.json(formattedInvoices);

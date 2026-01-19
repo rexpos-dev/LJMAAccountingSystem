@@ -45,7 +45,9 @@ import {
     FileText,
     Banknote,
     Phone,
-    Copy
+    Copy,
+    LogOut,
+    RefreshCw
 } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { cn } from '@/lib/utils';
@@ -159,6 +161,11 @@ export default function InvoiceListDialog() {
         </Button>
     );
 
+    const handleRefresh = () => {
+        fetchInvoices();
+        fetchCustomers();
+    };
+
     const handleNew = () => {
         setDialogData('create-invoice', { mode: 'create' });
         openDialog('create-invoice');
@@ -226,27 +233,38 @@ export default function InvoiceListDialog() {
     return (
         <Dialog open={openDialogs['invoice-list']} onOpenChange={() => closeDialog('invoice-list')}>
             <DialogContent className="max-w-[1200px] h-[80vh] flex flex-col p-0 gap-0 sm:rounded-lg overflow-hidden">
-                <DialogHeader className="px-4 py-2 border-b bg-background z-10">
+                <DialogHeader className="px-4 py-2 border-b bg-background z-10 flex flex-row items-center justify-between space-y-0">
                     <DialogTitle className="flex items-center gap-2">
                         <FileText className="h-5 w-5" />
                         Invoices
                     </DialogTitle>
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => closeDialog('invoice-list')} className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full">
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </DialogHeader>
 
                 {/* Toolbar */}
                 <div className="flex items-center px-2 py-1 border-b gap-1 bg-background overflow-x-auto">
-                    <ToolbarButton icon={Plus} label="New" onClick={handleNew} className="text-green-600 hover:text-green-700" />
+                    <ToolbarButton icon={Plus} label="New" onClick={handleNew} />
                     <ToolbarButton icon={Copy} label="Copy" disabled={!selectedInvoiceId} />
-                    <ToolbarButton icon={X} label="Delete" onClick={handleDelete} disabled={!selectedInvoiceId} className="text-red-600 hover:text-red-700" />
-                    <ToolbarButton icon={Pencil} label="Edit" onClick={() => handleEdit()} disabled={!selectedInvoiceId} className="text-yellow-600 hover:text-yellow-700" />
+                    <ToolbarButton icon={X} label="Delete" onClick={handleDelete} disabled={!selectedInvoiceId} />
+                    <ToolbarButton icon={Pencil} label="Edit" onClick={() => handleEdit()} disabled={!selectedInvoiceId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Printer} label="Print" disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Mail} label="Email" disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Phone} label="Fax" disabled={!selectedInvoiceId} />
                     <div className="w-px h-8 bg-border mx-1" />
-                    <ToolbarButton icon={Save} label="Save" className="text-blue-600 hover:text-blue-700" />
+                    <ToolbarButton icon={Save} label="Save" />
                     <ToolbarButton icon={Banknote} label="Export to EDI" />
+
+                    <ToolbarButton icon={RefreshCw} label="Refresh" onClick={handleRefresh} />
+
+                    <div className="ml-auto flex items-center">
+                        <ToolbarButton icon={HelpCircle} label="Help" />
+                    </div>
                 </div>
 
                 {/* Filters */}

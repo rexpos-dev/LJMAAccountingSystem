@@ -40,15 +40,15 @@ export function Flowchart() {
     },
     { id: "create-new-invoice", content: "Create New Invoice", position: { top: 150, left: 50 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("create-invoice") },
     { id: "invoices", content: "Invoices", position: { top: 300, left: 0 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("invoice-list") },
-    { id: "customers", content: "Customers", position: { top: 300, left: 175 }, color: "bg-gray-700", size: { width: 150, height: 80 } },
-    { id: "apply-customer-payment", content: "Apply Customer's Payment", position: { top: 430, left: 50 }, color: "bg-gray-800", size: { width: 200, height: 100 }, disabled: true },
+    { id: "customers", content: "Customers", position: { top: 300, left: 175 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("customer-list") },
+    { id: "apply-customer-payment", content: "Apply Customer's Payment", position: { top: 430, left: 50 }, color: "bg-gray-800", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("customer-payment") },
 
     // Accounts Payable
     { id: "immediate-payment", content: "Immediate Payment Or Purchase", position: { top: 0, left: 400 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-payment") },
     { id: "enter-new-ap", content: "Enter New Accounts Payable", position: { top: 150, left: 400 }, color: "bg-gray-600", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-ap") },
     { id: "suppliers", content: "Suppliers", position: { top: 300, left: 350 }, color: "bg-gray-700", size: { width: 120, height: 80 }, onClick: () => handleNodeClick("supplier-list") },
-    { id: "accounts-payable", content: "Accounts Payable", position: { top: 300, left: 510 }, color: "bg-gray-700", size: { width: 120, height: 80 }, disabled: true },
-    { id: "pay-bill", content: "Pay A Bill Previously Entered", position: { top: 430, left: 400 }, color: "bg-gray-800", size: { width: 200, height: 100 }, disabled: true },
+    { id: "accounts-payable", content: "Accounts Payable", position: { top: 300, left: 510 }, color: "bg-gray-700", size: { width: 120, height: 80 }, onClick: () => handleNodeClick("accounts-payable") },
+    { id: "pay-bill", content: "Pay A Bill Previously Entered", position: { top: 430, left: 400 }, color: "bg-gray-800", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("enter-payments-of-accounts-payable") },
 
     // Reports
     { id: "income-statement", content: "Income Statement", position: { top: 0, left: 700 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("income-statement") },
