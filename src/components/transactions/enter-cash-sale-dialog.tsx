@@ -8,6 +8,18 @@ import {
     DialogFooter,
     DialogClose,
 } from '@/components/ui/dialog';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from "@/lib/utils";
 import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,11 +40,11 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Check, ChevronsUpDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { mockAccounts } from '@/app/configuration/chart-of-accounts/mock-accounts';
 import { useExternalProducts } from '@/hooks/use-products';
+import { useBankAccounts } from '@/hooks/use-accounts';
 
 interface SalesItemRow {
     id: string;
@@ -42,6 +54,85 @@ interface SalesItemRow {
     unitPrice: number;
     tax: string;
     total: number;
+}
+
+interface ItemComboboxProps {
+    value: string;
+    products: any[];
+    onChange: (value: string) => void;
+}
+
+function ItemCombobox({ value, products, onChange }: ItemComboboxProps) {
+    const [open, setOpen] = useState(false);
+    const [search, setSearch] = useState("");
+
+    const filteredProducts = products.filter((product) =>
+        product.sku.toLowerCase().includes(search.toLowerCase()) ||
+        product.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between h-8 px-2 font-normal"
+                >
+                    {value
+                        ? products.find((product) => product.sku === value)?.sku || value
+                        : <span className="text-muted-foreground opacity-50">Select item...</span>}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-0" align="start">
+                <div className="flex flex-col">
+                    <div className="flex items-center border-b px-3">
+                        <Input
+                            placeholder="Search items..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 border-0 focus-visible:ring-0 px-0"
+                        />
+                    </div>
+                    <ScrollArea className="h-72">
+                        <div className="p-1">
+                            {filteredProducts.length === 0 ? (
+                                <div className="py-6 text-center text-sm">No item found.</div>
+                            ) : (
+                                filteredProducts.map((product) => (
+                                    <div
+                                        key={product.sku}
+                                        className={cn(
+                                            "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                                            value === product.sku ? "bg-accent" : ""
+                                        )}
+                                        onClick={() => {
+                                            onChange(product.sku);
+                                            setOpen(false);
+                                            setSearch("");
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                value === product.sku ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{product.sku}</span>
+                                            <span className="text-xs text-muted-foreground text-nowrap truncate max-w-[200px]">{product.name}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </ScrollArea>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
 }
 
 export default function EnterCashSaleDialog() {
@@ -54,6 +145,9 @@ export default function EnterCashSaleDialog() {
 
     // Fetch products (using first page, reasonably large size to get a list)
     const { externalProducts } = useExternalProducts(1, 100, '', '', '');
+
+    // Fetch bank accounts for deposit
+    const { accounts: bankAccounts } = useBankAccounts();
 
     // Initialize with one empty row if empty
     useEffect(() => {
@@ -79,7 +173,24 @@ export default function EnterCashSaleDialog() {
     };
 
     const removeItemRow = (id: string) => {
-        if (items.length <= 1) return;
+        if (items.length === 1) {
+            // If it's the last item, just clear it instead of removing
+            setItems(prev => prev.map(item => {
+                if (item.id === id) {
+                    return {
+                        ...item,
+                        itemId: '',
+                        description: '',
+                        unitPrice: 0,
+                        tax: 'None',
+                        total: 0,
+                        qty: 1
+                    };
+                }
+                return item;
+            }));
+            return;
+        }
         setItems(prev => prev.filter(item => item.id !== id));
     };
 
@@ -124,7 +235,7 @@ export default function EnterCashSaleDialog() {
     return (
         <Dialog open={openDialogs['enter-cash-sale']} onOpenChange={() => closeDialog('enter-cash-sale')}>
             <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0">
-                <DialogHeader className="p-4 border-b">
+                <DialogHeader className="px-6 py-4 border-b">
                     <DialogTitle>Non-Invoiced Cash Sale</DialogTitle>
                 </DialogHeader>
 
@@ -156,21 +267,11 @@ export default function EnterCashSaleDialog() {
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <Select
+                                            <ItemCombobox
                                                 value={item.itemId}
-                                                onValueChange={(val) => handleItemChange(item.id, val)}
-                                            >
-                                                <SelectTrigger className="h-8">
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {externalProducts.map((p, idx) => (
-                                                        <SelectItem key={`${p.sku}-${idx}`} value={p.sku}>
-                                                            {p.sku}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                                products={externalProducts}
+                                                onChange={(val) => handleItemChange(item.id, val)}
+                                            />
                                         </TableCell>
                                         <TableCell>
                                             <div className="h-8 flex items-center px-3 border rounded-md bg-muted/20 truncate text-sm">
@@ -204,9 +305,8 @@ export default function EnterCashSaleDialog() {
 
                     {/* Middle Action Bar */}
                     <div className="px-4 pb-2 flex gap-2">
-                        <Button variant="secondary" size="sm" onClick={addItemRow} className="h-8 shadow-sm border bg-gradient-to-b from-white to-gray-50">Add Item</Button>
-                        <Button variant="secondary" size="sm" disabled className="h-8 shadow-sm border bg-gradient-to-b from-white to-gray-50">Remove Item</Button>
-                        <Button variant="secondary" size="sm" disabled className="h-8 shadow-sm border bg-gradient-to-b from-white to-gray-50">Add Discount...</Button>
+                        <Button variant="secondary" size="sm" onClick={addItemRow} className="h-8 shadow-sm border">Add Item</Button>
+                        <Button variant="secondary" size="sm" disabled className="h-8 shadow-sm border">Add Discount...</Button>
                     </div>
 
                     {/* Bottom Form Section */}
@@ -221,8 +321,8 @@ export default function EnterCashSaleDialog() {
                                             <SelectValue placeholder="Select Account" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {mockAccounts.filter(account => account.bank === 'Yes').map(account => (
-                                                <SelectItem key={(account as any).number} value={account.name}>
+                                            {bankAccounts.map(account => (
+                                                <SelectItem key={account.id} value={account.name}>
                                                     {account.name}
                                                 </SelectItem>
                                             ))}
@@ -283,14 +383,23 @@ export default function EnterCashSaleDialog() {
                     </div>
                 </div>
 
-                <DialogFooter className="p-4 border-t">
+                <DialogFooter className="px-6 py-4 border-t bg-muted/20">
                     <div className="flex gap-2 w-full justify-end">
                         <div className="flex rounded-md shadow-sm">
                             <Button className="rounded-r-none">Record Cash</Button>
-                            <Button variant="outline" size="icon" className="rounded-l-none border-l-0 w-8 px-0">
-                                <span className="sr-only">Open options</span>
-                                <svg width="10" height="10" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><path d="M4.93179 5.43179C4.75605 5.60753 4.75605 5.89245 4.93179 6.06819C5.10753 6.24392 5.39245 6.24392 5.56819 6.06819L7.49999 4.13638L9.43179 6.06819C9.60753 6.24392 9.89245 6.24392 10.0682 6.06819C10.2439 5.89245 10.2439 5.60753 10.0682 5.43179L7.81819 3.18179C7.73379 3.0974 7.61933 3.04999 7.49999 3.04999C7.38064 3.04999 7.26618 3.0974 7.18179 3.18179L4.93179 5.43179ZM10.0682 9.56819C10.2439 9.39245 10.2439 9.10753 10.0682 8.93179C9.89245 8.75606 9.60753 8.75606 9.43179 8.93179L7.49999 10.8636L5.56819 8.93179C5.39245 8.75606 5.10753 8.75606 4.93179 8.93179C4.75605 9.10753 4.75605 9.39245 4.93179 9.56819L7.18179 11.8182C7.26618 11.9026 7.38064 11.95 7.49999 11.95C7.61933 11.95 7.73379 11.9026 7.81819 11.8182L10.0682 9.56819Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="icon" className="rounded-l-none border-l-0 w-8 px-0">
+                                        <span className="sr-only">Open options</span>
+                                        <svg width="10" height="10" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><path d="M4.93179 5.43179C4.75605 5.60753 4.75605 5.89245 4.93179 6.06819C5.10753 6.24392 5.39245 6.24392 5.56819 6.06819L7.49999 4.13638L9.43179 6.06819C9.60753 6.24392 9.89245 6.24392 10.0682 6.06819C10.2439 5.89245 10.2439 5.60753 10.0682 5.43179L7.81819 3.18179C7.73379 3.0974 7.61933 3.04999 7.49999 3.04999C7.38064 3.04999 7.26618 3.0974 7.18179 3.18179L4.93179 5.43179ZM10.0682 9.56819C10.2439 9.39245 10.2439 9.10753 10.0682 8.93179C9.89245 8.75606 9.60753 8.75606 9.43179 8.93179L7.49999 10.8636L5.56819 8.93179C5.39245 8.75606 5.10753 8.75606 4.93179 8.93179C4.75605 9.10753 4.75605 9.39245 4.93179 9.56819L7.18179 11.8182C7.26618 11.9026 7.38064 11.95 7.49999 11.95C7.61933 11.95 7.73379 11.9026 7.81819 11.8182L10.0682 9.56819Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem disabled>Record Credit</DropdownMenuItem>
+                                    <DropdownMenuItem disabled>Record Invoice</DropdownMenuItem>
+                                    <DropdownMenuItem disabled>Record Check</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>

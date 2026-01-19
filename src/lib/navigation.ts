@@ -82,6 +82,7 @@ export const navItems: NavItem[] = [
     icon: ShoppingCart,
     permissions: ['Sales'],
     subItems: [
+      { title: "Invoices", href: "#", dialogId: "invoice-list" },
       { title: "Create New Invoice", href: "/todo/create-invoice", dialogId: "create-invoice", hideForRoles: ['Auditor'] },
       { title: "Inventory", href: "/sales/inventory", dialogId: "inventory", permissions: ['Inventory'] },
     ],

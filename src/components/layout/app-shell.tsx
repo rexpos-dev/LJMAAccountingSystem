@@ -59,8 +59,6 @@ import AddPointsDialog from "../customer/add-points-dialog";
 import { useBusinessProfile } from "@/hooks/use-business-profile";
 
 // Dynamically import pages (server components) on the client to avoid client->server import errors
-const CreateInvoicePage = dynamic(() => import('@/app/todo/create-invoice/page').then(m => m.default), { ssr: false });
-const EnterPaymentPage = dynamic(() => import('@/app/todo/enter-payment/page').then(m => m.default), { ssr: false });
 const ChartOfAccountsPage = dynamic(() => import('@/app/configuration/chart-of-accounts/page').then(m => m.default), { ssr: false });
 const EnterApPage = dynamic(() => import('@/app/purchases/enter-ap/page').then(m => m.default), { ssr: false });
 const ReconcileAccountPage = dynamic(() => import('@/app/banking/reconcile/page').then(m => m.default), { ssr: false });
@@ -299,8 +297,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               }
               return <div key={`child-${index}`}>{child}</div>;
             })}
-            {openDialogs['create-invoice'] && <CreateInvoicePage />}
-            {openDialogs['enter-payment'] && <EnterPaymentPage />}
 
             {openDialogs['new-account'] && <NewAccountDialog />}
             {openDialogs['enter-ap'] && <EnterApPage />}

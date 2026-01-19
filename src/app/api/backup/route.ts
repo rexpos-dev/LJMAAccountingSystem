@@ -15,8 +15,9 @@ export async function GET(request: NextRequest) {
         });
 
         return NextResponse.json(backups);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch backups' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Failed to fetch backups:', error);
+        return NextResponse.json({ error: 'Failed to fetch backups', details: error.message }, { status: 500 });
     }
 }
 

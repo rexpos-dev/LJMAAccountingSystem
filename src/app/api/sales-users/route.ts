@@ -1,8 +1,40 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const action = searchParams.get('action');
+
+        if (action === 'next-id') {
+            const lastUser = await prisma.salesUser.findFirst({
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+
+            if (!lastUser || !lastUser.uniqueId) {
+                return NextResponse.json({ nextId: 'SP-0001' });
+            }
+
+            // Extract number from SP-XXXX format
+            const currentId = lastUser.uniqueId;
+            const match = currentId.match(/(\d+)$/);
+
+            if (match) {
+                const number = parseInt(match[1], 10);
+                const nextNumber = number + 1;
+                // Pad with leading zeros to match length, default to 4 digits
+                const paddedNumber = nextNumber.toString().padStart(Math.max(match[1].length, 4), '0');
+                // Construct new ID using the same prefix
+                const prefix = currentId.replace(/\d+$/, '');
+                return NextResponse.json({ nextId: `${prefix}${paddedNumber}` });
+            }
+
+            // Fallback if format doesn't match
+            return NextResponse.json({ nextId: `${currentId}-1` });
+        }
+
         const salesUsers = await prisma.salesUser.findMany({
             orderBy: { createdAt: 'desc' },
         });

@@ -50,7 +50,7 @@ export default function AddUserPermissionDialog() {
     },
     {
       title: 'Sales Sub-items',
-      items: ['Customer List', 'Customer Balances', 'Customer Payment', 'Customer Loyalty Points', 'Loyalty Points Setting']
+      items: ['Customer List', 'Customer Balances', 'Customer Payment', 'Customer Loyalty Points', 'Loyalty Points Setting', 'Non-Invoiced Cash Sale']
     },
     {
       title: 'User Management',
@@ -148,7 +148,7 @@ export default function AddUserPermissionDialog() {
   ];
 
   const MANAGER_PERMISSIONS = ALL_PERMISSIONS.filter(permission =>
-    !['Setup', 'Backup Database', 'Add/Edit user'].includes(permission)
+    !['Setup', 'Backup Database', 'Add/Edit user', 'Non-Invoiced Cash Sale'].includes(permission)
   );
 
   const handleInputChange = (field: string, value: string) => {

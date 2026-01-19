@@ -59,9 +59,22 @@ export default function BackupSchedulerDialog() {
                 // Check if any job is running
                 const running = data.some((j: BackupJob) => j.status === 'RUNNING' || j.status === 'PENDING');
                 setIsRunning(running);
+            } else {
+                const err = await res.json();
+                console.error("Backup fetch failed:", err);
+                toast({
+                    title: "Error Loading Backups",
+                    description: err.details || err.error || "Failed to load backup data",
+                    variant: "destructive"
+                });
             }
         } catch (error) {
             console.error('Failed to fetch jobs', error);
+            toast({
+                title: "Connection Error",
+                description: "Could not connect to backup service",
+                variant: "destructive"
+            });
         }
     }, []);
 

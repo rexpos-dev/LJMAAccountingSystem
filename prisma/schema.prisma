@@ -87,6 +87,7 @@ model Customer {
   loyaltyCalculationMethod  String?        @default("automatic")
   loyaltyCardNumber         String?
   loyaltyPoints             LoyaltyPoint[]
+  invoices                  Invoice[]
   createdAt                 DateTime       @default(now())
   updatedAt                 DateTime       @updatedAt
 
@@ -137,6 +138,7 @@ model Product {
   updatedAt             DateTime @updatedAt
 
   purchaseOrderItems PurchaseOrderItem[]
+  invoiceItems       InvoiceItem[]
 
   @@map("product")
 }
@@ -340,4 +342,43 @@ model PurchaseOrderItem {
   updatedAt       DateTime      @updatedAt
 
   @@map("purchase_order_item")
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  invoiceNumber   String        @unique
+  customerId      String
+  customer        Customer      @relation(fields: [customerId], references: [id])
+  customerPONumber String?
+  date            DateTime
+  dueDate         DateTime?
+  terms           String?
+  salesperson     String?
+  depositAccount  String?
+  billingAddress  String?       @db.Text
+  shippingAddress String?       @db.Text
+  subtotal        Float         @default(0)
+  total           Float         @default(0)
+  status          String        @default("Pending") // Pending, Paid, Void
+  items           InvoiceItem[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("invoice")
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  description String
+  quantity    Float
+  unitPrice   Float
+  total       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("invoice_item")
 }

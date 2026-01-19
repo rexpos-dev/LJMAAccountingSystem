@@ -198,20 +198,22 @@ export default function SupplierListDialog() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[40%]">Supplier</TableHead>
-                                <TableHead className="w-[20%] text-right">Accounts Payable</TableHead>
-                                <TableHead className="w-[20%]">Due Date</TableHead>
-                                <TableHead className="w-[20%]">Phone</TableHead>
+                                <TableHead className="w-[25%]">Supplier</TableHead>
+                                <TableHead className="w-[15%] text-right">Accounts Payable</TableHead>
+                                <TableHead className="w-[15%]">Due Date</TableHead>
+                                <TableHead className="w-[15%]">Phone</TableHead>
+                                <TableHead className="w-[10%]">Markup</TableHead>
+                                <TableHead className="w-[20%]">Payment Terms</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">Loading suppliers...</TableCell>
+                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">Loading suppliers...</TableCell>
                                 </TableRow>
                             ) : suppliers.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">No suppliers found.</TableCell>
+                                    <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">No suppliers found.</TableCell>
                                 </TableRow>
                             ) : (
                                 suppliers.map((supplier) => (
@@ -227,6 +229,17 @@ export default function SupplierListDialog() {
                                         <TableCell className="text-right">₱0.00</TableCell>
                                         <TableCell></TableCell>
                                         <TableCell>{supplier.phone}</TableCell>
+                                        <TableCell>
+                                            {(() => {
+                                                const match = supplier.additionalInfo?.match(/Markup: (\d+)%/);
+                                                return match ? `${match[1]}%` : '0%';
+                                            })()}
+                                        </TableCell>
+                                        <TableCell>
+                                            {supplier.paymentTerms === 'Pay in Days'
+                                                ? `${supplier.paymentTermsValue} Days`
+                                                : supplier.paymentTerms || '-'}
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             )}
