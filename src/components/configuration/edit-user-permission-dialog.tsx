@@ -38,6 +38,7 @@ export default function EditUserPermissionDialog() {
     lastName: '',
     contactNo: '',
     accountType: '',
+    formPermissions: '',
     password: '',
     confirmPassword: '',
     permissions: [] as string[],
@@ -73,6 +74,24 @@ export default function EditUserPermissionDialog() {
     {
       title: 'Reports',
       items: ['Reports', 'Income Statement', 'Balance Sheet']
+    },
+    {
+      title: 'Forms',
+      items: [
+        "ACCOUNT DEDUCTION REQUEST FORM",
+        "CASH ADVANCE REQUEST FOR FOR CONTRACTOR",
+        "CASH FUND REQUEST FORM",
+        "CONTRACTOR CASH ADVANCE MONITORING FILE",
+        "DISBURSEMENT",
+        "HOUSE CHARGE REQUEST FORM",
+        "JOB ORDER REQUEST FORM",
+        "JOB ORDER REQUEST FORM INTERNAL",
+        "MATERNAL REQUEST FORM",
+        "PURCHASE ORDER REQUEST (EXTERNAL)",
+        "PURCHASE ORDER REQUEST (SUPERMARKET)",
+        "REQUEST AND AUTHORIZATION OF CASH ADVANCES",
+        "STORE USE REQUEST FORM"
+      ]
     }
   ];
 
@@ -85,6 +104,7 @@ export default function EditUserPermissionDialog() {
         lastName: userData.lastName || '',
         contactNo: userData.contactNo || '',
         accountType: userData.accountType || '',
+        formPermissions: (userData as any).formPermissions || '',
         password: '',
         confirmPassword: '',
         permissions: userData.permissions ? JSON.parse(userData.permissions) : [],
@@ -170,6 +190,7 @@ export default function EditUserPermissionDialog() {
       lastName: '',
       contactNo: '',
       accountType: '',
+      formPermissions: '',
       password: '',
       confirmPassword: '',
       permissions: [],
@@ -295,7 +316,7 @@ export default function EditUserPermissionDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="accountType">Account Type</Label>
                 <Select value={formData.accountType} onValueChange={(value) => handleInputChange('accountType', value)}>
@@ -308,6 +329,20 @@ export default function EditUserPermissionDialog() {
                     <SelectItem value="AdminStaff">Admin Staff</SelectItem>
 
                     <SelectItem value="Auditor">Auditor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="formPermissions">Form Permissions</Label>
+                <Select value={formData.formPermissions} onValueChange={(value) => handleInputChange('formPermissions', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select form permissions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Verifier">Verifier</SelectItem>
+                    <SelectItem value="Approver">Approver</SelectItem>
+                    <SelectItem value="Processor">Processor</SelectItem>
+                    <SelectItem value="Released/Received">Released/Received</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -1,40 +1,56 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpIcon, ArrowDownIcon, DollarSign, Wallet, CreditCard, Activity } from "lucide-react";
+import { ArrowUpIcon, ArrowDownIcon, DollarSign, Wallet, CreditCard, Activity, PhilippinePesoIcon } from "lucide-react";
 import { useAccounts } from "@/hooks/use-accounts";
+import { useTransactions } from "@/hooks/use-transactions";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatsRow() {
-    const { data: accounts, isLoading } = useAccounts();
+    const { data: accounts, isLoading: isAccountsLoading } = useAccounts();
+    const { transactions, isLoading: isTransactionsLoading } = useTransactions();
+    const isLoading = isAccountsLoading || isTransactionsLoading;
 
     const stats = useMemo(() => {
-        if (!accounts) return null;
+        if (!accounts || !transactions) return null;
 
-        const calculateTotal = (type: string) =>
-            accounts
-                .filter(acc => acc.type === type)
-                .reduce((sum, acc) => sum + (acc.balance || 0), 0);
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        let receivables = 0;
+        let payables = 0;
 
-        const totalIncome = calculateTotal('Income');
-        const totalExpenses = calculateTotal('Expense');
+        transactions.forEach((t) => {
+            // Find linked account
+            const account = accounts.find(acc => acc.accnt_no?.toString() === t.accountNumber?.toString());
+            if (!account) return;
+
+            const debit = t.debit || 0;
+            const credit = t.credit || 0;
+
+            // Income (Credit Income increases Income)
+            if (account.type === 'Income') {
+                totalIncome += (credit - debit);
+            }
+            // Expense (Debit increases Expense)
+            else if (account.type === 'Expense') {
+                totalExpenses += (debit - credit);
+            }
+            // Assets (specifically Receivables) - Debit increases
+            else if (account.type === 'Asset') {
+                if (account.name.toLowerCase().includes('receivable')) {
+                    receivables += (debit - credit);
+                }
+            }
+            // Liabilities (specifically Payables) - Credit increases
+            else if (account.type === 'Liability') {
+                if (account.name.toLowerCase().includes('payable')) {
+                    payables += (credit - debit);
+                }
+            }
+        });
+
         const netProfit = totalIncome - totalExpenses;
-
-        // Robust matching for COA variations
-        const receivables = accounts
-            .filter(acc =>
-                (acc.type === 'Asset' && acc.name.toLowerCase().includes('receivable')) ||
-                acc.name.toLowerCase() === 'accounts receivable'
-            )
-            .reduce((sum, acc) => sum + (acc.balance || 0), 0);
-
-        const payables = accounts
-            .filter(acc =>
-                (acc.type === 'Liability' && acc.name.toLowerCase().includes('payable')) ||
-                acc.name.toLowerCase() === 'accounts payable'
-            )
-            .reduce((sum, acc) => sum + (acc.balance || 0), 0);
 
         return {
             totalIncome,
@@ -43,7 +59,7 @@ export function StatsRow() {
             receivables,
             payables
         };
-    }, [accounts]);
+    }, [accounts, transactions]);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-PH', {
@@ -68,7 +84,7 @@ export function StatsRow() {
         {
             title: "Total Income",
             value: stats.totalIncome,
-            icon: DollarSign,
+            icon: PhilippinePesoIcon,
             color: "text-emerald-500",
             trend: "+12% This Month", // Mock trend for now
             trendColor: "text-emerald-500",

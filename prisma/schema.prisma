@@ -139,6 +139,9 @@ model Product {
 
   purchaseOrderItems PurchaseOrderItem[]
   invoiceItems       InvoiceItem[]
+  history            ProductHistory[]
+  inventoryTransactions InventoryTransaction[]
+  requestItems       RequestItem[]
 
   @@map("product")
 }
@@ -338,6 +341,23 @@ model PurchaseOrderItem {
   unitPrice       Float
   tax             Float?
   total           Float
+  
+  // Additional fields for bulk upload
+  category            String?
+  sku                 String?
+  barcode             String?
+  buyingUom           String?
+  qtyPerCase          Int?
+  offtake             Int?
+  orderQty            Int?
+  pieces              Int?
+  costPricePerCase    Float?
+  costPricePerPiece   Float?
+  discount1           Float?
+  discount2           Float?
+  discount3           Float?
+  netCostAmount       Float?
+  
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -381,4 +401,117 @@ model InvoiceItem {
   updatedAt   DateTime @updatedAt
 
   @@map("invoice_item")
+}
+
+model ProductHistory {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  field       String   // e.g. "price", "stock"
+  oldValue    String?
+  newValue    String?
+  changedBy   String?  // User ID or name
+  changedAt   DateTime @default(now())
+
+  @@map("product_history")
+}
+
+model InventoryTransaction {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  type        String   // "IN", "OUT", "ADJUSTMENT"
+  quantity    Int
+  referenceId String?  // ID of Purchase Order, Invoice, etc.
+  status      String   @default("Pending") // For Kanban status
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  kanbanCard  KanbanCard?
+
+  @@map("inventory_transaction")
+}
+
+model KanbanBoard {
+  id        String         @id @default(cuid())
+  title     String
+  type      String         // e.g. "Inventory", "Project"
+  columns   KanbanColumn[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("kanban_board")
+}
+
+model KanbanColumn {
+  id        String       @id @default(cuid())
+  boardId   String
+  board     KanbanBoard  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  title     String
+  order     Int
+  cards     KanbanCard[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@map("kanban_column")
+}
+
+model KanbanCard {
+  id             String               @id @default(cuid())
+  columnId       String
+  column         KanbanColumn         @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  content        String?
+  position       Int
+  
+  // Polymorphic-like relations (can optionally link to other entities)
+  transactionId  String?              @unique
+  transaction    InventoryTransaction? @relation(fields: [transactionId], references: [id])
+  
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@map("kanban_card")
+}
+
+model Request {
+  id            String        @id @default(cuid())
+  requestNumber String        @unique
+  requesterName String
+  position      String?
+  accountNo     String?
+  businessUnit  String?       // "Business Unit / From"
+  department    String?
+  purpose       String?
+  chargeTo      String?
+  amount        Float         @default(0)
+  
+  // Signatures / Approvals
+  verifiedBy    String?
+  approvedBy    String?
+  processedBy   String?
+
+  date          DateTime      @default(now())
+  status        String        @default("To Verify") // To Verify, To Approve, To Process, Released, Received
+  items         RequestItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("request")
+}
+
+model RequestItem {
+  id          String   @id @default(cuid())
+  requestId   String
+  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  description String
+  quantity    Int
+  unit        String?
+  unitPrice   Float    @default(0)
+  total       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("request_item")
 }

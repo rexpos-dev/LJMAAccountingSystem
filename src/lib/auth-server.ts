@@ -68,6 +68,7 @@ export async function verifyAdmin() {
 export async function requireAdmin(request: NextRequest) {
     const session = await getSession();
     if (!session) {
+        console.log('requireAdmin: No active session found. Cookies:', request.cookies.getAll().map(c => c.name));
         return NextResponse.json({ error: 'Unauthorized: No active session' }, { status: 401 });
     }
 

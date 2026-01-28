@@ -13,7 +13,7 @@ import { useReminders } from '@/hooks/use-reminders';
 import { useNotifications } from '@/hooks/use-notifications';
 import { isSameDay, format, formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { ReminderDialog } from '../dashboard/reminder-dialog';
+// import { ReminderDialog } from '../dashboard/reminder-dialog'; // Removed
 
 export function NotificationBell() {
     const { reminders, updateReminder } = useReminders();
@@ -21,7 +21,7 @@ export function NotificationBell() {
 
     // We keep this to open the dialog with reminder details
     const [selectedReminder, setSelectedReminder] = useState<typeof reminders[0] | undefined>(undefined);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    // const [isDialogOpen, setIsDialogOpen] = useState(false);
     const router = useRouter();
 
     const hasNotifications = notifications.length > 0;
@@ -30,14 +30,8 @@ export function NotificationBell() {
         // Mark notification as read
         await markAsRead(notification.id);
 
-        // If it's a reminder related notification, try to open the reminder details
-        if (notification.entityId) {
-            const targetReminder = reminders.find(r => r.id === notification.entityId);
-            if (targetReminder) {
-                setSelectedReminder(targetReminder);
-                setIsDialogOpen(true);
-            }
-        }
+        // Redirect to dashboard where calendar is
+        router.push('/dashboard');
     };
 
     return (
@@ -95,21 +89,7 @@ export function NotificationBell() {
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Reuse ReminderDialog for viewing/editing */}
-            {selectedReminder && (
-                <ReminderDialog
-                    isOpen={isDialogOpen}
-                    onClose={() => setIsDialogOpen(false)}
-                    selectedDate={new Date(selectedReminder.date)}
-                    onSave={async (data: any) => {
-                        if (data.id) await updateReminder(data.id, data);
-                    }}
-                    onDelete={async (id: string) => {
-                        // Optional: allow delete from view
-                    }}
-                    existingReminders={[selectedReminder]}
-                />
-            )}
+            {/* ReminderDialog usage removed as it was deleted. TODO: Integrate with CalendarModal if needed */}
         </>
     );
 }

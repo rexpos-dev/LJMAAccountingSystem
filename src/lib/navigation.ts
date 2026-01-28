@@ -11,7 +11,8 @@ import {
   LayoutDashboard,
   Network,
   Users,
-  ClipboardList
+  ClipboardList,
+  FilePlus
 } from "lucide-react";
 
 export interface NavItem {
@@ -23,6 +24,7 @@ export interface NavItem {
   subItems?: Omit<NavItem, 'icon' | 'subItems' | 'label'>[];
   permissions?: string[];
   hideForRoles?: string[];
+  roles?: string[];
 }
 
 export const navItems: NavItem[] = [
@@ -60,7 +62,9 @@ export const navItems: NavItem[] = [
       { title: "Create first invoice", href: "/todo/create-invoice", dialogId: "create-invoice" },
       { title: "Enter your first payment", href: "/todo/enter-payment", dialogId: "enter-payment" },
       { title: "Run statements", href: "/todo/run-statements" },
+      { title: "Requests", href: "/requests" },
     ],
+
   },
   {
     title: "Transactions",
@@ -111,13 +115,10 @@ export const navItems: NavItem[] = [
   },
   {
     title: "Reports",
-    href: "#",
+    href: "/reports",
     icon: FileText,
     permissions: ['Reports'],
-    subItems: [
-      { title: "Income Statement", href: "/reports/income-statement", dialogId: "income-statement", permissions: ['Income Statement'] },
-      { title: "Balance Sheet", href: "/reports/balance-sheet", dialogId: "balance-sheet", permissions: ['Balance Sheet'] },
-    ]
+    roles: ['Super Admin', 'Administrator'],
   },
   {
     title: "Audit",

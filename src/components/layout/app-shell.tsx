@@ -102,11 +102,19 @@ function SidebarNav() {
     }
   };
 
-  const hasAccess = (item: { hideForRoles?: string[], permissions?: string[], accountType?: string }) => {
+  const hasAccess = (item: { hideForRoles?: string[], permissions?: string[], accountType?: string, roles?: string[] }) => {
     if (!user) return false;
 
-    // Check role restrictions
+    // Super Admin has access to everything
+    if (user.accountType === 'Super Admin' || user.accountType === 'Admin') return true;
+
+    // Check role restrictions (hideForRoles)
     if (item.hideForRoles && item.hideForRoles.includes(user.accountType)) {
+      return false;
+    }
+
+    // Check allowed roles (roles)
+    if (item.roles && !item.roles.includes(user.accountType)) {
       return false;
     }
 

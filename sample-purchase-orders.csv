@@ -1,0 +1,6 @@
+Supplier,Categories,SKU,Barcode,Product Description,Buying UOM,QTY/Case,Offtake,Order QTY,Pieces,Cost Price per Case,Cost Price per Piece,Discount 1,Discount 2,Discount 3,Net Cost Amount
+ABC Distributors,Beverages,SKU001,1234567890123,Coca Cola 1.5L,Case,12,5,10,120,480,40,5,2,1,4,416.00
+ABC Distributors,Snacks,SKU002,1234567890124,Lays Chips 50g,Case,24,8,15,360,720,30,3,1,0,10,368.00
+XYZ Suppliers,Dairy,SKU003,1234567890125,Fresh Milk 1L,Case,6,10,20,120,300,50,8,2,1,5,760.00
+XYZ Suppliers,Bakery,SKU004,1234567890126,White Bread Loaf,Case,10,12,25,250,500,20,10,1,0,4,950.00
+DEF Trading,Household,SKU005,1234567890127,Laundry Detergent 1kg,Case,8,6,12,96,384,32,5,0,0,4,416.00
