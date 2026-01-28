@@ -6,7 +6,10 @@ import {
   TrendingUp,
   TrendingDown,
   Wallet,
+  Calendar as CalendarIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useDialog } from "@/components/layout/dialog-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -23,7 +26,7 @@ import dynamic from 'next/dynamic';
 const Overview = dynamic(() => import('./overview').then(m => m.Overview), { ssr: false });
 // const SummaryCards = dynamic(() => import('./summary-cards').then(m => m.SummaryCards), { ssr: false }); // Deprecated
 const FinancialDonut = dynamic(() => import('./financial-donut').then(m => m.FinancialDonut), { ssr: false });
-const CalendarCard = dynamic(() => import('./calendar-card').then(m => m.CalendarCard), { ssr: false });
+// const CalendarCard = dynamic(() => import('./calendar-card').then(m => m.CalendarCard), { ssr: false }); // Deprecated
 const StatsRow = dynamic(() => import('./stats-row').then(m => m.StatsRow), { ssr: false });
 const RecentTransactions = dynamic(() => import('./recent-transactions').then(m => m.RecentTransactions), { ssr: false });
 const AccountBalances = dynamic(() => import('./account-balances').then(m => m.AccountBalances), { ssr: false });
@@ -31,6 +34,7 @@ const PendingInvoicesWidget = dynamic(() => import('./pending-invoices-widget').
 const UpcomingBillsWidget = dynamic(() => import('./upcoming-bills-widget').then(m => m.UpcomingBillsWidget), { ssr: false });
 
 export function Dashboard() {
+  const { openDialog } = useDialog();
   const [recentCustomers, setRecentCustomers] = useState<Array<any>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,6 +77,12 @@ export function Dashboard() {
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight font-headline text-white">Dashboard</h2>
+        <div className="flex items-center space-x-2">
+          <Button onClick={() => openDialog('calendar-modal' as any)} variant="secondary">
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            Calendar
+          </Button>
+        </div>
       </div>
 
       {/* 1. Top Section: Stats Row */}
@@ -85,7 +95,7 @@ export function Dashboard() {
         <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle className="font-headline">Financial Overview</CardTitle>
-            <CardDescription>(This Year)</CardDescription>
+            <CardDescription>Cost, Expenses, and Profit Trends</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <Overview />
@@ -158,9 +168,7 @@ export function Dashboard() {
         {/* Right Column: Balances & Calendar */}
         <div className="col-span-1 lg:col-span-3 space-y-4">
           <AccountBalances />
-          <div className="h-full">
-            <CalendarCard />
-          </div>
+          {/* CalendarCard removed and moved to popup */}
         </div>
 
       </div>

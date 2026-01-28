@@ -150,9 +150,7 @@ export default function BalanceSheetReport({ reportDate }: { reportDate: Date })
           </TableBody>
         </Table>
       </ScrollArea>
-      <footer className="text-center text-xs text-muted-foreground p-4 border-t">
-        Express Accounts v 11.10 © NCH Software
-      </footer>
+
     </>
   );
 

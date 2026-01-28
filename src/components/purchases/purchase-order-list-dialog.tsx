@@ -36,15 +36,12 @@ import {
     Pencil,
     Search,
     Printer,
-    Mail,
-    Save,
-    Briefcase,
     HelpCircle,
     Eye,
     MoreVertical,
     FileText,
-    Banknote,
-    Phone
+    Upload,
+    History
 } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { cn } from '@/lib/utils';
@@ -91,6 +88,13 @@ export default function PurchaseOrderListDialog() {
             fetchOrders();
         }
     }, [openDialogs['create-purchase-order']]);
+
+    // Re-fetch when bulk upload dialog closes to update list
+    useEffect(() => {
+        if (!openDialogs['bulk-upload-purchase-order'] && openDialogs['purchase-order-list']) {
+            fetchOrders();
+        }
+    }, [openDialogs['bulk-upload-purchase-order']]);
 
 
     const fetchOrders = async () => {
@@ -175,6 +179,25 @@ export default function PurchaseOrderListDialog() {
         openDialog('view-purchase-order');
     };
 
+    const handleBulkUpload = () => {
+        openDialog('bulk-upload-purchase-order');
+    };
+
+    const handlePurchaseHistory = () => {
+        if (!selectedOrderId) {
+            toast({
+                title: "No Order Selected",
+                description: "Please select a purchase order to view history.",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setDialogData('purchase-history', { orderId: selectedOrderId });
+        openDialog('purchase-history');
+    };
+
+
     const handleDelete = async () => {
         if (!selectedOrderId) return;
         if (!confirm('Are you sure you want to delete this order?')) return;
@@ -240,18 +263,15 @@ export default function PurchaseOrderListDialog() {
 
                 {/* Toolbar */}
                 <div className="flex items-center px-2 py-1 border-b gap-1 bg-background overflow-x-auto">
-                    <ToolbarButton icon={Plus} label="New" onClick={handleNew} className="text-green-600 hover:text-green-700" />
-                    <ToolbarButton icon={X} label="Delete" onClick={handleDelete} disabled={!selectedOrderId} className="text-red-600 hover:text-red-700" />
-                    <ToolbarButton icon={Pencil} label="Edit" onClick={() => handleEdit()} disabled={!selectedOrderId} className="text-yellow-600 hover:text-yellow-700" />
+                    <ToolbarButton icon={Plus} label="New" onClick={handleNew} />
+                    <ToolbarButton icon={X} label="Delete" onClick={handleDelete} disabled={!selectedOrderId} />
+                    <ToolbarButton icon={Pencil} label="Edit" onClick={() => handleEdit()} disabled={!selectedOrderId} />
+                    <ToolbarButton icon={History} label="Purchase History" onClick={handlePurchaseHistory} disabled={!selectedOrderId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedOrderId} />
                     <ToolbarButton icon={Printer} label="Print" />
-                    <ToolbarButton icon={Mail} label="Email" />
-                    <ToolbarButton icon={Phone} label="Fax" />
                     <div className="w-px h-8 bg-border mx-1" />
-                    <ToolbarButton icon={Save} label="Save" className="text-blue-600 hover:text-blue-700" />
-                    <ToolbarButton icon={Banknote} label="Bill" />
-                    <ToolbarButton icon={Briefcase} label="Suite" />
+                    <ToolbarButton icon={Upload} label="Bulk Upload" onClick={handleBulkUpload} />
                     <div className="ml-auto flex items-center">
                         <ToolbarButton icon={HelpCircle} label="Help" />
                     </div>

@@ -27,6 +27,7 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon, HardDrive, Clock, ShieldCheck, Download, FileArchive, Activity, AlertCircle, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast"; // Assuming hooks path, will adjust if needed
+import { useAuth } from "@/components/providers/auth-provider";
 
 interface BackupJob {
     id: string;
@@ -41,6 +42,7 @@ interface BackupJob {
 export default function BackupSchedulerDialog() {
     const { openDialogs, closeDialog } = useDialog();
     const { toast } = useToast();
+    const { logout } = useAuth();
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [time, setTime] = useState("00:00");
     const [frequency, setFrequency] = useState("week");
@@ -60,6 +62,18 @@ export default function BackupSchedulerDialog() {
                 const running = data.some((j: BackupJob) => j.status === 'RUNNING' || j.status === 'PENDING');
                 setIsRunning(running);
             } else {
+                if (res.status === 401) {
+                    toast({
+                        title: "Session Expired",
+                        description: "Your session has expired. Please login again.",
+                        variant: "destructive"
+                    });
+                    // Optional: Close dialog or logout
+                    closeDialog("backup-scheduler" as any);
+                    // Allow user to see the message briefly or logout immediately
+                    setTimeout(() => logout(), 2000);
+                    return;
+                }
                 const err = await res.json();
                 console.error("Backup fetch failed:", err);
                 toast({
@@ -76,7 +90,7 @@ export default function BackupSchedulerDialog() {
                 variant: "destructive"
             });
         }
-    }, []);
+    }, [logout, closeDialog, toast]);
 
     useEffect(() => {
         if (openDialogs["backup-scheduler"]) {
