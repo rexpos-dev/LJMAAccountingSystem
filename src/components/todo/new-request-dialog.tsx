@@ -14,6 +14,7 @@ import { FileText } from 'lucide-react';
 interface NewRequestDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    onRequestCreated?: () => void;
 }
 
 const REQUEST_FORMS = [
@@ -37,7 +38,7 @@ import { AccountDeductionForm } from '@/components/forms/account-deduction-form'
 import { CashFundForm } from '@/components/forms/cash-fund-form';
 import { ArrowLeft } from 'lucide-react';
 
-export function NewRequestDialog({ open, onOpenChange }: NewRequestDialogProps) {
+export function NewRequestDialog({ open, onOpenChange, onRequestCreated }: NewRequestDialogProps) {
     const [selectedForm, setSelectedForm] = useState<string | null>(null);
 
     const handleSelect = (formName: string) => {
@@ -51,7 +52,9 @@ export function NewRequestDialog({ open, onOpenChange }: NewRequestDialogProps) 
     const handleFormSuccess = () => {
         onOpenChange(false);
         setSelectedForm(null);
-        // Ideally trigger refresh of dashboard
+        if (onRequestCreated) {
+            onRequestCreated();
+        }
     };
 
     if (selectedForm === "ACCOUNT DEDUCTION REQUEST FORM") {

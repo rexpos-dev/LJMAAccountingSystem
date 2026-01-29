@@ -23,6 +23,13 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import {
     Table,
@@ -32,6 +39,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useUserPermissions } from '@/hooks/use-user-permissions';
 
 // Schema Definition
 const requestItemSchema = z.object({
@@ -64,6 +72,12 @@ interface AccountDeductionFormProps {
 
 export function AccountDeductionForm({ onSuccess, onCancel }: AccountDeductionFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
+
+    // Filter users by role
+    const verifiers = userPermissions.filter(u => u.isActive && (u.accountType === 'Manager' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -382,9 +396,18 @@ export function AccountDeductionForm({ onSuccess, onCancel }: AccountDeductionFo
                                 control={form.control}
                                 name="verifiedBy"
                                 render={({ field }) => (
-                                    <div className="border-b pt-0">
-                                        <Input {...field} className="border-none shadow-none h-8 text-center px-0 focus-visible:ring-0 rounded-none mb-[-1px] bg-transparent placeholder:text-muted-foreground/50" placeholder="Signer Name" />
-                                    </div>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger className="h-8 border-none shadow-none focus:ring-0 rounded-none border-b">
+                                            <SelectValue placeholder="Select user" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {verifiers.map((user) => (
+                                                <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
+                                                    {user.firstName} {user.lastName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
                         </div>
@@ -395,9 +418,18 @@ export function AccountDeductionForm({ onSuccess, onCancel }: AccountDeductionFo
                                 control={form.control}
                                 name="approvedBy"
                                 render={({ field }) => (
-                                    <div className="border-b pt-0">
-                                        <Input {...field} className="border-none shadow-none h-8 text-center px-0 focus-visible:ring-0 rounded-none mb-[-1px]" placeholder="Signer Name" />
-                                    </div>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger className="h-8 border-none shadow-none focus:ring-0 rounded-none border-b">
+                                            <SelectValue placeholder="Select user" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {approvers.map((user) => (
+                                                <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
+                                                    {user.firstName} {user.lastName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
                         </div>
@@ -408,9 +440,18 @@ export function AccountDeductionForm({ onSuccess, onCancel }: AccountDeductionFo
                                 control={form.control}
                                 name="processedBy"
                                 render={({ field }) => (
-                                    <div className="border-b pt-0">
-                                        <Input {...field} className="border-none shadow-none h-8 text-center px-0 focus-visible:ring-0 rounded-none mb-[-1px]" placeholder="Signer Name" />
-                                    </div>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <SelectTrigger className="h-8 border-none shadow-none focus:ring-0 rounded-none border-b">
+                                            <SelectValue placeholder="Select user" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {processors.map((user) => (
+                                                <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
+                                                    {user.firstName} {user.lastName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
                         </div>

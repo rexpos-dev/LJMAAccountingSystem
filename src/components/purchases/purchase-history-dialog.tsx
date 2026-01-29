@@ -16,10 +16,22 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { FileDown, FileText, Download } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { FileDown, FileText, Download, Search } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface PurchaseHistoryItem {
     id: string;
@@ -55,6 +67,15 @@ export default function PurchaseHistoryDialog() {
     const { toast } = useToast();
     const [order, setOrder] = useState<PurchaseOrder | null>(null);
     const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState<string>('all');
+    const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+    const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+
+    // Helper function to format currency with commas
+    const formatCurrency = (amount: number): string => {
+        return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
 
     const isOpen = openDialogs['purchase-history'];
     const data = getDialogData('purchase-history');
@@ -227,7 +248,7 @@ export default function PurchaseHistoryDialog() {
                     </tbody>
                 </table>
                 <div class="total">
-                    Total: ₱${order.total.toFixed(2)}
+                    Total: ₱${formatCurrency(order.total)}
                 </div>
                 <script>
                     window.onload = function() {
@@ -249,7 +270,70 @@ export default function PurchaseHistoryDialog() {
 
     const handleClose = () => {
         closeDialog('purchase-history');
+        // Reset filters when closing
+        setSearchQuery('');
+        setCategoryFilter('all');
+        setDateFrom(undefined);
+        setDateTo(undefined);
     };
+
+    // Get unique categories from items
+    const uniqueCategories = React.useMemo(() => {
+        if (!order) return [];
+        const categories = new Set(
+            order.items
+                .map(item => item.category)
+                .filter((cat): cat is string => cat !== null && cat !== '')
+        );
+        return Array.from(categories).sort();
+    }, [order]);
+
+    // Filter items based on search query, category, and date range
+    const filteredItems = React.useMemo(() => {
+        if (!order) return [];
+
+        let items = [...order.items];
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            items = items.filter(item =>
+                item.itemDescription?.toLowerCase().includes(query) ||
+                item.sku?.toLowerCase().includes(query) ||
+                item.barcode?.toLowerCase().includes(query) ||
+                item.category?.toLowerCase().includes(query)
+            );
+        }
+
+        // Apply category filter
+        if (categoryFilter !== 'all') {
+            items = items.filter(item => item.category === categoryFilter);
+        }
+
+        // Apply date range filter
+        if ((dateFrom || dateTo) && order.date) {
+            const orderDate = new Date(order.date);
+            orderDate.setHours(0, 0, 0, 0);
+
+            if (dateFrom) {
+                const fromDate = new Date(dateFrom);
+                fromDate.setHours(0, 0, 0, 0);
+                if (orderDate < fromDate) {
+                    items = [];
+                }
+            }
+
+            if (dateTo) {
+                const toDate = new Date(dateTo);
+                toDate.setHours(23, 59, 59, 999);
+                if (orderDate > toDate) {
+                    items = [];
+                }
+            }
+        }
+
+        return items;
+    }, [order, searchQuery, categoryFilter, dateFrom, dateTo]);
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -293,70 +377,172 @@ export default function PurchaseHistoryDialog() {
                         </div>
                     ) : order ? (
                         <div className="space-y-4">
-                            <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Order Date</p>
-                                    <p className="font-medium">{format(new Date(order.date), 'MMMM dd, yyyy')}</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Left Column - Order Information */}
+                                <div className="flex flex-col gap-4 p-4 bg-muted/50 rounded-lg">
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Order Date</p>
+                                        <p className="font-medium">{format(new Date(order.date), 'MMMM dd, yyyy')}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Supplier</p>
+                                        <p className="font-medium">{order.supplier.name}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Total Items</p>
+                                        <p className="font-medium">{order.items.length}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Supplier</p>
-                                    <p className="font-medium">{order.supplier.name}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Total Items</p>
-                                    <p className="font-medium">{order.items.length}</p>
+
+                                {/* Right Column - Filter Controls */}
+                                <div className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Search by description, SKU, barcode, or category..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="pl-9"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+                                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Filter by Category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">All Categories</SelectItem>
+                                                {uniqueCategories.map((category) => (
+                                                    <SelectItem key={category} value={category}>
+                                                        {category}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "justify-start text-left font-normal",
+                                                        !dateFrom && !dateTo && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {dateFrom ? (
+                                                        dateTo ? (
+                                                            <>
+                                                                {format(dateFrom, "LLL dd, y")} - {format(dateTo, "LLL dd, y")}
+                                                            </>
+                                                        ) : (
+                                                            format(dateFrom, "LLL dd, y")
+                                                        )
+                                                    ) : (
+                                                        <span>Pick date range</span>
+                                                    )}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <div className="flex">
+                                                    <div className="border-r">
+                                                        <div className="p-3 text-sm font-medium border-b">From Date</div>
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={dateFrom}
+                                                            onSelect={setDateFrom}
+                                                            initialFocus
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <div className="p-3 text-sm font-medium border-b">To Date</div>
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={dateTo}
+                                                            onSelect={setDateTo}
+                                                            initialFocus
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                    {(searchQuery || categoryFilter !== 'all' || dateFrom || dateTo) && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setCategoryFilter('all');
+                                                setDateFrom(undefined);
+                                                setDateTo(undefined);
+                                            }}
+                                            className="w-fit"
+                                        >
+                                            Clear Filters
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 
                             <div className="border rounded-lg overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Category</TableHead>
-                                            <TableHead>SKU</TableHead>
-                                            <TableHead>Barcode</TableHead>
-                                            <TableHead>Description</TableHead>
-                                            <TableHead>UOM</TableHead>
-                                            <TableHead className="text-right">QTY/Case</TableHead>
-                                            <TableHead className="text-right">Offtake</TableHead>
-                                            <TableHead className="text-right">Order QTY</TableHead>
-                                            <TableHead className="text-right">Pieces</TableHead>
-                                            <TableHead className="text-right">Cost/Case</TableHead>
-                                            <TableHead className="text-right">Cost/Piece</TableHead>
-                                            <TableHead className="text-right">Disc 1</TableHead>
-                                            <TableHead className="text-right">Disc 2</TableHead>
-                                            <TableHead className="text-right">Disc 3</TableHead>
-                                            <TableHead className="text-right">Net Amount</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {order.items.map((item) => (
-                                            <TableRow key={item.id}>
-                                                <TableCell>{item.category || '-'}</TableCell>
-                                                <TableCell>{item.sku || '-'}</TableCell>
-                                                <TableCell>{item.barcode || '-'}</TableCell>
-                                                <TableCell className="max-w-[200px]">{item.itemDescription}</TableCell>
-                                                <TableCell>{item.buyingUom || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.qtyPerCase || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.offtake || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.orderQty || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.pieces || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.costPricePerCase ? `₱${item.costPricePerCase.toFixed(2)}` : '-'}</TableCell>
-                                                <TableCell className="text-right">{item.costPricePerPiece ? `₱${item.costPricePerPiece.toFixed(2)}` : '-'}</TableCell>
-                                                <TableCell className="text-right">{item.discount1 || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.discount2 || '-'}</TableCell>
-                                                <TableCell className="text-right">{item.discount3 || '-'}</TableCell>
-                                                <TableCell className="text-right font-medium">{item.netCostAmount ? `₱${item.netCostAmount.toFixed(2)}` : '-'}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                <div className="relative overflow-auto max-h-[400px]">
+                                    <table className="w-full caption-bottom text-sm">
+                                        <thead className="sticky top-0 z-[1] bg-muted [&_tr]:border-b">
+                                            <tr className="border-b transition-colors">
+                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">Category</th>
+                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">SKU</th>
+                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">Barcode</th>
+                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">Description</th>
+                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">UOM</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">QTY/Case</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Offtake</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Order QTY</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Pieces</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Cost/Case</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Cost/Piece</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Disc 1</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Disc 2</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Disc 3</th>
+                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="[&_tr:last-child]:border-0">
+                                            {filteredItems.length > 0 ? (
+                                                filteredItems.map((item) => (
+                                                    <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
+                                                        <td className="p-4 align-middle">{item.category || '-'}</td>
+                                                        <td className="p-4 align-middle">{item.sku || '-'}</td>
+                                                        <td className="p-4 align-middle">{item.barcode || '-'}</td>
+                                                        <td className="p-4 align-middle max-w-[200px]">{item.itemDescription}</td>
+                                                        <td className="p-4 align-middle">{item.buyingUom || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.qtyPerCase || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.offtake || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.orderQty || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.pieces || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.costPricePerCase ? `₱${formatCurrency(item.costPricePerCase)}` : '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.costPricePerPiece ? `₱${formatCurrency(item.costPricePerPiece)}` : '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.discount1 || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.discount2 || '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{item.discount3 || '-'}</td>
+                                                        <td className="p-4 align-middle text-right font-medium">{item.netCostAmount ? `₱${formatCurrency(item.netCostAmount)}` : '-'}</td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr className="border-b transition-colors">
+                                                    <td colSpan={15} className="p-4 align-middle text-center py-8 text-muted-foreground">
+                                                        No items match your filters. Try adjusting your search or filter criteria.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <div className="flex justify-end p-4 bg-muted/50 rounded-lg">
                                 <div className="text-right">
                                     <p className="text-sm text-muted-foreground">Total Amount</p>
-                                    <p className="text-2xl font-bold">₱{order.total.toFixed(2)}</p>
+                                    <p className="text-2xl font-bold">₱{formatCurrency(order.total)}</p>
                                 </div>
                             </div>
                         </div>

@@ -23,8 +23,16 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useUserPermissions } from '@/hooks/use-user-permissions';
 
 // Schema Definition
 const formSchema = z.object({
@@ -54,6 +62,12 @@ interface CashFundFormProps {
 
 export function CashFundForm({ onSuccess, onCancel }: CashFundFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
+
+    // Filter users by role
+    const verifiers = userPermissions.filter(u => u.isActive && (u.accountType === 'Manager' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -104,16 +118,7 @@ export function CashFundForm({ onSuccess, onCancel }: CashFundFormProps) {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <div className="flex justify-between items-start mb-6 border-b pb-4">
-                        <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-muted flex items-center justify-center rounded-sm">
-                                {/* Placeholder for Logo */}
-                                <span className="text-[10px] text-muted-foreground text-center">LOGO</span>
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold uppercase tracking-tight">Cash / Fund Request Form</h1>
-                                <p className="text-xs text-muted-foreground">Roslinda Group of Companies</p>
-                            </div>
-                        </div>
+                        <h1 className="text-xl font-bold uppercase tracking-tight">Cash / Fund Request Form</h1>
                         <div className="flex flex-col items-end gap-2">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-semibold">Control No.:</span>
@@ -296,7 +301,18 @@ export function CashFundForm({ onSuccess, onCancel }: CashFundFormProps) {
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
                                         <FormControl>
-                                            <Input {...field} className="h-4 border-none bg-transparent focus-visible:ring-0 text-center text-[10px] p-0" placeholder="Signer Name" />
+                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                <SelectTrigger className="h-4 border-none bg-transparent focus:ring-0 text-center text-[10px] p-0">
+                                                    <SelectValue placeholder="Select user" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {verifiers.map((user) => (
+                                                        <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
+                                                            {user.firstName} {user.lastName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <div className="border-t border-black pt-1">
                                             <span className="text-[10px] block leading-tight">Name / Signature / Date</span>
@@ -313,7 +329,18 @@ export function CashFundForm({ onSuccess, onCancel }: CashFundFormProps) {
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
                                         <FormControl>
-                                            <Input {...field} className="h-4 border-none bg-transparent focus-visible:ring-0 text-center text-[10px] p-0" placeholder="Signer Name" />
+                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                <SelectTrigger className="h-4 border-none bg-transparent focus:ring-0 text-center text-[10px] p-0">
+                                                    <SelectValue placeholder="Select user" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {approvers.map((user) => (
+                                                        <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
+                                                            {user.firstName} {user.lastName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <div className="border-t border-black pt-1">
                                             <span className="text-[10px] block leading-tight">Name / Signature / Date</span>
@@ -330,7 +357,18 @@ export function CashFundForm({ onSuccess, onCancel }: CashFundFormProps) {
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
                                         <FormControl>
-                                            <Input {...field} className="h-4 border-none bg-transparent focus-visible:ring-0 text-center text-[10px] p-0" placeholder="Signer Name" />
+                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                <SelectTrigger className="h-4 border-none bg-transparent focus:ring-0 text-center text-[10px] p-0">
+                                                    <SelectValue placeholder="Select user" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {processors.map((user) => (
+                                                        <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
+                                                            {user.firstName} {user.lastName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <div className="border-t border-black pt-1">
                                             <span className="text-[10px] block leading-tight">Name / Signature / Date</span>

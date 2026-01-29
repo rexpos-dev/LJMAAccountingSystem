@@ -32,8 +32,9 @@ export function RequestDashboard() {
     const [stats, setStats] = useState<RequestStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [openNewRequest, setOpenNewRequest] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
-    useEffect(() => {
+    const fetchStats = () => {
         fetch('/api/requests/stats')
             .then(res => res.json())
             .then(data => {
@@ -44,7 +45,16 @@ export function RequestDashboard() {
                 console.error('Failed to fetch stats:', err);
                 setLoading(false);
             });
-    }, []);
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, [refreshKey]);
+
+    const handleRequestCreated = () => {
+        setOpenNewRequest(false);
+        setRefreshKey(prev => prev + 1); // Trigger refresh
+    };
 
     if (loading) {
         return <div className="p-8">Loading stats...</div>;
@@ -63,7 +73,7 @@ export function RequestDashboard() {
 
     return (
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-            <NewRequestDialog open={openNewRequest} onOpenChange={setOpenNewRequest} />
+            <NewRequestDialog open={openNewRequest} onOpenChange={setOpenNewRequest} onRequestCreated={handleRequestCreated} />
             <div className="flex items-center justify-between space-y-2">
                 <h2 className="text-3xl font-bold tracking-tight font-headline">Request Dashboard</h2>
                 <div className="flex items-center space-x-2">
@@ -107,7 +117,7 @@ export function RequestDashboard() {
                 />
             </div>
 
-            <RequestTable />
+            <RequestTable key={refreshKey} />
         </div>
     );
 }

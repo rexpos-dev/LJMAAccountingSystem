@@ -33,6 +33,7 @@ import { UserNav } from "./user-nav";
 import { NotificationBell } from "./notification-bell";
 import { EmailButton } from "./email-button";
 import { Breadcrumbs } from "./breadcrumbs";
+import { ThemeToggle } from "./theme-toggle";
 
 // ... (keep surrounding imports if range allows, but aiming for cleaner replacement)
 // Actually, I can't modify imports easily with a single chunk if they are far apart.
@@ -282,6 +283,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarTrigger className="md:hidden" />
             <Breadcrumbs />
             <div className="flex items-center gap-2 ml-auto">
+              <ThemeToggle />
               <EmailButton />
               <NotificationBell />
               <UserNav />

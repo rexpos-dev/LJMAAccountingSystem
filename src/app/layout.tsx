@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 import { AppShellWrapper } from '@/components/layout/app-shell-wrapper';
 
 import { AuthProvider } from '@/components/providers/auth-provider';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 export default function RootLayout({
   children,
@@ -38,19 +39,21 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <AuthProvider>
-          <QueryProvider>
-            <DialogProvider>
-              <AppShellWrapper>
-                {children}
-              </AppShellWrapper>
-              <EnterPaymentsDialog />
-              <EnterPaymentsOfAccountsPayableDialog />
-              <EnterDirectPaymentsDialog />
-            </DialogProvider>
-          </QueryProvider>
-        </AuthProvider>
-        <Toaster />
+        <ThemeProvider defaultTheme="dark" storageKey="ljma-ui-theme">
+          <AuthProvider>
+            <QueryProvider>
+              <DialogProvider>
+                <AppShellWrapper>
+                  {children}
+                </AppShellWrapper>
+                <EnterPaymentsDialog />
+                <EnterPaymentsOfAccountsPayableDialog />
+                <EnterDirectPaymentsDialog />
+              </DialogProvider>
+            </QueryProvider>
+          </AuthProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
