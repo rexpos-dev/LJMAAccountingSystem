@@ -3,7 +3,7 @@ import { prisma } from './prisma'
 // Account operations
 export const getAccounts = async () => {
   return await prisma.account.findMany({
-    orderBy: { accnt_no: 'asc' },
+    orderBy: { account_no: 'asc' },
   })
 }
 
@@ -21,13 +21,16 @@ export const updateAccountBalance = async (id: string, balance: number) => {
 }
 
 export const createAccount = async (data: {
-  accnt_no: number;
-  accnt_type_no: number;
-  name: string;
-  type: string;
+  account_no: number;
+  account_type_no: number;
+  account_name: string;
+  account_description?: string;
+  account_type: string;
   header: string;
   bank: string;
-  category?: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
   balance?: number;
 }) => {
   return await prisma.account.create({
@@ -36,12 +39,15 @@ export const createAccount = async (data: {
 }
 
 export const updateAccount = async (id: string, data: {
-  accnt_no?: number;
-  name?: string;
-  type?: string;
+  account_no?: number;
+  account_name?: string;
+  account_description?: string;
+  account_type?: string;
   header?: string;
   bank?: string;
-  category?: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
   balance?: number;
 }) => {
   return await prisma.account.update({

@@ -129,7 +129,7 @@ export async function GET(req: Request) {
         // Map to a consistent format
         const formattedInvoices = invoices.map(inv => ({
             ...inv,
-            customerName: inv.customer?.customerName || inv.customer?.name || 'Unknown',
+            customerName: inv.customer?.customerName || 'Unknown',
             salespersonName: inv.salesperson || '',
         }));
 

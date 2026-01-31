@@ -96,8 +96,8 @@ export default function AccountTransferPage() {
         toAccountId: selectedToAccount.id!,
         amount,
         date,
-        fromAccountName: selectedFromAccount.name,
-        toAccountName: selectedToAccount.name,
+        fromAccountName: selectedFromAccount.account_name,
+        toAccountName: selectedToAccount.account_name,
       });
 
       toast({
@@ -151,14 +151,14 @@ export default function AccountTransferPage() {
             <div className="col-span-2 flex items-center gap-2">
               <Select value={fromAccountId} onValueChange={setFromAccountId}>
                 <SelectTrigger id="from-account" className="flex-1">
-                  <SelectValue placeholder="Select an account">{selectedFromAccount?.name}</SelectValue>
+                  <SelectValue placeholder="Select an account">{selectedFromAccount?.account_name}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {isLoading ? (
                     <SelectItem value="loading" disabled>Loading...</SelectItem>
                   ) : (
                     bankAccounts?.map(account => (
-                      <SelectItem key={account.id} value={account.id!}>{account.name}</SelectItem>
+                      <SelectItem key={account.id} value={account.id!}>{account.account_name}</SelectItem>
                     ))
                   )}
                 </SelectContent>
@@ -172,14 +172,14 @@ export default function AccountTransferPage() {
             <div className="col-span-2 flex items-center gap-2">
               <Select value={toAccountId} onValueChange={setToAccountId}>
                 <SelectTrigger id="to-account" className="flex-1">
-                  <SelectValue placeholder="Select an account">{selectedToAccount?.name}</SelectValue>
+                  <SelectValue placeholder="Select an account">{selectedToAccount?.account_name}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {isLoading ? (
                     <SelectItem value="loading" disabled>Loading...</SelectItem>
                   ) : (
                     bankAccounts?.filter(acc => acc.id !== fromAccountId).map(account => (
-                      <SelectItem key={account.id} value={account.id!}>{account.name}</SelectItem>
+                      <SelectItem key={account.id} value={account.id!}>{account.account_name}</SelectItem>
                     ))
                   )}
                 </SelectContent>

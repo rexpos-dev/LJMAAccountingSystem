@@ -22,29 +22,29 @@ export function StatsRow() {
 
         transactions.forEach((t) => {
             // Find linked account
-            const account = accounts.find(acc => acc.accnt_no?.toString() === t.accountNumber?.toString());
+            const account = accounts.find(acc => acc.account_no?.toString() === t.accountNumber?.toString());
             if (!account) return;
 
             const debit = t.debit || 0;
             const credit = t.credit || 0;
 
             // Income (Credit Income increases Income)
-            if (account.type === 'Income') {
+            if (account.account_type === 'Income') {
                 totalIncome += (credit - debit);
             }
             // Expense (Debit increases Expense)
-            else if (account.type === 'Expense') {
+            else if (account.account_type === 'Expense') {
                 totalExpenses += (debit - credit);
             }
             // Assets (specifically Receivables) - Debit increases
-            else if (account.type === 'Asset') {
-                if (account.name.toLowerCase().includes('receivable')) {
+            else if (account.account_type === 'Asset') {
+                if (account.account_name.toLowerCase().includes('receivable')) {
                     receivables += (debit - credit);
                 }
             }
             // Liabilities (specifically Payables) - Credit increases
-            else if (account.type === 'Liability') {
-                if (account.name.toLowerCase().includes('payable')) {
+            else if (account.account_type === 'Liability') {
+                if (account.account_name.toLowerCase().includes('payable')) {
                     payables += (credit - debit);
                 }
             }

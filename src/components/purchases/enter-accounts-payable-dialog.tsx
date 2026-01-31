@@ -44,8 +44,8 @@ import { useSuppliers } from '@/hooks/use-suppliers';
 
 interface AllocationRow {
     id: string;
-    number: string;
-    name: string;
+    account_no: string;
+    account_name: string;
     amount: string;
     type: 'CR' | 'DR';
 }
@@ -90,15 +90,15 @@ export function EnterAccountsPayableDialog() {
             const newAllocations: AllocationRow[] = [
                 {
                     id: 'debit-1',
-                    number: '',
-                    name: '',
+                    account_no: '',
+                    account_name: '',
                     amount: '',
                     type: 'DR',
                 },
                 {
                     id: 'credit-1',
-                    number: '',
-                    name: '',
+                    account_no: '',
+                    account_name: '',
                     amount: '',
                     type: 'CR',
                 },
@@ -108,22 +108,22 @@ export function EnterAccountsPayableDialog() {
     };
 
     const handleAccountChange = (id: string, accountNumber: string) => {
-        const account = accounts.find(acc => acc.number?.toString() === accountNumber);
+        const account = accounts.find(acc => acc.account_no?.toString() === accountNumber);
         setAllocations(prev =>
             prev.map(allocation =>
                 allocation.id === id
-                    ? { ...allocation, number: accountNumber, name: account?.name || '' }
+                    ? { ...allocation, account_no: accountNumber, account_name: account?.account_name || '' }
                     : allocation
             )
         );
     };
 
     const handleNameChange = (id: string, accountName: string) => {
-        const account = accounts.find(acc => acc.name === accountName);
+        const account = accounts.find(acc => acc.account_name === accountName);
         setAllocations(prev =>
             prev.map(allocation =>
                 allocation.id === id
-                    ? { ...allocation, number: account?.number?.toString() ?? '', name: accountName }
+                    ? { ...allocation, account_no: account?.account_no?.toString() ?? '', account_name: accountName }
                     : allocation
             )
         );
@@ -146,7 +146,7 @@ export function EnterAccountsPayableDialog() {
 
     const handleApAccountChange = (accountNumber: string) => {
         setSelectedApAccount(accountNumber);
-        const account = accounts.find(acc => acc.number?.toString() === accountNumber);
+        const account = accounts.find(acc => acc.account_no?.toString() === accountNumber);
         if (account && account.balance !== undefined) {
             setAccountBalance(`₱${account.balance.toFixed(2)}`);
         } else {
@@ -260,9 +260,9 @@ export function EnterAccountsPayableDialog() {
                                             <SelectValue placeholder="Select Accounts Payable..." />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {accounts.filter(account => account.type === 'Liability' && account.number).map(account => (
-                                                <SelectItem key={account.id ?? account.number} value={account.number?.toString() || ''}>
-                                                    {account.name}
+                                            {accounts.filter(account => account.account_type === 'Liability' && account.account_no).map(account => (
+                                                <SelectItem key={account.id ?? account.account_no} value={account.account_no?.toString() || ''}>
+                                                    {account.account_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -322,18 +322,18 @@ export function EnterAccountsPayableDialog() {
                                             allocations.map(allocation => (
                                                 <TableRow key={allocation.id}>
                                                     <TableCell>
-                                                        <Select value={allocation.number || undefined} onValueChange={(value) => handleAccountChange(allocation.id, value)}>
+                                                        <Select value={allocation.account_no || undefined} onValueChange={(value) => handleAccountChange(allocation.id, value)}>
                                                             <SelectTrigger className="w-full border-0 shadow-none h-8">
                                                                 <SelectValue placeholder="Select" />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {accounts
                                                                     .filter(account =>
-                                                                        account.name.toLowerCase().includes(accountNameFilter.toLowerCase()) && account.number
+                                                                        account.account_name.toLowerCase().includes(accountNameFilter.toLowerCase()) && account.account_no
                                                                     )
                                                                     .map(account => (
-                                                                        <SelectItem key={account.id ?? account.number} value={account.number!.toString()}>
-                                                                            {account.number}
+                                                                        <SelectItem key={account.id ?? account.account_no} value={account.account_no!.toString()}>
+                                                                            {account.account_no}
                                                                         </SelectItem>
                                                                     ))}
                                                             </SelectContent>
@@ -341,7 +341,7 @@ export function EnterAccountsPayableDialog() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Select
-                                                            value={allocation.name}
+                                                            value={allocation.account_name}
                                                             onValueChange={(value) => handleNameChange(allocation.id, value)}
                                                         >
                                                             <SelectTrigger className="w-full border-0 shadow-none h-8">
@@ -350,11 +350,11 @@ export function EnterAccountsPayableDialog() {
                                                             <SelectContent>
                                                                 {accounts
                                                                     .filter(account =>
-                                                                        account.name && account.name.toLowerCase().includes(accountNameFilter.toLowerCase())
+                                                                        account.account_name && account.account_name.toLowerCase().includes(accountNameFilter.toLowerCase())
                                                                     )
                                                                     .map(account => (
-                                                                        <SelectItem key={account.id ?? account.number ?? account.name} value={account.name}>
-                                                                            {account.name}
+                                                                        <SelectItem key={account.id ?? account.account_no ?? account.account_name} value={account.account_name}>
+                                                                            {account.account_name}
                                                                         </SelectItem>
                                                                     ))}
                                                             </SelectContent>

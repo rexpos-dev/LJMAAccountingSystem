@@ -1,0 +1,145 @@
+﻿prisma/seed.ts(29,16): error TS2561: Object literal may only specify known properties, but 'accnt_no' does not exist in type 'AccountWhereUniqueInput'. Did you mean to write 'account_no'?
+prisma/seed.ts(31,7): error TS2322: Type '{ accnt_no: number; name: string; balance: number; type: string; header: string; bank: string; category: string; }' is not assignable to type '(Without<AccountCreateInput, AccountUncheckedCreateInput> & AccountUncheckedCreateInput) | (Without<...> & AccountCreateInput)'.
+  Type '{ accnt_no: number; name: string; balance: number; type: string; header: string; bank: string; category: string; }' is not assignable to type 'Without<AccountUncheckedCreateInput, AccountCreateInput> & AccountCreateInput'.
+    Type '{ accnt_no: number; name: string; balance: number; type: string; header: string; bank: string; category: string; }' is missing the following properties from type 'AccountCreateInput': account_no, account_name, account_type
+scripts/check-prisma-login.ts(1,30): error TS2307: Cannot find module '../src/generated/client' or its corresponding type declarations.
+src/app/api/invoices/route.ts(132,71): error TS2339: Property 'name' does not exist on type '{ customerName: string; }'.
+src/app/banking/receipts-deposits/page.tsx(52,85): error TS2345: Argument of type '"receipts-deposits"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/app/banking/reconcile/page.tsx(153,88): error TS2345: Argument of type '"receipts-deposits"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/app/banking/transfer/page.tsx(99,46): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/banking/transfer/page.tsx(100,42): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/banking/transfer/page.tsx(154,86): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/banking/transfer/page.tsx(161,81): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/banking/transfer/page.tsx(175,84): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/banking/transfer/page.tsx(182,81): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(6,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(16,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(26,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(36,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(46,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(56,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(66,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(76,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(86,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/configuration/chart-of-accounts/mock-accounts.ts(96,5): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Account'.
+src/app/customer/list/page.tsx(192,46): error TS2554: Expected 1 arguments, but got 2.
+src/app/purchases/enter-ap/page.tsx(89,46): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(93,68): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(100,46): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(104,47): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(127,46): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(205,61): error TS2339: Property 'type' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(205,93): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(206,66): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(206,89): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(207,38): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(233,59): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(234,64): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(234,87): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(235,36): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(290,45): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(290,117): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(293,76): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(293,99): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(294,48): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(311,45): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(314,76): error TS2339: Property 'number' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(314,94): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(314,115): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/purchases/enter-ap/page.tsx(315,48): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/todo/create-invoice/page.tsx(64,22): error TS2339: Property 'refetch' does not exist on type '{ customers: Customer[]; isLoading: boolean; error: Error | null; createCustomer: (customerData: Omit<Customer, "id" | "createdAt" | "updatedAt">) => Promise<...>; updateCustomer: (id: string, customerData: Partial<...>) => Promise<...>; deleteCustomer: (id: string) => Promise<...>; refreshCustomers: () => void; }'.
+src/app/todo/create-invoice/page.tsx(329,85): error TS2339: Property 'type' does not exist on type 'Account'.
+src/app/todo/create-invoice/page.tsx(330,76): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/todo/create-invoice/page.tsx(330,111): error TS2339: Property 'name' does not exist on type 'Account'.
+src/app/todo/create-invoice/page.tsx(331,48): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/configuration/delete-user-permission-dialog.tsx(69,58): error TS2339: Property 'middleName' does not exist on type 'UserPermission'.
+src/components/configuration/user-permissions-list.tsx(39,11): error TS2339: Property 'designation' does not exist on type 'UserPermission'.
+src/components/configuration/user-permissions-list.tsx(152,73): error TS2339: Property 'middleName' does not exist on type 'UserPermission'.
+src/components/configuration/user-permissions-list.tsx(153,56): error TS2339: Property 'designation' does not exist on type 'UserPermission'.
+src/components/dashboard/account-balances.tsx(16,42): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/dashboard/account-balances.tsx(16,58): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/financial-donut.tsx(33,55): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/financial-donut.tsx(34,56): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/financial-donut.tsx(35,54): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/financial-donut.tsx(40,62): error TS2339: Property 'category' does not exist on type 'Account'.
+src/components/dashboard/pending-invoices-widget.tsx(20,22): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/pending-invoices-widget.tsx(20,46): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/dashboard/pending-invoices-widget.tsx(21,21): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/dashboard/summary-cards.tsx(32,50): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/dashboard/summary-cards.tsx(40,48): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/summary-cards.tsx(41,53): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/summary-cards.tsx(42,48): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/upcoming-bills-widget.tsx(17,22): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/dashboard/upcoming-bills-widget.tsx(17,50): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/dashboard/upcoming-bills-widget.tsx(18,21): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/inventory/add-product-dialog.tsx(253,19): error TS2345: Argument of type '"add-product"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/inventory/add-product-dialog.tsx(263,79): error TS2345: Argument of type '"add-product"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/inventory/add-product-dialog.tsx(576,64): error TS2345: Argument of type '"add-product"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/layout/main-menu.tsx(48,50): error TS2345: Argument of type '"backup-scheduler"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(111,50): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(115,78): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(122,50): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(126,57): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(149,50): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(263,81): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(263,113): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(264,88): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(264,111): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(265,62): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(332,81): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(332,153): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(335,112): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(335,135): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(336,86): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(353,81): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(353,97): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(356,112): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(356,130): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(356,151): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/purchases/enter-accounts-payable-dialog.tsx(357,86): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/reports/balance-sheet-report.tsx(59,50): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/reports/balance-sheet-report.tsx(60,55): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/reports/balance-sheet-report.tsx(61,50): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/reports/balance-sheet-report.tsx(70,19): error TS2352: Conversion of type '{ id: string; name: string; number: number; balance: number; type: string; header: "No"; bank: "No"; }' to type 'Account' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ id: string; name: string; number: number; balance: number; type: string; header: "No"; bank: "No"; }' is missing the following properties from type 'Account': account_no, account_type_no, account_name, account_type
+src/components/reports/balance-sheet-report.tsx(88,44): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/reports/balance-sheet-report.tsx(89,27): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/reports/balance-sheet-report.tsx(158,88): error TS2345: Argument of type '"balance-sheet-report"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/reports/balance-sheet-report.tsx(172,57): error TS2345: Argument of type '"balance-sheet-report"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/todo/create-invoice-dialog.tsx(469,119): error TS2339: Property 'type' does not exist on type 'Account'.
+src/components/todo/create-invoice-dialog.tsx(470,112): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/todo/create-invoice-dialog.tsx(470,147): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/todo/create-invoice-dialog.tsx(471,86): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/edit-transaction-dialog.tsx(74,17): error TS2345: Argument of type '"edit-transaction"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/transactions/enter-cash-sale-dialog.tsx(325,93): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/enter-cash-sale-dialog.tsx(326,62): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(108,89): error TS2345: Argument of type '"enter-direct-payments"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/transactions/enter-direct-payments-dialog.tsx(155,52): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(155,75): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(156,38): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(177,50): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(177,73): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(178,36): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(252,60): error TS2339: Property 'number' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(252,83): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/enter-direct-payments-dialog.tsx(253,46): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/enter-payments-dialog.tsx(27,16): error TS2345: Argument of type '"enter-direct-payments"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/components/transactions/enter-payments-of-accounts-payable-dialog.tsx(205,32): error TS2339: Property 'name' does not exist on type 'Account'.
+src/components/transactions/view-transaction-dialog.tsx(21,17): error TS2345: Argument of type '"view-transaction"' is not assignable to parameter of type '"customer-list" | "add-customer" | "customer-payment" | "add-customer-payment" | "customer-loyalty-points" | "loyalty-settings" | "add-loyalty-card" | "add-loyalty-setting" | ... 37 more ... | "balance-sheet"'.
+src/lib/backup-service.ts(4,22): error TS7016: Could not find a declaration file for module 'archiver'. 'E:/SOFTWARE/#FIREBASE PROJECT/LJMAAccounting/node_modules/archiver/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/archiver` if it exists or add a new declaration (.d.ts) file containing `declare module 'archiver';`
+src/lib/backup-service.ts(6,30): error TS7016: Could not find a declaration file for module 'uuid'. 'E:/SOFTWARE/#FIREBASE PROJECT/LJMAAccounting/node_modules/uuid/dist/esm-browser/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+src/lib/backup-service.ts(66,32): error TS2345: Argument of type '(value: unknown) => void' is not assignable to parameter of type '() => void'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+src/lib/seed-db.ts(15,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(16,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(17,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(18,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(19,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(20,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(26,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(27,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(28,9): error TS2353: Object literal may only specify known properties, and 'number' does not exist in type 'Omit<Account, "id">'.
+src/lib/seed-db.ts(67,17): error TS2322: Type '{ category: string; account_no: number; account_type_no: number; account_name: string; account_description?: string | undefined; balance?: number | undefined; account_type: "Asset" | "Liability" | "Equity" | "Income" | "Expense" | string; ... 6 more ...; last_updated_at?: (Date | string) | undefined; }' is not assignable to type 'Account & { category: string; }'.
+  Property 'id' is missing in type '{ category: string; account_no: number; account_type_no: number; account_name: string; account_description?: string | undefined; balance?: number | undefined; account_type: "Asset" | "Liability" | "Equity" | "Income" | "Expense" | string; ... 6 more ...; last_updated_at?: (Date | string) | undefined; }' but required in type 'Account'.

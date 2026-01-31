@@ -7,17 +7,20 @@ datasource db {
 }
 
 model Account {
-  id            String   @id @default(cuid())
-  accnt_no      Int      @unique
-  accnt_type_no Int      @default(1)
-  name          String
-  balance       Float?   @default(0)
-  type          String
-  header        String
-  bank          String
-  category      String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  account_no          Int      @unique
+  account_name        String
+  balance             Float?   @default(0)
+  account_type        String
+  header              String
+  bank                String
+  account_category    String?
+  date_created        DateTime @default(now())
+  last_updated_at     DateTime @updatedAt
+  account_type_no     Int      @default(1)
+  account_description String?
+  fs_category         String?
+  account_status      String   @default("Active")
 
   @@map("chart_of_account")
 }
@@ -59,9 +62,9 @@ model LoyaltyPointSetting {
   description     String
   amount          Float          @default(0)
   equivalentPoint Float          @default(0)
-  loyaltyPoints   LoyaltyPoint[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  loyaltyPoints   LoyaltyPoint[]
 
   @@map("loyalty_point_setting")
 }
@@ -86,10 +89,10 @@ model Customer {
   pointSetting              String?
   loyaltyCalculationMethod  String?        @default("automatic")
   loyaltyCardNumber         String?
-  loyaltyPoints             LoyaltyPoint[]
-  invoices                  Invoice[]
   createdAt                 DateTime       @default(now())
   updatedAt                 DateTime       @updatedAt
+  invoices                  Invoice[]
+  loyaltyPoints             LoyaltyPoint[]
 
   @@map("customer")
 }
@@ -97,21 +100,23 @@ model Customer {
 model LoyaltyPoint {
   id             String              @id @default(cuid())
   customerId     String
-  customer       Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
   loyaltyCardId  String
   totalPoints    Float               @default(0)
   pointSettingId String
-  pointSetting   LoyaltyPointSetting @relation(fields: [pointSettingId], references: [id])
   expiryDate     DateTime?
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
+  customer       Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  pointSetting   LoyaltyPointSetting @relation(fields: [pointSettingId], references: [id])
 
+  @@index([customerId], map: "loyalty_point_customerId_fkey")
+  @@index([pointSettingId], map: "loyalty_point_pointSettingId_fkey")
   @@map("loyalty_point")
 }
 
 model Product {
-  id                    String   @id @default(cuid())
-  code                  String   @unique
+  id                    String                 @id @default(cuid())
+  code                  String                 @unique
   name                  String
   barcode               String?
   description           String?
@@ -122,26 +127,25 @@ model Product {
   brandId               String?
   supplierId            String?
   unitOfMeasureId       String?
-  unitPrice             Float    @default(0)
-  costPrice             Float    @default(0)
-  stockQuantity         Int      @default(0)
-  minStockLevel         Int      @default(0)
+  unitPrice             Float                  @default(0)
+  costPrice             Float                  @default(0)
+  stockQuantity         Int                    @default(0)
+  minStockLevel         Int                    @default(0)
   maxStockLevel         Int?
-  isActive              Boolean  @default(true)
+  isActive              Boolean                @default(true)
   salesOrder            String?
-  autoCreateChildren    Boolean  @default(false)
-  initialStock          Int      @default(0)
-  reorderPoint          Int      @default(0)
+  autoCreateChildren    Boolean                @default(false)
+  initialStock          Int                    @default(0)
+  reorderPoint          Int                    @default(0)
   incomeAccountId       String?
   expenseAccountId      String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  purchaseOrderItems PurchaseOrderItem[]
-  invoiceItems       InvoiceItem[]
-  history            ProductHistory[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
   inventoryTransactions InventoryTransaction[]
-  requestItems       RequestItem[]
+  invoiceItems          InvoiceItem[]
+  history               ProductHistory[]
+  purchaseOrderItems    PurchaseOrderItem[]
+  requestItems          RequestItem[]
 
   @@map("product")
 }
@@ -179,25 +183,24 @@ model Category {
 }
 
 model Supplier {
-  id                String   @id @default(cuid())
-  name              String   @unique
+  id                String          @id @default(cuid())
+  name              String          @unique
   contactPerson     String?
-  contactFirstName  String?
   email             String?
   phone             String?
-  phoneAlternative  String?
-  fax               String?
   address           String?
   paymentTerms      String?
-  paymentTermsValue String?
-  vatInfo           String?
-  isTaxExempt       Boolean  @default(false)
+  isActive          Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
   additionalInfo    String?
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  purchaseOrders PurchaseOrder[]
+  contactFirstName  String?
+  fax               String?
+  isTaxExempt       Boolean         @default(false)
+  paymentTermsValue String?
+  phoneAlternative  String?
+  vatInfo           String?
+  purchaseOrders    PurchaseOrder[]
 
   @@map("supplier")
 }
@@ -221,9 +224,9 @@ model Reminder {
   date      DateTime
   endDate   DateTime?
   isActive  Boolean   @default(true)
-  isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  isRead    Boolean   @default(false)
 
   @@map("reminder")
 }
@@ -247,11 +250,11 @@ model UserPermission {
   lastName    String
   contactNo   String?
   accountType String
-  password    String?
-  permissions String   @db.Text // JSON string containing permissions
+  permissions String   @db.Text
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  password    String?
 
   @@map("user_permission")
 }
@@ -276,7 +279,7 @@ model BusinessProfile {
 model BackupSchedule {
   id         String   @id @default(cuid())
   backupTime DateTime
-  frequency  String // "week", "month", "custom"
+  frequency  String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -285,10 +288,10 @@ model BackupSchedule {
 
 model Notification {
   id        String   @id @default(cuid())
-  type      String // e.g., "reminder_create", "reminder_update"
+  type      String
   title     String
   message   String?
-  entityId  String? // ID of the related object (reminder id)
+  entityId  String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -297,7 +300,7 @@ model Notification {
 
 model BackupJob {
   id          String    @id @default(cuid())
-  status      String // PENDING, RUNNING, COMPLETED, FAILED
+  status      String
   filePath    String?
   fileName    String?
   fileSize    String?
@@ -312,7 +315,6 @@ model BackupJob {
 model PurchaseOrder {
   id              String              @id @default(cuid())
   supplierId      String
-  supplier        Supplier            @relation(fields: [supplierId], references: [id])
   date            DateTime
   vendorAddress   String?             @db.Text
   shippingAddress String?             @db.Text
@@ -322,123 +324,128 @@ model PurchaseOrder {
   subtotal        Float               @default(0)
   taxTotal        Float               @default(0)
   total           Float               @default(0)
-  status          String              @default("Open") // Draft, Open, Closed, Void
-  items           PurchaseOrderItem[]
+  status          String              @default("Open")
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
+  supplier        Supplier            @relation(fields: [supplierId], references: [id])
+  items           PurchaseOrderItem[]
 
+  @@index([supplierId], map: "purchase_order_supplierId_fkey")
   @@map("purchase_order")
 }
 
 model PurchaseOrderItem {
-  id              String        @id @default(cuid())
-  purchaseOrderId String
-  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
-  productId       String?
-  product         Product?      @relation(fields: [productId], references: [id])
-  itemDescription String
-  quantity        Int
-  unitPrice       Float
-  tax             Float?
-  total           Float
-  
-  // Additional fields for bulk upload
-  category            String?
-  sku                 String?
-  barcode             String?
-  buyingUom           String?
-  qtyPerCase          Int?
-  offtake             Int?
-  orderQty            Int?
-  pieces              Int?
-  costPricePerCase    Float?
-  costPricePerPiece   Float?
-  discount1           Float?
-  discount2           Float?
-  discount3           Float?
-  netCostAmount       Float?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id                String        @id @default(cuid())
+  purchaseOrderId   String
+  productId         String?
+  itemDescription   String
+  quantity          Int
+  unitPrice         Float
+  tax               Float?
+  total             Float
+  category          String?
+  sku               String?
+  barcode           String?
+  buyingUom         String?
+  qtyPerCase        Int?
+  offtake           Int?
+  orderQty          Int?
+  pieces            Int?
+  costPricePerCase  Float?
+  costPricePerPiece Float?
+  discount1         Float?
+  discount2         Float?
+  discount3         Float?
+  netCostAmount     Float?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  product           Product?      @relation(fields: [productId], references: [id])
+  purchaseOrder     PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
 
+  @@index([productId], map: "purchase_order_item_productId_fkey")
+  @@index([purchaseOrderId], map: "purchase_order_item_purchaseOrderId_fkey")
   @@map("purchase_order_item")
 }
 
 model Invoice {
-  id              String        @id @default(cuid())
-  invoiceNumber   String        @unique
-  customerId      String
-  customer        Customer      @relation(fields: [customerId], references: [id])
+  id               String        @id @default(cuid())
+  invoiceNumber    String        @unique
+  customerId       String
   customerPONumber String?
-  date            DateTime
-  dueDate         DateTime?
-  terms           String?
-  salesperson     String?
-  depositAccount  String?
-  billingAddress  String?       @db.Text
-  shippingAddress String?       @db.Text
-  subtotal        Float         @default(0)
-  total           Float         @default(0)
-  status          String        @default("Pending") // Pending, Paid, Void
-  items           InvoiceItem[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  date             DateTime
+  dueDate          DateTime?
+  terms            String?
+  salesperson      String?
+  depositAccount   String?
+  billingAddress   String?       @db.Text
+  shippingAddress  String?       @db.Text
+  subtotal         Float         @default(0)
+  total            Float         @default(0)
+  status           String        @default("Pending")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  customer         Customer      @relation(fields: [customerId], references: [id])
+  items            InvoiceItem[]
 
+  @@index([customerId], map: "invoice_customerId_fkey")
   @@map("invoice")
 }
 
 model InvoiceItem {
   id          String   @id @default(cuid())
   invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   productId   String?
-  product     Product? @relation(fields: [productId], references: [id])
   description String
   quantity    Float
   unitPrice   Float
   total       Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id])
 
+  @@index([invoiceId], map: "invoice_item_invoiceId_fkey")
+  @@index([productId], map: "invoice_item_productId_fkey")
   @@map("invoice_item")
 }
 
 model ProductHistory {
-  id          String   @id @default(cuid())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  field       String   // e.g. "price", "stock"
-  oldValue    String?
-  newValue    String?
-  changedBy   String?  // User ID or name
-  changedAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  productId String
+  field     String
+  oldValue  String?
+  newValue  String?
+  changedBy String?
+  changedAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@index([productId], map: "product_history_productId_fkey")
   @@map("product_history")
 }
 
 model InventoryTransaction {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   productId   String
-  product     Product  @relation(fields: [productId], references: [id])
-  type        String   // "IN", "OUT", "ADJUSTMENT"
+  type        String
   quantity    Int
-  referenceId String?  // ID of Purchase Order, Invoice, etc.
-  status      String   @default("Pending") // For Kanban status
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  referenceId String?
+  status      String      @default("Pending")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  product     Product     @relation(fields: [productId], references: [id])
   kanbanCard  KanbanCard?
 
+  @@index([productId], map: "inventory_transaction_productId_fkey")
   @@map("inventory_transaction")
 }
 
 model KanbanBoard {
   id        String         @id @default(cuid())
   title     String
-  type      String         // e.g. "Inventory", "Project"
-  columns   KanbanColumn[]
+  type      String
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
+  columns   KanbanColumn[]
 
   @@map("kanban_board")
 }
@@ -446,30 +453,29 @@ model KanbanBoard {
 model KanbanColumn {
   id        String       @id @default(cuid())
   boardId   String
-  board     KanbanBoard  @relation(fields: [boardId], references: [id], onDelete: Cascade)
   title     String
   order     Int
-  cards     KanbanCard[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  cards     KanbanCard[]
+  board     KanbanBoard  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
+  @@index([boardId], map: "kanban_column_boardId_fkey")
   @@map("kanban_column")
 }
 
 model KanbanCard {
-  id             String               @id @default(cuid())
-  columnId       String
-  column         KanbanColumn         @relation(fields: [columnId], references: [id], onDelete: Cascade)
-  content        String?
-  position       Int
-  
-  // Polymorphic-like relations (can optionally link to other entities)
-  transactionId  String?              @unique
-  transaction    InventoryTransaction? @relation(fields: [transactionId], references: [id])
-  
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  id            String                @id @default(cuid())
+  columnId      String
+  content       String?
+  position      Int
+  transactionId String?               @unique
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  column        KanbanColumn          @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  transaction   InventoryTransaction? @relation(fields: [transactionId], references: [id])
 
+  @@index([columnId], map: "kanban_card_columnId_fkey")
   @@map("kanban_card")
 }
 
@@ -479,22 +485,19 @@ model Request {
   requesterName String
   position      String?
   accountNo     String?
-  businessUnit  String?       // "Business Unit / From"
+  businessUnit  String?
   department    String?
   purpose       String?
   chargeTo      String?
   amount        Float         @default(0)
-  
-  // Signatures / Approvals
   verifiedBy    String?
   approvedBy    String?
   processedBy   String?
-
   date          DateTime      @default(now())
-  status        String        @default("To Verify") // To Verify, To Approve, To Process, Released, Received
-  items         RequestItem[]
+  status        String        @default("To Verify")
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  items         RequestItem[]
 
   @@map("request")
 }
@@ -502,9 +505,7 @@ model Request {
 model RequestItem {
   id          String   @id @default(cuid())
   requestId   String
-  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
   productId   String?
-  product     Product? @relation(fields: [productId], references: [id])
   description String
   quantity    Int
   unit        String?
@@ -512,6 +513,10 @@ model RequestItem {
   total       Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  product     Product? @relation(fields: [productId], references: [id])
+  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
+  @@index([productId], map: "request_item_productId_fkey")
+  @@index([requestId], map: "request_item_requestId_fkey")
   @@map("request_item")
 }

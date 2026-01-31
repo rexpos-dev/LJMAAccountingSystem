@@ -202,7 +202,7 @@ export function EnterPaymentsOfAccountsPayableDialog() {
                     <SelectContent>
                       {bankAccounts.filter(acc => acc.id).map((acc) => (
                         <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
+                          {acc.account_name}
                         </SelectItem>
                       ))}
                     </SelectContent>

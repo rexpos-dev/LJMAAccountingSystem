@@ -28,8 +28,8 @@ export function Overview() {
       if (isNaN(date.getTime())) return;
 
       // 2. Link transaction to Account
-      // t.accountNumber (string) should match account.accnt_no (number or string)
-      const account = accounts.find(acc => acc.accnt_no?.toString() === t.accountNumber?.toString());
+      // t.accountNumber (string) should match account.account_no (number or string)
+      const account = accounts.find(acc => acc.account_no?.toString() === t.accountNumber?.toString());
       if (!account) return;
 
       // 3. Initialize monthly bucket
@@ -52,20 +52,20 @@ export function Overview() {
       // Profit = Income - (Expenses + Cost)
 
       // Income Accounts: Credit increases Income, Debit decreases
-      if (account.type === 'Income') {
+      if (account.account_type === 'Income') {
         const netIncome = credit - debit;
         entry.profit += netIncome; // Add to profit
       }
 
       // Expense Accounts: Debit increases Expense, Credit decreases
-      else if (account.type === 'Expense') {
+      else if (account.account_type === 'Expense') {
         const netExpense = debit - credit;
 
         // Distinguish Cost (COGS) vs Regular Expense
         // Check for specific "Cost" naming conventions
-        const isCost = account.name.toLowerCase().includes('cost') ||
-          account.name.toLowerCase().includes('cogs') ||
-          account.name.toLowerCase().includes('purchases');
+        const isCost = account.account_name.toLowerCase().includes('cost') ||
+          account.account_name.toLowerCase().includes('cogs') ||
+          account.account_name.toLowerCase().includes('purchases');
 
         if (isCost) {
           entry.cost += netExpense;

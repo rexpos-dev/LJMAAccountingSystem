@@ -66,7 +66,7 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
     const groups: { [key: string]: Account[] } = {};
 
     accountsData.forEach(account => {
-      const category = account.category || 'Uncategorized';
+      const category = account.account_category || 'Uncategorized';
       if (!groups[category]) {
         groups[category] = [];
       }
@@ -84,13 +84,13 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
 
   const handleRowDoubleClick = (account: Account) => {
     // A header row doesn't have a number and cannot be edited.
-    if (!account.accnt_no) return;
+    if (!account.account_no) return;
     onAccountSelect(account);
     openDialog('edit-account');
   };
 
   const renderAccountRow = (account: Account) => {
-    const isHeader = !account.accnt_no;
+    const isHeader = !account.account_no;
     const isSelected = selectedAccount?.id === account.id;
 
     return (
@@ -105,19 +105,19 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
         onClick={() => !isHeader && onAccountSelect(account)}
         onDoubleClick={() => handleRowDoubleClick(account)}
       >
-        <TableCell>{account.accnt_no}</TableCell>
+        <TableCell>{account.account_no}</TableCell>
         <TableCell
           className={cn({
             'pl-8': !isHeader,
             'font-semibold text-white': isHeader,
           })}
         >
-          {account.name}
+          {account.account_name}
         </TableCell>
         <TableCell className="text-right">
           {account.balance !== undefined ? formatCurrency(account.balance) : ''}
         </TableCell>
-        <TableCell>{account.type}</TableCell>
+        <TableCell>{account.account_type}</TableCell>
         <TableCell>{account.header}</TableCell>
         <TableCell>{account.bank}</TableCell>
       </TableRow>
@@ -279,8 +279,8 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {openDialogs['edit-account'] && <EditAccountDialog account={selectedAccount} />}
-      {openDialogs['delete-account'] && <DeleteAccountDialog account={selectedAccount} onDeleted={onAccountDeleted} />}
+      {openDialogs['edit-account'] && <EditAccountDialog />}
+      {openDialogs['delete-account'] && <DeleteAccountDialog />}
     </>
   );
 }

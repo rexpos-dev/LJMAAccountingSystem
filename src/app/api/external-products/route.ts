@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `http://192.168.1.163:9003/api/products?${externalParams.toString()}`,
+      `http://192.168.1.163:3001/api/products?${externalParams.toString()}`,
       {
         method: 'GET',
         headers: {

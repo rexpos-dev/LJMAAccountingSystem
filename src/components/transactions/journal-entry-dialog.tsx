@@ -106,7 +106,7 @@ export default function JournalEntryDialog() {
                 if (updates.accountId && accounts) {
                     const account = accounts.find(acc => acc.id === updates.accountId);
                     if (account) {
-                        updated.accountName = account.name;
+                        updated.accountName = account.account_name;
                     }
                 }
                 return updated;
@@ -166,15 +166,15 @@ export default function JournalEntryDialog() {
                 return {
                     ledger: journal === 'general' ? 'General Ledger' : journal.charAt(0).toUpperCase() + journal.slice(1) + ' Ledger',
                     transNo: reference,
-                    code: account?.accnt_no?.toString() || '',
-                    accountNumber: account?.accnt_no?.toString() || '',
+                    code: account?.account_no?.toString() || '',
+                    accountNumber: account?.account_no?.toString() || '',
                     date: date.toISOString(),
                     invoiceNumber: reference,
                     particulars: journalMemo,
                     debit: line.type === 'debit' ? line.amount : 0,
                     credit: line.type === 'credit' ? line.amount : 0,
                     balance: 0, // Will be calculated by backend
-                    accountName: account?.name || '',
+                    accountName: account?.account_name || '',
                     user: 'System', // TODO: Get from auth context
                 };
             });
@@ -345,7 +345,7 @@ export default function JournalEntryDialog() {
                                                             ) : (
                                                                 accounts?.map((account) => (
                                                                     <SelectItem key={account.id} value={account.id || ''}>
-                                                                        {account.accnt_no} - {account.name}
+                                                                        {account.account_no} - {account.account_name}
                                                                     </SelectItem>
                                                                 ))
                                                             )}

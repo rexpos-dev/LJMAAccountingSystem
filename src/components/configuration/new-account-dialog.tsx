@@ -15,8 +15,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
@@ -31,7 +29,7 @@ import { useAccounts } from '@/hooks/use-accounts';
 
 
 
-type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense';
+type AccountType = 'Cash' | 'Cash On Hand' | 'Fund Transfer' | 'Store Equipments' | 'Office Equipment' | 'Income' | 'Expense';
 
 export default function NewAccountDialog() {
   const { openDialogs, closeDialog } = useDialog();
@@ -41,32 +39,31 @@ export default function NewAccountDialog() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
   const [accntTypeNo, setAccntTypeNo] = useState('');
+  const [description, setDescription] = useState('');
+  const [accountStatus, setAccountStatus] = useState('Active');
+  const [accountCategory, setAccountCategory] = useState('');
+  const [fsCategory, setFsCategory] = useState('');
   const [openingBalance, setOpeningBalance] = useState('0.00');
-  const [type, setType] = useState<AccountType>('Asset');
-  const [subType, setSubType] = useState('');
-  const [isHeader, setIsHeader] = useState(false);
-  const [isBank, setIsBank] = useState(false);
-  const [linkedAccount, setLinkedAccount] = useState('');
+  const [type, setType] = useState<AccountType>('Cash');
 
-  // Effect to handle Income type specific settings
-  useEffect(() => {
-    if (type === 'Income') {
-      setIsHeader(false); // Disable header account
-      setIsBank(true); // Select cash postable by default
-    } else {
-      // Reset for other types
-      setIsHeader(false);
-      setIsBank(false);
-    }
-  }, [type]);
+  const baseTypeMapping: Record<AccountType, string> = {
+    'Cash': 'Asset',
+    'Cash On Hand': 'Asset',
+    'Fund Transfer': 'Asset',
+    'Store Equipments': 'Asset',
+    'Office Equipment': 'Asset',
+    'Income': 'Income',
+    'Expense': 'Expense'
+  };
 
   // Generate unique account number and type number based on type
   const generateAccountNumber = async (accountType: AccountType) => {
     try {
+      const baseType = baseTypeMapping[accountType];
       const response = await fetch('/api/accounts');
       const accounts = await response.json();
 
-      const typeRanges = {
+      const typeRanges: Record<string, [number, number]> = {
         Asset: [1000, 1999],
         Liability: [2000, 2999],
         Equity: [3000, 3999],
@@ -74,35 +71,36 @@ export default function NewAccountDialog() {
         Expense: [5000, 5999],
       };
 
-      const [min, max] = typeRanges[accountType];
-      const accountsOfType = accounts.filter((acc: any) => acc.type === accountType);
+      const [min, max] = typeRanges[baseType];
+      const accountsOfType = accounts.filter((acc: any) => acc.account_type === baseType);
       const existingNumbers = accountsOfType
-        .map((acc: any) => acc.accnt_no)
+        .map((acc: any) => acc.account_no)
         .sort((a: number, b: number) => a - b);
 
       // Find the next available number in the range
       for (let num = min; num <= max; num++) {
         if (!existingNumbers.includes(num)) {
-          return { accnt_no: num, accnt_type_no: accountsOfType.length + 1 };
+          return { account_no: num, account_type_no: accountsOfType.length + 1 };
         }
       }
 
       // If all numbers in range are taken, use the next available
       const nextNum = Math.max(...existingNumbers, max) + 1;
-      return { accnt_no: nextNum, accnt_type_no: accountsOfType.length + 1 };
+      return { account_no: nextNum, account_type_no: accountsOfType.length + 1 };
     } catch (error) {
       // Fallback to basic numbering
-      const baseNumbers = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, Expense: 5000 };
-      return { accnt_no: baseNumbers[accountType], accnt_type_no: 1 };
+      const baseType = baseTypeMapping[accountType];
+      const baseNumbers: Record<string, number> = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, Expense: 5000 };
+      return { account_no: baseNumbers[baseType] || 1000, account_type_no: 1 };
     }
   };
 
   // Update account number when type changes
   const handleTypeChange = async (newType: AccountType) => {
     setType(newType);
-    const { accnt_no, accnt_type_no } = await generateAccountNumber(newType);
-    setNumber(accnt_no.toString());
-    setAccntTypeNo(accnt_type_no.toString());
+    const { account_no, account_type_no } = await generateAccountNumber(newType);
+    setNumber(account_no.toString());
+    setAccntTypeNo(account_type_no.toString());
   };
 
 
@@ -123,14 +121,17 @@ export default function NewAccountDialog() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name,
-          accnt_no: parseInt(number, 10),
-          accnt_type_no: parseInt(accntTypeNo, 10),
-          type,
-          header: isHeader ? 'Yes' : 'No',
-          bank: isBank ? 'Yes' : 'No',
-          category: type, // Using main type as category for simplicity
+          account_name: name,
+          account_no: parseInt(number, 10),
+          account_type_no: parseInt(accntTypeNo, 10),
+          account_type: baseTypeMapping[type],
+          header: 'No',
+          bank: ['Cash', 'Cash On Hand', 'Fund Transfer'].includes(type) ? 'Yes' : 'No',
+          account_category: type, // Use the specific label as category
           balance: parseFloat(openingBalance) || 0,
+          account_description: description || null,
+          account_status: accountStatus,
+          fs_category: fsCategory || type,
         }),
       });
 
@@ -145,16 +146,16 @@ export default function NewAccountDialog() {
       setName('');
       setNumber('');
       setAccntTypeNo('');
+      setDescription('');
+      setAccountStatus('Active');
+      setAccountCategory('');
+      setFsCategory('');
       setOpeningBalance('0.00');
-      setType('Asset');
-      setSubType('');
-      setIsHeader(false);
-      setIsBank(false);
-      setLinkedAccount('');
+      setType('Cash');
 
       toast({
         title: "Account Added",
-        description: `Account "${newAccount.name}" has been successfully created.`,
+        description: `Account "${newAccount.account_name}" has been successfully created.`,
       });
 
       // Refresh accounts list
@@ -172,7 +173,7 @@ export default function NewAccountDialog() {
 
   return (
     <Dialog open={openDialogs['new-account']} onOpenChange={() => closeDialog('new-account')}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-5xl">
         <DialogHeader>
           <DialogTitle>New Account Dialog</DialogTitle>
         </DialogHeader>
@@ -180,174 +181,153 @@ export default function NewAccountDialog() {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-medium text-white mb-4">Create New Account</h3>
-              <div className="space-y-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="account-name" className="text-right">
-                    Account Name:
+
+              {/* Two-column grid layout */}
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                {/* Left Column - Account No. */}
+                <div className="space-y-2">
+                  <Label htmlFor="account-number">
+                    Account No.<span className="text-destructive">*</span>
                   </Label>
-                  <Input id="account-name" className="col-span-3" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label className="text-right pt-2">Type</Label>
-                  <div className="col-span-3">
-                    <RadioGroup
-                      value={type}
-                      onValueChange={handleTypeChange}
-                      className="space-y-2"
-                    >
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="Asset" id="asset" />
-                        <Label htmlFor="asset" className="font-normal flex-1">
-                          Asset
-                        </Label>
-                        <Select disabled={type !== 'Asset'} onValueChange={setSubType} value={subType}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="--- Select Type ---" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="bank">Bank Account</SelectItem>
-                            <SelectItem value="other-asset">Other Asset</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="Liability" id="liability" />
-                        <Label htmlFor="liability" className="font-normal flex-1">
-                          Liability
-                        </Label>
-                        <Select disabled={type !== 'Liability'} onValueChange={setSubType} value={subType}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="--- Select Type ---" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="credit-card">Credit Card</SelectItem>
-                            <SelectItem value="loan">Loan Account</SelectItem>
-                            <SelectItem value="other-liability">Other Liability</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="Equity" id="equity" />
-                        <Label htmlFor="equity" className="font-normal flex-1">
-                          Equity
-                        </Label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="Income" id="income" />
-                        <Label htmlFor="income" className="font-normal flex-1">
-                          Income
-                        </Label>
-                        <Select disabled={type !== 'Income'} onValueChange={setSubType} value={subType}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="--- Select Type ---" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="operating-income">Operating Income (Sales)</SelectItem>
-                            <SelectItem value="non-operating-income">Non-Operating Income</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="Expense" id="expenses" />
-                        <Label htmlFor="expenses" className="font-normal flex-1">
-                          Expenses
-                        </Label>
-                        <Select disabled={type !== 'Expense'} onValueChange={setSubType} value={subType}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="--- Select Type ---" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="cost-of-sales">Cost of Sales</SelectItem>
-                            <SelectItem value="operating-expenses">Operating Expenses</SelectItem>
-                            <SelectItem value="non-operating-expense">Non-Operating Expense</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="cash-flow" className="text-right">
-                    Classification for Cash Flow:
-                  </Label>
-                  <Select disabled={type !== 'Equity'}>
-                    <SelectTrigger id="cash-flow" className="col-span-3">
-                      <SelectValue placeholder="--- Select Classification ---" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="operating">Operating</SelectItem>
-                      <SelectItem value="investing">Investing</SelectItem>
-                      <SelectItem value="financing">Financing</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="account-number" className="text-right">
-                    Account Number:
-                  </Label>
-                  <Input id="account-number" className="col-span-3" value={number} readOnly />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="linked-account" className="text-right">
-                    Default Linked Account for:
-                  </Label>
-                  <Select value={linkedAccount} onValueChange={setLinkedAccount}>
-                    <SelectTrigger id="linked-account" className="col-span-3">
-                      <SelectValue placeholder="--- None ---" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {type === 'Income' ? (
-                        <>
-                          <SelectItem value="income-account">Income Account</SelectItem>
-                          <SelectItem value="freight-collected">Freight Collected</SelectItem>
-                        </>
-                      ) : type === 'Expense' ? (
-                        <>
-                          <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
-                          <SelectItem value="freight-paid">Freight Paid</SelectItem>
-                          <SelectItem value="expense-account">Expense Account</SelectItem>
-                        </>
-                      ) : type === 'Liability' ? (
-                        <>
-                          <SelectItem value="sales-tax-collected">Sales Tax Collected</SelectItem>
-                          <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
-                          <SelectItem value="accounts-payable">Accounts Payables</SelectItem>
-                        </>
-                      ) : (
-                        <>
-                          <SelectItem value="none">--- None ---</SelectItem>
-                          <SelectItem value="deposit-account">DEPOSIT ACCOUNT</SelectItem>
-                          <SelectItem value="accounts-receivable">ACCOUNTS RECEIVABLE</SelectItem>
-                          <SelectItem value="sales-tax-paid">SALES TAX PAID</SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="opening-balance" className="text-right">
-                    Opening Balance:
-                  </Label>
-                  <Input id="opening-balance" value={openingBalance} onChange={(e) => setOpeningBalance(e.target.value)} className="col-span-3" />
+                  <Input
+                    id="account-number"
+                    value={number}
+                    readOnly
+                    placeholder="Auto-generated"
+                  />
                 </div>
 
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <div />
-                  <div className="col-span-3 space-y-2">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="header-account" checked={isHeader} onCheckedChange={(checked) => setIsHeader(checked as boolean)} disabled={type === 'Income'} />
-                        <Label htmlFor="header-account" className="font-normal">Account is just a Header Account</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="cash-postable" checked={isBank} onCheckedChange={(checked) => setIsBank(checked as boolean)} />
-                        <Label htmlFor="cash-postable" className="font-normal">Cash Postable</Label>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="tax-included" disabled={type === 'Liability'} />
-                      <Label htmlFor="tax-included" className="font-normal">Tax Included</Label>
-                    </div>
+                {/* Right Column - Account Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="account-name">
+                    Account Name<span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="account-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter account name"
+                  />
+                </div>
+
+                {/* Left Column - Account Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="account-description">
+                    Account Description
+                  </Label>
+                  <Input
+                    id="account-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter description (optional)"
+                  />
+                </div>
+
+                {/* Right Column - Date Created */}
+                <div className="space-y-2">
+                  <Label htmlFor="date-created">
+                    Date Created
+                  </Label>
+                  <Input
+                    id="date-created"
+                    value={new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    readOnly
+                  />
+                </div>
+
+                {/* Left Column - Account Type */}
+
+                <div className="space-y-2">
+                  <Label htmlFor="account-type">
+                    Account Type<span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={type} onValueChange={(v) => handleTypeChange(v as AccountType)}>
+                    <SelectTrigger id="account-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Cash">Cash</SelectItem>
+                      <SelectItem value="Cash On Hand">Cash On Hand</SelectItem>
+                      <SelectItem value="Fund Transfer">Fund Transfer</SelectItem>
+                      <SelectItem value="Store Equipments">Store Equipments</SelectItem>
+                      <SelectItem value="Office Equipment">Office Equipment</SelectItem>
+                      <SelectItem value="Income">Income</SelectItem>
+                      <SelectItem value="Expense">Expense</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+
+                {/* Right Column - Account Category */}
+                <div className="space-y-2">
+                  <Label htmlFor="account-category">
+                    Account Category
+                  </Label>
+                  <Select value={accountCategory} onValueChange={setAccountCategory}>
+                    <SelectTrigger id="account-category">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Asset">Asset</SelectItem>
+                      <SelectItem value="Liability">Liability</SelectItem>
+                      <SelectItem value="Equity">Equity</SelectItem>
+                      <SelectItem value="Income">Income</SelectItem>
+                      <SelectItem value="Cost of Sales">Cost of Sales</SelectItem>
+                      <SelectItem value="Expense">Expense</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Left Column - FS Category */}
+                <div className="space-y-2">
+                  <Label htmlFor="fs-category">
+                    FS Category
+                  </Label>
+                  <Select value={fsCategory} onValueChange={setFsCategory}>
+                    <SelectTrigger id="fs-category">
+                      <SelectValue placeholder="Select FS category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BS">BS</SelectItem>
+                      <SelectItem value="IS">IS</SelectItem>
+                      <SelectItem value="CFS">CFS</SelectItem>
+                      <SelectItem value="SCE">SCE</SelectItem>
+                      <SelectItem value="NFS">NFS</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Right Column - Opening Balance */}
+                <div className="space-y-2">
+                  <Label htmlFor="opening-balance">
+                    Opening Balance
+                  </Label>
+                  <Input
+                    id="opening-balance"
+                    value={openingBalance}
+                    onChange={(e) => setOpeningBalance(e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Account Status Section */}
+              <div className="pt-4 border-t mt-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="account-status">
+                      Account Status
+                    </Label>
+                    <Select value={accountStatus} onValueChange={setAccountStatus}>
+                      <SelectTrigger id="account-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="Inactive">Inactive</SelectItem>
+                        <SelectItem value="Suspended">Suspended</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -355,14 +335,13 @@ export default function NewAccountDialog() {
           </div>
         </ScrollArea>
         <DialogFooter>
-          <Button variant="secondary">Help</Button>
           <div className="flex-grow" />
           <Button onClick={handleAddAccount} disabled={!isFormValid}>Add</Button>
           <DialogClose asChild>
-            <Button>Done</Button>
+            <Button>Cancel</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   );
 }

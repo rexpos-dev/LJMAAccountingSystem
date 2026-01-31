@@ -1,13 +1,19 @@
 
+
 export interface Account {
-  id?: string;
-  number?: string | number;
-  accnt_no?: number;
-  accnt_type_no?: number;
-  name: string;
+  id: string;
+  account_no: number;
+  account_type_no: number;
+  account_name: string;
+  account_description?: string;
   balance?: number;
-  type: 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense';
+  account_type: 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense' | string;
   header: 'Yes' | 'No';
   bank: 'Yes' | 'No';
-  category?: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
+  date_created?: Date | string;
+  last_updated_at?: Date | string;
 }
+

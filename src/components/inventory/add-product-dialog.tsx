@@ -55,9 +55,9 @@ interface UnitOfMeasure {
 
 interface Account {
   id: string;
-  number: number;
-  name: string;
-  type: string;
+  account_no: number;
+  account_name: string;
+  account_type: string;
 }
 
 interface ConversionFactor {
@@ -477,7 +477,7 @@ export function AddProductDialog() {
                 </SelectTrigger>
                 <SelectContent>
                   {incomeAccounts.map((acc) => (
-                    <SelectItem key={acc.id} value={acc.id}>{acc.name}</SelectItem>
+                    <SelectItem key={acc.id} value={acc.id}>{acc.account_name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -493,7 +493,7 @@ export function AddProductDialog() {
                 </SelectTrigger>
                 <SelectContent>
                   {expenseAccounts.map((acc) => (
-                    <SelectItem key={acc.id} value={acc.id}>{acc.name}</SelectItem>
+                    <SelectItem key={acc.id} value={acc.id}>{acc.account_name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

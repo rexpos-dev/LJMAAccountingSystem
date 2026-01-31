@@ -17,8 +17,8 @@ export function PendingInvoicesWidget() {
         // Sum of all Receivable accounts
         const receivables = accounts
             .filter(acc =>
-                (acc.type === 'Asset' && acc.name.toLowerCase().includes('receivable')) ||
-                acc.name.toLowerCase() === 'accounts receivable'
+                (acc.account_type === 'Asset' && acc.account_name.toLowerCase().includes('receivable')) ||
+                acc.account_name.toLowerCase() === 'accounts receivable'
             );
 
         const total = receivables.reduce((sum, acc) => sum + (acc.balance || 0), 0);

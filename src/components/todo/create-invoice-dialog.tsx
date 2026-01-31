@@ -466,9 +466,9 @@ export default function CreateInvoiceDialog() {
                                                                 <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
                                                             ) : (
                                                                 <>
-                                                                    {accounts.filter(acc => acc.bank === 'Yes' || acc.type === 'Asset').map(account => (
-                                                                        <SelectItem key={account.id || account.name} value={account.id || account.name}>
-                                                                            {account.name}
+                                                                    {accounts.filter(acc => acc.bank === 'Yes' || acc.account_type === 'Asset').map(account => (
+                                                                        <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                            {account.account_name}
                                                                         </SelectItem>
                                                                     ))}
                                                                 </>

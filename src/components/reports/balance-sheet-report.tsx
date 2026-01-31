@@ -49,16 +49,18 @@ const formatCurrency = (amount?: number) => {
   }).format(amount);
 };
 
-export default function BalanceSheetReport({ reportDate }: { reportDate: Date }) {
-  const { openDialogs, closeDialog } = useDialog();
+export default function BalanceSheetReport({ reportDate: propReportDate }: { reportDate?: Date }) {
+  const { openDialogs, closeDialog, getDialogData } = useDialog();
+  const dialogData = getDialogData('balance-sheet-report');
+  const reportDate = propReportDate || dialogData?.reportDate || new Date();
 
   const { data: accountsData, isLoading } = useAccounts();
 
   const { assets, liabilities, equity, totalAssets, totalLiabilities, totalEquity, netAssets } = useMemo(() => {
     const list: Account[] = accountsData ?? [];
-    const assets = list.filter((a: Account) => a.type === 'Asset');
-    const liabilities = list.filter((a: Account) => a.type === 'Liability');
-    const equity = list.filter((a: Account) => a.type === 'Equity');
+    const assets = list.filter((a: Account) => a.account_type === 'Asset');
+    const liabilities = list.filter((a: Account) => a.account_type === 'Liability');
+    const equity = list.filter((a: Account) => a.account_type === 'Equity');
 
     const totalAssets = assets.reduce((sum: number, acc: Account) => sum + (acc.balance ?? 0), 0);
     const totalLiabilities = liabilities.reduce((sum: number, acc: Account) => sum + (acc.balance ?? 0), 0);
@@ -69,10 +71,10 @@ export default function BalanceSheetReport({ reportDate }: { reportDate: Date })
     if (Math.abs(historicalBalancing) > 0.005) {
       equity.push({
         id: 'hist-balance',
-        name: 'Historical Balancing',
-        number: 3999,
+        account_name: 'Historical Balancing',
+        account_no: 3999,
         balance: historicalBalancing,
-        type: 'Equity',
+        account_type: 'Equity',
         header: 'No',
         bank: 'No'
       } as Account);
@@ -85,8 +87,8 @@ export default function BalanceSheetReport({ reportDate }: { reportDate: Date })
 
   const renderAccountRow = (account: Account) => (
     <TableRow key={account.id} className="border-none">
-      <TableCell className="pl-8">{account.number}</TableCell>
-      <TableCell>{account.name}</TableCell>
+      <TableCell className="pl-8">{account.account_no}</TableCell>
+      <TableCell>{account.account_name}</TableCell>
       <TableCell className="text-right">{formatCurrency(account.balance)}</TableCell>
     </TableRow>
   );

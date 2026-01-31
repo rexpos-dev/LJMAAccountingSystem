@@ -152,8 +152,8 @@ export function EnterDirectPaymentsDialog() {
                       </SelectTrigger>
                       <SelectContent>
                         {mockAccounts.map(account => (
-                          <SelectItem key={account.number} value={account.number?.toString() ?? ''}>
-                            {account.name}
+                          <SelectItem key={account.account_no} value={account.account_no?.toString() ?? ''}>
+                            {account.account_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -174,8 +174,8 @@ export function EnterDirectPaymentsDialog() {
                     </SelectTrigger>
                     <SelectContent>
                       {mockAccounts.filter(account => account.bank === 'Yes').map(account => (
-                        <SelectItem key={account.number} value={account.number?.toString() ?? ''}>
-                          {account.name}
+                        <SelectItem key={account.account_no} value={account.account_no?.toString() ?? ''}>
+                          {account.account_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -249,8 +249,8 @@ export function EnterDirectPaymentsDialog() {
                               </SelectTrigger>
                               <SelectContent>
                                 {mockAccounts.map(account => (
-                                  <SelectItem key={account.number} value={account.name}>
-                                    {account.name}
+                                  <SelectItem key={account.account_no} value={account.account_name}>
+                                    {account.account_name}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

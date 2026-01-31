@@ -13,7 +13,7 @@ import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -25,6 +25,18 @@ import { useEffect, useState } from 'react';
 import type { Account } from '@/types/account';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
+
+type AccountType = 'Cash' | 'Cash On Hand' | 'Fund Transfer' | 'Store Equipments' | 'Office Equipment' | 'Income' | 'Expense';
+
+const baseTypeMapping: Record<AccountType, string> = {
+  'Cash': 'Asset',
+  'Cash On Hand': 'Asset',
+  'Fund Transfer': 'Asset',
+  'Store Equipments': 'Asset',
+  'Office Equipment': 'Asset',
+  'Income': 'Income',
+  'Expense': 'Expense'
+};
 
 
 export default function EditAccountDialog() {
@@ -53,9 +65,14 @@ export default function EditAccountDialog() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Handles changes for checkboxes, converting boolean to 'Yes'/'No' string.
-  const handleCheckboxChange = (field: keyof Account, checked: boolean) => {
-    handleInputChange(field, checked ? 'Yes' : 'No');
+  const handleTypeChange = (newType: AccountType) => {
+    setFormData(prev => ({
+      ...prev,
+      account_category: newType,
+      account_type: baseTypeMapping[newType] as any,
+      bank: ['Cash', 'Cash On Hand', 'Fund Transfer'].includes(newType) ? 'Yes' : 'No',
+      fs_category: newType // Update fs_category to match type for consistency
+    }));
   };
 
   // Saves the updated data to the database.
@@ -73,13 +90,16 @@ export default function EditAccountDialog() {
         },
         body: JSON.stringify({
           id: formData.id,
-          accnt_no: formData.accnt_no,
-          name: formData.name,
-          type: formData.type,
-          header: formData.header,
-          bank: formData.bank,
-          category: formData.category,
+          account_no: formData.account_no,
+          account_name: formData.account_name,
+          account_type: formData.account_type,
+          header: formData.header || 'No',
+          bank: formData.bank || 'No',
+          account_category: formData.account_category,
           balance: formData.balance,
+          account_description: formData.account_description,
+          account_status: formData.account_status || 'Active',
+          fs_category: formData.fs_category || formData.account_category || formData.account_type,
         }),
       });
 
@@ -93,7 +113,7 @@ export default function EditAccountDialog() {
 
       toast({
         title: "Account Updated",
-        description: `Account "${updatedAccount.name}" has been successfully updated.`,
+        description: `Account "${updatedAccount.account_name}" has been successfully updated.`,
       });
 
       // Refresh accounts list
@@ -116,122 +136,117 @@ export default function EditAccountDialog() {
     closeDialog('edit-account');
   };
 
-  const isEquity = formData.type === 'Equity';
-
   return (
     <Dialog open={openDialogs['edit-account']} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Account Properties</DialogTitle>
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-0">
+          <DialogTitle className="text-2xl font-semibold">Account Properties</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="number" className="text-right">
-              Number:
-            </Label>
-            <Input id="number" value={formData.accnt_no || ''} readOnly className="col-span-2" />
-          </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="type" className="text-right">
-              Type:
-            </Label>
-            <Input id="type" value={formData.type || ''} disabled className="col-span-2" />
-          </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="subclass" className="text-right">
-              Subclass:
-            </Label>
-            <Select disabled>
-              <SelectTrigger id="subclass" className="col-span-2">
-                <SelectValue placeholder="" />
-              </SelectTrigger>
-            </Select>
-          </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="cash-flow" className="text-right">
-              Classification for cash flow:
-            </Label>
-            <Select disabled={!isEquity}>
-              <SelectTrigger id="cash-flow" className="col-span-2">
-                <SelectValue placeholder="--- Select Classification ---" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="operating">Operating</SelectItem>
-                <SelectItem value="investing">Investing</SelectItem>
-                <SelectItem value="financing">Financing</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name:
-            </Label>
-            <Input id="name" value={formData.name || ''} onChange={(e) => handleInputChange('name', e.target.value)} className="col-span-2" />
-          </div>
-          <div className="col-start-2 col-span-2 space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="header-account" checked={formData.header === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('header', checked as boolean)} disabled={formData.type === 'Income'} />
-              <Label htmlFor="header-account" className="font-normal">Header account (for subtotals only, no posting)</Label>
+
+        <ScrollArea className="max-h-[calc(90vh-140px)]">
+          <div className="p-6">
+            <div className="space-y-6">
+              {/* Account Details Section */}
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="number">Account No.</Label>
+                  <Input
+                    id="number"
+                    value={formData.account_no || ''}
+                    readOnly
+                    className="bg-muted"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="name">
+                    Account Name<span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder="Enter account name"
+                    value={formData.account_name || ''}
+                    onChange={(e) => handleInputChange('account_name', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="opening-balance">Opening Balance</Label>
+                  <Input
+                    id="opening-balance"
+                    type="number"
+                    placeholder="0.00"
+                    value={formData.balance ?? 0}
+                    onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="account-status">Status</Label>
+                  <Select
+                    value={formData.account_status || 'Active'}
+                    onValueChange={(v) => handleInputChange('account_status', v)}
+                  >
+                    <SelectTrigger id="account-status">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  placeholder="Optional description"
+                  value={formData.account_description || ''}
+                  onChange={(e) => handleInputChange('account_description', e.target.value)}
+                />
+              </div>
+
+              {/* Simplified Account Type Section */}
+              <div className="pt-4 border-t mt-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="account-type">
+                      Account Type<span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={(formData.account_category as AccountType) || (formData.account_type as any === 'Asset' ? 'Cash' : formData.account_type as any) || 'Cash'}
+                      onValueChange={(v) => handleTypeChange(v as AccountType)}
+                    >
+                      <SelectTrigger id="account-type">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Cash">Cash</SelectItem>
+                        <SelectItem value="Cash On Hand">Cash On Hand</SelectItem>
+                        <SelectItem value="Fund Transfer">Fund Transfer</SelectItem>
+                        <SelectItem value="Store Equipments">Store Equipments</SelectItem>
+                        <SelectItem value="Office Equipment">Office Equipment</SelectItem>
+                        <SelectItem value="Income">Income</SelectItem>
+                        <SelectItem value="Expense">Expense</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="cash-postable" checked={formData.bank === 'Yes'} onCheckedChange={(checked) => handleCheckboxChange('bank', checked as boolean)} />
-              <Label htmlFor="cash-postable" className="font-normal">Cash postable (e.g., bank or credit card)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="tax-included" disabled={formData.type === 'Liability'} />
-              <Label htmlFor="tax-included" className="font-normal">Tax included</Label>
-            </div>
           </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="opening-balance" className="text-right">
-              Opening balance:
-            </Label>
-            <Input id="opening-balance" type="number" value={formData.balance ?? 0} onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)} className="col-span-2" />
+        </ScrollArea>
+
+        <DialogFooter className="p-6 pt-2 border-t bg-muted/20">
+          <div className="flex gap-2 w-full justify-end">
+            <Button onClick={handleSave}>OK</Button>
+            <DialogClose asChild>
+              <Button variant="outline" onClick={handleClose}>Cancel</Button>
+            </DialogClose>
+            <Button variant="secondary">Help</Button>
           </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="linked-account" className="text-right">
-              Default linked account for:
-            </Label>
-            <Select>
-              <SelectTrigger id="linked-account" className="col-span-2">
-                <SelectValue placeholder="--- None ---" />
-              </SelectTrigger>
-              <SelectContent>
-                {formData.type === 'Income' ? (
-                  <>
-                    <SelectItem value="income-account">Income Account</SelectItem>
-                    <SelectItem value="freight-collected">Freight Collected</SelectItem>
-                  </>
-                ) : formData.type === 'Expense' ? (
-                  <>
-                    <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
-                    <SelectItem value="freight-paid">Freight Paid</SelectItem>
-                    <SelectItem value="expense-account">Expense Account</SelectItem>
-                  </>
-                ) : formData.type === 'Liability' ? (
-                  <>
-                    <SelectItem value="sales-tax-collected">Sales Tax Collected</SelectItem>
-                    <SelectItem value="sales-tax-paid">Sales Tax Paid</SelectItem>
-                    <SelectItem value="accounts-payable">Account Payables</SelectItem>
-                  </>
-                ) : (
-                  <>
-                    <SelectItem value="none">--- None ---</SelectItem>
-                    <SelectItem value="deposit-account">DEPOSIT ACCOUNT</SelectItem>
-                    <SelectItem value="accounts-receivable">ACCOUNTS RECEIVABLE</SelectItem>
-                    <SelectItem value="sales-tax-paid">SALES TAX PAID</SelectItem>
-                  </>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleSave}>OK</Button>
-          <DialogClose asChild>
-            <Button variant="outline" onClick={handleClose}>Cancel</Button>
-          </DialogClose>
-          <Button variant="secondary">Help</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -232,7 +232,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(null);
   const [selectedTransaction, setSelectedTransaction] = React.useState<Transaction | null>(null);
   const [reportDate, setReportDate] = React.useState<Date | null>(null);
-  const { openDialogs, openDialog, closeDialog } = useDialog();
+  const { openDialogs, openDialog, closeDialog, setDialogData } = useDialog();
   const { profile, isLoading } = useBusinessProfile();
 
   React.useEffect(() => {
@@ -252,7 +252,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const handleShowReport = (date: Date) => {
-    setReportDate(date);
+    setDialogData('balance-sheet-report', { reportDate: date });
     openDialog('balance-sheet-report' as any);
   }
 
@@ -307,29 +307,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               }
               return <div key={`child-${index}`}>{child}</div>;
             })}
-
-            {openDialogs['new-account'] && <NewAccountDialog />}
-            {openDialogs['enter-ap'] && <EnterApPage />}
-            {openDialogs['receipts-deposits'] && <ReceiptsDepositsPage />}
-
-            {openDialogs['journal-entry'] && <JournalEntryPage />}
-            {openDialogs['income-statement'] && <IncomeStatementPage />}
-            {openDialogs['balance-sheet'] && <BalanceSheetPage onViewReport={handleShowReport} />}
-            {openDialogs['balance-sheet-report'] && reportDate && <BalanceSheetReport reportDate={reportDate} />}
-            {openDialogs['edit-transaction'] && <EditTransactionDialog transaction={selectedTransaction} />}
-            {openDialogs['view-transaction'] && <ViewTransactionDialog transaction={selectedTransaction} />}
-            {openDialogs['customer-list'] && <CustomerListPage />}
-            {openDialogs['customer-balance'] && <CustomerBalancePage />}
-            {/* CustomerPaymentPage removed as it is now handled by DialogProvider as CustomerPaymentDialog (Form) and CustomerPaymentsListDialog */}
-            {openDialogs['customer-loyalty-points'] && <CustomerLoyaltyPointsPage />}
-            {openDialogs['add-customer'] && <AddCustomerDialog />}
-            {openDialogs['loyalty-settings'] && <LoyaltySettingsPage />}
-            {openDialogs['add-loyalty-setting'] && <AddLoyaltySettingDialog />}
-            {openDialogs['add-loyalty-card'] && <AddLoyaltyCardDialog />}
-            {openDialogs['add-loyalty-points'] && <AddPointsDialog />}
-            {openDialogs['inventory'] && <InventoryDialog />}
-            {openDialogs['add-product'] && <AddProductDialog />}
-            {openDialogs['backup-scheduler'] && <BackupSchedulerDialog />}
           </main>
         </SidebarInset>
       </SidebarProvider >

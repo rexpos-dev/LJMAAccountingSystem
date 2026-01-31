@@ -36,6 +36,7 @@ const REQUEST_FORMS = [
 import { useState } from 'react';
 import { AccountDeductionForm } from '@/components/forms/account-deduction-form';
 import { CashFundForm } from '@/components/forms/cash-fund-form';
+import { DisbursementSlipForm } from '@/components/forms/disbursement-slip-form';
 import { ArrowLeft } from 'lucide-react';
 
 export function NewRequestDialog({ open, onOpenChange, onRequestCreated }: NewRequestDialogProps) {
@@ -97,6 +98,29 @@ export function NewRequestDialog({ open, onOpenChange, onRequestCreated }: NewRe
                     </DialogHeader>
                     <ScrollArea className="flex-1 pr-6 -mr-6 mt-4">
                         <CashFundForm onSuccess={handleFormSuccess} onCancel={() => onOpenChange(false)} />
+                    </ScrollArea>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
+    if (selectedForm === "DISBURSEMENT") {
+        return (
+            <Dialog open={open} onOpenChange={onOpenChange}>
+                <DialogContent className="max-w-6xl max-h-[95vh] flex flex-col">
+                    <DialogHeader className="flex flex-row items-center gap-4 space-y-0 pb-4 border-b">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleBack}
+                            className="h-8 px-2"
+                        >
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                        </Button>
+                        <DialogTitle>Disbursement Slip</DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="flex-1 pr-6 -mr-6 mt-4">
+                        <DisbursementSlipForm onSuccess={handleFormSuccess} onCancel={() => onOpenChange(false)} />
                     </ScrollArea>
                 </DialogContent>
             </Dialog>

@@ -79,8 +79,8 @@ export default function ReconcileAccountDialog() {
                         // Idealy filter by account number
                         const selectedAccountDetails = bankAccounts.find(a => a.id === selectedAccount);
                         const accountTransactions = data.transactions.filter((t: Transaction) =>
-                            (selectedAccountDetails?.accnt_no && t.accountNumber?.toString() === selectedAccountDetails.accnt_no.toString()) ||
-                            t.accountName === selectedAccountDetails?.name
+                            (selectedAccountDetails?.account_no && t.accountNumber?.toString() === selectedAccountDetails.account_no.toString()) ||
+                            t.accountName === selectedAccountDetails?.account_name
                         );
 
                         // Pre-select transactions that are already cleared/reconciled if we were editing
@@ -211,7 +211,7 @@ export default function ReconcileAccountDialog() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {bankAccounts.map(acc => (
-                                                    <SelectItem key={acc.id} value={acc.id || ''}>{acc.name} ({acc.accnt_no})</SelectItem>
+                                                    <SelectItem key={acc.id} value={acc.id || ''}>{acc.account_name} ({acc.account_no})</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>

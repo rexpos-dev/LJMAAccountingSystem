@@ -2,7 +2,9 @@ export interface UserPermission {
   id: string;
   username: string;
   firstName: string;
+  middleName?: string;
   lastName: string;
+  designation?: string;
   contactNo?: string;
   accountType: string;
   password?: string;

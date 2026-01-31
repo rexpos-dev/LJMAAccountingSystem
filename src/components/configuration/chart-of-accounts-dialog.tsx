@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, Fragment } from 'react';
+import { useState, useMemo, Fragment, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -21,7 +21,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, HelpCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, HelpCircle, Upload } from 'lucide-react';
 import {
     Menubar,
     MenubarContent,
@@ -46,12 +46,10 @@ export default function ChartOfAccountsDialog() {
     const [selectedAccount, setSelectedAccount] = useState<any | null>(null);
 
     const handleRowClick = (account: any) => {
-        if (account.header === 'Yes') return;
         setSelectedAccount(account);
     }
 
     const handleRowDoubleClick = (account: any) => {
-        if (account.header === 'Yes') return;
         setDialogData('edit-account' as any, account);
         openDialog('edit-account' as any);
     };
@@ -72,6 +70,8 @@ export default function ChartOfAccountsDialog() {
 
     const [showDeleted, setShowDeleted] = useState(false);
 
+
+
     // Group accounts by category (Asset, Liability, Equity, Income, Cost of Sales, Expense)
     const groupedAccounts = useMemo(() => {
         if (!accounts) return [];
@@ -84,8 +84,8 @@ export default function ChartOfAccountsDialog() {
         // Filter first
         if (searchName || searchNumber || !showDeleted) {
             processedAccounts = processedAccounts.filter(account => {
-                const nameMatch = !searchName || matches(account.name, searchName);
-                const numberMatch = !searchNumber || (account.accnt_no?.toString().includes(searchNumber) ?? true);
+                const nameMatch = !searchName || matches(account.account_name, searchName);
+                const numberMatch = !searchNumber || (account.account_no?.toString().includes(searchNumber) ?? true);
                 // Assumption: 'showDeleted' not fully implemented in backend yet, but UI toggle is here.
                 // If backend sends 'deleted' flag, usage: !account.deleted || showDeleted
                 return nameMatch && numberMatch;
@@ -96,7 +96,7 @@ export default function ChartOfAccountsDialog() {
 
         // Pre-define order if needed, or dynamic. Page used dynamic.
         processedAccounts.forEach(account => {
-            const category = account.category || 'Uncategorized';
+            const category = account.account_category || 'Uncategorized';
             if (!groups[category]) {
                 groups[category] = [];
             }
@@ -105,7 +105,7 @@ export default function ChartOfAccountsDialog() {
 
         // Sort accounts within groups by number
         Object.keys(groups).forEach(key => {
-            groups[key].sort((a, b) => (a.accnt_no || 0) - (b.accnt_no || 0));
+            groups[key].sort((a, b) => (a.account_no || 0) - (b.account_no || 0));
         });
 
         return Object.entries(groups).map(([category, groupAccounts]) => ({
@@ -156,7 +156,13 @@ export default function ChartOfAccountsDialog() {
                                 <Plus className="h-5 w-5" />
                                 <span className="text-[10px]">New</span>
                             </Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={handleEditClick} disabled={!selectedAccount}>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="flex-col h-auto"
+                                onClick={handleEditClick}
+                                disabled={!selectedAccount}
+                            >
                                 <Pencil className="h-5 w-5" />
                                 <span className="text-[10px]">Edit</span>
                             </Button>
@@ -167,6 +173,10 @@ export default function ChartOfAccountsDialog() {
                             <Button variant="ghost" size="sm" className="flex-col h-auto" disabled={!selectedAccount}>
                                 <Undo className="h-5 w-5" />
                                 <span className="text-[10px]">Restore</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => openDialog('bulk-upload-accounts' as any)}>
+                                <Upload className="h-5 w-5" />
+                                <span className="text-[10px]">Bulk Upload</span>
                             </Button>
                         </div>
                         <div className="h-8 border-l mx-2" />
@@ -216,25 +226,27 @@ export default function ChartOfAccountsDialog() {
                             <Table>
                                 <TableHeader className="sticky top-0 bg-muted/50 z-10">
                                     <TableRow>
-                                        <TableHead className="w-[120px]">Account No</TableHead>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead className="text-right">Balance</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead>Header</TableHead>
-                                        <TableHead>Bank</TableHead>
+                                        <TableHead className="w-[100px]">Account No.</TableHead>
+                                        <TableHead>Account Name</TableHead>
+                                        <TableHead>Account Description</TableHead>
+                                        <TableHead>Date Created</TableHead>
+                                        <TableHead>Account Status</TableHead>
+                                        <TableHead>Account Type</TableHead>
+                                        <TableHead>Account Category</TableHead>
+                                        <TableHead>FS Category</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {isLoading ? (
                                         <TableRow>
-                                            <TableCell colSpan={6} className="text-center py-10">
+                                            <TableCell colSpan={8} className="text-center py-10">
                                                 <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />
                                                 Loading accounts...
                                             </TableCell>
                                         </TableRow>
                                     ) : groupedAccounts.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                                            <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
                                                 No accounts found.
                                             </TableCell>
                                         </TableRow>
@@ -244,7 +256,9 @@ export default function ChartOfAccountsDialog() {
                                                 <TableRow className="bg-muted/40 hover:bg-muted/40">
                                                     <TableCell></TableCell>
                                                     <TableCell className="font-bold text-foreground">{group.category}</TableCell>
-                                                    <TableCell className="text-right font-bold text-foreground">{formatCurrency(group.totalBalance)}</TableCell>
+                                                    <TableCell></TableCell>
+                                                    <TableCell></TableCell>
+                                                    <TableCell></TableCell>
                                                     <TableCell></TableCell>
                                                     <TableCell></TableCell>
                                                     <TableCell></TableCell>
@@ -255,23 +269,34 @@ export default function ChartOfAccountsDialog() {
                                                         className={cn(
                                                             "cursor-pointer",
                                                             selectedAccount?.id === account.id && "bg-primary/20 hover:bg-primary/30",
-                                                            account.header === 'Yes' && "bg-muted/20 font-bold hover:bg-muted/20 cursor-default"
+                                                            account.header === 'Yes' && "bg-muted/20 font-bold hover:bg-muted/30"
                                                         )}
                                                         onClick={() => handleRowClick(account)}
                                                         onDoubleClick={() => handleRowDoubleClick(account)}
                                                     >
-                                                        <TableCell className="font-mono">{account.accnt_no}</TableCell>
+                                                        <TableCell className="font-mono">{account.account_no}</TableCell>
                                                         <TableCell className={cn(
                                                             account.header === 'Yes' ? "font-bold text-primary pl-8" : "pl-8"
                                                         )}>
-                                                            {account.name}
+                                                            {account.account_name}
                                                         </TableCell>
-                                                        <TableCell className="text-right font-mono">
-                                                            {formatCurrency(account.balance)}
+                                                        <TableCell className="text-muted-foreground text-sm">{account.account_description || '-'}</TableCell>
+                                                        <TableCell className="text-sm">
+                                                            {account.date_created ? new Date(account.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}
                                                         </TableCell>
-                                                        <TableCell>{account.type}</TableCell>
-                                                        <TableCell>{account.header}</TableCell>
-                                                        <TableCell>{account.bank}</TableCell>
+                                                        <TableCell>
+                                                            <span className={cn(
+                                                                "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+                                                                account.account_status === 'Active' ? "bg-green-100 text-green-800" :
+                                                                    account.account_status === 'Inactive' ? "bg-gray-100 text-gray-800" :
+                                                                        "bg-yellow-100 text-yellow-800"
+                                                            )}>
+                                                                {account.account_status || 'Active'}
+                                                            </span>
+                                                        </TableCell>
+                                                        <TableCell>{account.account_type || '-'}</TableCell>
+                                                        <TableCell>{account.account_category || '-'}</TableCell>
+                                                        <TableCell>{account.fs_category || '-'}</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </Fragment>
