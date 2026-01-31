@@ -16,6 +16,6 @@ export default function EnterPaymentDialog() {
                     <p>Enter Payment Dialog Configuration Placeholder</p>
                 </div>
             </DialogContent>
-        </  >
+        </Dialog>
     );
 }

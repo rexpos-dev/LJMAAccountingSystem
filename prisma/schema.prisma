@@ -247,9 +247,12 @@ model UserPermission {
   id          String   @id @default(cuid())
   username    String   @unique
   firstName   String
+  middleName  String?
   lastName    String
+  designation String?
   contactNo   String?
   accountType String
+  formPermissions String?
   permissions String   @db.Text
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
