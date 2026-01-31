@@ -33,6 +33,7 @@ import { UserNav } from "./user-nav";
 import { NotificationBell } from "./notification-bell";
 import { EmailButton } from "./email-button";
 import { Breadcrumbs } from "./breadcrumbs";
+import { ThemeToggle } from "./theme-toggle";
 
 // ... (keep surrounding imports if range allows, but aiming for cleaner replacement)
 // Actually, I can't modify imports easily with a single chunk if they are far apart.
@@ -102,11 +103,19 @@ function SidebarNav() {
     }
   };
 
-  const hasAccess = (item: { hideForRoles?: string[], permissions?: string[], accountType?: string }) => {
+  const hasAccess = (item: { hideForRoles?: string[], permissions?: string[], accountType?: string, roles?: string[] }) => {
     if (!user) return false;
 
-    // Check role restrictions
+    // Super Admin has access to everything
+    if (user.accountType === 'Super Admin' || user.accountType === 'Admin') return true;
+
+    // Check role restrictions (hideForRoles)
     if (item.hideForRoles && item.hideForRoles.includes(user.accountType)) {
+      return false;
+    }
+
+    // Check allowed roles (roles)
+    if (item.roles && !item.roles.includes(user.accountType)) {
       return false;
     }
 
@@ -274,6 +283,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <SidebarTrigger className="md:hidden" />
             <Breadcrumbs />
             <div className="flex items-center gap-2 ml-auto">
+              <ThemeToggle />
               <EmailButton />
               <NotificationBell />
               <UserNav />

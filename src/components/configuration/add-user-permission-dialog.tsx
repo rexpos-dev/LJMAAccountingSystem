@@ -59,6 +59,24 @@ export default function AddUserPermissionDialog() {
     {
       title: 'Reports',
       items: ['Reports', 'Income Statement', 'Balance Sheet']
+    },
+    {
+      title: 'Forms',
+      items: [
+        "ACCOUNT DEDUCTION REQUEST FORM",
+        "CASH ADVANCE REQUEST FOR FOR CONTRACTOR",
+        "CASH FUND REQUEST FORM",
+        "CONTRACTOR CASH ADVANCE MONITORING FILE",
+        "DISBURSEMENT",
+        "HOUSE CHARGE REQUEST FORM",
+        "JOB ORDER REQUEST FORM",
+        "JOB ORDER REQUEST FORM INTERNAL",
+        "MATERNAL REQUEST FORM",
+        "PURCHASE ORDER REQUEST (EXTERNAL)",
+        "PURCHASE ORDER REQUEST (SUPERMARKET)",
+        "REQUEST AND AUTHORIZATION OF CASH ADVANCES",
+        "STORE USE REQUEST FORM"
+      ]
     }
   ];
 
@@ -68,6 +86,7 @@ export default function AddUserPermissionDialog() {
     lastName: '',
     contactNo: '',
     accountType: '',
+    formPermissions: '',
     password: '',
     confirmPassword: '',
     permissions: [] as string[],
@@ -85,6 +104,7 @@ export default function AddUserPermissionDialog() {
       lastName: '',
       contactNo: '',
       accountType: '',
+      formPermissions: '',
       password: '',
       confirmPassword: '',
       permissions: [],
@@ -276,7 +296,7 @@ export default function AddUserPermissionDialog() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="accountType">Account Type <span className="text-red-500">*</span></Label>
                 <Select value={formData.accountType} onValueChange={(value) => handleInputChange('accountType', value)}>
@@ -284,10 +304,24 @@ export default function AddUserPermissionDialog() {
                     <SelectValue placeholder="Select account type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Administrator">Administrator</SelectItem>
+                    <SelectItem value="Administrator">Admin</SelectItem>
                     <SelectItem value="Manager">Manager</SelectItem>
                     <SelectItem value="AdminStaff">Admin Staff</SelectItem>
                     <SelectItem value="Auditor">Auditor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="formPermissions">Form Permissions</Label>
+                <Select value={formData.formPermissions} onValueChange={(value) => handleInputChange('formPermissions', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select form permissions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Verifier">Verifier</SelectItem>
+                    <SelectItem value="Approver">Approver</SelectItem>
+                    <SelectItem value="Processor">Processor</SelectItem>
+                    <SelectItem value="Released/Received">Released/Received</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

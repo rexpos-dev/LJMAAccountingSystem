@@ -73,15 +73,16 @@ export default function ViewPurchaseOrderDialog() {
     const fetchOrder = async (id: string) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/purchase-orders`);
+            const res = await fetch(`/api/purchase-orders/${id}`);
             if (res.ok) {
                 const data = await res.json();
-                const found = data.find((o: any) => o.id === id);
-                if (found) setOrder(found);
-                else toast({ title: "Order not found", variant: "destructive" });
+                setOrder(data);
+            } else {
+                toast({ title: "Order not found", variant: "destructive" });
             }
         } catch (error) {
             console.error('Failed to fetch order', error);
+            toast({ title: "Failed to load order", variant: "destructive" });
         } finally {
             setLoading(false);
         }

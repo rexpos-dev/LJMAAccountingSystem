@@ -81,6 +81,11 @@ export async function POST(request: Request) {
       isActive,
       salesOrder,
       autoCreateChildren,
+      incomeAccountId,
+      expenseAccountId,
+      initialStock,
+      reorderPoint,
+      conversionFactors,
     } = body;
 
     // Validate required fields
@@ -91,32 +96,77 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create product record using Prisma
-    const product = await prisma.product.create({
-      data: {
-        code: code.trim(),
-        name: name.trim(),
-        barcode: barcode?.trim() || null,
-        description: description?.trim() || null,
-        additionalDescription: additionalDescription?.trim() || null,
-        category: category?.trim() || null,
-        categoryId: categoryId || null,
-        subcategoryId: subcategoryId || null,
-        brandId: brandId || null,
-        supplierId: supplierId || null,
-        unitOfMeasureId: unitOfMeasureId || null,
-        unitPrice: unitPrice ? parseFloat(unitPrice) : 0,
-        costPrice: costPrice ? parseFloat(costPrice) : 0,
-        stockQuantity: stockQuantity ? parseInt(stockQuantity) : 0,
-        minStockLevel: minStockLevel ? parseInt(minStockLevel) : 0,
-        maxStockLevel: maxStockLevel ? parseInt(maxStockLevel) : null,
-        isActive: isActive ?? true,
-        salesOrder: salesOrder?.trim() || null,
-        autoCreateChildren: autoCreateChildren ?? false,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      // Create product record
+      const product = await tx.product.create({
+        data: {
+          code: code.trim(),
+          name: name.trim(),
+          barcode: barcode?.trim() || null,
+          description: description?.trim() || null,
+          additionalDescription: additionalDescription?.trim() || null,
+          category: category?.trim() || null,
+          categoryId: categoryId || null,
+          subcategoryId: subcategoryId || null,
+          brandId: brandId || null,
+          supplierId: supplierId || null,
+          unitOfMeasureId: unitOfMeasureId || null,
+          unitPrice: unitPrice ? parseFloat(unitPrice) : 0,
+          costPrice: costPrice ? parseFloat(costPrice) : 0,
+          stockQuantity: (stockQuantity ? parseInt(stockQuantity) : 0) + (initialStock ? parseInt(initialStock) : 0),
+          minStockLevel: minStockLevel ? parseInt(minStockLevel) : (reorderPoint ? parseInt(reorderPoint) : 0),
+          maxStockLevel: maxStockLevel ? parseInt(maxStockLevel) : null,
+          isActive: isActive ?? true,
+          salesOrder: salesOrder?.trim() || null,
+          autoCreateChildren: autoCreateChildren ?? false,
+          incomeAccountId: incomeAccountId || null,
+          expenseAccountId: expenseAccountId || null,
+          initialStock: initialStock ? parseInt(initialStock) : 0,
+          reorderPoint: reorderPoint ? parseInt(reorderPoint) : 0,
+        },
+      });
+
+      // Create history record for creation
+      await tx.productHistory.create({
+        data: {
+          productId: product.id,
+          field: 'creation',
+          newValue: 'Product Created',
+          changedBy: 'System', // Replace with actual user if available
+        },
+      });
+
+      // Create inventory transaction if there's initial stock
+      const initialStockVal = initialStock ? parseInt(initialStock) : 0;
+      if (initialStockVal > 0) {
+        await tx.inventoryTransaction.create({
+          data: {
+            productId: product.id,
+            type: 'IN',
+            quantity: initialStockVal,
+            referenceId: 'INITIAL_STOCK',
+            status: 'Completed',
+          },
+        });
+      }
+
+      // Handle conversion factors if any
+      if (conversionFactors && Array.isArray(conversionFactors)) {
+        for (const factor of conversionFactors) {
+          await tx.conversionFactor.create({
+            data: {
+              productId: product.id,
+              unitName: factor.unitName,
+              factor: factor.factor,
+            },
+          });
+        }
+      }
+
+      return product;
     });
 
-    return NextResponse.json(product, { status: 201 });
+    return NextResponse.json(result, { status: 201 });
   } catch (error: any) {
     console.error('Error creating product:', error);
 
@@ -165,40 +215,77 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Update product record using raw SQL
-    await prisma.$queryRaw`
-      UPDATE product SET
-        code = ${code.trim()},
-        name = ${name.trim()},
-        barcode = ${barcode?.trim() || null},
-        description = ${description?.trim() || null},
-        category = ${category?.trim() || null},
-        unitPrice = ${unitPrice ? parseFloat(unitPrice) : 0},
-        costPrice = ${costPrice ? parseFloat(costPrice) : 0},
-        stockQuantity = ${stockQuantity ? parseInt(stockQuantity) : 0},
-        minStockLevel = ${minStockLevel ? parseInt(minStockLevel) : 0},
-        maxStockLevel = ${maxStockLevel ? parseInt(maxStockLevel) : null},
-        isActive = ${isActive ?? true},
-        salesOrder = ${salesOrder?.trim() || null},
-        updatedAt = NOW()
-      WHERE id = ${id}
-    `;
+    const result = await prisma.$transaction(async (tx) => {
+      // Get existing product for comparison
+      const existingProduct = await tx.product.findUnique({
+        where: { id },
+      });
 
-    // Fetch the updated product
-    const product = await prisma.$queryRaw`
-      SELECT * FROM product WHERE id = ${id}
-    `;
+      if (!existingProduct) {
+        throw new Error('Product not found');
+      }
 
-    if ((product as any).length === 0) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
-    }
+      // Update product
+      const updatedProduct = await tx.product.update({
+        where: { id },
+        data: {
+          code: code.trim(),
+          name: name.trim(),
+          barcode: barcode?.trim() || null,
+          description: description?.trim() || null,
+          category: category?.trim() || null,
+          unitPrice: unitPrice ? parseFloat(unitPrice) : 0,
+          costPrice: costPrice ? parseFloat(costPrice) : 0,
+          stockQuantity: stockQuantity ? parseInt(stockQuantity) : 0,
+          minStockLevel: minStockLevel ? parseInt(minStockLevel) : 0,
+          maxStockLevel: maxStockLevel ? parseInt(maxStockLevel) : null,
+          isActive: isActive ?? true,
+          salesOrder: salesOrder?.trim() || null,
+        },
+      });
 
-    return NextResponse.json((product as any)[0]);
+      // Track changes in history
+      const changes = [];
+      if (existingProduct.unitPrice !== updatedProduct.unitPrice) changes.push({ field: 'unitPrice', old: existingProduct.unitPrice, new: updatedProduct.unitPrice });
+      if (existingProduct.costPrice !== updatedProduct.costPrice) changes.push({ field: 'costPrice', old: existingProduct.costPrice, new: updatedProduct.costPrice });
+      if (existingProduct.stockQuantity !== updatedProduct.stockQuantity) changes.push({ field: 'stockQuantity', old: existingProduct.stockQuantity, new: updatedProduct.stockQuantity });
+
+      for (const change of changes) {
+        await tx.productHistory.create({
+          data: {
+            productId: id,
+            field: change.field,
+            oldValue: String(change.old),
+            newValue: String(change.new),
+            changedBy: 'System',
+          },
+        });
+      }
+
+      // Track stock adjustment if stock changed
+      if (existingProduct.stockQuantity !== updatedProduct.stockQuantity) {
+        const diff = updatedProduct.stockQuantity - existingProduct.stockQuantity;
+        await tx.inventoryTransaction.create({
+          data: {
+            productId: id,
+            type: diff > 0 ? 'ADJUSTMENT_IN' : 'ADJUSTMENT_OUT',
+            quantity: Math.abs(diff),
+            referenceId: 'MANUAL_EDIT',
+            status: 'Completed',
+          },
+        });
+      }
+
+      return updatedProduct;
+    });
+
+    return NextResponse.json(result);
   } catch (error: any) {
     console.error('Error updating product:', error);
+
+    if (error.message === 'Product not found') {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
 
     // Handle unique constraint violation
     if (error.code === 'P2002') {

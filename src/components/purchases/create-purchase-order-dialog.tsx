@@ -342,7 +342,7 @@ export default function CreatePurchaseOrderDialog() {
 
     return (
         <Dialog open={openDialogs['create-purchase-order']} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[1200px] h-[90vh] flex flex-col p-0">
+            <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col p-0">
                 <DialogHeader className="px-6 py-4 border-b">
                     <div className="flex items-center justify-between">
                         <DialogTitle className="text-xl">{mode === 'edit' ? 'Edit Purchase Order' : 'New Purchase Order'}</DialogTitle>

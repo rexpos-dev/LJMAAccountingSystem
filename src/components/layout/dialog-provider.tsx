@@ -29,8 +29,6 @@ import EditAccountDialog from '@/components/configuration/edit-account-dialog';
 import DeleteAccountDialog from '@/components/configuration/delete-account-dialog';
 import ReconcileAccountDialog from '@/components/banking/reconcile-account-dialog';
 import AccountTransferDialog from '@/components/banking/account-transfer-dialog';
-import IncomeStatementDialog from '@/components/reports/income-statement-dialog';
-import BalanceSheetDialog from '@/components/reports/balance-sheet-dialog';
 import CreateInvoiceDialog from '@/components/todo/create-invoice-dialog';
 import AddSalesUserDialog from '@/components/configuration/add-sales-user-dialog';
 import EditSalesUserDialog from '@/components/configuration/edit-sales-user-dialog';
@@ -54,6 +52,11 @@ import InvoiceListDialog from '@/components/invoices/invoice-list-dialog';
 
 import AccountsPayableListDialog from '@/components/purchases/accounts-payable-list-dialog';
 import { EnterAccountsPayableDialog } from '@/components/purchases/enter-accounts-payable-dialog';
+import CalendarModal from '@/components/dashboard/calendar-modal';
+import CashFundRequestDialog from '@/components/transactions/cash-fund-request-dialog';
+import BulkUploadDialog from '@/components/purchases/bulk-upload-dialog';
+import PurchaseHistoryDialog from '@/components/purchases/purchase-history-dialog';
+
 
 /* ... */
 
@@ -76,8 +79,6 @@ const dialogComponents = {
   'delete-account': DeleteAccountDialog,
   'reconcile-account': ReconcileAccountDialog,
   'account-transfer': AccountTransferDialog,
-  'income-statement': IncomeStatementDialog,
-  'balance-sheet': BalanceSheetDialog,
   'create-invoice': CreateInvoiceDialog,
   'enter-cash-sale': EnterCashSaleDialog,
   'add-sales-user': AddSalesUserDialog,
@@ -98,9 +99,15 @@ const dialogComponents = {
   'accounts-payable': AccountsPayableListDialog,
   'enter-payments-of-accounts-payable': EnterPaymentsOfAccountsPayableDialog,
   'enter-ap': EnterAccountsPayableDialog,
+  'calendar-modal': CalendarModal,
+  'cash-fund-request': CashFundRequestDialog,
+  'bulk-upload-purchase-order': BulkUploadDialog,
+  'purchase-history': PurchaseHistoryDialog,
 };
 
-type DialogId = keyof typeof dialogComponents;
+
+type DialogId = keyof typeof dialogComponents | 'balance-sheet' | 'income-statement';
+
 
 interface DialogContextType {
   openDialogs: Record<string, boolean>;
