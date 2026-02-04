@@ -17,6 +17,15 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -63,6 +72,7 @@ export default function PurchaseOrderListDialog() {
     const [orders, setOrders] = useState<PurchaseOrder[]>([]);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [showRestrictedAlert, setShowRestrictedAlert] = useState(false);
     const { toast } = useToast();
 
     // Filters
@@ -167,6 +177,13 @@ export default function PurchaseOrderListDialog() {
         const targetId = id || selectedOrderId;
         if (!targetId) return;
 
+        // Check if order is editable based on status
+        const order = orders.find(o => o.id === targetId);
+        if (order && (order.status === 'Approved' || order.status === 'Disapproved' || order.status === 'Rejected' || order.status === 'Void')) {
+            setShowRestrictedAlert(true);
+            return;
+        }
+
         setDialogData('create-purchase-order', { mode: 'edit', orderId: targetId });
         openDialog('create-purchase-order');
     };
@@ -222,7 +239,8 @@ export default function PurchaseOrderListDialog() {
         let newStatus = '';
         switch (action) {
             case 'Approve': newStatus = 'Approved'; break;
-            case 'Disapprove': newStatus = 'Rejected'; break; // Or Disapproved
+            case 'Disapprove': newStatus = 'Disapproved'; break;
+            case 'Receive': newStatus = 'Closed'; break;
             case 'Void': newStatus = 'Void'; break;
             case 'Reorder':
                 // Reorder logic might be different (clone order), for now just ignore
@@ -337,7 +355,7 @@ export default function PurchaseOrderListDialog() {
                                 <SelectItem value="Open">Open</SelectItem>
                                 <SelectItem value="Approved">Approved</SelectItem>
                                 <SelectItem value="Closed">Closed</SelectItem>
-                                <SelectItem value="Rejected">Rejected</SelectItem>
+                                <SelectItem value="Disapproved">Disapproved</SelectItem>
                                 <SelectItem value="Void">Void</SelectItem>
                             </SelectContent>
                         </Select>
@@ -395,10 +413,20 @@ export default function PurchaseOrderListDialog() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleAction('Approve', order.id)}>Approve</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('Disapprove', order.id)}>Disapprove</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('Void', order.id)}>Void</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('Reorder', order.id)}>Reorder</DropdownMenuItem>
+                                                    {order.status === 'Approved' ? (
+                                                        <>
+                                                            <DropdownMenuItem onClick={() => handleAction('Receive', order.id)}>Receive</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Void', order.id)}>Void</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Reorder', order.id)}>Reorder</DropdownMenuItem>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <DropdownMenuItem onClick={() => handleAction('Approve', order.id)}>Approve</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Disapprove', order.id)}>Disapprove</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Void', order.id)}>Void</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Reorder', order.id)}>Reorder</DropdownMenuItem>
+                                                        </>
+                                                    )}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -415,6 +443,20 @@ export default function PurchaseOrderListDialog() {
                     <div>Total: ₱{totalAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</div>
                 </div>
             </DialogContent>
+
+            <AlertDialog open={showRestrictedAlert} onOpenChange={setShowRestrictedAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Unable to edit</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Please contact the admin.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction onClick={() => setShowRestrictedAlert(false)}>OK</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Dialog>
     );
 }

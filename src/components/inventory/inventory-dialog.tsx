@@ -297,9 +297,9 @@ export default function InventoryDialog() {
                         <TableCell className="w-32">{product.barcode || '-'}</TableCell>
                         <TableCell className="w-32">{product.category || '-'}</TableCell>
                         <TableCell className="w-32">{product.brand || '-'}</TableCell>
-                        <TableCell className="w-24 text-right">₱{Number(product.price).toFixed(2)}</TableCell>
-                        <TableCell className="w-24 text-right">₱{product.cost ? Number(product.cost).toFixed(2) : '-'}</TableCell>
-                        <TableCell className="w-20 text-right">{product.stock}</TableCell>
+                        <TableCell className="w-24 text-right">₱{Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                        <TableCell className="w-24 text-right">₱{product.cost ? Number(product.cost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}</TableCell>
+                        <TableCell className="w-20 text-right">{product.stock.toLocaleString()}</TableCell>
                         <TableCell className="w-28">
                           <Select
                             value={selectedActions[product.sku] || ''}
@@ -359,15 +359,15 @@ export default function InventoryDialog() {
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="bg-background rounded-lg p-3 border">
                   <div className="text-sm font-medium text-muted-foreground">No. of Items</div>
-                  <div className="text-2xl font-bold text-primary">{summaryTotals.itemCount}</div>
+                  <div className="text-2xl font-bold text-primary">{summaryTotals.itemCount.toLocaleString()}</div>
                 </div>
                 <div className="bg-background rounded-lg p-3 border">
                   <div className="text-sm font-medium text-muted-foreground">Total Costs</div>
-                  <div className="text-2xl font-bold text-orange-600">₱{summaryTotals.totalCosts.toFixed(2)}</div>
+                  <div className="text-2xl font-bold text-orange-600">₱{summaryTotals.totalCosts.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
                 <div className="bg-background rounded-lg p-3 border">
                   <div className="text-sm font-medium text-muted-foreground">Total Profit</div>
-                  <div className="text-2xl font-bold text-green-600">₱{summaryTotals.totalProfit.toFixed(2)}</div>
+                  <div className="text-2xl font-bold text-green-600">₱{summaryTotals.totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </div>
               </div>
             </div>

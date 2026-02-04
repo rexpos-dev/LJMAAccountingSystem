@@ -7,21 +7,22 @@ export async function GET(request: Request) {
     const bank = searchParams.get('bank');
     const type = searchParams.get('type');
 
-    let accounts;
+    let accounts: any[] = [];
     if (bank === 'yes') {
       accounts = await getBankAccounts();
     } else {
       accounts = await getAccounts();
     }
 
-    if (type) {
+    if (type && Array.isArray(accounts)) {
       accounts = accounts.filter((acc: any) => acc.account_type === type);
     }
 
-    return NextResponse.json(accounts);
+    return NextResponse.json(Array.isArray(accounts) ? accounts : []);
   } catch (error) {
-    console.error('Error fetching accounts:', error);
-    return NextResponse.json({ error: 'Failed to fetch accounts' }, { status: 500 });
+    console.error('Error fetching accounts API:', error);
+    // Always return an array to prevent frontend crashes
+    return NextResponse.json([]);
   }
 }
 

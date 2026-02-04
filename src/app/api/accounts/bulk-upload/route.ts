@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAccount } from '@/lib/database';
+import { createAccount, upsertAccount } from '@/lib/database';
 import { parseCSV, validateAccountsCSV, mapCSVRowToAccount } from '@/lib/bulk-upload-accounts-utils';
 import type { Account } from '@/types/account';
 
@@ -48,18 +48,17 @@ export async function POST(request: Request) {
             try {
                 const accountData = mapCSVRowToAccount(row);
 
-                // Create account in database
-                const account = (await createAccount({
+                // Upsert account in database
+                const account = (await upsertAccount({
                     ...accountData,
                     account_description: accountData.account_description || undefined,
                     account_type: accountData.account_type || accountData.account_category || 'Asset',
-                    bank: accountData.bank || 'No',
                     fs_category: accountData.fs_category || undefined,
                     account_type_no: 1
                 })) as Account;
 
-                appendFileSync(logPath, `Created account: ${account.account_no}\n`);
-                console.log(`[BulkUpload] Created account: ${account.account_no}`);
+                appendFileSync(logPath, `Processed account (created/updated): ${account.account_no}\n`);
+                console.log(`[BulkUpload] Processed account: ${account.account_no}`);
 
                 createdAccounts.push({
                     account_no: account.account_no,
@@ -89,14 +88,15 @@ export async function POST(request: Request) {
         if (createdAccounts.length === 0) {
             return NextResponse.json({
                 success: false,
-                message: 'No accounts were created',
+                error: 'No accounts were created',
+                message: 'All accounts failed to upload. Check for duplicate account numbers.',
                 errors
             }, { status: 400 });
         }
 
         return NextResponse.json({
             success: true,
-            message: `Successfully created ${createdAccounts.length} account(s)${errors.length > 0 ? ` with ${errors.length} error(s)` : ''}`,
+            message: `Successfully processed ${createdAccounts.length} account(s)${errors.length > 0 ? ` with ${errors.length} error(s)` : ''}`,
             createdAccounts,
             errors: errors.length > 0 ? errors : undefined
         });

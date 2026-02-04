@@ -1,13 +1,64 @@
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth-server';
 
 export async function GET() {
     try {
-        // Use raw query to bypass potentially stale Prisma Client model definitions
-        const requests = await prisma.$queryRaw`SELECT * FROM request ORDER BY createdAt DESC`;
-        // Normalize date fields if needed, but JSON serialization usually handles dates.
-        // Prisma raw returns dates as Date objects.
+        const session = await getSession();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Fetch latest user data from DB to avoid stale session permissions
+        const user = await prisma.userPermission.findUnique({
+            where: { username: (session as any).username }
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        const isVerifier = user.formPermissions === 'Verifier';
+        const isSuperAdmin = user.accountType === 'Super Admin';
+        const isAdmin = ['Administrator', 'Admin'].includes(user.accountType);
+
+        if (isSuperAdmin && !isVerifier) {
+            // Only Super Admins who are NOT specifically verifiers see everything
+            const requests = await prisma.$queryRaw`SELECT * FROM request ORDER BY createdAt DESC`;
+            return NextResponse.json(requests);
+        }
+
+        if (isAdmin && !isVerifier) {
+            // Other Admins who are NOT verifiers currently also see everything 
+            // but the user wants them to be restricted if they are verifiers.
+            // Let's keep this as seeing everything UNLESS they are a verifier.
+            const requests = await prisma.$queryRaw`SELECT * FROM request ORDER BY createdAt DESC`;
+            return NextResponse.json(requests);
+        }
+
+        // For Verifiers (regardless of Admin/Administrator account type) 
+        // and non-admin users, filter by assigned forms in their permissions array.
+        let userPermissions: string[] = [];
+        try {
+            userPermissions = typeof user.permissions === 'string'
+                ? JSON.parse(user.permissions)
+                : (user.permissions as any as string[]);
+        } catch (e) {
+            userPermissions = [];
+        }
+
+        if (!userPermissions || userPermissions.length === 0) {
+            return NextResponse.json([]);
+        }
+
+        // Use Prisma raw query to handle filtering since Prisma Client might be out of sync
+        // Prisma expands arrays in template literals for IN clauses
+        const requests = await prisma.$queryRaw`
+            SELECT * FROM request 
+            WHERE formName IN (${userPermissions}) 
+            ORDER BY createdAt DESC
+        `;
+
         return NextResponse.json(requests);
     } catch (error) {
         console.error('Error fetching requests:', error);
@@ -36,11 +87,11 @@ export async function POST(req: Request) {
             INSERT INTO request (
                 id, requestNumber, requesterName, position, businessUnit, chargeTo, 
                 accountNo, purpose, amount, verifiedBy, approvedBy, processedBy, 
-                status, createdAt, updatedAt, date
+                formName, status, createdAt, updatedAt, date
             ) VALUES (
                 ${id}, ${requestNumber}, ${body.requesterName || 'Unknown'}, ${body.position}, ${body.businessUnit}, ${body.chargeTo},
                 ${body.accountNo}, ${body.purpose}, ${body.amount || 0}, ${body.verifiedBy}, ${body.approvedBy}, ${body.processedBy},
-                'To Verify', ${now}, ${now}, ${now}
+                ${body.formName}, 'To Verify', ${now}, ${now}, ${now}
             )
         `;
 
@@ -57,6 +108,28 @@ export async function POST(req: Request) {
                     )
                 `;
             }
+        }
+
+        // Create Notifications for Verifiers
+        const formName = body.formName || 'General Request';
+        const allVerifiers: any[] = await prisma.$queryRaw`
+            SELECT id, permissions FROM user_permission 
+            WHERE isActive = 1 AND formPermissions = 'Verifier'
+        `;
+
+        const notifiedVerifiers = allVerifiers.filter(v => {
+            try {
+                const perms = JSON.parse(v.permissions || '[]');
+                return perms.includes(formName);
+            } catch { return false; }
+        });
+
+        for (const verifier of notifiedVerifiers) {
+            const notifId = crypto.randomUUID();
+            await prisma.$executeRaw`
+                INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
+                VALUES (${notifId}, 'REQUEST_VERIFICATION', 'New Request to Verify', ${`A new ${formName} (${requestNumber}) requires your verification.`}, ${id}, ${verifier.id}, 0, ${now})
+            `;
         }
 
         return NextResponse.json({ id, requestNumber });

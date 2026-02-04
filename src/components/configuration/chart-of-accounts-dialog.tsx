@@ -12,15 +12,6 @@ import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, HelpCircle, Upload } from 'lucide-react';
 import {
     Menubar,
@@ -221,90 +212,28 @@ export default function ChartOfAccountsDialog() {
                         </div>
                     </div>
 
-                    <div className="border rounded-md h-full overflow-hidden bg-card border-t-0 rounded-t-none">
-                        <ScrollArea className="h-full">
-                            <Table>
-                                <TableHeader className="sticky top-0 bg-muted/50 z-10">
-                                    <TableRow>
-                                        <TableHead className="w-[100px]">Account No.</TableHead>
-                                        <TableHead>Account Name</TableHead>
-                                        <TableHead>Account Description</TableHead>
-                                        <TableHead>Date Created</TableHead>
-                                        <TableHead>Account Status</TableHead>
-                                        <TableHead>Account Type</TableHead>
-                                        <TableHead>Account Category</TableHead>
-                                        <TableHead>FS Category</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {isLoading ? (
-                                        <TableRow>
-                                            <TableCell colSpan={8} className="text-center py-10">
-                                                <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />
-                                                Loading accounts...
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : groupedAccounts.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
-                                                No accounts found.
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        groupedAccounts.map((group) => (
-                                            <Fragment key={group.category}>
-                                                <TableRow className="bg-muted/40 hover:bg-muted/40">
-                                                    <TableCell></TableCell>
-                                                    <TableCell className="font-bold text-foreground">{group.category}</TableCell>
-                                                    <TableCell></TableCell>
-                                                    <TableCell></TableCell>
-                                                    <TableCell></TableCell>
-                                                    <TableCell></TableCell>
-                                                    <TableCell></TableCell>
-                                                    <TableCell></TableCell>
-                                                </TableRow>
-                                                {group.accounts.map((account) => (
-                                                    <TableRow
-                                                        key={account.id}
-                                                        className={cn(
-                                                            "cursor-pointer",
-                                                            selectedAccount?.id === account.id && "bg-primary/20 hover:bg-primary/30",
-                                                            account.header === 'Yes' && "bg-muted/20 font-bold hover:bg-muted/30"
-                                                        )}
-                                                        onClick={() => handleRowClick(account)}
-                                                        onDoubleClick={() => handleRowDoubleClick(account)}
-                                                    >
-                                                        <TableCell className="font-mono">{account.account_no}</TableCell>
-                                                        <TableCell className={cn(
-                                                            account.header === 'Yes' ? "font-bold text-primary pl-8" : "pl-8"
-                                                        )}>
-                                                            {account.account_name}
-                                                        </TableCell>
-                                                        <TableCell className="text-muted-foreground text-sm">{account.account_description || '-'}</TableCell>
-                                                        <TableCell className="text-sm">
-                                                            {account.date_created ? new Date(account.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <span className={cn(
-                                                                "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                                                                account.account_status === 'Active' ? "bg-green-100 text-green-800" :
-                                                                    account.account_status === 'Inactive' ? "bg-gray-100 text-gray-800" :
-                                                                        "bg-yellow-100 text-yellow-800"
-                                                            )}>
-                                                                {account.account_status || 'Active'}
-                                                            </span>
-                                                        </TableCell>
-                                                        <TableCell>{account.account_type || '-'}</TableCell>
-                                                        <TableCell>{account.account_category || '-'}</TableCell>
-                                                        <TableCell>{account.fs_category || '-'}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </Fragment>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </ScrollArea>
+                    <div className="border rounded-md h-full overflow-auto bg-card border-t-0 rounded-t-none relative">
+                        <table className="w-full border-separate border-spacing-0 text-sm">
+                            <thead className="sticky top-0 bg-secondary z-30 shadow-sm transition-colors">
+                                <tr className="hover:bg-transparent border-b"><th className="w-[100px] bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account No.</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Name</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Description</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Date Created</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Status</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Type</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Category</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">FS Category</th></tr>
+                            </thead>
+                            <tbody className="divide-y [&_tr:last-child]:border-0">
+                                {isLoading ? (
+                                    <tr><td colSpan={8} className="text-center py-10"><RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />Loading accounts...</td></tr>
+                                ) : groupedAccounts.length === 0 ? (
+                                    <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">No accounts found.</td></tr>
+                                ) : (
+                                    groupedAccounts.map((group) => (
+                                        <Fragment key={group.category}>
+                                            <tr className="bg-muted/40 hover:bg-muted/40 border-b"><td className="p-4 align-middle"></td><td className="p-4 align-middle font-bold text-foreground">{group.category}</td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td></tr>
+                                            {group.accounts.map((account) => (
+                                                <tr key={account.id} className={cn("cursor-pointer border-b transition-colors hover:bg-muted/50", selectedAccount?.id === account.id && "bg-primary/20 hover:bg-primary/30", account.header === 'Yes' && "bg-muted/20 font-bold hover:bg-muted/30")} onClick={() => handleRowClick(account)} onDoubleClick={() => handleRowDoubleClick(account)}><td className="p-4 align-middle font-mono">{account.account_no}</td><td className={cn("p-4 align-middle", account.header === 'Yes' ? "font-bold text-primary pl-8" : "pl-8")}>{account.account_name}</td><td className="p-4 align-middle text-muted-foreground text-sm">{account.account_description || '-'}</td><td className="p-4 align-middle text-sm">{account.date_created ? new Date(account.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td><td className="p-4 align-middle"><span className={cn("inline-flex items-center px-2 py-1 rounded-full text-xs font-medium", account.account_status === 'Active' ? "bg-green-100 text-green-800" : account.account_status === 'Inactive' ? "bg-gray-100 text-gray-800" : "bg-yellow-100 text-yellow-800")}>{account.account_status || 'Active'}</span></td><td className="p-4 align-middle">{account.account_type || '-'}</td><td className="p-4 align-middle">{account.account_category || '-'}</td><td className="p-4 align-middle">{account.fs_category || '-'}</td></tr>
+                                            ))}
+                                        </Fragment>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 

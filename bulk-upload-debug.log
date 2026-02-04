@@ -930,3 +930,2191 @@ E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-se
   234 const createAccount = async (data)=>{
 → 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
 Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+
+[2026-02-02T05:07:33.964Z] Bulk upload started
+Parsed 110 rows
+Validation result: true, Errors: 0
+Processing 103 validated rows
+Error creating account 1080007: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1080006: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1080003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1080001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400009: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400008: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040000: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040016: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040017: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040012: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040007: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040010: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040011: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040008: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040015: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040018: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040006: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040013: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040014: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040009: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050055: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050053: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050032: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050039: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050046: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050043: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050044: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050049: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050051: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050045: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050026: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050040: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050050: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050018: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050035: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050047: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050054: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050007: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050006: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050038: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050034: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050041: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050058: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050012: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050008: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050010: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050027: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050009: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050013: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050056: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050011: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050024: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050019: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050048: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050014: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050028: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050059: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050029: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050057: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050015: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050025: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050036: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050023: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050033: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050022: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050016: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050030: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050031: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050042: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050052: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050020: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050037: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050021: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050017: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__fbbde5a4._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+
+[2026-02-02T05:09:52.972Z] Bulk upload started
+Parsed 110 rows
+Validation result: true, Errors: 0
+Processing 103 validated rows
+Error creating account 1080007: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1080006: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1080003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1080001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1300002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400009: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400008: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1400003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1070005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040000: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040016: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040017: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040012: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040007: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040010: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040011: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040008: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040015: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040018: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040006: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040013: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040014: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1040009: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1100004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050055: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050053: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050032: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050039: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050046: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050043: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050044: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050049: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050051: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050045: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050001: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050026: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050040: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050050: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050018: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050035: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050047: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050054: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050007: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050006: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050038: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050005: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050034: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050041: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050058: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050012: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050002: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050008: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050010: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050027: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050009: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050013: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050056: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050011: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050003: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050024: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050019: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050048: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050014: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050028: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050059: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050029: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050057: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050015: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050025: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050036: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050023: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050033: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050022: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050016: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050030: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050031: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050004: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050042: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050052: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050020: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050037: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050021: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+Error creating account 1050017: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create()` invocation in
+E:\SOFTWARE\#FIREBASE PROJECT\LJMAAccounting\.next\server\chunks\[root-of-the-server]__848a6e38._.js:235:155
+
+  232     });
+  233 };
+  234 const createAccount = async (data)=>{
+→ 235     return await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].account.create(
+Unique constraint failed on the constraint: `chart_of_account_account_no_key`
+
+[2026-02-02T05:15:10.545Z] Bulk upload started
+Parsed 110 rows
+Validation result: true, Errors: 0
+Processing 103 validated rows
+Processed account (created/updated): 1080007
+Processed account (created/updated): 1080006
+Processed account (created/updated): 1080003
+Processed account (created/updated): 1080001
+Processed account (created/updated): 1300004
+Processed account (created/updated): 1300001
+Processed account (created/updated): 1300003
+Processed account (created/updated): 1300002
+Processed account (created/updated): 1400009
+Processed account (created/updated): 1400008
+Processed account (created/updated): 1400004
+Processed account (created/updated): 1400002
+Processed account (created/updated): 1400005
+Processed account (created/updated): 1400001
+Processed account (created/updated): 1400003
+Processed account (created/updated): 1070003
+Processed account (created/updated): 1070001
+Processed account (created/updated): 1070004
+Processed account (created/updated): 1070002
+Processed account (created/updated): 1070005
+Processed account (created/updated): 1040000
+Processed account (created/updated): 1040003
+Processed account (created/updated): 1040016
+Processed account (created/updated): 1040004
+Processed account (created/updated): 1040002
+Processed account (created/updated): 1040017
+Processed account (created/updated): 1040012
+Processed account (created/updated): 1040007
+Processed account (created/updated): 1040010
+Processed account (created/updated): 1040011
+Processed account (created/updated): 1040001
+Processed account (created/updated): 1040008
+Processed account (created/updated): 1040015
+Processed account (created/updated): 1040018
+Processed account (created/updated): 1040006
+Processed account (created/updated): 1040005
+Processed account (created/updated): 1040013
+Processed account (created/updated): 1040014
+Processed account (created/updated): 1040009
+Processed account (created/updated): 1100005
+Processed account (created/updated): 1100001
+Processed account (created/updated): 1100003
+Processed account (created/updated): 1100002
+Processed account (created/updated): 1100004
+Processed account (created/updated): 1050055
+Processed account (created/updated): 1050053
+Processed account (created/updated): 1050032
+Processed account (created/updated): 1050039
+Processed account (created/updated): 1050046
+Processed account (created/updated): 1050043
+Processed account (created/updated): 1050044
+Processed account (created/updated): 1050049
+Processed account (created/updated): 1050051
+Processed account (created/updated): 1050045
+Processed account (created/updated): 1050001
+Processed account (created/updated): 1050026
+Processed account (created/updated): 1050040
+Processed account (created/updated): 1050050
+Processed account (created/updated): 1050018
+Processed account (created/updated): 1050035
+Processed account (created/updated): 1050047
+Processed account (created/updated): 1050054
+Processed account (created/updated): 1050007
+Processed account (created/updated): 1050006
+Processed account (created/updated): 1050038
+Processed account (created/updated): 1050005
+Processed account (created/updated): 1050034
+Processed account (created/updated): 1050041
+Processed account (created/updated): 1050058
+Processed account (created/updated): 1050012
+Processed account (created/updated): 1050002
+Processed account (created/updated): 1050008
+Processed account (created/updated): 1050010
+Processed account (created/updated): 1050027
+Processed account (created/updated): 1050009
+Processed account (created/updated): 1050013
+Processed account (created/updated): 1050056
+Processed account (created/updated): 1050011
+Processed account (created/updated): 1050003
+Processed account (created/updated): 1050024
+Processed account (created/updated): 1050019
+Processed account (created/updated): 1050048
+Processed account (created/updated): 1050014
+Processed account (created/updated): 1050028
+Processed account (created/updated): 1050059
+Processed account (created/updated): 1050029
+Processed account (created/updated): 1050057
+Processed account (created/updated): 1050015
+Processed account (created/updated): 1050025
+Processed account (created/updated): 1050036
+Processed account (created/updated): 1050023
+Processed account (created/updated): 1050033
+Processed account (created/updated): 1050022
+Processed account (created/updated): 1050016
+Processed account (created/updated): 1050030
+Processed account (created/updated): 1050031
+Processed account (created/updated): 1050004
+Processed account (created/updated): 1050042
+Processed account (created/updated): 1050052
+Processed account (created/updated): 1050020
+Processed account (created/updated): 1050037
+Processed account (created/updated): 1050021
+Processed account (created/updated): 1050017
+
+[2026-02-03T09:35:09.780Z] Bulk upload started
+Parsed 110 rows
+Validation result: true, Errors: 0
+Processing 103 validated rows
+Processed account (created/updated): 1080007
+Processed account (created/updated): 1080006
+Processed account (created/updated): 1080003
+Processed account (created/updated): 1080001
+Processed account (created/updated): 1300004
+Processed account (created/updated): 1300001
+Processed account (created/updated): 1300003
+Processed account (created/updated): 1300002
+Processed account (created/updated): 1400009
+Processed account (created/updated): 1400008
+Processed account (created/updated): 1400004
+Processed account (created/updated): 1400002
+Processed account (created/updated): 1400005
+Processed account (created/updated): 1400001
+Processed account (created/updated): 1400003
+Processed account (created/updated): 1070003
+Processed account (created/updated): 1070001
+Processed account (created/updated): 1070004
+Processed account (created/updated): 1070002
+Processed account (created/updated): 1070005
+Processed account (created/updated): 1040000
+Processed account (created/updated): 1040003
+Processed account (created/updated): 1040016
+Processed account (created/updated): 1040004
+Processed account (created/updated): 1040002
+Processed account (created/updated): 1040017
+Processed account (created/updated): 1040012
+Processed account (created/updated): 1040007
+Processed account (created/updated): 1040010
+Processed account (created/updated): 1040011
+Processed account (created/updated): 1040001
+Processed account (created/updated): 1040008
+Processed account (created/updated): 1040015
+Processed account (created/updated): 1040018
+Processed account (created/updated): 1040006
+Processed account (created/updated): 1040005
+Processed account (created/updated): 1040013
+Processed account (created/updated): 1040014
+Processed account (created/updated): 1040009
+Processed account (created/updated): 1100005
+Processed account (created/updated): 1100001
+Processed account (created/updated): 1100003
+Processed account (created/updated): 1100002
+Processed account (created/updated): 1100004
+Processed account (created/updated): 1050055
+Processed account (created/updated): 1050053
+Processed account (created/updated): 1050032
+Processed account (created/updated): 1050039
+Processed account (created/updated): 1050046
+Processed account (created/updated): 1050043
+Processed account (created/updated): 1050044
+Processed account (created/updated): 1050049
+Processed account (created/updated): 1050051
+Processed account (created/updated): 1050045
+Processed account (created/updated): 1050001
+Processed account (created/updated): 1050026
+Processed account (created/updated): 1050040
+Processed account (created/updated): 1050050
+Processed account (created/updated): 1050018
+Processed account (created/updated): 1050035
+Processed account (created/updated): 1050047
+Processed account (created/updated): 1050054
+Processed account (created/updated): 1050007
+Processed account (created/updated): 1050006
+Processed account (created/updated): 1050038
+Processed account (created/updated): 1050005
+Processed account (created/updated): 1050034
+Processed account (created/updated): 1050041
+Processed account (created/updated): 1050058
+Processed account (created/updated): 1050012
+Processed account (created/updated): 1050002
+Processed account (created/updated): 1050008
+Processed account (created/updated): 1050010
+Processed account (created/updated): 1050027
+Processed account (created/updated): 1050009
+Processed account (created/updated): 1050013
+Processed account (created/updated): 1050056
+Processed account (created/updated): 1050011
+Processed account (created/updated): 1050003
+Processed account (created/updated): 1050024
+Processed account (created/updated): 1050019
+Processed account (created/updated): 1050048
+Processed account (created/updated): 1050014
+Processed account (created/updated): 1050028
+Processed account (created/updated): 1050059
+Processed account (created/updated): 1050029
+Processed account (created/updated): 1050057
+Processed account (created/updated): 1050015
+Processed account (created/updated): 1050025
+Processed account (created/updated): 1050036
+Processed account (created/updated): 1050023
+Processed account (created/updated): 1050033
+Processed account (created/updated): 1050022
+Processed account (created/updated): 1050016
+Processed account (created/updated): 1050030
+Processed account (created/updated): 1050031
+Processed account (created/updated): 1050004
+Processed account (created/updated): 1050042
+Processed account (created/updated): 1050052
+Processed account (created/updated): 1050020
+Processed account (created/updated): 1050037
+Processed account (created/updated): 1050021
+Processed account (created/updated): 1050017
+
+[2026-02-03T10:53:36.578Z] Bulk upload started
+Parsed 110 rows
+Validation result: true, Errors: 0
+Processing 103 validated rows
+Processed account (created/updated): 1080007
+Processed account (created/updated): 1080006
+Processed account (created/updated): 1080003
+Processed account (created/updated): 1080001
+Processed account (created/updated): 1300004
+Processed account (created/updated): 1300001
+Processed account (created/updated): 1300003
+Processed account (created/updated): 1300002
+Processed account (created/updated): 1400009
+Processed account (created/updated): 1400008
+Processed account (created/updated): 1400004
+Processed account (created/updated): 1400002
+Processed account (created/updated): 1400005
+Processed account (created/updated): 1400001
+Processed account (created/updated): 1400003
+Processed account (created/updated): 1070003
+Processed account (created/updated): 1070001
+Processed account (created/updated): 1070004
+Processed account (created/updated): 1070002
+Processed account (created/updated): 1070005
+Processed account (created/updated): 1040000
+Processed account (created/updated): 1040003
+Processed account (created/updated): 1040016
+Processed account (created/updated): 1040004
+Processed account (created/updated): 1040002
+Processed account (created/updated): 1040017
+Processed account (created/updated): 1040012
+Processed account (created/updated): 1040007
+Processed account (created/updated): 1040010
+Processed account (created/updated): 1040011
+Processed account (created/updated): 1040001
+Processed account (created/updated): 1040008
+Processed account (created/updated): 1040015
+Processed account (created/updated): 1040018
+Processed account (created/updated): 1040006
+Processed account (created/updated): 1040005
+Processed account (created/updated): 1040013
+Processed account (created/updated): 1040014
+Processed account (created/updated): 1040009
+Processed account (created/updated): 1100005
+Processed account (created/updated): 1100001
+Processed account (created/updated): 1100003
+Processed account (created/updated): 1100002
+Processed account (created/updated): 1100004
+Processed account (created/updated): 1050055
+Processed account (created/updated): 1050053
+Processed account (created/updated): 1050032
+Processed account (created/updated): 1050039
+Processed account (created/updated): 1050046
+Processed account (created/updated): 1050043
+Processed account (created/updated): 1050044
+Processed account (created/updated): 1050049
+Processed account (created/updated): 1050051
+Processed account (created/updated): 1050045
+Processed account (created/updated): 1050001
+Processed account (created/updated): 1050026
+Processed account (created/updated): 1050040
+Processed account (created/updated): 1050050
+Processed account (created/updated): 1050018
+Processed account (created/updated): 1050035
+Processed account (created/updated): 1050047
+Processed account (created/updated): 1050054
+Processed account (created/updated): 1050007
+Processed account (created/updated): 1050006
+Processed account (created/updated): 1050038
+Processed account (created/updated): 1050005
+Processed account (created/updated): 1050034
+Processed account (created/updated): 1050041
+Processed account (created/updated): 1050058
+Processed account (created/updated): 1050012
+Processed account (created/updated): 1050002
+Processed account (created/updated): 1050008
+Processed account (created/updated): 1050010
+Processed account (created/updated): 1050027
+Processed account (created/updated): 1050009
+Processed account (created/updated): 1050013
+Processed account (created/updated): 1050056
+Processed account (created/updated): 1050011
+Processed account (created/updated): 1050003
+Processed account (created/updated): 1050024
+Processed account (created/updated): 1050019
+Processed account (created/updated): 1050048
+Processed account (created/updated): 1050014
+Processed account (created/updated): 1050028
+Processed account (created/updated): 1050059
+Processed account (created/updated): 1050029
+Processed account (created/updated): 1050057
+Processed account (created/updated): 1050015
+Processed account (created/updated): 1050025
+Processed account (created/updated): 1050036
+Processed account (created/updated): 1050023
+Processed account (created/updated): 1050033
+Processed account (created/updated): 1050022
+Processed account (created/updated): 1050016
+Processed account (created/updated): 1050030
+Processed account (created/updated): 1050031
+Processed account (created/updated): 1050004
+Processed account (created/updated): 1050042
+Processed account (created/updated): 1050052
+Processed account (created/updated): 1050020
+Processed account (created/updated): 1050037
+Processed account (created/updated): 1050021
+Processed account (created/updated): 1050017

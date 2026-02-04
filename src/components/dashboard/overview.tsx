@@ -4,21 +4,45 @@ import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } f
 import { useMemo } from "react"
 import { useAccounts } from "@/hooks/use-accounts"
 import { useTransactions } from "@/hooks/use-transactions"
+import {
+  startOfWeek,
+  startOfMonth,
+  startOfYear,
+  format,
+  subWeeks,
+  subMonths,
+  subYears,
+  isAfter,
+  parseISO
+} from "date-fns"
 
-export function Overview() {
+export interface OverviewProps {
+  timeframe?: "weekly" | "monthly" | "yearly";
+}
+
+export function Overview({ timeframe = "monthly" }: OverviewProps) {
   const { data: accounts, isLoading: isAccountsLoading } = useAccounts();
   const { transactions, isLoading: isTransactionsLoading } = useTransactions();
 
   const data = useMemo(() => {
     if (!accounts.length || !transactions.length) return [];
 
-    const monthlyData = new Map<string, { name: string, profit: number, expense: number, cost: number, sortKey: number }>();
+    const groupedData = new Map<string, { name: string, profit: number, expense: number, cost: number, sortKey: number }>();
+
+    // Determine cutoff date for Weekly and Monthly (last 12 units)
+    let cutoffDate: Date | null = null;
+    const now = new Date();
+    if (timeframe === "weekly") {
+      cutoffDate = subWeeks(now, 12);
+    } else if (timeframe === "monthly") {
+      cutoffDate = subMonths(now, 12);
+    }
 
     transactions.forEach((t) => {
       // 1. Validate transaction date
       let date: Date;
       if (typeof t.date === 'string') {
-        date = new Date(t.date);
+        date = parseISO(t.date);
       } else if (typeof t.date === 'object' && t.date && 'seconds' in (t.date as any)) {
         date = new Date((t.date as any).seconds * 1000);
       } else {
@@ -26,35 +50,53 @@ export function Overview() {
       }
 
       if (isNaN(date.getTime())) return;
+      if (cutoffDate && !isAfter(date, cutoffDate)) return;
 
       // 2. Link transaction to Account
-      // t.accountNumber (string) should match account.account_no (number or string)
       const account = accounts.find(acc => acc.account_no?.toString() === t.accountNumber?.toString());
       if (!account) return;
 
-      // 3. Initialize monthly bucket
-      const key = `${date.getFullYear()}-${date.getMonth()}`;
-      if (!monthlyData.has(key)) {
-        monthlyData.set(key, {
-          name: date.toLocaleString('default', { month: 'short' }),
+      // 3. Determine Group Key and Name
+      let key: string;
+      let name: string;
+      let sortKey: number;
+
+      if (timeframe === "weekly") {
+        const weekStart = startOfWeek(date);
+        key = format(weekStart, "yyyy-ww");
+        name = `Week ${format(weekStart, "ww")}`;
+        sortKey = weekStart.getTime();
+      } else if (timeframe === "monthly") {
+        const monthStart = startOfMonth(date);
+        key = format(monthStart, "yyyy-MM");
+        name = format(monthStart, "MMM");
+        sortKey = monthStart.getTime();
+      } else {
+        const yearStart = startOfYear(date);
+        key = format(yearStart, "yyyy");
+        name = format(yearStart, "yyyy");
+        sortKey = yearStart.getTime();
+      }
+
+      if (!groupedData.has(key)) {
+        groupedData.set(key, {
+          name,
           profit: 0,
           expense: 0,
           cost: 0,
-          sortKey: date.getTime()
+          sortKey
         });
       }
 
-      const entry = monthlyData.get(key)!;
+      const entry = groupedData.get(key)!;
       const debit = t.debit || 0;
       const credit = t.credit || 0;
 
       // 4. Calculate Metrics based on Account Type
-      // Profit = Income - (Expenses + Cost)
-
       // Income Accounts: Credit increases Income, Debit decreases
       if (account.account_type === 'Income') {
         const netIncome = credit - debit;
-        entry.profit += netIncome; // Add to profit
+        entry.profit += netIncome;
       }
 
       // Expense Accounts: Debit increases Expense, Credit decreases
@@ -62,7 +104,6 @@ export function Overview() {
         const netExpense = debit - credit;
 
         // Distinguish Cost (COGS) vs Regular Expense
-        // Check for specific "Cost" naming conventions
         const isCost = account.account_name.toLowerCase().includes('cost') ||
           account.account_name.toLowerCase().includes('cogs') ||
           account.account_name.toLowerCase().includes('purchases');
@@ -77,13 +118,11 @@ export function Overview() {
       }
     });
 
-    return Array.from(monthlyData.values())
-      .sort((a, b) => a.sortKey - b.sortKey)
-      .slice(-3); // Show last 3 months as requested
+    return Array.from(groupedData.values())
+      .sort((a, b) => a.sortKey - b.sortKey);
 
-  }, [accounts, transactions]);
+  }, [accounts, transactions, timeframe]);
 
-  // Use real data only
   const chartData = data;
 
   if (isAccountsLoading || isTransactionsLoading) {
@@ -96,8 +135,8 @@ export function Overview() {
 
   if (!chartData.length) {
     return (
-      <div className="w-full h-[350px] flex items-center justify-center text-muted-foreground">
-        No financial data available from Chart of Accounts.
+      <div className="w-full h-[350px] flex items-center justify-center text-muted-foreground italic">
+        No financial data available for the selected timeframe.
       </div>
     );
   }
@@ -107,12 +146,12 @@ export function Overview() {
       <AreaChart data={chartData}>
         <defs>
           <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -121,31 +160,34 @@ export function Overview() {
         </defs>
         <XAxis
           dataKey="name"
-          stroke="#888888"
-          fontSize={12}
+          stroke="#71717a"
+          fontSize={10}
           tickLine={false}
           axisLine={false}
+          padding={{ left: 10, right: 10 }}
         />
         <YAxis
-          stroke="#888888"
-          fontSize={12}
+          stroke="#71717a"
+          fontSize={10}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `₱${value}`}
+          tickFormatter={(value) => `₱${(value / 1000).toFixed(0)}k`}
         />
         <Tooltip
-          formatter={(value: number) => `₱${value.toFixed(2)}`}
+          formatter={(value: number) => `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           contentStyle={{
-            backgroundColor: '#09090b', // zinc-950
+            backgroundColor: '#09090b',
             borderRadius: '0.5rem',
-            border: '1px solid #27272a' // zinc-800
+            border: '1px solid #27272a',
+            fontSize: '12px'
           }}
-          itemStyle={{ color: '#e4e4e7' }} // zinc-200
+          itemStyle={{ padding: '0px' }}
         />
         <Legend
           verticalAlign="top"
-          height={36}
+          height={40}
           iconType="circle"
+          wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }}
         />
 
         <Area
@@ -162,7 +204,7 @@ export function Overview() {
           type="monotone"
           dataKey="expense"
           name="Expenses"
-          stroke="#8b5cf6"
+          stroke="#f43f5e"
           fillOpacity={1}
           fill="url(#colorExpenses)"
           strokeWidth={2}
@@ -172,7 +214,7 @@ export function Overview() {
           type="monotone"
           dataKey="profit"
           name="Profit"
-          stroke="#06b6d4"
+          stroke="#10b981"
           fillOpacity={1}
           fill="url(#colorProfit)"
           strokeWidth={2}

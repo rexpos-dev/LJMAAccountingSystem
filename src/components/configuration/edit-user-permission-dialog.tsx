@@ -79,10 +79,10 @@ export default function EditUserPermissionDialog() {
       title: 'Forms',
       items: [
         "ACCOUNT DEDUCTION REQUEST FORM",
-        "CASH ADVANCE REQUEST FOR FOR CONTRACTOR",
-        "CASH FUND REQUEST FORM",
+        "CASH ADVANCE REQUEST FOR CONTRACTOR",
+        "CASH / FUND REQUEST FORM",
         "CONTRACTOR CASH ADVANCE MONITORING FILE",
-        "DISBURSEMENT",
+        "DISBURSEMENT SLIP",
         "HOUSE CHARGE REQUEST FORM",
         "JOB ORDER REQUEST FORM",
         "JOB ORDER REQUEST FORM INTERNAL",
@@ -150,6 +150,25 @@ export default function EditUserPermissionDialog() {
     'Add/Edit Price Type'
   ];
 
+  const PURCHASER_PERMISSIONS = [
+    'Dashboard',
+    'Inventory',
+    'Stocks',
+    'Stock movement',
+    'Purchases',
+    'Suppliers',
+    'Product Brand',
+    'Category',
+    'Unit of Measure',
+    'Add Purchase Order',
+    'Approve Purchase Order',
+    'Receive Purchase Order',
+    'Void Purchase Order',
+    'Add/Edit Purchase Cost',
+    'Add/Edit Category',
+    'Add/Edit Price Type'
+  ];
+
   const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => {
       const updates: any = { [field]: value };
@@ -163,6 +182,8 @@ export default function EditUserPermissionDialog() {
           updates.permissions = ADMIN_STAFF_PERMISSIONS;
         } else if (value === 'Admin') {
           updates.permissions = ALL_PERMISSIONS;
+        } else if (value === 'Purchaser') {
+          updates.permissions = PURCHASER_PERMISSIONS;
         }
       }
 
@@ -327,8 +348,8 @@ export default function EditUserPermissionDialog() {
                     <SelectItem value="Admin">Admin</SelectItem>
                     <SelectItem value="Manager">Manager</SelectItem>
                     <SelectItem value="AdminStaff">Admin Staff</SelectItem>
-
                     <SelectItem value="Auditor">Auditor</SelectItem>
+                    <SelectItem value="Purchaser">Purchaser</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

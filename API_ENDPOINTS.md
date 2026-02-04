@@ -12,6 +12,7 @@ This document lists all available API endpoints for the LJMA Accounting system.
 - [Notifications](#notifications)
 - [Backup & Utilities](#backup--utilities)
 - [Utility Endpoints](#utility-endpoints)
+- [Authentication](#authentication)
 
 ---
 
@@ -22,6 +23,7 @@ This document lists all available API endpoints for the LJMA Accounting system.
   - Query params: `bank` (filter bank accounts), `type` (filter by type)
 - **POST** `/api/accounts` - Create new account
 - **PUT** `/api/accounts` - Update existing account
+- **POST** `/api/accounts/bulk-upload` - Bulk upload accounts from CSV
 
 ### 2. Transactions `/api/transactions`
 - **GET** `/api/transactions` - Get all transactions
@@ -115,19 +117,39 @@ This document lists all available API endpoints for the LJMA Accounting system.
   - Returns: Array of request forms with items
 - **POST** `/api/requests` - Create new request
   - Auto-generates request number (REQ-XXXXX format)
-  - Required fields: `requesterName`, `position`, `businessUnit`, `chargeTo`, `accountNo`, `purpose`, `amount`, `verifiedBy`, `approvedBy`, `processedBy`
-  - Optional fields: `items` (array of request items)
+  - Required fields: `requesterName`, `position`, `businessUnit`, `chargeTo`, `accountNo`, `purpose`, `amount`, `verifiedBy`, `approvedBy`, `processedBy`, `formName`
+  - Optional fields: `items` (array of objects with `description`, `quantity`, `unit`, `unitPrice`, `total`)
+  - **Supported `formName` values**:
+    - `ACCOUNT DEDUCTION REQUEST FORM`
+    - `CASH ADVANCE REQUEST FOR CONTRACTOR`
+    - `CONTRACTOR CASH ADVANCE MONITORING FILE`
+    - `HOUSE CHARGE REQUEST FORM`
+    - `CASH FUND REQUEST FORM`
+    - `DISBURSEMENT`
+    - `JOB ORDER REQUEST FORM`
+    - `JOB ORDER REQUEST FORM INTERNAL`
+    - `MATERIAL/FUEL REQUEST FORM`
+    - `MATERIALS REQUEST FORM`
+    - `PURCHASE ORDER REQUEST (EXTERNAL)`
+    - `PURCHASE ORDER REQUEST (SUPERMARKET)`
+    - `STORE USE REQUEST FORM`
+    - `REQUEST FOR CASH ADVANCE`
   - Default status: "To Verify"
 
 ### 15. Request Statistics `/api/requests/stats`
-- **GET** `/api/requests/stats` - Get request statistics
+- **GET** `/api/requests/stats` - Get request statistics (Total, To Verify, To Approve, To Process, Released, Received)
   - Returns: `{ total, toVerify, toApprove, toProcess, released, received, releasedAndReceived }`
+
+### 16. Request Details `/api/requests/[id]`
+- **GET** `/api/requests/[id]` - Get single request details with items
+- **PATCH** `/api/requests/[id]` - Update request fields (status, signatures, etc.)
+- **DELETE** `/api/requests/[id]` - Delete a request and its associated items
 
 ---
 
 ## Sales & Invoicing
 
-### 16. Invoices `/api/invoices`
+### 17. Invoices `/api/invoices`
 - **GET** `/api/invoices` - Get all invoices
   - Query params: `status` (filter by status), `customerId` (filter by customer)
   - Returns: Invoices with customer details and items
@@ -135,22 +157,22 @@ This document lists all available API endpoints for the LJMA Accounting system.
   - Required fields: `customerId`, `items`, `invoiceNumber`, `date`, `subtotal`, `total`
   - Optional fields: `customerPONumber`, `dueDate`, `terms`, `salesperson`, `depositAccount`, `billingAddress`, `shippingAddress`
 
-### 17. Loyalty Points `/api/loyalty-points`
+### 18. Loyalty Points `/api/loyalty-points`
 - **GET** `/api/loyalty-points` - Get loyalty points
 - **POST** `/api/loyalty-points` - Create loyalty points entry
 
-### 18. Loyalty Point Settings `/api/loyalty-point-settings`
+### 19. Loyalty Point Settings `/api/loyalty-point-settings`
 - **GET** `/api/loyalty-point-settings` - Get loyalty point settings
 - **POST** `/api/loyalty-point-settings` - Create loyalty point setting
 
-### 19. Loyalty Points Summary `/api/loyalty-points/summary`
+### 20. Loyalty Points Summary `/api/loyalty-points/summary`
 - **GET** `/api/loyalty-points/summary` - Get loyalty points summary
 
 ---
 
 ## Purchase Orders
 
-### 20. Purchase Orders `/api/purchase-orders`
+### 21. Purchase Orders `/api/purchase-orders`
 - **GET** `/api/purchase-orders` - Get all purchase orders
   - Query params: `limit`, `offset`, `status`, `supplierId`, `startDate`, `endDate`
   - Returns: Purchase orders with supplier and items
@@ -162,24 +184,24 @@ This document lists all available API endpoints for the LJMA Accounting system.
   - Optional fields: `status`, `items`, and other PO fields
 - **DELETE** `/api/purchase-orders?id={id}` - Delete purchase order
 
-### 21. Purchase Order Details `/api/purchase-orders/[id]`
+### 22. Purchase Order Details `/api/purchase-orders/[id]`
 - **GET** `/api/purchase-orders/[id]` - Get specific purchase order by ID
 
-### 22. Bulk Upload Purchase Orders `/api/purchase-orders/bulk-upload`
+### 23. Bulk Upload Purchase Orders `/api/purchase-orders/bulk-upload`
 - **POST** `/api/purchase-orders/bulk-upload` - Bulk upload purchase order items from CSV/Excel
 
 ---
 
 ## Business Settings
 
-### 23. Business Profile `/api/business-profile`
+### 24. Business Profile `/api/business-profile`
 - **GET** `/api/business-profile` - Get business profile
   - Returns: First business profile or empty object
 - **POST** `/api/business-profile` - Create or update business profile
   - Upserts the business profile (only one profile exists)
   - Fields: `businessName`, `address`, `owner`, `contactPhone`, `contactTel`, `email`, `tin`, `permit`, `logo`
 
-### 24. Reminders `/api/reminders`
+### 25. Reminders `/api/reminders`
 - **GET** `/api/reminders` - Get all active reminders
 - **POST** `/api/reminders` - Create new reminder
 - **PUT** `/api/reminders` - Update existing reminder
@@ -189,7 +211,7 @@ This document lists all available API endpoints for the LJMA Accounting system.
 
 ## Notifications
 
-### 25. Notifications `/api/notifications`
+### 26. Notifications `/api/notifications`
 - **GET** `/api/notifications` - Get unread notifications
   - Returns: Unread notifications ordered by createdAt desc
 - **PUT** `/api/notifications` - Mark notification as read
@@ -199,14 +221,14 @@ This document lists all available API endpoints for the LJMA Accounting system.
 
 ## Backup & Utilities
 
-### 26. Backup Jobs `/api/backup`
+### 27. Backup Jobs `/api/backup`
 - **GET** `/api/backup` - Get recent backup jobs (last 20)
   - Requires: Admin authentication
 - **POST** `/api/backup` - Trigger new database backup
   - Requires: Admin authentication
   - Returns: `{ message, jobId }` with status 202 (Accepted)
 
-### 27. Backup Download `/api/backup/download/[id]`
+### 28. Backup Download `/api/backup/download/[id]`
 - **GET** `/api/backup/download/[id]` - Download backup file by job ID
   - Requires: Admin authentication
 
@@ -214,16 +236,25 @@ This document lists all available API endpoints for the LJMA Accounting system.
 
 ## Utility Endpoints
 
-### 28. Next Invoice Number `/api/invoices/next-number`
+### 29. Next Invoice Number `/api/invoices/next-number`
 - **GET** `/api/invoices/next-number` - Get next available invoice number
   - Returns: `{ nextNumber }` (starts at 10000)
 
-### 29. Next PO Number `/api/invoices/next-po-number`
-- **GET** `/api/invoices/next-po-number` - Get next available purchase order number
+### 30. Next PO Number `/api/purchase-orders/next-number`
+- **GET** `/api/purchase-orders/next-number` - Get next available purchase order number
 
-### 30. Next Transaction Reference `/api/transactions/next-reference`
+### 31. Next Transaction Reference `/api/transactions/next-reference`
 - **GET** `/api/transactions/next-reference` - Get next transaction reference number
   - Returns: `{ nextReference }` (format: GJ-XXXXXX)
+
+### 32. Seed Requests `/api/seed-requests`
+- **GET** `/api/seed-requests` - Populate the database with sample request data
+  - **DANGER**: Clears existing requests before seeding. Use only for testing.
+
+### 33. Authentication `/api/auth`
+- **GET** `/api/auth` - Get current session status
+- **POST** `/api/auth/login` - User login
+- **POST** `/api/auth/logout` - User logout
 
 ---
 
@@ -353,19 +384,88 @@ POST /api/purchase-orders
 }
 ```
 
+### Create a Job Order Request:
+```javascript
+POST /api/requests
+{
+  "requesterName": "Bob Engineer",
+  "department": "Engineering",
+  "location": "Warehouse A",
+  "natureOfWork": "Repair conveyor motor",
+  "items": [
+    {
+      "description": "Electric Motor 5HP",
+      "quantity": 1,
+      "unit": "unit",
+      "unitPrice": 12500,
+      "total": 12500
+    }
+  ],
+  "amount": 12500,
+  "formName": "JOB ORDER REQUEST FORM",
+  "verifiedBy": "John Supervisor"
+}
+```
+
+### Create an Account Deduction Request:
+```javascript
+POST /api/requests
+{
+  "requesterName": "Alice Staff",
+  "position": "Clerk",
+  "businessUnit": "Main Office",
+  "accountNo": "2024-0015",
+  "purpose": "Salary deduction for lost item",
+  "items": [
+    {
+      "description": "Missing Stapler",
+      "quantity": 1,
+      "unitPrice": 450,
+      "total": 450
+    }
+  ],
+  "amount": 450,
+  "formName": "ACCOUNT DEDUCTION REQUEST FORM",
+  "verifiedBy": "Manager X"
+}
+```
+
 ### Get request statistics:
 ```javascript
 GET /api/requests/stats
-// Returns: { total: 150, toVerify: 20, toApprove: 15, toProcess: 10, released: 80, received: 25, releasedAndReceived: 105 }
+// Returns: { 
+//   total: 150, 
+//   toVerify: 20, 
+//   toApprove: 15, 
+//   toProcess: 10, 
+//   released: 80, 
+//   received: 25, 
+//   releasedAndReceived: 105 
+// }
 ```
 
 ### Trigger database backup:
 ```javascript
 POST /api/backup
-// Returns: { message: "Backup started", jobId: "backup_job_id" }
+// Returns: { "message": "Backup started", "jobId": "backup_job_id" }
 ```
 
 ### Get next invoice number:
 ```javascript
 GET /api/invoices/next-number
 // Returns: { nextNumber: "10001" }
+```
+
+### Update request status:
+```javascript
+PATCH /api/requests/[id]
+{
+  "status": "To Approve"
+}
+```
+
+### Get single request details:
+```javascript
+GET /api/requests/[id]
+// Returns: { id: "...", requestNumber: "...", items: [...], ... }
+```

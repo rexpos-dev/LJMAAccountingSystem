@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useDialog } from "@/components/layout/dialog-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -23,7 +24,9 @@ import { StatCard } from "./stat-card";
 import { PesoIcon } from "@/components/icons/peso-icon";
 import dynamic from 'next/dynamic';
 
-const Overview = dynamic(() => import('./overview').then(m => m.Overview), { ssr: false });
+import type { OverviewProps } from "./overview";
+
+const Overview = dynamic<OverviewProps>(() => import('./overview').then(m => m.Overview), { ssr: false });
 // const SummaryCards = dynamic(() => import('./summary-cards').then(m => m.SummaryCards), { ssr: false }); // Deprecated
 const FinancialDonut = dynamic(() => import('./financial-donut').then(m => m.FinancialDonut), { ssr: false });
 // const CalendarCard = dynamic(() => import('./calendar-card').then(m => m.CalendarCard), { ssr: false }); // Deprecated
@@ -37,6 +40,7 @@ export function Dashboard() {
   const { openDialog } = useDialog();
   const [recentCustomers, setRecentCustomers] = useState<Array<any>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [timeframe, setTimeframe] = useState<"weekly" | "monthly" | "yearly">("monthly");
 
   useEffect(() => {
     const fetchRecentCustomers = async () => {
@@ -93,12 +97,25 @@ export function Dashboard() {
 
         {/* Main Chart: Financial Overview */}
         <Card className="col-span-1 lg:col-span-4">
-          <CardHeader>
-            <CardTitle className="font-headline">Financial Overview</CardTitle>
-            <CardDescription>Cost, Expenses, and Profit Trends</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="space-y-1">
+              <CardTitle className="font-headline text-white">Financial Overview</CardTitle>
+              <CardDescription>Cost, Expenses, and Profit Trends</CardDescription>
+            </div>
+            <Tabs
+              defaultValue="monthly"
+              className="w-auto"
+              onValueChange={(v) => setTimeframe(v as any)}
+            >
+              <TabsList className="grid w-full grid-cols-3 bg-zinc-900 border border-zinc-800">
+                <TabsTrigger value="weekly" className="text-xs">Weekly</TabsTrigger>
+                <TabsTrigger value="monthly" className="text-xs">Monthly</TabsTrigger>
+                <TabsTrigger value="yearly" className="text-xs">Yearly</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </CardHeader>
           <CardContent className="pl-2">
-            <Overview />
+            <Overview timeframe={timeframe} />
           </CardContent>
         </Card>
 

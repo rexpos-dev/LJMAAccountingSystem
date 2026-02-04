@@ -101,9 +101,9 @@ export default function BulkUploadAccountsDialog() {
             });
 
             const result = await response.json();
+            setUploadResult(result);
 
             if (response.ok) {
-                setUploadResult(result);
                 // Trigger refresh of accounts table
                 window.dispatchEvent(new CustomEvent('accounts-refresh'));
                 toast({
@@ -113,7 +113,7 @@ export default function BulkUploadAccountsDialog() {
             } else {
                 toast({
                     title: 'Upload Failed',
-                    description: result.error || 'Unknown error',
+                    description: result.error || result.message || 'Unknown error',
                     variant: 'destructive',
                 });
             }
@@ -138,14 +138,14 @@ export default function BulkUploadAccountsDialog() {
     };
 
     const downloadTemplate = () => {
-        const csvContent = `Account No.,Account Name,Account Description,Account Status,Account Type,Account Category,FS Category,Header,Bank,Balance
-1000,Cash on Hand,Cash in vault,Active,Cash,Asset,Current Assets,No,No,0
-1100,Petty Cash Fund,Small petty cash,Active,Cash,Asset,Current Assets,No,No,0
-2000,Accounts Payable,Unpaid supplier bills,Active,Payment,Liability,Current Liabilities,No,No,0
-3000,Owner's Equity,Capital account,Active,Equity,Equity,Equity,No,No,0
-4000,Sales Revenue,Main revenue stream,Active,Sale,Income,Revenue,No,No,0
-5000,Cost of Goods Sold,Purchase costs,Active,Purchase,Cost of Sales,COGS,No,No,0
-6000,Operating Expenses,Monthly utility bills,Active,Expense,Expense,Expenses,No,No,0`;
+        const csvContent = `Account No.,Account Name,Account Description,Account Status,Account Type,Account Category,FS Category,Header,Bank,Balance,Date Created
+1000,Cash on Hand,Cash in vault,Active,Cash,Asset,Current Assets,No,No,0,2026-01-01
+1100,Petty Cash Fund,Small petty cash,Active,Cash,Asset,Current Assets,No,No,0,2026-01-01
+2000,Accounts Payable,Unpaid supplier bills,Active,Payment,Liability,Current Liabilities,No,No,0,2026-01-01
+3000,Owner's Equity,Capital account,Active,Equity,Equity,Equity,No,No,0,2026-01-01
+4000,Sales Revenue,Main revenue stream,Active,Sale,Income,Revenue,No,No,0,2026-01-01
+5000,Cost of Goods Sold,Purchase costs,Active,Purchase,Cost of Sales,COGS,No,No,0,2026-01-01
+6000,Operating Expenses,Monthly utility bills,Active,Expense,Expense,Expenses,No,No,0,2026-01-01`;
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
@@ -236,10 +236,13 @@ export default function BulkUploadAccountsDialog() {
                                         <TableRow>
                                             <TableHead>Account No.</TableHead>
                                             <TableHead>Account Name</TableHead>
-                                            <TableHead>Account Category</TableHead>
-                                            <TableHead>Account Type</TableHead>
-                                            <TableHead>Account Status</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead>Type</TableHead>
+                                            <TableHead>FS Category</TableHead>
+                                            <TableHead>Status</TableHead>
                                             <TableHead>Balance</TableHead>
+                                            <TableHead>Date Created</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -247,10 +250,13 @@ export default function BulkUploadAccountsDialog() {
                                             <TableRow key={index}>
                                                 <TableCell className="font-mono">{row['Account No.']}</TableCell>
                                                 <TableCell>{row['Account Name']}</TableCell>
+                                                <TableCell className="text-xs text-muted-foreground truncate max-w-[100px]">{row['Account Description'] || '-'}</TableCell>
                                                 <TableCell>{row['Account Category']}</TableCell>
                                                 <TableCell>{row['Account Type'] || '-'}</TableCell>
+                                                <TableCell>{row['FS Category'] || '-'}</TableCell>
                                                 <TableCell>{row['Account Status'] || 'Active'}</TableCell>
-                                                <TableCell className="font-mono">₱{row.Balance || '0.00'}</TableCell>
+                                                <TableCell className="font-mono text-xs">₱{row.Balance || '0.00'}</TableCell>
+                                                <TableCell className="text-xs">{row['Date Created'] || '-'}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

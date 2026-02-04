@@ -171,6 +171,25 @@ export default function AddUserPermissionDialog() {
     !['Setup', 'Backup Database', 'Add/Edit user', 'Non-Invoiced Cash Sale'].includes(permission)
   );
 
+  const PURCHASER_PERMISSIONS = [
+    'Dashboard',
+    'Inventory',
+    'Stocks',
+    'Stock movement',
+    'Purchases',
+    'Suppliers',
+    'Product Brand',
+    'Category',
+    'Unit of Measure',
+    'Add Purchase Order',
+    'Approve Purchase Order',
+    'Receive Purchase Order',
+    'Void Purchase Order',
+    'Add/Edit Purchase Cost',
+    'Add/Edit Category',
+    'Add/Edit Price Type'
+  ];
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
       const updates: any = { [field]: value };
@@ -182,6 +201,8 @@ export default function AddUserPermissionDialog() {
           updates.permissions = MANAGER_PERMISSIONS;
         } else if (value === 'Administrator') {
           updates.permissions = ALL_PERMISSIONS;
+        } else if (value === 'Purchaser') {
+          updates.permissions = PURCHASER_PERMISSIONS;
         }
       }
 
@@ -308,6 +329,7 @@ export default function AddUserPermissionDialog() {
                     <SelectItem value="Manager">Manager</SelectItem>
                     <SelectItem value="AdminStaff">Admin Staff</SelectItem>
                     <SelectItem value="Auditor">Auditor</SelectItem>
+                    <SelectItem value="Purchaser">Purchaser</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

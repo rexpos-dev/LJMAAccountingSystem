@@ -2,15 +2,29 @@ import { prisma } from './prisma'
 
 // Account operations
 export const getAccounts = async () => {
-  return await prisma.account.findMany({
-    orderBy: { account_no: 'asc' },
-  })
+  try {
+    const accounts = await prisma.$queryRaw`
+            SELECT * FROM chart_of_account 
+            ORDER BY account_no ASC
+        `;
+    return Array.isArray(accounts) ? accounts : [];
+  } catch (error) {
+    console.error('Error in getAccounts:', error);
+    return [];
+  }
 }
 
 export const getBankAccounts = async () => {
-  return await prisma.account.findMany({
-    where: { bank: 'Yes' },
-  })
+  try {
+    const accounts = await prisma.$queryRaw`
+            SELECT * FROM chart_of_account 
+            WHERE bank = 'Yes'
+        `;
+    return Array.isArray(accounts) ? accounts : [];
+  } catch (error) {
+    console.error('Error in getBankAccounts:', error);
+    return [];
+  }
 }
 
 export const updateAccountBalance = async (id: string, balance: number) => {
@@ -32,9 +46,34 @@ export const createAccount = async (data: {
   account_status?: string;
   fs_category?: string;
   balance?: number;
+  date_created?: Date;
 }) => {
   return await prisma.account.create({
     data,
+  })
+}
+
+export const upsertAccount = async (data: {
+  account_no: number;
+  account_type_no: number;
+  account_name: string;
+  account_description?: string;
+  account_type: string;
+  header: string;
+  bank: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
+  balance?: number;
+  date_created?: Date;
+}) => {
+  const { account_no, ...updateData } = data;
+  return await prisma.account.upsert({
+    where: { account_no },
+    update: {
+      ...updateData,
+    },
+    create: data,
   })
 }
 
@@ -49,6 +88,7 @@ export const updateAccount = async (id: string, data: {
   account_status?: string;
   fs_category?: string;
   balance?: number;
+  date_created?: Date;
 }) => {
   return await prisma.account.update({
     where: { id },

@@ -7,6 +7,7 @@ export interface UserPermission {
   designation?: string;
   contactNo?: string;
   accountType: string;
+  formPermissions?: string;
   password?: string;
   permissions: string; // JSON string containing permissions
   isActive: boolean;

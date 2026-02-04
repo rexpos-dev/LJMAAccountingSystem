@@ -117,7 +117,15 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
         <TableCell className="text-right">
           {account.balance !== undefined ? formatCurrency(account.balance) : ''}
         </TableCell>
+        <TableCell className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+          {account.account_description || '-'}
+        </TableCell>
+        <TableCell className="text-sm">
+          {account.date_created ? new Date(account.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}
+        </TableCell>
+        <TableCell className="text-sm">{account.account_status || 'Active'}</TableCell>
         <TableCell>{account.account_type}</TableCell>
+        <TableCell>{account.fs_category || '-'}</TableCell>
         <TableCell>{account.header}</TableCell>
         <TableCell>{account.bank}</TableCell>
       </TableRow>
@@ -231,7 +239,11 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                       <TableHead className="w-[100px]">Account No</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead className="text-right">Balance</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Date Created</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Type</TableHead>
+                      <TableHead>FS Category</TableHead>
                       <TableHead>Header</TableHead>
                       <TableHead>Bank</TableHead>
                     </TableRow>
@@ -256,6 +268,10 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                             <TableCell></TableCell>
                             <TableCell className="font-bold text-white">{group.category}</TableCell>
                             <TableCell className="text-right font-bold text-white">{formatCurrency(group.totalBalance)}</TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
                             <TableCell></TableCell>
                             <TableCell></TableCell>
                             <TableCell></TableCell>

@@ -1,0 +1,18 @@
+﻿
+> nextn@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+node.exe : unhandledRejection TypeError: The argument 'path' must be a string, Uint8Array, or URL without null bytes. Received 'E:\\SOFTWARE\\\x00#FIREBASE PROJECT\\LJMAAccounting\\node_modules\\date-fns\\esm\\constants\\index.js'
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo              : NotSpecified    : (unhandledReject.    ..ants\\index.js':S    tring) [], RemoteEx    ception
+    + FullyQualifiedErr    orId : NativeComman    dError
+ 
+    at new Promise (<anonymous>) {
+  code: 'ERR_INVALID_ARG_VALUE'
+}

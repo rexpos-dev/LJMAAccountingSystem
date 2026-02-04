@@ -23,6 +23,7 @@ export interface AccountCSVRow {
     'Header'?: string;
     'Bank'?: string;
     'Balance'?: string;
+    'Date Created'?: string;
 }
 
 const HEADER_MAPPING: Record<string, string> = {
@@ -41,7 +42,9 @@ const HEADER_MAPPING: Record<string, string> = {
     'fscategory': 'FS Category',
     'header': 'Header',
     'bank': 'Bank',
-    'balance': 'Balance'
+    'balance': 'Balance',
+    'datecreated': 'Date Created',
+    'createdat': 'Date Created'
 };
 
 const REQUIRED_COLUMNS = [
@@ -229,6 +232,15 @@ export function mapCSVRowToAccount(row: AccountCSVRow) {
         return trimmed === '' ? null : trimmed;
     };
 
+    const dateCreatedRaw = trimOrNull(row['Date Created']);
+    let dateCreated: Date | undefined = undefined;
+    if (dateCreatedRaw) {
+        const parsedDate = new Date(dateCreatedRaw);
+        if (!isNaN(parsedDate.getTime())) {
+            dateCreated = parsedDate;
+        }
+    }
+
     return {
         account_no: Math.floor(parseNumber(row['Account No.'])),
         account_name: trimOrNull(row['Account Name']) || 'Unnamed Account',
@@ -239,6 +251,7 @@ export function mapCSVRowToAccount(row: AccountCSVRow) {
         fs_category: trimOrNull(row['FS Category']),
         header: trimOrNull(row.Header) || 'No',
         bank: trimOrNull(row.Bank) || 'No',
-        balance: parseNumber(row.Balance)
+        balance: parseNumber(row.Balance),
+        date_created: dateCreated
     };
 }

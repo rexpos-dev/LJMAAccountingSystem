@@ -11,6 +11,7 @@ interface User {
     designation: string;
     userAccess: string;
     accountType: string;
+    formPermissions?: string;
     permissions: string; // JSON string
     isActive: boolean;
 }
@@ -40,7 +41,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 localStorage.removeItem('auth_user');
             }
         }
-        setIsLoading(false);
+
+        // Immediate sync with server session
+        const syncSession = async () => {
+            try {
+                const res = await fetch('/api/auth/session');
+                if (res.ok) {
+                    const data = await res.json();
+                    setUser(data.user);
+                    localStorage.setItem('auth_user', JSON.stringify(data.user));
+                } else if (res.status === 401) {
+                    // Server session is dead, clear local
+                    console.log('Session expired, logging out...');
+                    setUser(null);
+                    localStorage.removeItem('auth_user');
+                }
+            } catch (err) {
+                console.error('Failed to sync session:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        syncSession();
+
+        // Optional: Periodic check every 5 minutes
+        const interval = setInterval(syncSession, 5 * 60 * 1000);
+        return () => clearInterval(interval);
     }, []);
 
     const login = (userData: User) => {
@@ -49,7 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push('/');
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (err) {
+            console.error('Logout API failed:', err);
+        }
         setUser(null);
         localStorage.removeItem('auth_user');
         router.push('/login');

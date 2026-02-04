@@ -246,18 +246,17 @@ model SalesUser {
 model UserPermission {
   id          String   @id @default(cuid())
   username    String   @unique
-  firstName   String
-  middleName  String?
-  lastName    String
-  designation String?
-  contactNo   String?
-  accountType String
+  firstName       String
+  lastName        String
+  designation     String?
+  contactNo       String?
+  accountType     String
   formPermissions String?
-  permissions String   @db.Text
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  password    String?
+  permissions     String   @db.Text
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  password        String?
 
   @@map("user_permission")
 }
@@ -295,9 +294,11 @@ model Notification {
   title     String
   message   String?
   entityId  String?
+  userId    String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
+  @@index([userId])
   @@map("notification")
 }
 
@@ -500,6 +501,7 @@ model Request {
   status        String        @default("To Verify")
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  formName      String?       @db.VarChar(255)
   items         RequestItem[]
 
   @@map("request")

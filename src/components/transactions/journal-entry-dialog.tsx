@@ -314,78 +314,14 @@ export default function JournalEntryDialog() {
                         <div className="border rounded-md">
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Account</TableHead>
-                                        <TableHead className="w-[150px] text-right">Amount</TableHead>
-                                        <TableHead className="w-[100px] text-right">CR/DR</TableHead>
-                                        <TableHead className="w-[50px]"></TableHead>
-                                    </TableRow>
+                                    <TableRow><TableHead>Account</TableHead><TableHead className="w-[150px] text-right">Amount</TableHead><TableHead className="w-[100px] text-right">CR/DR</TableHead><TableHead className="w-[50px]"></TableHead></TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {lines.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                                                Click "Add Line" to allocate amounts to accounts.
-                                            </TableCell>
-                                        </TableRow>
+                                        <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">Click "Add Line" to allocate amounts to accounts.</TableCell></TableRow>
                                     ) : (
                                         lines.map((line) => (
-                                            <TableRow key={line.id}>
-                                                <TableCell>
-                                                    <Select
-                                                        value={line.accountId}
-                                                        onValueChange={(value) => updateLine(line.id, { accountId: value })}
-                                                    >
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select account" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {accountsLoading ? (
-                                                                <SelectItem value="loading" disabled>Loading accounts...</SelectItem>
-                                                            ) : (
-                                                                accounts?.map((account) => (
-                                                                    <SelectItem key={account.id} value={account.id || ''}>
-                                                                        {account.account_no} - {account.account_name}
-                                                                    </SelectItem>
-                                                                ))
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Input
-                                                        type="number"
-                                                        step="0.01"
-                                                        min="0"
-                                                        value={line.amount || ''}
-                                                        onChange={(e) => updateLine(line.id, { amount: parseFloat(e.target.value) || 0 })}
-                                                        className="text-right"
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Select
-                                                        value={line.type}
-                                                        onValueChange={(value: 'debit' | 'credit') => updateLine(line.id, { type: value })}
-                                                    >
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="debit">DR</SelectItem>
-                                                            <SelectItem value="credit">CR</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => removeLine(line.id)}
-                                                    >
-                                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
+                                            <TableRow key={line.id}><TableCell><Select value={line.accountId} onValueChange={(value) => updateLine(line.id, { accountId: value })}><SelectTrigger className="w-full"><SelectValue placeholder="Select account" /></SelectTrigger><SelectContent>{accountsLoading ? (<SelectItem value="loading" disabled>Loading accounts...</SelectItem>) : (accounts?.map((account) => (<SelectItem key={account.id} value={account.id || ''}>{account.account_no} - {account.account_name}</SelectItem>)))}</SelectContent></Select></TableCell><TableCell><Input type="number" step="0.01" min="0" value={line.amount || ''} onChange={(e) => updateLine(line.id, { amount: parseFloat(e.target.value) || 0 })} className="text-right" /></TableCell><TableCell><Select value={line.type} onValueChange={(value: 'debit' | 'credit') => updateLine(line.id, { type: value })}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="debit">DR</SelectItem><SelectItem value="credit">CR</SelectItem></SelectContent></Select></TableCell><TableCell><Button variant="ghost" size="icon" onClick={() => removeLine(line.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></TableCell></TableRow>
                                         ))
                                     )}
                                 </TableBody>

@@ -13,5 +13,6 @@
             "name": "localhost"
         }
     ],
-    "claudeCodeChat.permissions.yoloMode": true
+    "claudeCodeChat.permissions.yoloMode": true,
+    "snyk.advanced.autoSelectOrganization": true
 }

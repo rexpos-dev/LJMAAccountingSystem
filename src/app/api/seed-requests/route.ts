@@ -1,11 +1,9 @@
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-    // Instantiate local client to avoid stale singleton issue
-    // Note: This won't use the MariaDB adapter if configured in lib, but standard client works for seeding
-    const prisma = new PrismaClient();
+    // Using the unified prisma singleton
     try {
         await prisma.request.deleteMany();
 
