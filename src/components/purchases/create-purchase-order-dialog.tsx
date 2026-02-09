@@ -28,7 +28,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useDialog } from '@/components/layout/dialog-provider';
-import { CalendarIcon, Plus, Trash2, Users, Pencil, HelpCircle, X, Search } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, Users, Pencil, HelpCircle, X, Search, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -43,10 +43,15 @@ interface PurchaseOrderItem {
     id: string;
     qty: number;
     item: string;
-    description: string;
     unitPrice: number;
-    tax: string;
+    total: number;
+    barcode?: string;
     productId?: string;
+    uom: string;
+    qtyPerCase?: number;
+    orderQty?: number;
+    costPricePerCase?: number;
+    costPricePerPiece?: number;
 }
 
 const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product: any) => void }) => {
@@ -54,30 +59,53 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
     const [searchTerm, setSearchTerm] = useState('');
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [allProducts, setAllProducts] = useState<any[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (open) {
-            const timeoutId = setTimeout(() => {
-                fetchProducts(searchTerm);
-            }, 300);
-            return () => clearTimeout(timeoutId);
+        if (open && allProducts.length === 0) {
+            fetchInitialProducts();
         }
-    }, [searchTerm, open]);
+    }, [open]);
 
-    const fetchProducts = async (term: string) => {
+    const fetchInitialProducts = async () => {
         setLoading(true);
+        setError(null);
         try {
-            const res = await fetch(`/api/products?search=${encodeURIComponent(term)}`);
+            // Fetch a larger set for local searching, matching Inventory dialog pattern
+            const res = await fetch(`/api/external-products?limit=1000`);
             if (res.ok) {
                 const data = await res.json();
-                setProducts(data);
+                if (data.success) {
+                    setAllProducts(data.data || []);
+                    setProducts(data.data || []);
+                } else {
+                    setError('Unable to fetch external inventory');
+                }
+            } else {
+                setError('Inventory API error');
             }
         } catch (error) {
             console.error(error);
+            setError('Connection failed');
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
+            setProducts(allProducts);
+            return;
+        }
+
+        const filtered = allProducts.filter(p =>
+            p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.barcode?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setProducts(filtered);
+    }, [searchTerm, allProducts]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -103,8 +131,9 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                     />
                 </div>
                 <div className="max-h-[200px] overflow-y-auto">
-                    {loading && <div className="p-2 text-sm text-muted-foreground text-center">Loading...</div>}
-                    {!loading && products.length === 0 && (
+                    {loading && <div className="p-2 text-sm text-muted-foreground text-center">Loading inventory...</div>}
+                    {error && <div className="p-2 text-sm text-destructive text-center font-medium">{error}</div>}
+                    {!loading && !error && products.length === 0 && (
                         <div className="p-2 text-sm text-muted-foreground text-center">No products found.</div>
                     )}
                     {!loading && products.map((product) => (
@@ -117,7 +146,7 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                             }}
                         >
                             <div className="font-medium">{product.name}</div>
-                            <div className="text-xs text-muted-foreground">{product.code}</div>
+                            <div className="text-xs text-muted-foreground">{product.sku}</div>
                         </div>
                     ))}
                 </div>
@@ -136,13 +165,14 @@ export default function CreatePurchaseOrderDialog() {
     const [supplierId, setSupplierId] = useState('');
     const [vendorAddress, setVendorAddress] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
-    const [taxType, setTaxType] = useState('default');
+
     const [items, setItems] = useState<PurchaseOrderItem[]>([]);
     const [comments, setComments] = useState('');
     const [privateComments, setPrivateComments] = useState('');
     const [saving, setSaving] = useState(false);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [editOrderId, setEditOrderId] = useState<string | null>(null);
+    const [customUomRows, setCustomUomRows] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         if (openDialogs['create-purchase-order']) {
@@ -163,7 +193,7 @@ export default function CreatePurchaseOrderDialog() {
         setSupplierId('');
         setVendorAddress('');
         setShippingAddress('');
-        setTaxType('default');
+
         setItems([]);
         setComments('');
         setPrivateComments('');
@@ -189,17 +219,19 @@ export default function CreatePurchaseOrderDialog() {
                     setDate(new Date(order.date));
                     setComments(order.comments || '');
                     setPrivateComments(order.privateComments || '');
-                    setTaxType(order.taxType || 'default');
+
 
                     // Map items
                     const mappedItems = order.items.map((item: any) => ({
                         id: item.id,
                         qty: item.quantity,
-                        item: item.product?.name || 'Unknown Item', // Or itemDescription
-                        description: item.itemDescription || '',
-                        unitPrice: item.unitPrice,
-                        tax: 'None', // Default or from DB if stored
-                        productId: item.productId // Important for tracking
+                        item: item.product?.name || item.itemDescription || 'Unknown Item',
+                        barcode: item.product?.barcode || item.barcode || '',
+                        productId: item.productId, // Important for tracking
+                        qtyPerCase: item.qtyPerCase || 1,
+                        orderQty: item.orderQty || item.quantity || 0,
+                        costPricePerCase: item.costPricePerCase || (item.unitPrice * (item.qtyPerCase || 1)) || 0,
+                        costPricePerPiece: item.costPricePerPiece || item.unitPrice || 0
                     }));
                     setItems(mappedItems);
                 } else {
@@ -260,14 +292,21 @@ export default function CreatePurchaseOrderDialog() {
     const taxAmount = 0; // Placeholder for tax calculation logic
     const total = subtotal + taxAmount;
 
-    const handleAddItem = () => {
+    const handleProductSelect = (product: any) => {
+        const costVal = product.cost ? parseFloat(product.cost.toString()) : 0;
         const newItem: PurchaseOrderItem = {
             id: Math.random().toString(36).substr(2, 9),
             qty: 1,
-            item: '',
-            description: '',
-            unitPrice: 0,
-            tax: 'None'
+            item: product.name,
+            uom: 'pc', // Default to 'pc' as it's a standard unit in the new dropdown
+            barcode: product.barcode || '',
+            productId: product.id,
+            qtyPerCase: 1,
+            orderQty: 1,
+            costPricePerCase: costVal,
+            costPricePerPiece: costVal,
+            unitPrice: costVal,
+            total: costVal
         };
         setItems([...items, newItem]);
     };
@@ -281,7 +320,29 @@ export default function CreatePurchaseOrderDialog() {
     };
 
     const updateItem = (id: string, field: keyof PurchaseOrderItem, value: any) => {
-        setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
+        setItems(items.map(item => {
+            if (item.id !== id) return item;
+
+            const updatedItem = { ...item, [field]: value };
+
+            // Recalculate based on changed fields
+            if (field === 'qtyPerCase' || field === 'costPricePerCase' || field === 'orderQty') {
+                const qtyPerCase = parseFloat(updatedItem.qtyPerCase?.toString() || '1') || 1;
+                const costPricePerCase = parseFloat(updatedItem.costPricePerCase?.toString() || '0') || 0;
+                const orderQty = parseFloat(updatedItem.orderQty?.toString() || '0') || 0;
+
+                updatedItem.costPricePerPiece = costPricePerCase / qtyPerCase;
+                updatedItem.unitPrice = updatedItem.costPricePerPiece;
+                updatedItem.qty = orderQty * qtyPerCase;
+            } else if (field === 'costPricePerPiece') {
+                const costPricePerPiece = parseFloat(value?.toString() || '0') || 0;
+                const qtyPerCase = parseFloat(updatedItem.qtyPerCase?.toString() || '1') || 1;
+                updatedItem.costPricePerCase = costPricePerPiece * qtyPerCase;
+                updatedItem.unitPrice = costPricePerPiece;
+            }
+
+            return updatedItem;
+        }));
     };
 
 
@@ -308,7 +369,7 @@ export default function CreatePurchaseOrderDialog() {
                 date: date,
                 vendorAddress,
                 shippingAddress,
-                taxType,
+
                 comments,
                 privateComments,
                 items,
@@ -326,8 +387,17 @@ export default function CreatePurchaseOrderDialog() {
             });
 
             if (res.ok) {
-                toast({ title: 'Success', description: 'Purchase Order created successfully.' });
+                const savedOrder = await res.json();
+                toast({ title: 'Success', description: `Purchase Order ${mode === 'edit' ? 'updated' : 'created'} successfully.` });
+
+                // Close create/edit dialog
                 handleClose();
+
+                // Automatically open preview/details dialog
+                setTimeout(() => {
+                    setDialogData('view-purchase-order', { orderId: savedOrder.id });
+                    openDialog('view-purchase-order');
+                }, 100);
             } else {
                 const data = await res.json();
                 toast({ title: 'Error', description: data.error || 'Failed to save order.', variant: 'destructive' });
@@ -382,7 +452,7 @@ export default function CreatePurchaseOrderDialog() {
                                 <Textarea
                                     placeholder="[Enter vendor address]"
                                     className="min-h-[100px] resize-none"
-                                    value={vendorAddress}
+                                    value={vendorAddress || ''}
                                     onChange={(e) => setVendorAddress(e.target.value)}
                                 />
                             </div>
@@ -421,45 +491,45 @@ export default function CreatePurchaseOrderDialog() {
                                 <Textarea
                                     placeholder="[Enter shipping address]"
                                     className="min-h-[100px] resize-none"
-                                    value={shippingAddress}
+                                    value={shippingAddress || ''}
                                     onChange={(e) => setShippingAddress(e.target.value)}
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <Label>Tax Method</Label>
-                        <Select value={taxType} onValueChange={setTaxType}>
-                            <SelectTrigger className="w-[240px]">
-                                <SelectValue placeholder="Select Tax" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="default">Default</SelectItem>
-                                <SelectItem value="none">None</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
 
                     {/* Items Table */}
                     <div className="space-y-4">
+                        <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-lg border">
+                            <div className="flex-1 max-w-sm">
+                                <Label className="text-xs font-semibold uppercase text-muted-foreground mb-1 block">Search to Add Item</Label>
+                                <ProductSearch value="" onSelect={handleProductSelect} />
+                            </div>
+                            <div className="text-xs text-muted-foreground pt-4">
+                                Select a product to automatically add it to the order list.
+                            </div>
+                        </div>
+
                         <div className="rounded-md border">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-muted/50">
-                                        <TableHead className="w-[80px]">Qty</TableHead>
-                                        <TableHead className="w-[30%]">Item</TableHead>
-                                        <TableHead className="w-[30%]">Description</TableHead>
-                                        <TableHead className="w-[120px] text-right">Unit Price</TableHead>
-                                        <TableHead className="w-[100px] text-right">Tax</TableHead>
-                                        <TableHead className="w-[120px] text-right">Total</TableHead>
-                                        <TableHead className="w-[50px]"></TableHead>
+                                        <TableHead className="w-[12%]">Barcode</TableHead>
+                                        <TableHead className="w-[30%]">Item Name</TableHead>
+                                        <TableHead className="w-[80px] text-right">QTY/Case</TableHead>
+                                        <TableHead className="w-[80px] text-right">Order QTY</TableHead>
+                                        <TableHead className="w-[100px] text-right">Cost/Case</TableHead>
+                                        <TableHead className="w-[100px] text-right">Cost/Piece</TableHead>
+                                        <TableHead className="w-[100px] text-right">UOM</TableHead>
+                                        <TableHead className="w-[110px] text-right">Total</TableHead>
+                                        <TableHead className="w-[40px]"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {items.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="h-[200px] text-center text-muted-foreground">
+                                            <TableCell colSpan={9} className="h-[200px] text-center text-muted-foreground">
                                                 Click "Add Item" to add items to this order.
                                             </TableCell>
                                         </TableRow>
@@ -468,40 +538,108 @@ export default function CreatePurchaseOrderDialog() {
                                             <TableRow key={item.id}>
                                                 <TableCell>
                                                     <Input
-                                                        type="number"
-                                                        value={item.qty}
+                                                        value={item.barcode || ''}
                                                         className="h-8"
-                                                        onChange={(e) => updateItem(item.id, 'qty', parseInt(e.target.value) || 0)}
+                                                        placeholder="Barcode"
+                                                        onChange={(e) => updateItem(item.id, 'barcode', e.target.value)}
                                                     />
                                                 </TableCell>
                                                 <TableCell className="relative">
-                                                    <ProductSearch
-                                                        value={item.item}
-                                                        onSelect={(product) => {
-                                                            updateItem(item.id, 'item', product.name);
-                                                            updateItem(item.id, 'description', product.description || '');
-                                                            updateItem(item.id, 'unitPrice', product.costPrice || 0);
-                                                            updateItem(item.id, 'productId', product.id);
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
                                                     <Input
-                                                        value={item.description}
-                                                        className="h-8"
-                                                        onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                                                        value={item.item || ''}
+                                                        className="h-8 font-medium"
+                                                        placeholder="Item Name"
+                                                        onChange={(e) => updateItem(item.id, 'item', e.target.value)}
                                                     />
                                                 </TableCell>
                                                 <TableCell>
                                                     <Input
                                                         type="number"
-                                                        value={item.unitPrice}
+                                                        value={item.qtyPerCase ?? 1}
                                                         className="h-8 text-right"
-                                                        onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                                        onChange={(e) => updateItem(item.id, 'qtyPerCase', parseFloat(e.target.value) || 1)}
                                                     />
                                                 </TableCell>
-                                                <TableCell className="text-right align-middle">
-                                                    {item.tax}
+                                                <TableCell>
+                                                    <Input
+                                                        type="number"
+                                                        value={item.orderQty ?? 0}
+                                                        className="h-8 text-right"
+                                                        onChange={(e) => updateItem(item.id, 'orderQty', parseFloat(e.target.value) || 0)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="number"
+                                                        value={item.costPricePerCase ?? 0}
+                                                        className="h-8 text-right"
+                                                        onChange={(e) => updateItem(item.id, 'costPricePerCase', parseFloat(e.target.value) || 0)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="number"
+                                                        value={item.costPricePerPiece ?? 0}
+                                                        className="h-8 text-right"
+                                                        onChange={(e) => updateItem(item.id, 'costPricePerPiece', parseFloat(e.target.value) || 0)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {customUomRows[item.id] ? (
+                                                        <div className="flex items-center gap-1">
+                                                            <Input
+                                                                value={item.uom || ''}
+                                                                className="h-8 text-right"
+                                                                placeholder="Enter UOM"
+                                                                autoFocus
+                                                                onChange={(e) => updateItem(item.id, 'uom', e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter') {
+                                                                        setCustomUomRows(prev => ({ ...prev, [item.id]: false }));
+                                                                    }
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-primary shadow-none"
+                                                                onClick={() => setCustomUomRows(prev => ({ ...prev, [item.id]: false }))}
+                                                            >
+                                                                <Check className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ) : (
+                                                        <Select
+                                                            value={item.uom || 'pc'}
+                                                            onValueChange={(val) => {
+                                                                if (val === 'CUSTOM_NEW') {
+                                                                    setCustomUomRows(prev => ({ ...prev, [item.id]: true }));
+                                                                    updateItem(item.id, 'uom', ''); // Clear to let user type
+                                                                } else {
+                                                                    updateItem(item.id, 'uom', val);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <SelectTrigger className="h-8 text-right">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="pc">pc</SelectItem>
+                                                                <SelectItem value="case">case</SelectItem>
+                                                                <SelectItem value="bottle">bottle</SelectItem>
+                                                                <SelectItem value="box">box</SelectItem>
+                                                                <SelectItem value="kg">kg</SelectItem>
+                                                                <SelectItem value="each">each</SelectItem>
+                                                                <div className="border-t my-1 h-[1px] bg-muted" />
+                                                                <SelectItem value="CUSTOM_NEW" className="text-primary font-medium cursor-pointer">
+                                                                    <div className="flex items-center">
+                                                                        <Plus className="mr-2 h-3 w-3" />
+                                                                        + Add New...
+                                                                    </div>
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
                                                 </TableCell>
                                                 <TableCell className="text-right align-middle font-medium">
                                                     {(item.qty * item.unitPrice).toFixed(2)}
@@ -520,16 +658,8 @@ export default function CreatePurchaseOrderDialog() {
                             </Table>
                         </div>
 
-                        <div className="flex gap-2">
-                            <Button onClick={handleAddItem} variant="outline">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Item
-                            </Button>
-                            <Button variant="outline">
-                                Add Discount
-                            </Button>
-                        </div>
                     </div>
+
 
                     {/* Footer Notes & Totals */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t pt-6">
@@ -539,7 +669,7 @@ export default function CreatePurchaseOrderDialog() {
                                 <Textarea
                                     placeholder="[Enter order notes]"
                                     className="h-[100px] resize-none"
-                                    value={comments}
+                                    value={comments || ''}
                                     onChange={(e) => setComments(e.target.value)}
                                 />
                             </div>
@@ -548,7 +678,7 @@ export default function CreatePurchaseOrderDialog() {
                                 <Textarea
                                     placeholder="[Enter internal notes]"
                                     className="h-[100px] resize-none"
-                                    value={privateComments}
+                                    value={privateComments || ''}
                                     onChange={(e) => setPrivateComments(e.target.value)}
                                 />
                             </div>
@@ -570,17 +700,16 @@ export default function CreatePurchaseOrderDialog() {
                 <DialogFooter className="border-t p-4">
                     <div className="flex w-full justify-between items-center">
                         <div className="flex gap-2">
+                        </div>
+                        <div className="flex gap-2">
                             <Button onClick={handleSave} disabled={saving}>
                                 {saving ? "Saving..." : "Save and Preview"}
                             </Button>
-                        </div>
-                        <div className="flex gap-2">
                             <Button variant="outline" onClick={handleClose}>Cancel</Button>
-                            <Button variant="ghost">Help</Button>
                         </div>
                     </div>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 }

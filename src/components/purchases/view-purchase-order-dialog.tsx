@@ -18,13 +18,19 @@ import { cn } from '@/lib/utils'; // Assuming this exists
 interface PurchaseOrderItem {
     id: string;
     product: {
-        code: string;
+        barcode: string;
         name: string;
     } | null;
     itemDescription: string;
     quantity: number;
     unitPrice: number;
     total: number;
+    barcode?: string;
+    buyingUom?: string;
+    qtyPerCase?: number;
+    orderQty?: number;
+    costPricePerCase?: number;
+    costPricePerPiece?: number;
 }
 
 interface PurchaseOrder {
@@ -42,6 +48,7 @@ interface PurchaseOrder {
     taxTotal: number;
     total: number;
     orderNumber?: string; // If available
+    comments?: string;
 }
 
 interface BusinessProfile {
@@ -108,7 +115,7 @@ export default function ViewPurchaseOrderDialog() {
 
     return (
         <Dialog open={openDialogs['view-purchase-order']} onOpenChange={() => closeDialog('view-purchase-order')}>
-            <DialogContent className="max-w-[900px] h-screen sm:h-auto max-h-[95vh] flex flex-col p-0 overflow-hidden sm:rounded-lg">
+            <DialogContent className="max-w-[1200px] h-screen sm:h-auto max-h-[95vh] flex flex-col p-0 overflow-hidden sm:rounded-lg">
 
                 {/* Header / Title Bar */}
                 <div className="flex items-center justify-between px-6 py-4 border-b bg-background print:hidden">
@@ -120,7 +127,7 @@ export default function ViewPurchaseOrderDialog() {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-auto p-8 bg-background text-foreground text-sm" id="printable-content">
+                <div className="flex-1 overflow-auto p-12 bg-background text-foreground text-sm" id="printable-content">
                     {loading ? (
                         <div className="flex justify-center items-center h-40">Loading details...</div>
                     ) : order ? (
@@ -179,26 +186,35 @@ export default function ViewPurchaseOrderDialog() {
                                 <table className="w-full text-left text-sm">
                                     <thead className="bg-muted/50 border-b">
                                         <tr>
-                                            <th className="px-4 py-2 font-medium border-r w-[15%]">Code</th>
-                                            <th className="px-4 py-2 font-medium border-r w-[45%]">Name</th>
-                                            <th className="px-4 py-2 font-medium border-r text-right w-[15%]">Price</th>
-                                            <th className="px-4 py-2 font-medium border-r text-right w-[10%]">Quantity</th>
-                                            <th className="px-4 py-2 font-medium text-right w-[15%]">Total</th>
+                                            <th className="px-3 py-2 font-medium border-r w-[12%] text-xs uppercase tracking-wider">Barcode</th>
+                                            <th className="px-3 py-2 font-medium border-r w-[43%] text-xs uppercase tracking-wider">Name</th>
+                                            <th className="px-2 py-2 font-medium border-r text-right w-[5%] text-[10px] uppercase">QTY/Case</th>
+                                            <th className="px-3 py-2 font-medium border-r text-right w-[7%] text-[10px] uppercase">Order QTY</th>
+                                            <th className="px-3 py-2 font-medium border-r text-right w-[9%] text-[10px] uppercase">Cost/Case</th>
+                                            <th className="px-3 py-2 font-medium border-r text-right w-[9%] text-[10px] uppercase">Cost/Piece</th>
+                                            <th className="px-3 py-2 font-medium border-r text-right w-[5%] text-[10px] uppercase">UOM</th>
+                                            <th className="px-4 py-2 font-medium text-right w-[10%] text-xs uppercase tracking-wider">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y">
                                         {order.items.map((item, idx) => (
                                             <tr key={item.id || idx}>
-                                                <td className="px-4 py-2 border-r align-top">{item.product?.code || "N/A"}</td>
-                                                <td className="px-4 py-2 border-r align-top">{item.itemDescription}</td>
-                                                <td className="px-4 py-2 border-r align-top text-right">{item.unitPrice.toFixed(2)}</td>
-                                                <td className="px-4 py-2 border-r align-top text-right">{item.quantity.toFixed(2)} pc</td> {/* Assuming unit */}
-                                                <td className="px-4 py-2 align-top text-right">{item.total.toFixed(2)}</td>
+                                                <td className="px-3 py-2 border-r align-top text-[10px] break-all">{item.barcode || item.product?.barcode || "N/A"}</td>
+                                                <td className="px-3 py-2 border-r align-top text-xs font-medium">{item.itemDescription}</td>
+                                                <td className="px-2 py-2 border-r align-top text-right text-xs">{item.qtyPerCase || 1}</td>
+                                                <td className="px-2 py-2 border-r align-top text-right text-xs font-semibold">{item.orderQty || item.quantity}</td>
+                                                <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerCase || (item.unitPrice * (item.qtyPerCase || 1))).toFixed(2)}</td>
+                                                <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerPiece || item.unitPrice).toFixed(2)}</td>
+                                                <td className="px-3 py-2 border-r align-top text-right text-xs text-muted-foreground">{item.buyingUom || "pc"}</td>
+                                                <td className="px-4 py-2 align-top text-right text-xs font-bold">{item.total.toFixed(2)}</td>
                                             </tr>
                                         ))}
                                         {/* Filler rows to match height if needed, or min-height on tbody */}
                                         {Array.from({ length: Math.max(0, 5 - order.items.length) }).map((_, i) => (
                                             <tr key={`filler-${i}`}>
+                                                <td className="px-4 py-4 border-r">&nbsp;</td>
+                                                <td className="px-4 py-4 border-r">&nbsp;</td>
+                                                <td className="px-4 py-4 border-r">&nbsp;</td>
                                                 <td className="px-4 py-4 border-r">&nbsp;</td>
                                                 <td className="px-4 py-4 border-r">&nbsp;</td>
                                                 <td className="px-4 py-4 border-r">&nbsp;</td>
@@ -209,7 +225,14 @@ export default function ViewPurchaseOrderDialog() {
                                     </tbody>
                                     <tfoot className="border-t">
                                         <tr>
-                                            <td colSpan={3} rowSpan={4} className="border-r border-b"></td>
+                                            <td colSpan={8} rowSpan={4} className="border-r border-b text-xs p-4 align-top text-muted-foreground italic">
+                                                {order.comments && (
+                                                    <div className="mb-2">
+                                                        <span className="font-semibold block not-italic uppercase text-[10px] mb-1">Remarks:</span>
+                                                        {order.comments}
+                                                    </div>
+                                                )}
+                                            </td>
                                             <td className="px-4 py-1 border-r text-right text-muted-foreground border-b text-xs">Shipping</td>
                                             <td className="px-4 py-1 text-right border-b font-medium">0.00</td>
                                         </tr>

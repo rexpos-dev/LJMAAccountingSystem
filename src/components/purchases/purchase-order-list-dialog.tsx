@@ -44,7 +44,6 @@ import {
     X,
     Pencil,
     Search,
-    Printer,
     HelpCircle,
     Eye,
     MoreVertical,
@@ -87,10 +86,16 @@ export default function PurchaseOrderListDialog() {
 
     useEffect(() => {
         if (openDialogs['purchase-order-list']) {
-            fetchOrders();
             fetchSuppliers();
         }
     }, [openDialogs['purchase-order-list']]);
+
+    // Dynamic Filter Re-fetch
+    useEffect(() => {
+        if (openDialogs['purchase-order-list']) {
+            fetchOrders();
+        }
+    }, [openDialogs['purchase-order-list'], statusFilter, supplierFilter, startDate, endDate]);
 
     // Re-fetch when creation dialog closes to update list
     useEffect(() => {
@@ -113,7 +118,9 @@ export default function PurchaseOrderListDialog() {
             const params = new URLSearchParams();
             if (statusFilter !== 'all') params.append('status', statusFilter);
             if (supplierFilter !== 'all') params.append('supplierId', supplierFilter);
-            // Add date filter logic if needed based on period selection
+
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
 
             const res = await fetch(`/api/purchase-orders?${params.toString()}`);
             if (res.ok) {
@@ -126,6 +133,40 @@ export default function PurchaseOrderListDialog() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handlePeriodChange = (val: string) => {
+        setPeriod(val);
+        const now = new Date();
+        let start = now;
+        let end = now;
+
+        switch (val) {
+            case 'today':
+                start = now;
+                end = now;
+                break;
+            case 'week':
+                // Get start of week (Sunday)
+                start = new Date(now.setDate(now.getDate() - now.getDay()));
+                end = new Date();
+                break;
+            case 'month':
+                // Get start of month
+                start = new Date(now.getFullYear(), now.getMonth(), 1);
+                end = new Date();
+                break;
+            case 'all':
+                // Clear filters or set to very early date if needed
+                setStartDate('');
+                setEndDate('');
+                return;
+            default:
+                return;
+        }
+
+        setStartDate(format(start, 'yyyy-MM-dd'));
+        setEndDate(format(end, 'yyyy-MM-dd'));
     };
 
     const fetchSuppliers = async () => {
@@ -287,7 +328,6 @@ export default function PurchaseOrderListDialog() {
                     <ToolbarButton icon={History} label="Purchase History" onClick={handlePurchaseHistory} disabled={!selectedOrderId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedOrderId} />
-                    <ToolbarButton icon={Printer} label="Print" />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Upload} label="Bulk Upload" onClick={handleBulkUpload} />
                     <div className="ml-auto flex items-center">
@@ -299,7 +339,7 @@ export default function PurchaseOrderListDialog() {
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-muted/20 border-b">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Period:</span>
-                        <Select value={period} onValueChange={setPeriod}>
+                        <Select value={period} onValueChange={handlePeriodChange}>
                             <SelectTrigger className="h-8">
                                 <SelectValue placeholder="Period" />
                             </SelectTrigger>
