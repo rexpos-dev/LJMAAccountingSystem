@@ -72,7 +72,6 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
         setLoading(true);
         setError(null);
         try {
-            // Fetch a larger set for local searching, matching Inventory dialog pattern
             const res = await fetch(`/api/external-products?limit=1000`);
             if (res.ok) {
                 const data = await res.json();
@@ -110,43 +109,42 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between h-8 px-2 font-normal"
-                >
-                    {value || "Search product..."}
-                    <Plus className="ml-2 h-4 w-4 shrink-0 opacity-50 rotate-45" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0" align="start">
-                <div className="p-2 border-b">
+                <div className="relative w-full">
                     <Input
-                        placeholder="Search products..."
+                        placeholder="Search products"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-8"
-                        autoFocus
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            if (!open) setOpen(true);
+                        }}
+                        onFocus={() => setOpen(true)}
+                        className="h-10 pl-4 pr-10 font-normal bg-[#1a1c23] border-[#2e313a] text-white placeholder:text-muted-foreground rounded-lg transition-colors shadow-sm focus-visible:ring-1 focus-visible:ring-primary"
                     />
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 </div>
-                <div className="max-h-[200px] overflow-y-auto">
-                    {loading && <div className="p-2 text-sm text-muted-foreground text-center">Loading inventory...</div>}
-                    {error && <div className="p-2 text-sm text-destructive text-center font-medium">{error}</div>}
+            </PopoverTrigger>
+            <PopoverContent className="w-[350px] p-0" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <div className="max-h-[300px] overflow-y-auto">
+                    {loading && <div className="p-4 text-sm text-muted-foreground text-center">Loading inventory...</div>}
+                    {error && <div className="p-4 text-sm text-destructive text-center font-medium">{error}</div>}
                     {!loading && !error && products.length === 0 && (
-                        <div className="p-2 text-sm text-muted-foreground text-center">No products found.</div>
+                        <div className="p-4 text-sm text-muted-foreground text-center">No products found.</div>
                     )}
                     {!loading && products.map((product) => (
                         <div
                             key={product.id}
-                            className="p-2 text-sm hover:bg-muted cursor-pointer truncate"
+                            className="p-3 text-sm hover:bg-muted cursor-pointer transition-colors border-b last:border-0"
                             onClick={() => {
                                 onSelect(product);
                                 setOpen(false);
+                                setSearchTerm(''); // Clear after select
                             }}
                         >
-                            <div className="font-medium">{product.name}</div>
-                            <div className="text-xs text-muted-foreground">{product.sku}</div>
+                            <div className="font-semibold">{product.name}</div>
+                            <div className="flex justify-between items-center mt-1">
+                                <span className="text-xs text-muted-foreground">{product.sku || 'No SKU'}</span>
+                                {product.barcode && <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground">{product.barcode}</span>}
+                            </div>
                         </div>
                     ))}
                 </div>

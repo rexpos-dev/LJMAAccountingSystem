@@ -39,6 +39,7 @@ interface PurchaseOrder {
     supplier: {
         name: string;
         address?: string;
+        paymentTerms?: string;
     };
     vendorAddress?: string;
     shippingAddress?: string;
@@ -56,6 +57,7 @@ interface BusinessProfile {
     address?: string;
     contactPhone?: string;
     email?: string;
+    bankDetails?: string;
 }
 
 export default function ViewPurchaseOrderDialog() {
@@ -178,7 +180,7 @@ export default function ViewPurchaseOrderDialog() {
 
                             {/* Notes / Terms */}
                             <div className="mt-8">
-                                <span className="underline">Payment Terms: CASH</span>
+                                <span className="underline">Payment Terms: {order.supplier.paymentTerms || "CASH"}</span>
                             </div>
 
                             {/* Items Table - Custom Styled to match image */}
@@ -225,7 +227,7 @@ export default function ViewPurchaseOrderDialog() {
                                     </tbody>
                                     <tfoot className="border-t">
                                         <tr>
-                                            <td colSpan={8} rowSpan={4} className="border-r border-b text-xs p-4 align-top text-muted-foreground italic">
+                                            <td colSpan={6} rowSpan={4} className="border-r border-b text-xs p-4 align-top text-muted-foreground italic">
                                                 {order.comments && (
                                                     <div className="mb-2">
                                                         <span className="font-semibold block not-italic uppercase text-[10px] mb-1">Remarks:</span>
@@ -255,7 +257,7 @@ export default function ViewPurchaseOrderDialog() {
                             {/* Footer Signature */}
                             <div className="mt-12 mb-8 pt-8">
                                 <div className="text-sm uppercase mb-12">
-                                    CASH DEPOSIT / PAYMENT (BPI)
+                                    {businessProfile?.bankDetails || "CASH DEPOSIT / PAYMENT"}
                                 </div>
                                 <div className="flex justify-end items-end gap-2">
                                     <span className="mb-1 text-sm text-muted-foreground">Authorized by:</span>

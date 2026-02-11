@@ -9,8 +9,6 @@ import {
     Eye,
     Printer,
     Save,
-    Mail,
-    HelpCircle,
     Search,
     RefreshCw,
 } from 'lucide-react';
@@ -215,17 +213,9 @@ export default function ViewJournalDialog() {
                             <Save className="h-5 w-5" />
                             <span className="text-[10px]">Save</span>
                         </Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto" disabled={!selectedEntry}>
-                            <Mail className="h-5 w-5" />
-                            <span className="text-[10px]">Email</span>
-                        </Button>
                         <div className="ml-auto flex items-center gap-2">
                             <Button variant="ghost" size="icon" onClick={fetchTransactions} disabled={isLoadingTransactions}>
                                 <RefreshCw className={cn("h-4 w-4", isLoadingTransactions && "animate-spin")} />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto">
-                                <HelpCircle className="h-5 w-5" />
-                                <span className="text-[10px]">Help</span>
                             </Button>
                         </div>
                     </div>

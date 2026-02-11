@@ -35,6 +35,13 @@ export function MainMenu() {
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
+        <MenubarTrigger>Reports</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={() => openDialog('income-statement')}>Income Statement</MenubarItem>
+          <MenubarItem onClick={() => openDialog('balance-sheet')}>Balance Sheet</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
         <MenubarTrigger>Configuration</MenubarTrigger>
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('chart-of-accounts')}>Chart of Accounts</MenubarItem>

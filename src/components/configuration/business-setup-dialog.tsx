@@ -25,6 +25,7 @@ interface BusinessProfileData {
     email: string;
     tin: string;
     permit: string;
+    bankDetails: string;
     logo: string | null;
 }
 
@@ -44,6 +45,7 @@ export default function BusinessSetupDialog() {
         email: '',
         tin: '',
         permit: '',
+        bankDetails: '',
         logo: null,
     });
 
@@ -68,6 +70,7 @@ export default function BusinessSetupDialog() {
                         email: data.email || '',
                         tin: data.tin || '',
                         permit: data.permit || '',
+                        bankDetails: data.bankDetails || '',
                         logo: data.logo || null,
                     });
                 }
@@ -244,6 +247,15 @@ export default function BusinessSetupDialog() {
                                         value={formData.permit}
                                         onChange={handleChange}
                                         placeholder="Permit Number"
+                                    />
+                                </div>
+                                <div className="space-y-2 col-span-2">
+                                    <Label htmlFor="bankDetails">Bank Details / Payment Instructions</Label>
+                                    <Input
+                                        id="bankDetails"
+                                        value={formData.bankDetails}
+                                        onChange={handleChange}
+                                        placeholder="e.g. BPI: 123-456-789 | GCash: 09123456789"
                                     />
                                 </div>
                             </div>

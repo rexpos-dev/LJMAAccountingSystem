@@ -44,12 +44,12 @@ import {
     X,
     Pencil,
     Search,
-    HelpCircle,
     Eye,
     MoreVertical,
     FileText,
     Upload,
-    History
+    History,
+    Filter
 } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { cn } from '@/lib/utils';
@@ -78,24 +78,18 @@ export default function PurchaseOrderListDialog() {
     const [period, setPeriod] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
     const [supplierFilter, setSupplierFilter] = useState('all');
-    const [displayOrders, setDisplayOrders] = useState('Recorded');
-    const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-    const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const [suppliers, setSuppliers] = useState<any[]>([]);
 
     useEffect(() => {
         if (openDialogs['purchase-order-list']) {
             fetchSuppliers();
+            fetchOrders(true);
         }
     }, [openDialogs['purchase-order-list']]);
 
-    // Dynamic Filter Re-fetch
-    useEffect(() => {
-        if (openDialogs['purchase-order-list']) {
-            fetchOrders();
-        }
-    }, [openDialogs['purchase-order-list'], statusFilter, supplierFilter, startDate, endDate]);
 
     // Re-fetch when creation dialog closes to update list
     useEffect(() => {
@@ -112,15 +106,17 @@ export default function PurchaseOrderListDialog() {
     }, [openDialogs['bulk-upload-purchase-order']]);
 
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (ignoreFilters = false) => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            if (statusFilter !== 'all') params.append('status', statusFilter);
-            if (supplierFilter !== 'all') params.append('supplierId', supplierFilter);
+            if (!ignoreFilters) {
+                if (statusFilter !== 'all') params.append('status', statusFilter);
+                if (supplierFilter !== 'all') params.append('supplierId', supplierFilter);
 
-            if (startDate) params.append('startDate', startDate);
-            if (endDate) params.append('endDate', endDate);
+                if (startDate) params.append('startDate', startDate);
+                if (endDate) params.append('endDate', endDate);
+            }
 
             const res = await fetch(`/api/purchase-orders?${params.toString()}`);
             if (res.ok) {
@@ -330,9 +326,6 @@ export default function PurchaseOrderListDialog() {
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedOrderId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Upload} label="Bulk Upload" onClick={handleBulkUpload} />
-                    <div className="ml-auto flex items-center">
-                        <ToolbarButton icon={HelpCircle} label="Help" />
-                    </div>
                 </div>
 
                 {/* Filters */}
@@ -373,17 +366,7 @@ export default function PurchaseOrderListDialog() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">Display Orders:</span>
-                        <Select value={displayOrders} onValueChange={setDisplayOrders}>
-                            <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Recorded" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Recorded">Recorded</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Status:</span>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -399,6 +382,15 @@ export default function PurchaseOrderListDialog() {
                                 <SelectItem value="Void">Void</SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            className="h-8 bg-blue-600 hover:bg-blue-700 text-white gap-2 w-full"
+                            onClick={() => fetchOrders()}
+                        >
+                            <Filter className="h-4 w-4" />
+                            Filter
+                        </Button>
                     </div>
                 </div>
 
