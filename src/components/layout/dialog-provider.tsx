@@ -43,6 +43,57 @@ import BusinessSetupDialog from '@/components/configuration/business-setup-dialo
 import EnterPaymentDialog from '@/components/todo/enter-payment-dialog';
 import IncomeStatementDialog from '@/components/reports/income-statement-dialog';
 import BalanceSheetDialog from '@/components/reports/balance-sheet-dialog';
+import ItemSalesReportDialog from '@/components/reports/item-sales-report-dialog';
+import ItemSalesReport from '@/components/reports/item-sales-report';
+import CashFlowStatementDialog from '@/components/reports/cash-flow-statement-dialog';
+import CashFlowReport from '@/components/reports/cash-flow-report';
+import TrialBalanceDialog from '@/components/reports/trial-balance-dialog';
+import TrialBalanceReport from '@/components/reports/trial-balance-report';
+import ConsolidatedReportsDialog from '@/components/reports/consolidated-reports-dialog';
+import ConsolidatedReport from '@/components/reports/consolidated-report';
+import IncomeStatementAnalysisDialog from '@/components/reports/income-statement-analysis-dialog';
+import IncomeStatementAnalysisReport from '@/components/reports/income-statement-analysis-report';
+import IncomeStatementReport from '@/components/reports/income-statement-report';
+import InvoicesReportDialog from '@/components/reports/invoices-report-dialog';
+import InvoicesReport from '@/components/reports/invoices-report';
+import QuotesReportDialog from '@/components/reports/quotes-report-dialog';
+import QuotesReport from '@/components/reports/quotes-report';
+import SalesInvoicePaymentReportDialog from '@/components/reports/sales-invoice-payment-report-dialog';
+import SalesInvoicePaymentReport from '@/components/reports/sales-invoice-payment-report';
+import InventoryReportDialog from '@/components/reports/inventory-report-dialog';
+import InventoryReport from '@/components/reports/inventory-report';
+import SalespersonReportDialog from '@/components/reports/salesperson-report-dialog';
+import SalespersonReport from '@/components/reports/salesperson-report';
+import UnpaidAccountsReportDialog from '@/components/reports/unpaid-accounts-report-dialog';
+import UnpaidAccountsReport from '@/components/reports/unpaid-accounts-report';
+import AccountsPayableReportDialog from '@/components/reports/accounts-payable-report-dialog';
+import AccountsPayableReport from '@/components/reports/accounts-payable-report';
+import APPaymentsReportDialog from '@/components/reports/ap-payments-report-dialog';
+import APPaymentsReport from '@/components/reports/ap-payments-report';
+import ARAgingReportDialog from '@/components/reports/ar-aging-report-dialog';
+import ARAgingReport from '@/components/reports/ar-aging-report';
+import CustomersReportDialog from '@/components/reports/customers-report-dialog';
+import CustomersReport from '@/components/reports/customers-report';
+import ItemsPerCustomerReportDialog from '@/components/reports/items-per-customer-report-dialog';
+import ItemsPerCustomerReport from '@/components/reports/items-per-customer-report';
+import CustomerSalesReportDialog from '@/components/reports/customer-sales-report-dialog';
+import CustomerSalesReport from '@/components/reports/customer-sales-report';
+import OrdersReportDialog from '@/components/reports/orders-report-dialog';
+import OrdersReport from '@/components/reports/orders-report';
+import ReconciliationReportDialog from '@/components/reports/reconciliation-report-dialog';
+import ReconciliationReport from '@/components/reports/reconciliation-report';
+import AccountEnquiryReportDialog from '@/components/reports/account-enquiry-report-dialog';
+import AccountEnquiryReport from '@/components/reports/account-enquiry-report';
+import ChartOfAccountsReportDialog from '@/components/reports/chart-of-accounts-report-dialog';
+import ChartOfAccountsReport from '@/components/reports/chart-of-accounts-report';
+import MileageReportDialog from '@/components/reports/mileage-report-dialog';
+import MileageReport from '@/components/reports/mileage-report';
+import TaxReportDialog from '@/components/reports/tax-report-dialog';
+import TaxReport from '@/components/reports/tax-report';
+import BudgetReportDialog from '@/components/reports/budget-report-dialog';
+import BudgetReport from '@/components/reports/budget-report';
+import CustomReportDialog from '@/components/reports/custom-report-dialog';
+import CustomReport from '@/components/reports/custom-report';
 
 import EnterCashSaleDialog from '@/components/transactions/enter-cash-sale-dialog';
 import { EnterDirectPaymentsDialog } from '@/components/transactions/enter-direct-payments-dialog';
@@ -129,6 +180,57 @@ const dialogComponents = {
   'balance-sheet-report': BalanceSheetReportDialog,
   'income-statement': IncomeStatementDialog,
   'balance-sheet': BalanceSheetDialog,
+  'item-sales-report-dialog': ItemSalesReportDialog,
+  'item-sales-report': ItemSalesReport,
+  'cash-flow-statement-dialog': CashFlowStatementDialog,
+  'cash-flow-report': CashFlowReport,
+  'trial-balance-dialog': TrialBalanceDialog,
+  'trial-balance-report': TrialBalanceReport,
+  'consolidated-reports-dialog': ConsolidatedReportsDialog,
+  'consolidated-report': ConsolidatedReport,
+  'income-statement-analysis-dialog': IncomeStatementAnalysisDialog,
+  'income-statement-analysis-report': IncomeStatementAnalysisReport,
+  'income-statement-report': IncomeStatementReport,
+  'invoices-report-dialog': InvoicesReportDialog,
+  'invoices-report': InvoicesReport,
+  'quotes-report-dialog': QuotesReportDialog,
+  'quotes-report': QuotesReport,
+  'orders-report-dialog': OrdersReportDialog,
+  'orders-report': OrdersReport,
+  'sales-invoice-payment-report-dialog': SalesInvoicePaymentReportDialog,
+  'sales-invoice-payment-report': SalesInvoicePaymentReport,
+  'inventory-report-dialog': InventoryReportDialog,
+  'inventory-report': InventoryReport,
+  'salesperson-report-dialog': SalespersonReportDialog,
+  'salesperson-report': SalespersonReport,
+  'unpaid-accounts-report-dialog': UnpaidAccountsReportDialog,
+  'unpaid-accounts-report': UnpaidAccountsReport,
+  'accounts-payable-report-dialog': AccountsPayableReportDialog,
+  'accounts-payable-report': AccountsPayableReport,
+  'ap-payments-report-dialog': APPaymentsReportDialog,
+  'ap-payments-report': APPaymentsReport,
+  'ar-aging-report-dialog': ARAgingReportDialog,
+  'ar-aging-report': ARAgingReport,
+  'customers-report-dialog': CustomersReportDialog,
+  'customers-report': CustomersReport,
+  'items-per-customer-report-dialog': ItemsPerCustomerReportDialog,
+  'items-per-customer-report': ItemsPerCustomerReport,
+  'customer-sales-report-dialog': CustomerSalesReportDialog,
+  'customer-sales-report': CustomerSalesReport,
+  'reconciliation-report-dialog': ReconciliationReportDialog,
+  'reconciliation-report': ReconciliationReport,
+  'account-enquiry-report-dialog': AccountEnquiryReportDialog,
+  'account-enquiry-report': AccountEnquiryReport,
+  'chart-of-accounts-report-dialog': ChartOfAccountsReportDialog,
+  'chart-of-accounts-report': ChartOfAccountsReport,
+  'mileage-report-dialog': MileageReportDialog,
+  'mileage-report': MileageReport,
+  'tax-report-dialog': TaxReportDialog,
+  'tax-report': TaxReport,
+  'budget-report-dialog': BudgetReportDialog,
+  'budget-report': BudgetReport,
+  'custom-report-dialog': CustomReportDialog,
+  'custom-report': CustomReport,
 };
 
 type DialogId = keyof typeof dialogComponents;

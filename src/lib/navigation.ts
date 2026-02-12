@@ -61,7 +61,6 @@ export const navItems: NavItem[] = [
     subItems: [
       { title: "Create first invoice", href: "/todo/create-invoice", dialogId: "create-invoice" },
       { title: "Enter your first payment", href: "/todo/enter-payment", dialogId: "enter-payment" },
-      { title: "Run statements", href: "/todo/run-statements" },
       { title: "Requests", href: "/requests" },
     ],
 

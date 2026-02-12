@@ -2,31 +2,31 @@
 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useDialog } from '@/components/layout/dialog-provider';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-export default function IncomeStatementDialog() {
+export default function OrdersReportDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const [fromDate, setFromDate] = useState<Date | undefined>(new Date());
     const [toDate, setToDate] = useState<Date | undefined>(new Date());
 
     const handleRunReport = () => {
-        setDialogData('income-statement-report', { fromDate, toDate });
-        closeDialog('income-statement');
-        openDialog('income-statement-report');
+        setDialogData('orders-report', { fromDate, toDate });
+        closeDialog('orders-report-dialog');
+        openDialog('orders-report');
     };
 
     return (
-        <Dialog open={openDialogs['income-statement']} onOpenChange={() => closeDialog('income-statement')}>
+        <Dialog open={openDialogs['orders-report-dialog']} onOpenChange={() => closeDialog('orders-report-dialog')}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Income Statement</DialogTitle>
+                    <DialogTitle>Orders Report</DialogTitle>
                 </DialogHeader>
                 <div className="p-6 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -85,7 +85,7 @@ export default function IncomeStatementDialog() {
                     <div className="pt-4 border-t flex justify-end gap-2">
                         <Button
                             variant="outline"
-                            onClick={() => closeDialog('income-statement')}
+                            onClick={() => closeDialog('orders-report-dialog')}
                         >
                             Cancel
                         </Button>

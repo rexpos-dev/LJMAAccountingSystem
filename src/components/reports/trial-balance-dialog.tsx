@@ -2,30 +2,30 @@
 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useDialog } from '@/components/layout/dialog-provider';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-export default function BalanceSheetDialog() {
+export default function TrialBalanceDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
-    const [reportDate, setReportDate] = useState<Date | undefined>(new Date());
+    const [asOfDate, setAsOfDate] = useState<Date | undefined>(new Date());
 
     const handleRunReport = () => {
-        setDialogData('balance-sheet-report', { reportDate });
-        closeDialog('balance-sheet');
-        openDialog('balance-sheet-report');
+        setDialogData('trial-balance-report', { asOfDate });
+        closeDialog('trial-balance-dialog');
+        openDialog('trial-balance-report');
     };
 
     return (
-        <Dialog open={openDialogs['balance-sheet']} onOpenChange={() => closeDialog('balance-sheet')}>
+        <Dialog open={openDialogs['trial-balance-dialog']} onOpenChange={() => closeDialog('trial-balance-dialog')}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Balance Sheet</DialogTitle>
+                    <DialogTitle>Trial Balance</DialogTitle>
                 </DialogHeader>
                 <div className="p-6 space-y-4">
                     <div className="space-y-2">
@@ -36,18 +36,18 @@ export default function BalanceSheetDialog() {
                                     variant={"outline"}
                                     className={cn(
                                         "w-full justify-start text-left font-normal",
-                                        !reportDate && "text-muted-foreground"
+                                        !asOfDate && "text-muted-foreground"
                                     )}
                                 >
                                     <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {reportDate ? format(reportDate, "MM/dd/yyyy") : <span>Pick a date</span>}
+                                    {asOfDate ? format(asOfDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
                                 <Calendar
                                     mode="single"
-                                    selected={reportDate}
-                                    onSelect={setReportDate}
+                                    selected={asOfDate}
+                                    onSelect={setAsOfDate}
                                     initialFocus
                                 />
                             </PopoverContent>
@@ -57,7 +57,7 @@ export default function BalanceSheetDialog() {
                     <div className="pt-4 border-t flex justify-end gap-2">
                         <Button
                             variant="outline"
-                            onClick={() => closeDialog('balance-sheet')}
+                            onClick={() => closeDialog('trial-balance-dialog')}
                         >
                             Cancel
                         </Button>

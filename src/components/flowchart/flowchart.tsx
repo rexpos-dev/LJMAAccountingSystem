@@ -122,8 +122,6 @@ export function Flowchart() {
       disabled: isAudit
     },
 
-    // Options
-    { id: "configure-express-accounts", content: "Configure Options", position: { top: 0, left: 1040 }, color: "bg-gray-600", size: { width: 200, height: 100 } },
   ];
 
   const arrows = [

@@ -2,33 +2,49 @@
 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useDialog } from '@/components/layout/dialog-provider';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export default function IncomeStatementDialog() {
+export default function MileageReportDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const [fromDate, setFromDate] = useState<Date | undefined>(new Date());
     const [toDate, setToDate] = useState<Date | undefined>(new Date());
+    const [vehicle, setVehicle] = useState('all');
 
     const handleRunReport = () => {
-        setDialogData('income-statement-report', { fromDate, toDate });
-        closeDialog('income-statement');
-        openDialog('income-statement-report');
+        setDialogData('mileage-report' as any, { fromDate, toDate, vehicle });
+        closeDialog('mileage-report-dialog' as any);
+        openDialog('mileage-report' as any);
     };
 
     return (
-        <Dialog open={openDialogs['income-statement']} onOpenChange={() => closeDialog('income-statement')}>
+        <Dialog open={openDialogs['mileage-report-dialog'] || false} onOpenChange={() => closeDialog('mileage-report-dialog' as any)}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Income Statement</DialogTitle>
+                    <DialogTitle>Mileage Report</DialogTitle>
                 </DialogHeader>
                 <div className="p-6 space-y-4">
+                    <div className="space-y-2">
+                        <Label>Vehicle</Label>
+                        <Select value={vehicle} onValueChange={setVehicle}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select vehicle" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Vehicles</SelectItem>
+                                <SelectItem value="vehicle1">Vehicle 1 - ABC 123</SelectItem>
+                                <SelectItem value="vehicle2">Vehicle 2 - XYZ 789</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>From Date</Label>
@@ -85,7 +101,7 @@ export default function IncomeStatementDialog() {
                     <div className="pt-4 border-t flex justify-end gap-2">
                         <Button
                             variant="outline"
-                            onClick={() => closeDialog('income-statement')}
+                            onClick={() => closeDialog('mileage-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
