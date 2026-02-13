@@ -93,11 +93,12 @@ export default function InventoryReport() {
 
                 <ScrollArea className='flex-1 px-6'>
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="sticky top-0 z-10 bg-card shadow-sm">
                             <TableRow className="bg-muted/30">
                                 <TableHead>Item Code</TableHead>
                                 <TableHead>Description</TableHead>
                                 <TableHead>Category</TableHead>
+                                <TableHead>Unit</TableHead>
                                 <TableHead className="text-right">Quantity on Hand</TableHead>
                                 <TableHead className="text-right">Unit Cost</TableHead>
                                 <TableHead className="text-right">Total Value</TableHead>
@@ -106,13 +107,13 @@ export default function InventoryReport() {
                         <TableBody>
                             {isLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground italic">
+                                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground italic">
                                         Loading inventory data...
                                     </TableCell>
                                 </TableRow>
                             ) : externalProducts.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground italic">
+                                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground italic">
                                         No external inventory data found.
                                     </TableCell>
                                 </TableRow>
@@ -128,6 +129,7 @@ export default function InventoryReport() {
                                                 <TableCell className="font-medium text-blue-400">{product.sku}</TableCell>
                                                 <TableCell>{product.name}</TableCell>
                                                 <TableCell>{product.category}</TableCell>
+                                                <TableCell>{product.unitOfMeasure || '-'}</TableCell>
                                                 <TableCell className="text-right">{stock.toLocaleString()}</TableCell>
                                                 <TableCell className="text-right">₱{cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                                                 <TableCell className="text-right text-green-400">₱{totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
@@ -135,7 +137,7 @@ export default function InventoryReport() {
                                         );
                                     })}
                                     <TableRow className="bg-muted/50 font-bold border-t-2">
-                                        <TableCell colSpan={3}>GRAND TOTAL</TableCell>
+                                        <TableCell colSpan={4}>GRAND TOTAL</TableCell>
                                         <TableCell className="text-right">{totals.totalQty.toLocaleString()}</TableCell>
                                         <TableCell></TableCell>
                                         <TableCell className="text-right text-green-400">₱{totals.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>

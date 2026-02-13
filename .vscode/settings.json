@@ -14,5 +14,10 @@
         }
     ],
     "claudeCodeChat.permissions.yoloMode": true,
-    "snyk.advanced.autoSelectOrganization": true
+    "snyk.advanced.autoSelectOrganization": true,
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.preferredDarkColorTheme": "Default Dark+",
+    "workbench.preferredHighContrastColorTheme": "Visual Studio Dark",
+    "workbench.preferredHighContrastLightColorTheme": "Visual Studio Light",
+    "workbench.preferredLightColorTheme": "Default Light+"
 }

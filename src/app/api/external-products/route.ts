@@ -6,6 +6,7 @@ export interface ExternalProduct {
   description: string | null;
   category: string | null;
   brand: string | null;
+  unitOfMeasure: string | null;
   stock: number;
   price: string;
   cost: string | null;

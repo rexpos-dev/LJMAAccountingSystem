@@ -5,88 +5,64 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const page = parseInt(searchParams.get('page') || '1');
-    const offset = (page - 1) * limit;
+    const limit = searchParams.get('limit') || '10';
+    const page = searchParams.get('page') || '1';
 
-    // Fetch all loyalty points with includes
-    const allLoyaltyPoints = await prisma.loyaltyPoint.findMany({
-      where: {
-        customer: {
-          OR: [
-            { customerName: { contains: search } },
-            { code: { contains: search } }
-          ]
-        }
-      },
-      include: {
-        customer: {
-          select: {
-            code: true,
-            customerName: true
-          }
-        },
-        pointSetting: {
-          select: {
-            description: true
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
+    // Fetch from external API
+    const externalUrl = new URL('http://192.168.1.163:3001/api/customer-loyalty');
+    externalUrl.searchParams.append('search', search);
+    externalUrl.searchParams.append('limit', limit);
+    externalUrl.searchParams.append('page', page);
+
+    const response = await fetch(externalUrl.toString(), {
+      next: { revalidate: 0 } // Disable caching to get fresh data
     });
 
-    // Group by customerId, loyaltyCardId, pointSettingId
-    const groupedMap = new Map<string, any>();
-
-    for (const point of allLoyaltyPoints) {
-      const key = `${point.customerId}-${point.loyaltyCardId}-${point.pointSettingId}`;
-      if (!groupedMap.has(key)) {
-        groupedMap.set(key, {
-          id: key,
-          customerId: point.customerId,
-          loyaltyCardId: point.loyaltyCardId,
-          totalPoints: 0,
-          pointSettingId: point.pointSettingId,
-          expiryDate: null,
-          createdAt: point.createdAt,
-          customer: point.customer,
-          pointSetting: point.pointSetting
-        });
-      }
-      const group = groupedMap.get(key);
-      group.totalPoints += point.totalPoints;
-      // Keep the latest expiry date
-      if (!group.expiryDate || (point.expiryDate && new Date(point.expiryDate) > new Date(group.expiryDate))) {
-        group.expiryDate = point.expiryDate;
-      }
+    if (!response.ok) {
+      throw new Error(`External API returned ${response.status}`);
     }
 
-    const groupedArray = Array.from(groupedMap.values());
+    const externalData = await response.json();
 
-    // Sort by createdAt desc
-    groupedArray.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    let rawData = [];
+    if (Array.isArray(externalData)) {
+      rawData = externalData;
+    } else if (externalData && Array.isArray(externalData.data)) {
+      rawData = externalData.data;
+    }
 
-    // Pagination
-    const total = groupedArray.length;
-    const startIndex = offset;
-    const endIndex = startIndex + limit;
-    const paginatedData = groupedArray.slice(startIndex, endIndex);
+    // Map external fields to internal structure
+    const mappedData = rawData.map((item: any) => ({
+      id: item.id || item.rfid_code,
+      customerId: item.customer_id || item.rfid_code || item.id || item.name, // Ensure we have a customerId for balance lookup
+      loyaltyCardId: item.rfid_code,
+      totalPoints: parseFloat(item.loyaltyPoints || 0),
+      pointSettingId: item.point_setting_id || '',
+      expiryDate: item.created_at || null,
+      customer: {
+        code: item.rfid_code || '',
+        customerName: item.name || 'N/A'
+      },
+      pointSetting: {
+        description: item.point_setting || 'N/A'
+      }
+    }));
 
     return NextResponse.json({
-      data: paginatedData,
+      data: mappedData,
       pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit)
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: mappedData.length,
+        totalPages: 1
       }
     });
   } catch (error) {
-    console.error('Error fetching loyalty points:', error);
+    console.error('Error fetching loyalty points from external API:', error);
+    // Fallback to local prisma if external API fails? 
+    // The user specifically asked to fetch from there, so maybe we should report the error.
     return NextResponse.json(
-      { error: 'Failed to fetch loyalty points' },
+      { error: 'Failed to fetch loyalty points from external API' },
       { status: 500 }
     );
   }

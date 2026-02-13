@@ -31,6 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
+        const controller = new AbortController();
+
         // Check for saved session on mount
         const savedUser = localStorage.getItem('auth_user');
         if (savedUser) {
@@ -43,31 +45,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         // Immediate sync with server session
-        const syncSession = async () => {
+        const syncSession = async (isManual = false) => {
+            // Check if we are online before attempting to fetch
+            if (typeof window !== 'undefined' && !window.navigator.onLine) {
+                if (isManual) {
+                    console.log('Session sync skipped: Device is offline.');
+                }
+                setIsLoading(false);
+                return;
+            }
+
             try {
-                const res = await fetch('/api/auth/session');
+                const res = await fetch('/api/auth/session', {
+                    signal: controller.signal,
+                    cache: 'no-store'
+                });
+
                 if (res.ok) {
                     const data = await res.json();
                     setUser(data.user);
                     localStorage.setItem('auth_user', JSON.stringify(data.user));
                 } else if (res.status === 401) {
                     // Server session is dead, clear local
-                    console.log('Session expired, logging out...');
-                    setUser(null);
-                    localStorage.removeItem('auth_user');
+                    if (user || localStorage.getItem('auth_user')) {
+                        console.log('Session expired, logging out...');
+                        setUser(null);
+                        localStorage.removeItem('auth_user');
+                    }
                 }
-            } catch (err) {
-                console.error('Failed to sync session:', err);
+            } catch (err: any) {
+                if (err.name === 'AbortError') {
+                    // Expected when component unmounts
+                    return;
+                }
+                // Only log unexpected errors
+                console.error('Failed to sync session:', err.message || 'Network error');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        syncSession();
+        syncSession(true);
 
         // Optional: Periodic check every 5 minutes
-        const interval = setInterval(syncSession, 5 * 60 * 1000);
-        return () => clearInterval(interval);
+        const interval = setInterval(() => syncSession(false), 5 * 60 * 1000);
+
+        return () => {
+            controller.abort();
+            clearInterval(interval);
+        };
     }, []);
 
     const login = (userData: User) => {
