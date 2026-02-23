@@ -51,12 +51,14 @@ import {
     TableRow
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const formSchema = z.object({
     requesterName: z.string().min(1, 'Requestor is required'),
     position: z.string().min(1, 'Position is required'),
     businessUnit: z.string().min(1, 'Business Unit is required'),
     purpose: z.string().min(1, 'Purpose is required'),
+    depositAccount: z.string().optional(),
     amountRequested: z.coerce.number().min(0, 'Amount Requested is required'),
     amountApproved: z.coerce.number().min(0).optional(),
     remarks: z.string().optional(),
@@ -78,6 +80,7 @@ interface PurchaseOrderSupermarketFormProps {
 export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onSuccess, onCancel }: PurchaseOrderSupermarketFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "PURCHASE ORDER REQUEST (SUPERMARKET)";
@@ -94,6 +97,7 @@ export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onS
             position: initialData?.position || '',
             businessUnit: initialData?.businessUnit || '',
             purpose: initialData?.purpose || '',
+            depositAccount: initialData?.depositAccount || '',
             amountRequested: initialData?.amountRequested || (initialData?.amount || 0),
             amountApproved: initialData?.amountApproved || 0,
             remarks: initialData?.remarks || '',
@@ -189,6 +193,34 @@ export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onS
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Position</FormLabel>
                                         <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="depositAccount" render={({ field }) => (
+                                    <FormItem className="space-y-0.5">
+                                        <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Deposit Account</FormLabel>
+                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 bg-background">
+                                                    <SelectValue placeholder="-- Select --" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {accountsLoading ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                ) : (!accounts || accounts.length === 0) ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                ) : (
+                                                    <>
+                                                        {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                            <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                {account.account_name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />

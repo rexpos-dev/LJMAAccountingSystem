@@ -1,0 +1,12 @@
+Creating MariaDB pool...
+TypeError: Cannot read properties of undefined (reading 'acquireTimeout')
+    at new PoolOptions (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\mariadb\lib\config\pool-options.js:28:32)
+    at Object.createPool (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\mariadb\promise.js:44:19)
+    at testConnection (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\test-mariadb-adapter.js:7:26)
+    at Object.<anonymous> (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\test-mariadb-adapter.js:25:1)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)

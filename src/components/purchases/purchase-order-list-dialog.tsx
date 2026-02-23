@@ -71,6 +71,7 @@ export default function PurchaseOrderListDialog() {
     const [orders, setOrders] = useState<PurchaseOrder[]>([]);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [showRestrictedAlert, setShowRestrictedAlert] = useState(false);
     const { toast } = useToast();
 
@@ -108,6 +109,7 @@ export default function PurchaseOrderListDialog() {
 
     const fetchOrders = async (ignoreFilters = false) => {
         setLoading(true);
+        setError(null);
         try {
             const params = new URLSearchParams();
             if (!ignoreFilters) {
@@ -119,12 +121,12 @@ export default function PurchaseOrderListDialog() {
             }
 
             const res = await fetch(`/api/purchase-orders?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                setOrders(data);
-            }
-        } catch (error) {
+            if (!res.ok) throw new Error('Failed to fetch purchase orders');
+            const data = await res.json();
+            setOrders(data);
+        } catch (error: any) {
             console.error('Failed to fetch orders', error);
+            setError(error.message === 'Failed to fetch purchase orders' ? 'Failed to fetch purchase orders.' : 'No connection on API. Please check your network and try again.');
             toast({ title: 'Error', description: 'Failed to fetch purchase orders', variant: 'destructive' });
         } finally {
             setLoading(false);
@@ -408,7 +410,11 @@ export default function PurchaseOrderListDialog() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {loading ? (
+                            {error ? (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="h-24 text-center text-red-500 font-medium">{error}</TableCell>
+                                </TableRow>
+                            ) : loading ? (
                                 <TableRow>
                                     <TableCell colSpan={6} className="h-24 text-center">Loading orders...</TableCell>
                                 </TableRow>

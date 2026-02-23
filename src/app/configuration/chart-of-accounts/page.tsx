@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, Fragment } from 'react';
+import { useState, useMemo, Fragment, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -30,12 +30,22 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Plus,
   Pencil,
   Trash2,
   Undo,
   HelpCircle,
   RefreshCw,
+  Search,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Account } from '@/types/account';
 import { cn } from '@/lib/utils';
@@ -60,12 +70,32 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
   // Use database data instead of mock data
   const { data: accountsData, isLoading, error, refetch } = useAccounts();
 
-  const groupedAccounts = useMemo(() => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const filteredAccounts = useMemo(() => {
     if (!accountsData) return [];
+    if (!searchQuery) return accountsData;
+    const query = searchQuery.toLowerCase();
+    return accountsData.filter(account =>
+      account.account_name.toLowerCase().includes(query) ||
+      (account.account_no && String(account.account_no).includes(query)) ||
+      (account.account_category && account.account_category.toLowerCase().includes(query))
+    );
+  }, [accountsData, searchQuery]);
+
+  const groupedAccounts = useMemo(() => {
+    if (!filteredAccounts.length) return [];
 
     const groups: { [key: string]: Account[] } = {};
 
-    accountsData.forEach(account => {
+    filteredAccounts.forEach(account => {
       const category = account.account_category || 'Uncategorized';
       if (!groups[category]) {
         groups[category] = [];
@@ -73,13 +103,39 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
       groups[category].push(account);
     });
 
-    return Object.entries(groups).map(([category, accounts]) => ({
-      category,
-      accounts,
-      totalBalance: accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0),
-    }));
+    Object.keys(groups).forEach(key => {
+      groups[key].sort((a, b) => (a.account_no || 0) - (b.account_no || 0));
+    });
 
-  }, [accountsData]);
+    return Object.entries(groups).map(([category, accounts]) => {
+      const categoryTotal = accounts.reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
+
+      return {
+        category,
+        accounts,
+        totalBalance: categoryTotal,
+      };
+    }).sort((a, b) => {
+      const minQA = Math.min(...a.accounts.map(acc => acc.account_no || 0));
+      const minQB = Math.min(...b.accounts.map(acc => acc.account_no || 0));
+      return minQA - minQB;
+    });
+  }, [filteredAccounts]);
+
+  const flattenedList = useMemo(() => {
+    const list: any[] = [];
+    groupedAccounts.forEach(group => {
+      list.push({ isHeader: true, category: group.category, totalBalance: group.totalBalance, id: `header-${group.category}` });
+      group.accounts.forEach(account => {
+        list.push({ isHeader: false, ...account });
+      });
+    });
+    return list;
+  }, [groupedAccounts]);
+
+  const totalPages = Math.max(1, Math.ceil(flattenedList.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedList = flattenedList.slice(startIndex, startIndex + itemsPerPage);
 
 
   const handleRowDoubleClick = (account: Account) => {
@@ -115,7 +171,7 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
           {account.account_name}
         </TableCell>
         <TableCell className="text-right">
-          {account.balance !== undefined ? formatCurrency(account.balance) : ''}
+          {formatCurrency(account.balance ?? 0)}
         </TableCell>
         <TableCell className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
           {account.account_description || '-'}
@@ -230,6 +286,15 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                     Also show recently deleted accounts
                   </Label>
                 </div>
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search accounts..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
               </div>
 
               <div className="border rounded-md">
@@ -251,23 +316,23 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center">Loading...</TableCell>
+                        <TableCell colSpan={10} className="text-center">Loading...</TableCell>
                       </TableRow>
                     ) : error ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center text-red-500">Error loading accounts: {error.message}</TableCell>
+                        <TableCell colSpan={10} className="text-center text-red-500">Error loading accounts: {error.message}</TableCell>
                       </TableRow>
-                    ) : groupedAccounts.length === 0 ? (
+                    ) : flattenedList.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center">No accounts found.</TableCell>
+                        <TableCell colSpan={10} className="text-center">No accounts found.</TableCell>
                       </TableRow>
                     ) : (
-                      groupedAccounts.map((group) => (
-                        <Fragment key={group.category}>
-                          <TableRow className="bg-muted/40">
+                      paginatedList.map((item: any) => (
+                        item.isHeader ? (
+                          <TableRow key={item.id} className="bg-muted/40">
                             <TableCell></TableCell>
-                            <TableCell className="font-bold text-white">{group.category}</TableCell>
-                            <TableCell className="text-right font-bold text-white">{formatCurrency(group.totalBalance)}</TableCell>
+                            <TableCell className="font-bold text-white">{item.category}</TableCell>
+                            <TableCell className="text-right font-bold text-white">{formatCurrency(item.totalBalance)}</TableCell>
                             <TableCell></TableCell>
                             <TableCell></TableCell>
                             <TableCell></TableCell>
@@ -276,13 +341,65 @@ export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }
                             <TableCell></TableCell>
                             <TableCell></TableCell>
                           </TableRow>
-                          {group.accounts.map(renderAccountRow)}
-                        </Fragment>
+                        ) : (
+                          renderAccountRow(item)
+                        )
                       ))
                     )}
                   </TableBody>
                 </Table>
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 0 && (
+                <div className="flex items-center justify-between py-2 border-t mt-4 px-2">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {flattenedList.length === 0 ? 0 : startIndex + 1} to {Math.min(startIndex + itemsPerPage, flattenedList.length)} of {flattenedList.length} rows
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Rows per page</span>
+                      <Select value={itemsPerPage.toString()} onValueChange={(val) => { setItemsPerPage(Number(val)); setCurrentPage(1); }}>
+                        <SelectTrigger className="h-8 w-[70px]">
+                          <SelectValue placeholder={itemsPerPage} />
+                        </SelectTrigger>
+                        <SelectContent side="top">
+                          {[10, 20, 50, 100].map((size) => (
+                            <SelectItem key={size} value={size.toString()}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      Page {currentPage} of {totalPages}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2 text-xs"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Prev
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2 text-xs"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage >= totalPages}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
           <DialogFooter className="border-t pt-4">

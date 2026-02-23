@@ -33,6 +33,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 // Schema Definition
 const formSchema = z.object({
@@ -46,6 +47,7 @@ const formSchema = z.object({
     finalAccountNo: z.string().optional(),
     purpose: z.string().min(1, 'Purpose is required'),
     amount: z.coerce.number().min(0, 'Amount must be positive'),
+    depositAccount: z.string().optional(),
     // Signatures
     verifiedBy: z.string().optional(),
     approvedBy: z.string().optional(),
@@ -65,6 +67,7 @@ interface CashFundFormProps {
 export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel }: CashFundFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
@@ -94,6 +97,7 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
             finalAccountNo: '',
             purpose: initialData?.purpose || '',
             amount: initialData?.amount || 0,
+            depositAccount: initialData?.depositAccount || '',
             verifiedBy: initialData?.verifiedBy || currentVerifierName,
             approvedBy: initialData?.approvedBy || '',
             processedBy: initialData?.processedBy || '',
@@ -213,6 +217,33 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                 </FormItem>
                             )} />
                         </div>
+                        <FormField control={form.control} name="depositAccount" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Deposit Account</FormLabel>
+                                <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                    <FormControl>
+                                        <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                            <SelectValue placeholder="-- Select account --" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {accountsLoading ? (
+                                            <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                        ) : (!accounts || accounts.length === 0) ? (
+                                            <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                        ) : (
+                                            <>
+                                                {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                    <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                        {account.account_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                        )} />
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

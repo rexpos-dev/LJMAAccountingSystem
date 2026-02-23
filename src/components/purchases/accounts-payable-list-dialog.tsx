@@ -92,7 +92,7 @@ export default function AccountsPayableListDialog() {
                     supplierName: po.supplier?.name || 'Unknown',
                     supplierId: po.supplierId || po.supplier?.id || '',
                     amount: po.total,
-                    dueAmount: po.total, // Assuming none paid yet
+                    dueAmount: po.status === 'Paid' ? 0 : po.total, // Assuming none paid yet unless status is Paid
                     status: po.status === 'Approved' ? 'Not Paid' : po.status
                 }));
                 setPayables(mappedData);
@@ -177,9 +177,8 @@ export default function AccountsPayableListDialog() {
 
     const handleEdit = () => {
         if (selectedId) {
-            // Determine what to open, likely the PO edit
-            // setDialogData...
-            toast({ title: "Edit", description: "Opening edit for " + selectedId });
+            setDialogData('enter-ap', { payableId: selectedId });
+            openDialog('enter-ap' as any);
         }
     };
 

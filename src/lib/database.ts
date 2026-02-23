@@ -27,6 +27,44 @@ export const getBankAccounts = async () => {
   }
 }
 
+export const applyTransactionToAccountBalance = async (
+  accountNumber: string,
+  debit: number,
+  credit: number
+) => {
+  try {
+    const accountNoInt = parseInt(accountNumber, 10);
+    if (isNaN(accountNoInt)) return;
+
+    const account = await prisma.account.findUnique({
+      where: { account_no: accountNoInt },
+      include: { accountTypeRel: true }
+    });
+
+    if (!account) return;
+
+    // Default to Asset logic if baseType is unknown
+    const baseType = account.accountTypeRel?.baseType || 'Asset';
+    let balanceChange = 0;
+
+    if (baseType === 'Asset' || baseType === 'Expense') {
+      balanceChange = debit - credit;
+    } else {
+      // Liability, Equity, Income, etc.
+      balanceChange = credit - debit;
+    }
+
+    if (balanceChange !== 0) {
+      await prisma.account.update({
+        where: { id: account.id },
+        data: { balance: { increment: balanceChange } }
+      });
+    }
+  } catch (error) {
+    console.error('Error updating account balance:', error);
+  }
+}
+
 export const updateAccountBalance = async (id: string, balance: number) => {
   return await prisma.account.update({
     where: { id },
@@ -40,6 +78,7 @@ export const createAccount = async (data: {
   account_name: string;
   account_description?: string;
   account_type: string;
+  account_type_id?: string;
   header: string;
   bank: string;
   account_category?: string;
@@ -59,6 +98,7 @@ export const upsertAccount = async (data: {
   account_name: string;
   account_description?: string;
   account_type: string;
+  account_type_id?: string;
   header: string;
   bank: string;
   account_category?: string;
@@ -82,6 +122,7 @@ export const updateAccount = async (id: string, data: {
   account_name?: string;
   account_description?: string;
   account_type?: string;
+  account_type_id?: string;
   header?: string;
   bank?: string;
   account_category?: string;
@@ -108,6 +149,13 @@ export const getTransactions = async (limit?: number, offset?: number) => {
     orderBy: { seq: 'asc' },
     take: limit,
     skip: offset,
+  })
+}
+
+export const getRecentTransactions = async (limit: number = 5) => {
+  return await prisma.transaction.findMany({
+    orderBy: { date: 'desc' },
+    take: limit,
   })
 }
 

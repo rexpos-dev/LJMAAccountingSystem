@@ -41,19 +41,23 @@ import format from '@/lib/date-format';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useSuppliers } from '@/hooks/use-suppliers';
+import { useToast } from '@/hooks/use-toast';
 
 interface AllocationRow {
     id: string;
     account_no: string;
     account_name: string;
+    description: string;
     amount: string;
     type: 'CR' | 'DR';
 }
 
 export function EnterAccountsPayableDialog() {
-    const { openDialogs, closeDialog } = useDialog();
+    const { openDialogs, closeDialog, getDialogData } = useDialog();
     const { data: accounts } = useAccounts();
     const { suppliers } = useSuppliers();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [dueDate, setDueDate] = useState<Date | undefined>(new Date());
@@ -68,10 +72,77 @@ export function EnterAccountsPayableDialog() {
     const [memo, setMemo] = useState('Purchases');
 
     useEffect(() => {
+        const loadPurchaseOrder = async (id: string) => {
+            try {
+                const res = await fetch(`/api/purchase-orders/${id}`);
+                if (res.ok) {
+                    const po = await res.json();
+
+                    setSelectedSupplierId(po.supplierId);
+                    handleSupplierChange(po.supplierId); // to trigger address population if possible
+
+                    setDate(new Date(po.date));
+
+                    // Note: original component seems to use ₱ for string, so formatting it.
+                    setAmount(`₱${po.total.toFixed(2)}`);
+                    setReferenceNumber(po.orderNumber || '');
+                    setMemo(po.comments || 'Purchases');
+
+                    if (po.depositAccount) {
+                        const acc = accounts.find((a: any) => a.id === po.depositAccount);
+                        if (acc && acc.account_no) {
+                            setSelectedApAccount(acc.account_no.toString());
+                            setAccountBalance(`₱${(acc.balance || 0).toFixed(2)}`);
+                        }
+                    }
+
+                    // Convert line items to allocation rows if they exist
+                    if (po.items && po.items.length > 0) {
+                        const newAllocations = po.items.map((item: any, index: number) => ({
+                            id: `po-item-${item.id || index}`,
+                            account_no: '',
+                            account_name: '',
+                            description: item.itemDescription || item.product?.name || '',
+                            amount: item.amount ? item.amount.toFixed(2) : (item.total ? item.total.toFixed(2) : '0.00'),
+                            type: 'DR'
+                        }));
+                        setAllocations(newAllocations);
+                    } else if (po.depositAccount) {
+                        // Default allocation if just modifying account balance
+                        const acc = accounts.find(a => a.id === po.depositAccount);
+                        if (acc) {
+                            setAllocations([{
+                                id: 'deposit-account',
+                                account_no: acc.account_no?.toString() || '',
+                                account_name: acc.account_name || '',
+                                description: 'Purchase Order Total',
+                                amount: po.total.toFixed(2),
+                                type: 'DR'
+                            }]);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch purchase order", error);
+            }
+        };
+
         if (openDialogs['enter-ap']) {
-            // Reset or init logic can go here
+            const data = getDialogData('enter-ap');
+            if (data?.payableId) {
+                loadPurchaseOrder(data.payableId);
+            } else {
+                // Reset form if opening fresh
+                setSelectedSupplierId('');
+                setSupplierAddress('');
+                setDate(new Date());
+                setAmount('₱0.00');
+                setReferenceNumber('');
+                setMemo('Purchases');
+                setAllocations([]);
+            }
         }
-    }, [openDialogs['enter-ap']]);
+    }, [openDialogs['enter-ap'], getDialogData, accounts]);
 
     const handleSupplierChange = (supplierId: string) => {
         setSelectedSupplierId(supplierId);
@@ -92,6 +163,7 @@ export function EnterAccountsPayableDialog() {
                     id: 'debit-1',
                     account_no: '',
                     account_name: '',
+                    description: '',
                     amount: '',
                     type: 'DR',
                 },
@@ -99,6 +171,7 @@ export function EnterAccountsPayableDialog() {
                     id: 'credit-1',
                     account_no: '',
                     account_name: '',
+                    description: '',
                     amount: '',
                     type: 'CR',
                 },
@@ -140,8 +213,80 @@ export function EnterAccountsPayableDialog() {
         );
     };
 
+    const handleDescriptionChange = (id: string, value: string) => {
+        setAllocations(prev =>
+            prev.map(allocation => {
+                if (allocation.id === id) {
+                    return { ...allocation, description: value };
+                }
+                return allocation;
+            })
+        );
+    };
+
     const handleDeleteAllocation = (id: string) => {
         setAllocations(prev => prev.filter(allocation => allocation.id !== id));
+    };
+
+    const handleRecord = async () => {
+        if (!date || allocations.length === 0) {
+            toast({
+                title: 'Error',
+                description: 'Please ensure a date is selected and there is at least one allocation entry.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // NOTE: In a real app, user might come from session. Hardcoding for now if no auth context exists.
+            const currentUser = 'admin';
+
+            const ledgerEntries = allocations.map(allocation => {
+                const debit = allocation.type === 'DR' ? parseFloat(allocation.amount) || 0 : 0;
+                const credit = allocation.type === 'CR' ? parseFloat(allocation.amount) || 0 : 0;
+
+                return {
+                    date: date.toISOString(),
+                    reference: referenceNumber || null,
+                    ledger: memo || null,
+                    accountNumber: allocation.account_no || null,
+                    accountName: allocation.account_name || null,
+                    accountDescription: allocation.description || null,
+                    debitAmount: debit,
+                    creditAmount: credit,
+                    user: currentUser
+                };
+            });
+
+            const res = await fetch('/api/payables-ledger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ledgerEntries),
+            });
+
+            if (res.ok) {
+                toast({
+                    title: 'Success',
+                    description: 'Transaction recorded successfully into Payables Ledger.',
+                });
+                closeDialog('enter-ap');
+            } else {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to record transaction');
+            }
+        } catch (error: any) {
+            console.error('Record error:', error);
+            toast({
+                title: 'Error',
+                description: error.message || 'An error occurred while saving the ledger.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleApAccountChange = (accountNumber: string) => {
@@ -306,7 +451,8 @@ export function EnterAccountsPayableDialog() {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead className="w-[150px]">Number</TableHead>
-                                            <TableHead>Name</TableHead>
+                                            <TableHead className="w-[200px]">Account Name</TableHead>
+                                            <TableHead>Description</TableHead>
                                             <TableHead className="w-[150px] text-right">Amount</TableHead>
                                             <TableHead className="w-[100px] text-right">CR/DR</TableHead>
                                         </TableRow>
@@ -314,7 +460,7 @@ export function EnterAccountsPayableDialog() {
                                     <TableBody>
                                         {allocations.length === 0 ? (
                                             <TableRow onDoubleClick={handleRowDoubleClick} className="cursor-pointer hover:bg-muted/50">
-                                                <TableCell colSpan={4} className="text-center text-muted-foreground py-12">
+                                                <TableCell colSpan={5} className="text-center text-muted-foreground py-12">
                                                     Double-click here to allocate an amount to account(s).
                                                 </TableCell>
                                             </TableRow>
@@ -360,6 +506,14 @@ export function EnterAccountsPayableDialog() {
                                                             </SelectContent>
                                                         </Select>
                                                     </TableCell>
+                                                    <TableCell>
+                                                        <Input
+                                                            value={allocation.description || ''}
+                                                            onChange={(e) => handleDescriptionChange(allocation.id, e.target.value)}
+                                                            className="w-full border-0 shadow-none h-8 focus-visible:ring-0 px-2"
+                                                            placeholder="Description/Memo"
+                                                        />
+                                                    </TableCell>
                                                     <TableCell className="text-right">
                                                         <Input
                                                             type="number"
@@ -390,9 +544,16 @@ export function EnterAccountsPayableDialog() {
                     </div>
                 </ScrollArea>
                 <DialogFooter className="mt-4">
-                    <Button variant="default" className="bg-blue-600 hover:bg-blue-700">Record</Button>
-                    <Button variant="secondary" onClick={() => closeDialog('enter-ap')}>Cancel</Button>
-                    <Button variant="outline">Help</Button>
+                    <Button
+                        variant="default"
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={handleRecord}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Recording...' : 'Record'}
+                    </Button>
+                    <Button variant="secondary" onClick={() => closeDialog('enter-ap')} disabled={isSubmitting}>Cancel</Button>
+                    <Button variant="outline" disabled={isSubmitting}>Help</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

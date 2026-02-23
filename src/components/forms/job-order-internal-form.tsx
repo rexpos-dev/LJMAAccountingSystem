@@ -50,12 +50,14 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const formSchema = z.object({
     requesterName: z.string().min(1, 'Requestor is required'),
     position: z.string().min(1, 'Position is required'),
     chargeTo: z.string().min(1, 'Charge To is required'),
     accountNo: z.string().min(1, 'Account No. is required'),
+    depositAccount: z.string().optional(),
     purpose: z.string().min(1, 'Purpose is required'),
     targetDate: z.date({ required_error: 'Target Date is required' }),
     description: z.string().min(1, 'Description is required'),
@@ -76,6 +78,7 @@ interface JobOrderInternalFormProps {
 export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, onCancel }: JobOrderInternalFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "JOB ORDER REQUEST FORM INTERNAL";
@@ -89,6 +92,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
             position: initialData?.position || '',
             chargeTo: initialData?.chargeTo || '',
             accountNo: initialData?.accountNo || '',
+            depositAccount: initialData?.depositAccount || '',
             purpose: initialData?.purpose || '',
             targetDate: initialData?.targetDate ? new Date(initialData.targetDate) : undefined,
             description: initialData?.description || (initialData?.items?.[0]?.description || ''),
@@ -221,6 +225,34 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Account No.</FormLabel>
                                         <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="depositAccount" render={({ field }) => (
+                                    <FormItem className="space-y-0.5">
+                                        <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Deposit Account</FormLabel>
+                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 bg-background">
+                                                    <SelectValue placeholder="-- Select --" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {accountsLoading ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                ) : (!accounts || accounts.length === 0) ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                ) : (
+                                                    <>
+                                                        {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                            <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                {account.account_name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />

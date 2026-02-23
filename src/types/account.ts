@@ -15,5 +15,6 @@ export interface Account {
   fs_category?: string;
   date_created?: Date | string;
   last_updated_at?: Date | string;
+  account_type_id?: string;
 }
 

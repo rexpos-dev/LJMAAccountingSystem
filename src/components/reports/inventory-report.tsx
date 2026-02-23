@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
     Menubar,
     MenubarContent,
@@ -40,9 +41,12 @@ export default function InventoryReport() {
     const dialogData = getDialogData('inventory-report' as any);
     const reportDate = dialogData?.reportDate || new Date();
 
-    const { externalProducts, isLoading } = useExternalProducts(1, 1000); // Fetch up to 1000 items from external source
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
-    const totals = externalProducts.reduce((acc, product) => {
+    const { externalProducts, allProducts, isLoading, error, pagination } = useExternalProducts(currentPage, pageSize);
+
+    const totals = allProducts.reduce((acc, product) => {
         const stock = Number(product.stock) || 0;
         const cost = Number(product.cost) || 0;
         return {
@@ -105,7 +109,15 @@ export default function InventoryReport() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {isLoading ? (
+                            {error ? (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="h-32 text-center text-red-500 font-medium">
+                                        {error.message.includes('Failed to fetch') || error.message.includes('Network') || error.message.includes('fetch')
+                                            ? 'No connection on API. Please check your network and try again.'
+                                            : `Error: ${error.message}`}
+                                    </TableCell>
+                                </TableRow>
+                            ) : isLoading ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="h-32 text-center text-muted-foreground italic">
                                         Loading inventory data...
@@ -146,6 +158,36 @@ export default function InventoryReport() {
                             )}
                         </TableBody>
                     </Table>
+
+                    {/* Pagination Controls */}
+                    {!isLoading && pagination && (
+                        <div className="flex items-center justify-between py-4 border-t mt-4">
+                            <div className="text-sm text-muted-foreground">
+                                Showing <span className="font-medium text-white">{((currentPage - 1) * pageSize) + 1}</span> to <span className="font-medium text-white">{Math.min(currentPage * pageSize, pagination.total)}</span> of <span className="font-medium text-white">{pagination.total}</span> products
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    Previous
+                                </Button>
+                                <div className="flex items-center gap-1 mx-2 text-sm">
+                                    Page <span className="font-medium text-white">{currentPage}</span> of <span className="font-medium text-white">{Math.ceil(pagination.total / pageSize)}</span>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                    disabled={!pagination.hasMore}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </ScrollArea>
             </DialogContent>
         </Dialog>

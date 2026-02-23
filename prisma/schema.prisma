@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
@@ -7,22 +8,35 @@ datasource db {
 }
 
 model Account {
-  id                  String   @id @default(cuid())
-  account_no          Int      @unique
+  id                  String       @id @default(cuid())
+  account_no          Int          @unique
   account_name        String
-  balance             Float?   @default(0)
+  balance             Float?       @default(0)
   account_type        String
   header              String
   bank                String
   account_category    String?
-  date_created        DateTime @default(now())
-  last_updated_at     DateTime @updatedAt
-  account_type_no     Int      @default(1)
+  date_created        DateTime     @default(now())
+  last_updated_at     DateTime     @updatedAt
+  account_type_no     Int          @default(1)
   account_description String?
   fs_category         String?
-  account_status      String   @default("Active")
+  account_status      String       @default("Active")
+  account_type_id     String?
+  accountTypeRel      AccountType? @relation(fields: [account_type_id], references: [id])
 
   @@map("chart_of_account")
+}
+
+model AccountType {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  baseType  String    @default("Asset")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  accounts  Account[]
+
+  @@map("account_type")
 }
 
 model Transaction {
@@ -244,19 +258,19 @@ model SalesUser {
 }
 
 model UserPermission {
-  id          String   @id @default(cuid())
-  username    String   @unique
+  id              String   @id @default(cuid())
+  username        String   @unique
   firstName       String
   lastName        String
-  designation     String?
   contactNo       String?
   accountType     String
-  formPermissions String?
   permissions     String   @db.Text
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   password        String?
+  designation     String?
+  formPermissions String?
 
   @@map("user_permission")
 }
@@ -271,10 +285,10 @@ model BusinessProfile {
   email        String?
   tin          String?
   permit       String?
-  bankDetails  String?  @db.Text
   logo         String?  @db.LongText
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  bankDetails  String?  @db.Text
 
   @@map("business_profile")
 }
@@ -295,9 +309,9 @@ model Notification {
   title     String
   message   String?
   entityId  String?
-  userId    String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  userId    String?
 
   @@index([userId])
   @@map("notification")
@@ -330,6 +344,7 @@ model PurchaseOrder {
   taxTotal        Float               @default(0)
   total           Float               @default(0)
   status          String              @default("Open")
+  depositAccount  String?
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
   supplier        Supplier            @relation(fields: [supplierId], references: [id])
@@ -503,6 +518,7 @@ model Request {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   formName      String?       @db.VarChar(255)
+  depositAccount String?
   items         RequestItem[]
 
   @@map("request")
@@ -525,4 +541,21 @@ model RequestItem {
   @@index([productId], map: "request_item_productId_fkey")
   @@index([requestId], map: "request_item_requestId_fkey")
   @@map("request_item")
+}
+
+model PayablesLedger {
+  id                 String   @id @default(cuid())
+  date               DateTime
+  reference          String?
+  ledger             String?
+  accountNumber      String?
+  accountName        String?
+  accountDescription String?
+  debitAmount        Float    @default(0)
+  creditAmount       Float    @default(0)
+  user               String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("payables_ledger")
 }

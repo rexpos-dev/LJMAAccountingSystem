@@ -26,6 +26,7 @@ import { ScrollArea } from '../ui/scroll-area';
 
 import { useToast } from '@/hooks/use-toast';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useAccountTypes } from '@/hooks/use-account-types';
 
 
 
@@ -34,7 +35,12 @@ type AccountType = 'Cash' | 'Cash On Hand' | 'Fund Transfer' | 'Store Equipments
 export default function NewAccountDialog() {
   const { openDialogs, closeDialog } = useDialog();
   const { toast } = useToast();
-  const { refetch } = useAccounts();
+  const { data: accounts, refetch: refetchAccounts } = useAccounts();
+  const { accountTypes, refetch: refetchAccountTypes } = useAccountTypes();
+
+  const uniqueAccountNames = Array.from(
+    new Set((accounts || []).map((acc: any) => acc.account_name))
+  ).filter(Boolean) as string[];
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
@@ -44,22 +50,24 @@ export default function NewAccountDialog() {
   const [accountCategory, setAccountCategory] = useState('');
   const [fsCategory, setFsCategory] = useState('');
   const [openingBalance, setOpeningBalance] = useState('0.00');
-  const [type, setType] = useState<AccountType>('Cash');
+  const [type, setType] = useState<string>('');
 
-  const baseTypeMapping: Record<AccountType, string> = {
-    'Cash': 'Asset',
-    'Cash On Hand': 'Asset',
-    'Fund Transfer': 'Asset',
-    'Store Equipments': 'Asset',
-    'Office Equipment': 'Asset',
-    'Income': 'Income',
-    'Expense': 'Expense'
-  };
+  // State for Create New Account Type dialog
+  const [isCreatingNewType, setIsCreatingNewType] = useState(false);
+  const [newTypeName, setNewTypeName] = useState('');
+  const [newTypeBase, setNewTypeBase] = useState('Asset');
+
+  // Set default type when accountTypes load
+  useEffect(() => {
+    if (accountTypes.length > 0 && !type) {
+      setType(accountTypes[0].name);
+      handleTypeChange(accountTypes[0].name, accountTypes[0].baseType);
+    }
+  }, [accountTypes]);
 
   // Generate unique account number and type number based on type
-  const generateAccountNumber = async (accountType: AccountType) => {
+  const generateAccountNumber = async (accountTypeName: string, baseType: string) => {
     try {
-      const baseType = baseTypeMapping[accountType];
       const response = await fetch('/api/accounts');
       const accounts = await response.json();
 
@@ -89,18 +97,50 @@ export default function NewAccountDialog() {
       return { account_no: nextNum, account_type_no: accountsOfType.length + 1 };
     } catch (error) {
       // Fallback to basic numbering
-      const baseType = baseTypeMapping[accountType];
       const baseNumbers: Record<string, number> = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, Expense: 5000 };
       return { account_no: baseNumbers[baseType] || 1000, account_type_no: 1 };
     }
   };
 
   // Update account number when type changes
-  const handleTypeChange = async (newType: AccountType) => {
+  const handleTypeChange = async (newType: string, newBaseType?: string) => {
+    if (newType === 'NEW_ACCOUNT_TYPE') {
+      setIsCreatingNewType(true);
+      return;
+    }
     setType(newType);
-    const { account_no, account_type_no } = await generateAccountNumber(newType);
+
+    // Find the base type from the accounts list if not provided directly
+    const baseType = newBaseType || accountTypes.find(t => t.name === newType)?.baseType || 'Asset';
+
+    const { account_no, account_type_no } = await generateAccountNumber(newType, baseType);
     setNumber(account_no.toString());
     setAccntTypeNo(account_type_no.toString());
+  };
+
+  const handleCreateNewAccountType = async () => {
+    if (!newTypeName) return;
+    try {
+      const res = await fetch('/api/account-types', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: newTypeName, baseType: newTypeBase }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to create account type');
+      }
+      toast({ title: 'Success', description: 'Account Type created successfully.' });
+      setIsCreatingNewType(false);
+      setNewTypeName('');
+      setNewTypeBase('Asset');
+      await refetchAccountTypes();
+      handleTypeChange(newTypeName, newTypeBase);
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Error', description: error.message });
+    }
   };
 
 
@@ -115,6 +155,9 @@ export default function NewAccountDialog() {
     }
 
     try {
+      const selectedAccountType = accountTypes.find((t: any) => t.name === type);
+      const baseType = selectedAccountType?.baseType || 'Asset';
+
       const response = await fetch('/api/accounts', {
         method: 'POST',
         headers: {
@@ -124,11 +167,12 @@ export default function NewAccountDialog() {
           account_name: name,
           account_no: parseInt(number, 10),
           account_type_no: parseInt(accntTypeNo, 10),
-          account_type: baseTypeMapping[type],
+          account_type: baseType,
+          account_category: type, // Historically labelled via type
+          account_type_id: selectedAccountType?.id, // Important matching piece
           header: 'No',
           bank: ['Cash', 'Cash On Hand', 'Fund Transfer'].includes(type) ? 'Yes' : 'No',
-          account_category: type, // Use the specific label as category
-          balance: parseFloat(openingBalance) || 0,
+          balance: parseFloat(openingBalance.replace(/,/g, '')) || 0,
           account_description: description || null,
           account_status: accountStatus,
           fs_category: fsCategory || type,
@@ -151,7 +195,11 @@ export default function NewAccountDialog() {
       setAccountCategory('');
       setFsCategory('');
       setOpeningBalance('0.00');
-      setType('Cash');
+      if (accountTypes.length > 0) {
+        handleTypeChange(accountTypes[0].name, (accountTypes[0] as any).baseType);
+      } else {
+        setType('');
+      }
 
       toast({
         title: "Account Added",
@@ -207,7 +255,13 @@ export default function NewAccountDialog() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter account name"
+                    list="existing-account-names"
                   />
+                  <datalist id="existing-account-names">
+                    {uniqueAccountNames.map((n) => (
+                      <option key={n} value={n} />
+                    ))}
+                  </datalist>
                 </div>
 
                 {/* Left Column - Account Description */}
@@ -241,18 +295,24 @@ export default function NewAccountDialog() {
                   <Label htmlFor="account-type">
                     Account Type<span className="text-destructive">*</span>
                   </Label>
-                  <Select value={type} onValueChange={(v) => handleTypeChange(v as AccountType)}>
+                  <Select value={type} onValueChange={handleTypeChange}>
                     <SelectTrigger id="account-type">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Cash">Cash</SelectItem>
-                      <SelectItem value="Cash On Hand">Cash On Hand</SelectItem>
-                      <SelectItem value="Fund Transfer">Fund Transfer</SelectItem>
-                      <SelectItem value="Store Equipments">Store Equipments</SelectItem>
-                      <SelectItem value="Office Equipment">Office Equipment</SelectItem>
-                      <SelectItem value="Income">Income</SelectItem>
-                      <SelectItem value="Expense">Expense</SelectItem>
+                      {Array.from(
+                        new Set([
+                          ...accountTypes.map((t: any) => t.name),
+                          ...(accounts || []).map((acc: any) => acc.account_type),
+                          ...(accounts || []).map((acc: any) => acc.account_category)
+                        ].filter(Boolean))
+                      ).sort().map((typeName: any) => (
+                        <SelectItem key={typeName} value={typeName}>{typeName}</SelectItem>
+                      ))}
+                      <div className="border-t my-1" />
+                      <SelectItem value="NEW_ACCOUNT_TYPE" className="text-primary font-medium">
+                        + Create New Account Type
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -342,6 +402,44 @@ export default function NewAccountDialog() {
           </DialogClose>
         </DialogFooter>
       </DialogContent>
+
+      {/* Sub-dialog for specific account type creation */}
+      <Dialog open={isCreatingNewType} onOpenChange={setIsCreatingNewType}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Account Type</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Account Type Name</Label>
+              <Input
+                value={newTypeName}
+                onChange={(e) => setNewTypeName(e.target.value)}
+                placeholder="e.g. Short Term Investments"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Base Type</Label>
+              <Select value={newTypeBase} onValueChange={setNewTypeBase}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Asset">Asset</SelectItem>
+                  <SelectItem value="Liability">Liability</SelectItem>
+                  <SelectItem value="Equity">Equity</SelectItem>
+                  <SelectItem value="Income">Income</SelectItem>
+                  <SelectItem value="Expense">Expense</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreatingNewType(false)}>Cancel</Button>
+            <Button onClick={handleCreateNewAccountType} disabled={!newTypeName.trim()}>Create Type</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Dialog >
   );
 }

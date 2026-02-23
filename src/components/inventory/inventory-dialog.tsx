@@ -269,8 +269,10 @@ export default function InventoryDialog() {
                     </TableRow>
                   ) : error ? (
                     <TableRow>
-                      <TableCell colSpan={10} className="text-center py-8 text-red-500">
-                        No Products Fetch
+                      <TableCell colSpan={10} className="text-center py-8 text-red-500 font-medium">
+                        {error.message.includes('Failed to fetch') || error.message.includes('Network') || error.message.includes('fetch')
+                          ? 'No connection on API. Please check your network and try again.'
+                          : `Error: ${error.message}`}
                       </TableCell>
                     </TableRow>
                   ) : externalProducts.length === 0 ? (

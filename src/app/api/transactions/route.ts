@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getTransactions, createTransaction, getTransactionsByAccount } from '@/lib/database';
+import { getTransactions, createTransaction, getTransactionsByAccount, applyTransactionToAccountBalance, getRecentTransactions } from '@/lib/database';
 
 export async function GET(request: Request) {
   try {
@@ -8,10 +8,13 @@ export async function GET(request: Request) {
     const accountNumber = searchParams.get('accountNumber');
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
+    const recent = searchParams.get('recent');
 
     let transactions;
     if (accountNumber) {
       transactions = await getTransactionsByAccount(accountNumber);
+    } else if (recent === 'true') {
+      transactions = await getRecentTransactions(limit ? parseInt(limit, 10) : 5);
     } else {
       transactions = await getTransactions(
         limit ? parseInt(limit, 10) : undefined,
@@ -29,12 +32,12 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
     // Handle both single transaction and multiple transactions (for journal entries)
     const transactions = Array.isArray(body.transactions) ? body.transactions : [body];
-    
+
     const createdTransactions = [];
-    
+
     for (const transactionBody of transactions) {
       const {
         seq,
@@ -71,8 +74,12 @@ export async function POST(request: Request) {
       if (date !== undefined) transactionData.date = new Date(date);
       if (invoiceNumber !== undefined) transactionData.invoiceNumber = invoiceNumber;
       if (particulars !== undefined) transactionData.particulars = particulars;
-      if (debit !== undefined) transactionData.debit = parseFloat(debit) || 0;
-      if (credit !== undefined) transactionData.credit = parseFloat(credit) || 0;
+
+      const debitVal = parseFloat(debit) || 0;
+      const creditVal = parseFloat(credit) || 0;
+
+      if (debit !== undefined) transactionData.debit = debitVal;
+      if (credit !== undefined) transactionData.credit = creditVal;
       if (balance !== undefined) transactionData.balance = parseFloat(balance) || 0;
       if (checkAccountNumber !== undefined) transactionData.checkAccountNumber = checkAccountNumber;
       if (checkNumber !== undefined) transactionData.checkNumber = checkNumber;
@@ -88,6 +95,12 @@ export async function POST(request: Request) {
       if (ftToAccount !== undefined) transactionData.ftToAccount = ftToAccount;
 
       const transaction = await createTransaction(transactionData);
+
+      // Update the chart of accounts balance automatically
+      if (accountNumber && (debitVal !== 0 || creditVal !== 0)) {
+        await applyTransactionToAccountBalance(accountNumber, debitVal, creditVal);
+      }
+
       createdTransactions.push(transaction);
     }
 

@@ -52,11 +52,13 @@ import {
     TableRow
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const formSchema = z.object({
     requesterName: z.string().min(1, 'Requestor is required'),
     position: z.string().min(1, 'Position is required'),
     purpose: z.string().min(1, 'Purpose is required'),
+    depositAccount: z.string().optional(),
     items: z.array(z.object({
         description: z.string().min(1, 'Description is required'),
         quantity: z.coerce.number().min(0.01, 'Qty > 0'),
@@ -82,6 +84,7 @@ interface StoreUseRequestFormProps {
 export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, onCancel }: StoreUseRequestFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "STORE USE REQUEST FORM";
@@ -97,6 +100,7 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
             requesterName: initialData?.requesterName || (user ? `${user.firstName} ${user.lastName}` : ''),
             position: initialData?.position || '',
             purpose: initialData?.purpose || '',
+            depositAccount: initialData?.depositAccount || '',
             items: initialData?.items?.length > 0
                 ? initialData.items.map((it: any) => ({
                     description: it.description || '',
@@ -215,6 +219,34 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Position</FormLabel>
                                         <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="depositAccount" render={({ field }) => (
+                                    <FormItem className="space-y-0.5">
+                                        <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Deposit Account</FormLabel>
+                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 bg-background">
+                                                    <SelectValue placeholder="-- Select --" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {accountsLoading ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                ) : (!accounts || accounts.length === 0) ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                ) : (
+                                                    <>
+                                                        {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                            <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                {account.account_name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />

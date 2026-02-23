@@ -68,6 +68,10 @@ export async function PATCH(
             await prisma.$executeRaw`UPDATE request SET status = ${body.status}, updatedAt = ${now} WHERE id = ${id}`;
         }
 
+        if (body.depositAccount !== undefined) {
+            await prisma.$executeRaw`UPDATE request SET depositAccount = ${body.depositAccount}, updatedAt = ${now} WHERE id = ${id}`;
+        }
+
         if (body.verifiedBy !== undefined) {
             await prisma.$executeRaw`UPDATE request SET verifiedBy = ${body.verifiedBy}, updatedAt = ${now} WHERE id = ${id}`;
         }

@@ -40,6 +40,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const itemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -55,6 +56,7 @@ const formSchema = z.object({
     purpose: z.string().min(1, 'Purpose is required'),
     chargeTo: z.string().optional(),
     accountNo: z.string().optional(),
+    depositAccount: z.string().optional(),
     items: z.array(itemSchema).min(1, 'At least one item is required'),
     requestedBy: z.string().optional(),
     verifiedBy: z.string().optional(),
@@ -76,6 +78,7 @@ interface GenericRequestFormProps {
 export function GenericRequestForm({ formName, initialData, mode = 'create', onSuccess, onCancel }: GenericRequestFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
 
@@ -100,6 +103,7 @@ export function GenericRequestForm({ formName, initialData, mode = 'create', onS
             purpose: initialData?.purpose || '',
             chargeTo: initialData?.chargeTo || '',
             accountNo: initialData?.accountNo || '',
+            depositAccount: initialData?.depositAccount || '',
             items: initialData?.items?.length > 0
                 ? initialData.items.map((it: any) => ({
                     description: it.description,
@@ -260,7 +264,7 @@ export function GenericRequestForm({ formName, initialData, mode = 'create', onS
                                 </FormItem>
                             )}
                         />
-                        <div className="grid grid-cols-2 gap-4 col-span-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 col-span-1 md:col-span-2 lg:col-span-3">
                             <FormField
                                 control={form.control}
                                 name="chargeTo"
@@ -283,6 +287,38 @@ export function GenericRequestForm({ formName, initialData, mode = 'create', onS
                                         <FormControl>
                                             <Input {...field} placeholder="..." disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent transition-colors" />
                                         </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="depositAccount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Deposit Account</FormLabel>
+                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                            <FormControl>
+                                                <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent transition-colors">
+                                                    <SelectValue placeholder="-- Select --" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {accountsLoading ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                ) : (!accounts || accounts.length === 0) ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                ) : (
+                                                    <>
+                                                        {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                            <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                {account.account_name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}

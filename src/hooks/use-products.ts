@@ -302,6 +302,7 @@ export function useExternalProducts(page: number = 1, limit: number = 10, search
 
   return {
     externalProducts,
+    allProducts,
     isLoading,
     error,
     pagination,

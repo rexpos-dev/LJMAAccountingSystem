@@ -1,0 +1,28 @@
+Creating MariaDB pool...
+Initializing adapter...
+Creating PrismaClient...
+Fetching user...
+Prisma error: DriverAdapterError: pool timeout: failed to retrieve a connection from pool after 10007ms
+    (pool connections: active=0 idle=0 limit=10)
+    at PrismaMariaDbAdapter.onError (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\adapter-mariadb\dist\index.js:358:11)
+    at PrismaMariaDbAdapter.performIO (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\adapter-mariadb\dist\index.js:353:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PrismaMariaDbAdapter.queryRaw (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\adapter-mariadb\dist\index.js:319:20)
+    at async E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\client\runtime\client.js:11:24163
+    at async fr (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\client\runtime\client.js:11:24002)
+    at async e.interpretNode (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\client\runtime\client.js:11:42384)
+    at async e.interpretNode (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\client\runtime\client.js:11:42808)
+    at async e.interpretNode (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\client\runtime\client.js:11:43982)
+    at async e.run (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\@prisma\client\runtime\client.js:11:41223) {
+  cause: {
+    originalCode: '45028',
+    originalMessage: 'pool timeout: failed to retrieve a connection from pool after 10007ms\n' +
+      '    (pool connections: active=0 idle=0 limit=10)',
+    kind: 'mysql',
+    code: 45028,
+    message: 'pool timeout: failed to retrieve a connection from pool after 10007ms\n' +
+      '    (pool connections: active=0 idle=0 limit=10)',
+    state: 'HY000'
+  },
+  clientVersion: '7.1.0'
+}

@@ -82,15 +82,14 @@ export async function POST(req: Request) {
         const id = crypto.randomUUID();
         const now = new Date();
 
-        // Insert Request using executeRaw to bypass Prisma Client model check
         await prisma.$executeRaw`
             INSERT INTO request (
                 id, requestNumber, requesterName, position, businessUnit, chargeTo, 
-                accountNo, purpose, amount, verifiedBy, approvedBy, processedBy, 
+                accountNo, depositAccount, purpose, amount, verifiedBy, approvedBy, processedBy, 
                 formName, status, createdAt, updatedAt, date
             ) VALUES (
                 ${id}, ${requestNumber}, ${body.requesterName || 'Unknown'}, ${body.position}, ${body.businessUnit}, ${body.chargeTo},
-                ${body.accountNo}, ${body.purpose}, ${body.amount || 0}, ${body.verifiedBy}, ${body.approvedBy}, ${body.processedBy},
+                ${body.accountNo}, ${body.depositAccount}, ${body.purpose}, ${body.amount || 0}, ${body.verifiedBy}, ${body.approvedBy}, ${body.processedBy},
                 ${body.formName}, 'To Verify', ${now}, ${now}, ${now}
             )
         `;

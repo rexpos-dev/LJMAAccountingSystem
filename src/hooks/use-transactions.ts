@@ -37,6 +37,39 @@ export function useTransactions(limit?: number, offset?: number) {
   return { transactions, isLoading, error };
 }
 
+export function useRecentTransactions(limit: number = 5) {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setIsLoading(true);
+        const params = new URLSearchParams();
+        params.append('limit', limit.toString());
+        params.append('recent', 'true');
+
+        const response = await fetch(`/api/transactions?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch recent transactions');
+        }
+
+        const data = await response.json();
+        setTransactions(Array.isArray(data) ? data.map((t: any) => ({ ...t, seq: t.seq ?? 0 })) : []);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, [limit]);
+
+  return { transactions, isLoading, error };
+}
+
 export function useTransactionsByAccount(accountNumber: string) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);

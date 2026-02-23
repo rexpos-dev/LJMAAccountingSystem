@@ -88,11 +88,14 @@ export async function GET(request: Request) {
     console.log('Successfully processed customers with loyalty balances');
     return NextResponse.json(customersWithBalance);
   } catch (error: any) {
-    console.error('Error fetching customers detailed:', error);
+    console.error('❌ [API/Customers] Error fetching customers:', error);
+    if (error.code) console.error('Error Code:', error.code);
+    if (error.meta) console.error('Error Meta:', JSON.stringify(error.meta));
+
     return NextResponse.json(
       {
         error: 'Failed to fetch customers',
-        details: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+        details: error.message || error.toString(),
       },
       { status: 500 }
     );

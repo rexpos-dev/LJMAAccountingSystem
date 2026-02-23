@@ -42,6 +42,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const requestItemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -57,6 +58,7 @@ const formSchema = z.object({
     purpose: z.string().min(1, 'Purpose is required'),
     chargeTo: z.string().min(1, 'Charge To is required'),
     accountNo: z.string().min(1, 'Account No. is required'),
+    depositAccount: z.string().optional(),
     items: z.array(requestItemSchema).min(1, 'At least one item is required'),
     requestedBy: z.string().optional(),
     chargeToName: z.string().optional(),
@@ -77,6 +79,7 @@ interface HouseChargeFormProps {
 export function HouseChargeForm({ initialData, mode = 'create', onSuccess, onCancel }: HouseChargeFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "HOUSE CHARGE REQUEST FORM";
@@ -94,6 +97,7 @@ export function HouseChargeForm({ initialData, mode = 'create', onSuccess, onCan
             purpose: initialData?.purpose || '',
             chargeTo: initialData?.chargeTo || '',
             accountNo: initialData?.accountNo || '',
+            depositAccount: initialData?.depositAccount || '',
             items: initialData?.items?.length > 0
                 ? initialData.items.map((it: any) => ({
                     description: it.description || '',
@@ -230,6 +234,34 @@ export function HouseChargeForm({ initialData, mode = 'create', onSuccess, onCan
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Account No.</FormLabel>
                                         <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="depositAccount" render={({ field }) => (
+                                    <FormItem className="space-y-0.5">
+                                        <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Deposit Account</FormLabel>
+                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 bg-background">
+                                                    <SelectValue placeholder="-- Select --" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {accountsLoading ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                ) : (!accounts || accounts.length === 0) ? (
+                                                    <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                ) : (
+                                                    <>
+                                                        {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                            <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                {account.account_name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />

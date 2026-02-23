@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const formSchema = z.object({
     date: z.date(),
@@ -39,6 +40,7 @@ const formSchema = z.object({
     requestor: z.string().min(1, 'Employee name is required'),
     company: z.string().min(1, 'Company name is required'),
     amount: z.coerce.number().min(1, 'Amount must be greater than 0'),
+    depositAccount: z.string().optional(),
     deductionStartDate: z.date(),
     requestedBy: z.string().min(1, 'Requested by is required'),
     approvedBy: z.string().min(1, 'Approved by is required'),
@@ -58,6 +60,7 @@ interface SalaryCashAdvanceFormProps {
 export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess, onCancel }: SalaryCashAdvanceFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "REQUEST AND AUTHORIZATION OF CASH ADVANCES";
@@ -75,6 +78,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
             requestor: initialData?.requesterName || initialData?.requestor || '',
             company: initialData?.company || 'Roslinda Group of Companies',
             amount: initialData?.amount || 0,
+            depositAccount: initialData?.depositAccount || '',
             deductionStartDate: initialData?.deductionStartDate ? new Date(initialData.deductionStartDate) : new Date(),
             requestedBy: initialData?.requestedBy || currentUserName,
             approvedBy: initialData?.approvedBy || '',
@@ -282,6 +286,41 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                             </div>
 
                             <p>This authorization is given freely, knowingly, and voluntarily, and shall remain valid until the obligation has been fully settled.</p>
+
+                            <div className="flex flex-col gap-2 mt-6 pt-6 border-t border-dashed">
+                                <span className="text-sm font-semibold uppercase">Deposit Account (Optional):</span>
+                                <FormField
+                                    control={form.control}
+                                    name="depositAccount"
+                                    render={({ field }) => (
+                                        <FormItem className="max-w-[300px]">
+                                            <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                                <FormControl>
+                                                    <SelectTrigger className="bg-muted/10 border-black/20 focus-visible:ring-0">
+                                                        <SelectValue placeholder="-- Select Account --" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {accountsLoading ? (
+                                                        <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                    ) : (!accounts || accounts.length === 0) ? (
+                                                        <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                    ) : (
+                                                        <>
+                                                            {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                                <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                    {account.account_name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
                     </div>
 

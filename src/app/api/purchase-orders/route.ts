@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const {
-            supplierId, date, vendorAddress, shippingAddress,
+            supplierId, date, vendorAddress, shippingAddress, depositAccount,
             taxType, comments, privateComments, items,
             subtotal, taxTotal, total, status
         } = body;
@@ -65,6 +65,17 @@ export async function POST(request: NextRequest) {
         }
         if (!items || items.length === 0) {
             return NextResponse.json({ error: 'At least one item is required' }, { status: 400 });
+        }
+        if (!depositAccount) {
+            return NextResponse.json({ error: 'Deposit Account is required' }, { status: 400 });
+        }
+
+        const liabilityAccount = await prisma.account.findUnique({
+            where: { id: depositAccount }
+        });
+
+        if (!liabilityAccount) {
+            return NextResponse.json({ error: 'Selected deposit account not found.' }, { status: 400 });
         }
 
         // Validate Product IDs (Foreign Key P2003 protection)
@@ -77,45 +88,55 @@ export async function POST(request: NextRequest) {
 
         // Create Purchase Order
         try {
-            const purchaseOrder = await prisma.purchaseOrder.create({
-                data: {
-                    supplierId,
-                    date: new Date(date),
-                    vendorAddress,
-                    shippingAddress,
-                    taxType,
-                    comments,
-                    privateComments,
-                    subtotal,
-                    taxTotal,
-                    total,
-                    status: status || 'Open',
-                    items: {
-                        create: items.map((item: any) => {
-                            const qty = parseInt(item.qty) || 0;
-                            const price = parseFloat(item.unitPrice) || 0;
-                            const isProductValid = item.productId && validProductIds.has(item.productId);
+            const purchaseOrder = await prisma.$transaction(async (tx) => {
+                const po = await tx.purchaseOrder.create({
+                    data: {
+                        supplierId,
+                        date: new Date(date),
+                        vendorAddress,
+                        shippingAddress,
+                        depositAccount,
+                        taxType,
+                        comments,
+                        privateComments,
+                        subtotal,
+                        taxTotal,
+                        total,
+                        status: status || 'Open',
+                        items: {
+                            create: items.map((item: any) => {
+                                const qty = parseInt(item.qty) || 0;
+                                const price = parseFloat(item.unitPrice) || 0;
+                                const isProductValid = item.productId && validProductIds.has(item.productId);
 
-                            return {
-                                productId: isProductValid ? item.productId : null,
-                                itemDescription: item.item || 'No Name',
-                                barcode: item.barcode || '',
-                                buyingUom: item.uom || 'pc',
-                                quantity: qty,
-                                unitPrice: price,
-                                tax: 0,
-                                total: qty * price,
-                                qtyPerCase: parseInt(item.qtyPerCase) || 1,
-                                orderQty: parseInt(item.orderQty) || qty,
-                                costPricePerCase: parseFloat(item.costPricePerCase) || (price * (parseInt(item.qtyPerCase) || 1)),
-                                costPricePerPiece: parseFloat(item.costPricePerPiece) || price,
-                            };
-                        }),
+                                return {
+                                    productId: isProductValid ? item.productId : null,
+                                    itemDescription: item.item || 'No Name',
+                                    barcode: item.barcode || '',
+                                    buyingUom: item.uom || 'pc',
+                                    quantity: qty,
+                                    unitPrice: price,
+                                    tax: 0,
+                                    total: qty * price,
+                                    qtyPerCase: parseInt(item.qtyPerCase) || 1,
+                                    orderQty: parseInt(item.orderQty) || qty,
+                                    costPricePerCase: parseFloat(item.costPricePerCase) || (price * (parseInt(item.qtyPerCase) || 1)),
+                                    costPricePerPiece: parseFloat(item.costPricePerPiece) || price,
+                                };
+                            }),
+                        },
                     },
-                },
-                include: {
-                    items: true,
-                },
+                    include: {
+                        items: true,
+                    },
+                });
+
+                await tx.account.update({
+                    where: { id: liabilityAccount.id },
+                    data: { balance: { increment: total || 0 } }
+                });
+
+                return po;
             });
 
             return NextResponse.json(purchaseOrder, { status: 201 });
@@ -145,6 +166,14 @@ export async function PUT(request: NextRequest) {
 
         if (!id) {
             return NextResponse.json({ error: 'Purchase Order ID is required' }, { status: 400 });
+        }
+
+        const oldPo = await prisma.purchaseOrder.findUnique({
+            where: { id }
+        });
+
+        if (!oldPo) {
+            return NextResponse.json({ error: 'Purchase Order not found.' }, { status: 404 });
         }
 
         // If only status is provided, just update status
@@ -210,10 +239,26 @@ export async function PUT(request: NextRequest) {
             updateData.date = new Date(updateData.date);
         }
 
-        const purchaseOrder = await prisma.purchaseOrder.update({
-            where: { id },
-            data: updateData,
-            include: { items: true }
+        const purchaseOrder = await prisma.$transaction(async (tx) => {
+            const po = await tx.purchaseOrder.update({
+                where: { id },
+                data: updateData,
+                include: { items: true }
+            });
+
+            if (otherData.total !== undefined && otherData.total !== oldPo.total) {
+                const poDepositAccount = updateData.depositAccount || oldPo.depositAccount;
+
+                if (poDepositAccount) {
+                    const diff = otherData.total - oldPo.total;
+                    await tx.account.update({
+                        where: { id: poDepositAccount },
+                        data: { balance: { increment: diff } }
+                    });
+                }
+            }
+
+            return po;
         });
 
         return NextResponse.json(purchaseOrder);
@@ -232,8 +277,24 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Purchase Order ID is required' }, { status: 400 });
         }
 
-        await prisma.purchaseOrder.delete({
-            where: { id },
+        const oldPo = await prisma.purchaseOrder.findUnique({ where: { id } });
+        if (!oldPo) {
+            return NextResponse.json({ error: 'Purchase Order not found' }, { status: 404 });
+        }
+
+        await prisma.$transaction(async (tx) => {
+            await tx.purchaseOrder.delete({
+                where: { id },
+            });
+
+            const poDepositAccount = oldPo.depositAccount;
+
+            if (poDepositAccount) {
+                await tx.account.update({
+                    where: { id: poDepositAccount },
+                    data: { balance: { decrement: oldPo.total } }
+                });
+            }
         });
 
         return NextResponse.json({ message: 'Purchase order deleted successfully' });

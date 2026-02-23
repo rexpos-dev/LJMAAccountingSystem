@@ -163,6 +163,8 @@ export default function CreatePurchaseOrderDialog() {
     const [supplierId, setSupplierId] = useState('');
     const [vendorAddress, setVendorAddress] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
+    const [depositAccount, setDepositAccount] = useState('');
+    const [liabilityAccounts, setLiabilityAccounts] = useState<any[]>([]);
 
     const [items, setItems] = useState<PurchaseOrderItem[]>([]);
     const [comments, setComments] = useState('');
@@ -173,8 +175,26 @@ export default function CreatePurchaseOrderDialog() {
     const [customUomRows, setCustomUomRows] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
+        const fetchLiabilityAccounts = async () => {
+            try {
+                const res = await fetch('/api/accounts');
+                if (res.ok) {
+                    const data = await res.json();
+                    const liabilities = data.filter((acc: any) =>
+                        acc.account_type?.toLowerCase().includes('liability') ||
+                        acc.header?.toLowerCase().includes('liability') ||
+                        acc.account_category?.toLowerCase().includes('liability')
+                    );
+                    setLiabilityAccounts(liabilities);
+                }
+            } catch (error) {
+                console.error('Failed to fetch liability accounts', error);
+            }
+        };
+
         if (openDialogs['create-purchase-order']) {
             fetchSuppliers();
+            fetchLiabilityAccounts();
             const data = getDialogData('create-purchase-order');
             if (data?.mode === 'edit' && data?.orderId) {
                 setMode('edit');
@@ -191,6 +211,7 @@ export default function CreatePurchaseOrderDialog() {
         setSupplierId('');
         setVendorAddress('');
         setShippingAddress('');
+        setDepositAccount('');
 
         setItems([]);
         setComments('');
@@ -217,6 +238,7 @@ export default function CreatePurchaseOrderDialog() {
                     setDate(new Date(order.date));
                     setComments(order.comments || '');
                     setPrivateComments(order.privateComments || '');
+                    setDepositAccount(order.depositAccount || '');
 
 
                     // Map items
@@ -354,6 +376,10 @@ export default function CreatePurchaseOrderDialog() {
             toast({ title: 'Validation Error', description: 'Please select a supplier.', variant: 'destructive' });
             return;
         }
+        if (!depositAccount) {
+            toast({ title: 'Validation Error', description: 'Please select a deposit account.', variant: 'destructive' });
+            return;
+        }
         if (items.length === 0) {
             toast({ title: 'Validation Error', description: 'Please add at least one item.', variant: 'destructive' });
             return;
@@ -367,6 +393,7 @@ export default function CreatePurchaseOrderDialog() {
                 date: date,
                 vendorAddress,
                 shippingAddress,
+                depositAccount,
 
                 comments,
                 privateComments,
@@ -443,6 +470,25 @@ export default function CreatePurchaseOrderDialog() {
                                         <Pencil className="h-4 w-4" />
                                     </Button>
                                 </div>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="depositAccount">Deposit Account (Liability)</Label>
+                                <Select value={depositAccount} onValueChange={setDepositAccount}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Deposit Account" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {liabilityAccounts.map(account => (
+                                            <SelectItem key={account.id} value={account.id}>
+                                                {account.account_name} - {account.account_type} ({account.account_no})
+                                            </SelectItem>
+                                        ))}
+                                        {liabilityAccounts.length === 0 && (
+                                            <SelectItem value="none" disabled>No liability accounts found</SelectItem>
+                                        )}
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <div className="grid gap-2">

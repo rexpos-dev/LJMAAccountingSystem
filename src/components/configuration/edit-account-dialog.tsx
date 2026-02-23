@@ -25,26 +25,21 @@ import { useEffect, useState } from 'react';
 import type { Account } from '@/types/account';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
+import { useAccountTypes } from '@/hooks/use-account-types';
 
-type AccountType = 'Cash' | 'Cash On Hand' | 'Fund Transfer' | 'Store Equipments' | 'Office Equipment' | 'Income' | 'Expense';
-
-const baseTypeMapping: Record<AccountType, string> = {
-  'Cash': 'Asset',
-  'Cash On Hand': 'Asset',
-  'Fund Transfer': 'Asset',
-  'Store Equipments': 'Asset',
-  'Office Equipment': 'Asset',
-  'Income': 'Income',
-  'Expense': 'Expense'
-};
 
 
 export default function EditAccountDialog() {
   const { openDialogs, closeDialog, getDialogData } = useDialog();
-  const { refetch } = useAccounts();
+  const { data: accounts, refetch } = useAccounts();
   const { toast } = useToast();
+  const { accountTypes } = useAccountTypes();
 
   const account = getDialogData('edit-account');
+
+  const uniqueAccountNames = Array.from(
+    new Set((accounts || []).map((acc: any) => acc.account_name))
+  ).filter(Boolean) as string[];
 
   // This state will hold the form data and will be updated as the user types.
   const [formData, setFormData] = useState<Partial<Account>>({});
@@ -65,11 +60,15 @@ export default function EditAccountDialog() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleTypeChange = (newType: AccountType) => {
+  const handleTypeChange = (newType: string) => {
+    const selectedAccountType = accountTypes.find((t: any) => t.name === newType);
+    const baseType = selectedAccountType?.baseType || 'Asset';
+
     setFormData(prev => ({
       ...prev,
       account_category: newType,
-      account_type: baseTypeMapping[newType] as any,
+      account_type: baseType as any,
+      account_type_id: selectedAccountType?.id,
       bank: ['Cash', 'Cash On Hand', 'Fund Transfer'].includes(newType) ? 'Yes' : 'No',
       fs_category: newType // Update fs_category to match type for consistency
     }));
@@ -96,7 +95,8 @@ export default function EditAccountDialog() {
           header: formData.header || 'No',
           bank: formData.bank || 'No',
           account_category: formData.account_category,
-          balance: formData.balance,
+          account_type_id: formData.account_type_id,
+          balance: parseFloat(formData.balance as any) || 0,
           account_description: formData.account_description,
           account_status: formData.account_status || 'Active',
           fs_category: formData.fs_category || formData.account_category || formData.account_type,
@@ -159,15 +159,21 @@ export default function EditAccountDialog() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="name">
+                  <Label htmlFor="account-name">
                     Account Name<span className="text-destructive">*</span>
                   </Label>
                   <Input
-                    id="name"
+                    id="account-name"
                     placeholder="Enter account name"
                     value={formData.account_name || ''}
                     onChange={(e) => handleInputChange('account_name', e.target.value)}
+                    list="edit-existing-account-names"
                   />
+                  <datalist id="edit-existing-account-names">
+                    {uniqueAccountNames.map((n) => (
+                      <option key={n} value={n} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div className="space-y-2">
@@ -216,20 +222,16 @@ export default function EditAccountDialog() {
                       Account Type<span className="text-destructive">*</span>
                     </Label>
                     <Select
-                      value={(formData.account_category as AccountType) || (formData.account_type as any === 'Asset' ? 'Cash' : formData.account_type as any) || 'Cash'}
-                      onValueChange={(v) => handleTypeChange(v as AccountType)}
+                      value={(formData.account_category) || (formData.account_type === 'Asset' ? 'Cash' : formData.account_type) || ''}
+                      onValueChange={handleTypeChange}
                     >
                       <SelectTrigger id="account-type">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Cash">Cash</SelectItem>
-                        <SelectItem value="Cash On Hand">Cash On Hand</SelectItem>
-                        <SelectItem value="Fund Transfer">Fund Transfer</SelectItem>
-                        <SelectItem value="Store Equipments">Store Equipments</SelectItem>
-                        <SelectItem value="Office Equipment">Office Equipment</SelectItem>
-                        <SelectItem value="Income">Income</SelectItem>
-                        <SelectItem value="Expense">Expense</SelectItem>
+                        {accountTypes.map((t: any) => (
+                          <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

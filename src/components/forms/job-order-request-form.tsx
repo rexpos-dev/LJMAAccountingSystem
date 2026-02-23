@@ -41,6 +41,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useAccounts } from '@/hooks/use-accounts';
 
 const itemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -55,6 +56,7 @@ const formSchema = z.object({
     department: z.string().min(1, 'Department is required'),
     natureOfWork: z.string().min(1, 'Nature of work is required'),
     location: z.string().optional(),
+    depositAccount: z.string().optional(),
     items: z.array(itemSchema).min(1, 'At least one item is required'),
     verifiedBy: z.string().optional(),
     approvedBy: z.string().optional(),
@@ -74,6 +76,7 @@ interface JobOrderRequestFormProps {
 export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initialData, mode = 'create', onSuccess, onCancel }: JobOrderRequestFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
+    const { data: accounts, isLoading: accountsLoading } = useAccounts();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
@@ -98,6 +101,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
             department: initialData?.department || '',
             natureOfWork: initialData?.purpose || '',
             location: initialData?.businessUnit || '',
+            depositAccount: initialData?.depositAccount || '',
             items: initialData?.items?.length > 0
                 ? initialData.items.map((it: any) => ({
                     description: it.description,
@@ -246,9 +250,41 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                         />
                         <FormField
                             control={form.control}
+                            name="depositAccount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Deposit Account</FormLabel>
+                                    <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                                <SelectValue placeholder="-- Select --" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {accountsLoading ? (
+                                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                            ) : (!accounts || accounts.length === 0) ? (
+                                                <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                            ) : (
+                                                <>
+                                                    {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                        <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                            {account.account_name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
                             name="natureOfWork"
                             render={({ field }) => (
-                                <FormItem className="md:col-span-2 lg:col-span-3">
+                                <FormItem className="md:col-span-2 lg:col-span-2">
                                     <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Nature of Work</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} placeholder="Describe the work involved..." disabled={isReadOnly} className="min-h-[80px] bg-muted/30 focus-visible:bg-transparent resize-none h-20" />

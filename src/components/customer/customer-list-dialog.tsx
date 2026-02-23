@@ -58,11 +58,13 @@ export default function CustomerListDialog() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const isAuditor = user?.accountType === 'Auditor';
 
   const fetchCustomers = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch('/api/customers');
       if (!response.ok) throw new Error('Failed to fetch customers');
@@ -82,6 +84,8 @@ export default function CustomerListDialog() {
 
       setCustomers(transformedData);
     } catch (error: any) {
+      console.error('Error fetching customers:', error);
+      setError(error.message === 'Failed to fetch customers' ? 'Failed to fetch customer data.' : 'No connection on API. Please check your network and try again.');
       toast({
         title: 'Error',
         description: error.message || 'Failed to load customers',
@@ -237,7 +241,13 @@ export default function CustomerListDialog() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
+              {error ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-red-500 font-medium">
+                    {error}
+                  </TableCell>
+                </TableRow>
+              ) : isLoading ? (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center py-8">
                     Loading customers...
@@ -268,8 +278,8 @@ export default function CustomerListDialog() {
                     <TableCell>{customer.email || '-'}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs ${customer.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
                         }`}>
                         {customer.isActive ? 'Active' : 'Inactive'}
                       </span>

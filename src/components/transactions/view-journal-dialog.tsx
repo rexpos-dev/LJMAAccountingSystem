@@ -63,19 +63,51 @@ export default function ViewJournalDialog() {
     const fetchTransactions = async () => {
         try {
             setIsLoadingTransactions(true);
-            const response = await fetch('/api/transactions');
-            if (!response.ok) {
-                throw new Error('Failed to fetch transactions');
+            const [transResponse, payablesResponse] = await Promise.all([
+                fetch('/api/transactions').catch(() => null),
+                fetch('/api/payables-ledger').catch(() => null)
+            ]);
+
+            let combinedData: any[] = [];
+
+            if (transResponse && transResponse.ok) {
+                const data = await transResponse.json();
+                const transformedData = Array.isArray(data) ? data.map((t: any) => ({
+                    ...t,
+                    seq: t.seq ?? 0,
+                    date: t.date ? new Date(t.date) : null,
+                    dateMatured: t.dateMatured ? new Date(t.dateMatured) : null,
+                })) : [];
+                combinedData = [...combinedData, ...transformedData];
             }
-            const data = await response.json();
-            // Transform data to match Transaction type
-            const transformedData = Array.isArray(data) ? data.map((t: any) => ({
-                ...t,
-                seq: t.seq ?? 0,
-                date: t.date ? new Date(t.date) : null,
-                dateMatured: t.dateMatured ? new Date(t.dateMatured) : null,
-            })) : [];
-            setTransactions(transformedData);
+
+            if (payablesResponse && payablesResponse.ok) {
+                const pData = await payablesResponse.json();
+                const transformedPayables = Array.isArray(pData) ? pData.map((p: any) => ({
+                    id: p.id,
+                    seq: 0,
+                    date: p.date ? new Date(p.date) : null,
+                    transNo: p.reference,
+                    ledger: p.ledger,
+                    accountNumber: p.accountNumber,
+                    accountName: p.accountName,
+                    code: '',
+                    particulars: p.accountDescription,
+                    debit: p.debitAmount,
+                    credit: p.creditAmount,
+                    user: p.user,
+                })) : [];
+                combinedData = [...combinedData, ...transformedPayables];
+            }
+
+            // Sort by date descending
+            combinedData.sort((a, b) => {
+                const dateA = a.date ? a.date.getTime() : 0;
+                const dateB = b.date ? b.date.getTime() : 0;
+                return dateB - dateA;
+            });
+
+            setTransactions(combinedData);
         } catch (error) {
             console.error('Error fetching transactions:', error);
             toast({

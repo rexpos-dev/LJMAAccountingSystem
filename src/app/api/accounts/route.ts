@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { account_no, account_type_no, account_name, account_description, account_type, header, bank, account_category, account_status, fs_category, balance } = body;
+    const { account_no, account_type_no, account_name, account_description, account_type, account_type_id, header, bank, account_category, account_status, fs_category, balance } = body;
 
     if (!account_no || !account_type_no || !account_name || !account_type) {
       return NextResponse.json({ error: 'Missing required fields: account_no, account_type_no, account_name, account_type' }, { status: 400 });
@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       account_name,
       account_description,
       account_type,
+      account_type_id,
       header: header || 'No',
       bank: bank || 'No',
       account_category,
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, account_no, account_type_no, account_name, account_description, account_type, header, bank, account_category, account_status, fs_category, balance } = body;
+    const { id, account_no, account_type_no, account_name, account_description, account_type, account_type_id, header, bank, account_category, account_status, fs_category, balance } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
@@ -73,6 +74,7 @@ export async function PUT(request: Request) {
     if (account_name !== undefined) updateData.account_name = account_name;
     if (account_description !== undefined) updateData.account_description = account_description;
     if (account_type !== undefined) updateData.account_type = account_type;
+    if (account_type_id !== undefined) updateData.account_type_id = account_type_id;
     if (header !== undefined) updateData.header = header;
     if (bank !== undefined) updateData.bank = bank;
     if (account_category !== undefined) updateData.account_category = account_category;

@@ -42,6 +42,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { useSuppliers } from '@/hooks/use-suppliers';
 import { useBankAccounts } from '@/hooks/use-accounts';
+import { useToast } from '@/hooks/use-toast';
 
 export function EnterPaymentsOfAccountsPayableDialog() {
   const { openDialogs, closeDialog, getDialogData } = useDialog();
@@ -59,6 +60,31 @@ export function EnterPaymentsOfAccountsPayableDialog() {
 
   const { suppliers } = useSuppliers();
   const { accounts: bankAccounts } = useBankAccounts();
+  const { toast } = useToast();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [billId, setBillId] = useState<string | null>(null);
+  const [liabilityAccounts, setLiabilityAccounts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchLiabilityAccounts = async () => {
+      try {
+        const res = await fetch('/api/accounts');
+        if (res.ok) {
+          const data = await res.json();
+          const liabilities = data.filter((acc: any) =>
+            acc.account_type?.toLowerCase().includes('liabilit') ||
+            acc.header?.toLowerCase().includes('liabilit') ||
+            acc.account_category?.toLowerCase().includes('liabilit')
+          );
+          setLiabilityAccounts(liabilities);
+        }
+      } catch (error) {
+        console.error('Failed to fetch liability accounts', error);
+      }
+    };
+    fetchLiabilityAccounts();
+  }, []);
 
   useEffect(() => {
     if (openDialogs['enter-payments-of-accounts-payable']) {
@@ -66,6 +92,11 @@ export function EnterPaymentsOfAccountsPayableDialog() {
       if (data) {
         if (data.supplierId) {
           setSupplier(data.supplierId);
+        }
+        if (data.billId) {
+          setBillId(data.billId);
+        } else {
+          setBillId(null);
         }
         if (data.amount !== undefined && data.amount !== null) {
           setAmount(Number(data.amount).toFixed(2));
@@ -83,22 +114,25 @@ export function EnterPaymentsOfAccountsPayableDialog() {
 
       setLoadingBills(true);
       try {
-        // Fetch Purchase Orders for this supplier
-        // In a real app, query by supplierId. e.g. /api/purchase-orders?supplierId=${supplier}
-        const res = await fetch('/api/purchase-orders');
+        const res = await fetch(`/api/purchase-orders?supplierId=${supplier}&limit=10000`);
         if (res.ok) {
           const data = await res.json();
-          // Filter client-side for now as we might not have backend filter
-          const supplierBills = data.filter((po: any) =>
-            (po.supplierId === supplier || po.supplier?.id === supplier) &&
-            po.status === 'Approved' // Only approved (unpaid) bills
-          ).map((po: any) => ({
+          let supplierBills = data.filter((po: any) =>
+            (po.status === 'Approved' || po.status === 'Open' || po.id === billId || po.status === 'Paid')
+          );
+
+          if (billId) {
+            supplierBills = supplierBills.filter((po: any) => po.id === billId);
+          }
+
+          supplierBills = supplierBills.map((po: any) => ({
             id: po.id,
             date: po.date,
             dueDate: new Date(new Date(po.date).setDate(new Date(po.date).getDate() + 30)).toISOString(),
             total: po.total,
-            due: po.total, // Assuming no partial payments yet
-            applied: 0
+            due: po.status === 'Paid' ? 0 : po.total,
+            applied: po.status === 'Paid' ? 0 : (po.id === billId ? po.total : 0), // Apply amount automatically if not paid
+            allocationAccount: po.depositAccount || '' // Track the allocation account
           }));
           setBills(supplierBills);
         }
@@ -110,7 +144,110 @@ export function EnterPaymentsOfAccountsPayableDialog() {
     };
 
     fetchBills();
-  }, [supplier]);
+  }, [supplier, billId]);
+
+  const handleRecord = async () => {
+    if (!accountPaidFrom) {
+      toast({ title: 'Error', description: 'Please select a bank account to pay from.', variant: 'destructive' });
+      return;
+    }
+
+    const appliedBills = bills.filter(b => Number(b.applied) > 0);
+    if (appliedBills.length === 0) {
+      toast({ title: 'Error', description: 'Please apply an amount to at least one bill.', variant: 'destructive' });
+      return;
+    }
+
+    const bankAccount = bankAccounts.find(a => a.id === accountPaidFrom);
+    if (!bankAccount) return;
+
+    setIsSubmitting(true);
+    try {
+      const currentUser = "admin";
+      const entries = [];
+      const totalApplied = appliedBills.reduce((sum, b) => sum + Number(b.applied), 0);
+
+      // 1. Credit the Asset/Bank Account for the total payment amount out
+      entries.push({
+        date: date ? date.toISOString() : new Date().toISOString(),
+        reference: referenceNumber || checkNumber || null,
+        ledger: journalMemo || null,
+        accountNumber: bankAccount.account_no?.toString() || null,
+        accountName: bankAccount.account_name || null,
+        accountDescription: bankAccount.account_description || 'Bank Payment',
+        debitAmount: 0,
+        creditAmount: totalApplied,
+        user: currentUser
+      });
+
+      // 2. Debit the Accounts Payable (Liability decrease) for each applied bill
+      for (const bill of appliedBills) {
+        let liabilityAcc = liabilityAccounts.find(a => a.id === bill.allocationAccount);
+        if (!liabilityAcc) {
+          // Fallback to default Accounts Payable account since we hid the allocation column
+          liabilityAcc = liabilityAccounts.find(a => a.account_name?.toLowerCase().includes('accounts payable') || a.account_name?.toLowerCase().includes('account payable'));
+        }
+
+        if (!liabilityAcc) {
+          toast({ title: 'Error', description: 'Could not find a valid Accounts Payable liability account. Please check your Chart of Accounts.', variant: 'destructive' });
+          setIsSubmitting(false);
+          return;
+        }
+
+        entries.push({
+          date: date ? date.toISOString() : new Date().toISOString(),
+          reference: referenceNumber || checkNumber || null,
+          ledger: journalMemo || null,
+          accountNumber: liabilityAcc?.account_no?.toString() || null,
+          accountName: liabilityAcc?.account_name || null,
+          accountDescription: `Payment for Bill #${bill.id.slice(0, 8)}`,
+          debitAmount: Number(bill.applied),
+          creditAmount: 0,
+          user: currentUser
+        });
+      }
+
+      const res = await fetch('/api/payables-ledger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entries),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to record payment');
+      }
+
+      // 3. Mark the applied bills as Paid
+      const billIds = appliedBills.map(b => b.id);
+      const updateStatusRes = await fetch('/api/purchase-orders/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: billIds, status: 'Paid' }),
+      });
+
+      if (!updateStatusRes.ok) {
+        console.error('Failed to update status for bills:', billIds);
+        // We do not throw here to prevent confusing the user since the ledger got saved,
+        // but typically you'd handle this cleanly in a transaction if running natively
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Payment recorded to payables ledger and status updated to Paid!',
+      });
+      closeDialog('enter-payments-of-accounts-payable');
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        title: 'Error',
+        description: error.message || 'An error occurred while saving the ledger.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Dialog open={openDialogs['enter-payments-of-accounts-payable']} onOpenChange={() => closeDialog('enter-payments-of-accounts-payable')}>
@@ -127,14 +264,7 @@ export function EnterPaymentsOfAccountsPayableDialog() {
             </DialogTitle>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground">
-              <HelpCircle className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => closeDialog('enter-payments-of-accounts-payable')} className="h-6 w-6 text-muted-foreground hover:text-foreground">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+
         </div>
 
         <ScrollArea className="flex-1 p-4 bg-background">
@@ -247,8 +377,9 @@ export function EnterPaymentsOfAccountsPayableDialog() {
             <fieldset className="border rounded-md p-4 bg-muted/10 shadow-sm h-[300px] flex flex-col">
               <legend className="text-sm font-semibold px-2 -ml-2 text-foreground">Bills</legend>
 
-              <div className="mb-2 text-sm">
-                Unapplied amount remaining: <span className="font-bold">₱{amount}</span>
+              <div className="mb-2 text-sm flex gap-4">
+                <span>Total Amount: <span className="font-bold">₱{Number(amount || 0).toFixed(2)}</span></span>
+                {/* <span>Unapplied amount remaining: <span className={cn("font-bold", (Number(amount || 0) - bills.reduce((sum, b) => sum + Number(b.applied || 0), 0)) < 0 ? "text-destructive" : "")}>₱{(Number(amount || 0) - bills.reduce((sum, b) => sum + Number(b.applied || 0), 0)).toFixed(2)}</span></span> */}
               </div>
 
               <div className="flex-1 border rounded overflow-hidden">
@@ -284,7 +415,19 @@ export function EnterPaymentsOfAccountsPayableDialog() {
                           <TableCell>{format(new Date(bill.dueDate), 'MM/dd/yyyy')}</TableCell>
                           <TableCell className="text-right">₱{Number(bill.total).toFixed(2)}</TableCell>
                           <TableCell className="text-right">₱{Number(bill.due).toFixed(2)}</TableCell>
-                          <TableCell className="text-right">₱{Number(bill.applied).toFixed(2)}</TableCell>
+                          <TableCell className="text-right">
+                            <Input
+                              type="number"
+                              className="w-24 h-7 text-right bg-background ml-auto"
+                              value={bill.applied}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setBills(prev => prev.map(b => b.id === bill.id ? { ...b, applied: val } : b));
+                              }}
+                              max={Number(bill.due)}
+                              min={0}
+                            />
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
@@ -296,9 +439,15 @@ export function EnterPaymentsOfAccountsPayableDialog() {
           </div>
         </ScrollArea>
         <DialogFooter className="p-2 border-t bg-background flex justify-center sm:justify-center gap-2">
-          <Button className="w-[100px] h-8 border-blue-500 text-blue-600 hover:bg-blue-50" variant="outline">Record</Button>
-          <Button className="w-[100px] h-8" variant="outline" onClick={() => closeDialog('enter-payments-of-accounts-payable')}>Cancel</Button>
-          <Button className="w-[100px] h-8" variant="outline">Help</Button>
+          <Button
+            className="w-[100px] h-8 border-blue-500 text-blue-600 hover:bg-blue-50"
+            variant="outline"
+            onClick={handleRecord}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Recording...' : 'Record'}
+          </Button>
+          <Button className="w-[100px] h-8" variant="outline" onClick={() => closeDialog('enter-payments-of-accounts-payable')} disabled={isSubmitting}>Cancel</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

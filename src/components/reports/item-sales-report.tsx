@@ -16,6 +16,13 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -30,6 +37,10 @@ import {
     Save,
     ListVideo,
     Search,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-provider';
@@ -46,10 +57,11 @@ export default function ItemSalesReport() {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(20);
 
-    const { transactions, isLoading, pagination } = useSalesTransactions(
+    const { transactions, isLoading, error, pagination } = useSalesTransactions(
         page,
-        100, // Show more items for report
+        limit,
         searchTerm,
         format(fromDate, 'yyyy-MM-dd'),
         format(toDate, 'yyyy-MM-dd')
@@ -90,7 +102,10 @@ export default function ItemSalesReport() {
                                 placeholder="Search transaction..."
                                 className="pl-8"
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setPage(1);
+                                }}
                             />
                         </div>
                     </div>
@@ -127,7 +142,15 @@ export default function ItemSalesReport() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {isLoading ? (
+                                {error ? (
+                                    <TableRow>
+                                        <TableCell colSpan={9} className="h-32 text-center text-red-500 font-medium">
+                                            {error.message.includes('Failed to fetch') || error.message.includes('Network') || error.message.includes('fetch')
+                                                ? 'No connection on API. Please check your network and try again.'
+                                                : `Error: ${error.message}`}
+                                        </TableCell>
+                                    </TableRow>
+                                ) : isLoading ? (
                                     <TableRow>
                                         <TableCell colSpan={9} className="h-32 text-center text-muted-foreground italic">
                                             Loading sales transaction data...
@@ -142,7 +165,7 @@ export default function ItemSalesReport() {
                                 ) : (
                                     <>
                                         {transactions.map((transaction, index) => (
-                                            <TableRow key={`${transaction.id}-${index}`} className="align-top">
+                                            <TableRow key={`${transaction.id}-${index}`} className="align-top hover:bg-muted/10 transition-colors">
                                                 <TableCell className="text-sm">
                                                     {format(new Date(transaction.date), 'MM/dd/yyyy HH:mm')}
                                                 </TableCell>
@@ -184,7 +207,7 @@ export default function ItemSalesReport() {
                                             </TableRow>
                                         ))}
                                         <TableRow className="bg-muted/50 font-bold border-t-2">
-                                            <TableCell colSpan={6} className="text-right">GRAND TOTAL</TableCell>
+                                            <TableCell colSpan={6} className="text-right">PAGE TOTAL</TableCell>
                                             <TableCell className="text-right">
                                                 ₱{totalSales.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                             </TableCell>
@@ -200,31 +223,92 @@ export default function ItemSalesReport() {
                     </div>
                 </ScrollArea>
 
-                {pagination && pagination.totalPages > 1 && (
-                    <div className="p-4 border-t flex items-center justify-between">
+                <div className="p-4 border-t flex items-center justify-between bg-card shrink-0">
+                    <div className="flex items-center gap-4">
                         <span className="text-sm text-muted-foreground">
-                            Page {pagination.page} of {pagination.totalPages} ({pagination.totalRecords} records)
+                            {pagination ? (
+                                <>Showing <b>{((page - 1) * limit) + 1}</b> to <b>{Math.min(page * limit, pagination.totalRecords)}</b> of <b>{pagination.totalRecords}</b> entries</>
+                            ) : 'Loading...'}
                         </span>
-                        <div className="flex gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground whitespace-nowrap">Show:</span>
+                            <Select
+                                value={limit.toString()}
+                                onValueChange={(value) => {
+                                    setLimit(Number(value));
+                                    setPage(1);
+                                }}
+                            >
+                                <SelectTrigger className="w-[70px] h-8">
+                                    <SelectValue placeholder={limit.toString()} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    {pagination && pagination.totalPages > 1 && (
+                        <div className="flex items-center gap-1">
                             <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setPage(1)}
+                                disabled={page === 1}
+                            >
+                                <ChevronsLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => setPage(prev => Math.max(1, prev - 1))}
                                 disabled={page === 1}
                             >
-                                Previous
+                                <ChevronLeft className="h-4 w-4" />
                             </Button>
+
+                            <div className="flex items-center gap-1 mx-2">
+                                <span className="text-sm">Page</span>
+                                <Input
+                                    className="h-8 w-12 text-center p-0"
+                                    value={page}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        if (!isNaN(val) && val >= 1 && val <= pagination.totalPages) {
+                                            setPage(val);
+                                        }
+                                    }}
+                                />
+                                <span className="text-sm">of {pagination.totalPages}</span>
+                            </div>
+
                             <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => setPage(prev => Math.min(pagination.totalPages, prev + 1))}
                                 disabled={page === pagination.totalPages}
                             >
-                                Next
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setPage(pagination.totalPages)}
+                                disabled={page === pagination.totalPages}
+                            >
+                                <ChevronsRight className="h-4 w-4" />
                             </Button>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     );
