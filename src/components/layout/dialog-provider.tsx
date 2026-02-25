@@ -94,6 +94,9 @@ import BudgetReportDialog from '@/components/reports/budget-report-dialog';
 import BudgetReport from '@/components/reports/budget-report';
 import CustomReportDialog from '@/components/reports/custom-report-dialog';
 import CustomReport from '@/components/reports/custom-report';
+import PosSalesDetailDialog from '@/components/reports/pos-sales-detail-dialog';
+import GeneralLedgerDialog from '@/components/reports/general-ledger-dialog';
+import GeneralLedgerReport from '@/components/reports/general-ledger-report';
 
 import EnterCashSaleDialog from '@/components/transactions/enter-cash-sale-dialog';
 import { EnterDirectPaymentsDialog } from '@/components/transactions/enter-direct-payments-dialog';
@@ -231,6 +234,9 @@ const dialogComponents = {
   'budget-report': BudgetReport,
   'custom-report-dialog': CustomReportDialog,
   'custom-report': CustomReport,
+  'pos-sales-detail': PosSalesDetailDialog,
+  'general-ledger-dialog': GeneralLedgerDialog,
+  'general-ledger-report': GeneralLedgerReport,
 };
 
 type DialogId = keyof typeof dialogComponents;

@@ -13,16 +13,29 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Search } from 'lucide-react';
+import { useCustomerPayments, CustomerPayment } from '@/hooks/use-customer-payments';
+import { Plus, Search, RefreshCw } from 'lucide-react';
 
 export default function CustomerPaymentDialog() {
-    const { openDialogs, closeDialog, openDialog } = useDialog();
+    const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const { toast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
     const [customerFilter, setCustomerFilter] = useState('all');
     const [paymentType, setPaymentType] = useState('all');
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+
+    const { payments, isLoading, error: apiError, refreshPayments } = useCustomerPayments();
+
+    const filteredPayments = payments.filter((p) => {
+        if (!p) return false;
+        const name = (p.customer_name || '').toLowerCase();
+        const ref = (p.reference || '').toLowerCase();
+        const query = (searchQuery || '').toLowerCase();
+        return name.includes(query) || ref.includes(query);
+    });
+
+    const totalAmountPaid = filteredPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
     useEffect(() => {
         if (openDialogs['customer-payment']) {
@@ -40,14 +53,33 @@ export default function CustomerPaymentDialog() {
     };
 
     const handleShowReport = () => {
-        toast({ title: 'Show Report', description: 'Showing report (not implemented)' });
+        if (!fromDate || !toDate) {
+            toast({
+                title: 'Date Required',
+                description: 'Please select both from and to dates.',
+                variant: 'destructive'
+            });
+            return;
+        }
+
+        setDialogData('sales-invoice-payment-report', {
+            fromDate: new Date(fromDate),
+            toDate: new Date(toDate),
+            paymentType: paymentType
+        });
+        openDialog('sales-invoice-payment-report');
     };
 
     return (
         <Dialog open={openDialogs['customer-payment']} onOpenChange={() => closeDialog('customer-payment')}>
             <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
-                <DialogHeader>
+                <DialogHeader className="flex flex-row items-center justify-between">
                     <DialogTitle>Customer Payments</DialogTitle>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="icon" onClick={() => { refreshPayments(); toast({ title: 'Refreshed', description: 'Refreshed customer payments' }); }} title="Refresh" className="h-8 w-8">
+                            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                        </Button>
+                    </div>
                 </DialogHeader>
 
                 <div className="flex items-center justify-between mb-3">
@@ -86,14 +118,17 @@ export default function CustomerPaymentDialog() {
                             <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
                         </div>
 
-                        <div className="w-40">
-                            <label className="block text-sm mb-1 text-muted-foreground">Payment Type</label>
-                            <Select>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue>{paymentType}</SelectValue>
+                        <div className="w-48">
+                            <label className="block text-sm mb-1 text-muted-foreground font-medium">Payment Type</label>
+                            <Select value={paymentType} onValueChange={setPaymentType}>
+                                <SelectTrigger className="w-full bg-background border-muted-foreground/20">
+                                    <SelectValue placeholder="All Payment Types" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All</SelectItem>
+                                    <SelectItem value="all">All Payment Types</SelectItem>
+                                    <SelectItem value="Cash">Cash</SelectItem>
+                                    <SelectItem value="Check">Check</SelectItem>
+                                    <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -119,9 +154,53 @@ export default function CustomerPaymentDialog() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colSpan={8} className="text-center py-8">No payment information to display.</td>
-                            </tr>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={8} className="text-center py-8">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+                                            <span className="text-sm text-muted-foreground font-medium">Loading payment information...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : apiError ? (
+                                <tr>
+                                    <td colSpan={8} className="text-center py-10 bg-red-50/30">
+                                        <div className="text-red-500 font-semibold mb-1">Failed to Load Payments</div>
+                                        <div className="text-xs text-red-400 max-w-md mx-auto">{apiError.message}</div>
+                                        <Button variant="link" size="sm" onClick={() => refreshPayments()} className="mt-2 text-red-600">Try Again</Button>
+                                    </td>
+                                </tr>
+                            ) : filteredPayments.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} className="text-center py-12 text-muted-foreground italic border-dashed border-2 rounded-lg">
+                                        No payment information to display{searchQuery ? ` matching "${searchQuery}"` : ''}.
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredPayments.map((payment: CustomerPayment) => (
+                                    <tr key={payment.id} className="border-b text-sm hover:bg-muted/50 transition-colors">
+                                        <td className="p-2 font-medium">{payment.customer_name || 'N/A'}</td>
+                                        <td className="p-2 text-green-600 font-semibold">
+                                            {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(payment.amount || 0))}
+                                        </td>
+                                        <td className="p-2 text-muted-foreground">-</td>
+                                        <td className="p-2 text-muted-foreground">-</td>
+                                        <td className="p-2">{payment.payment_type || 'N/A'}</td>
+                                        <td className="p-2">
+                                            {(() => {
+                                                try {
+                                                    return payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'N/A';
+                                                } catch (e) {
+                                                    return 'Invalid Date';
+                                                }
+                                            })()}
+                                        </td>
+                                        <td className="p-2 text-xs text-muted-foreground truncate max-w-[120px]" title={payment.reference}>{payment.reference || '-'}</td>
+                                        <td className="p-2 text-xs text-muted-foreground truncate max-w-[150px]" title={payment.note}>{payment.note || '-'}</td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </ScrollArea>
@@ -152,7 +231,9 @@ export default function CustomerPaymentDialog() {
                             <div className="text-sm font-semibold">Grand Total</div>
                             <div className="text-xs text-muted-foreground">Amount Paid</div>
                         </div>
-                        <div className="text-lg font-semibold">0.00</div>
+                        <div className="text-lg font-semibold text-green-600">
+                            {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(totalAmountPaid)}
+                        </div>
                     </div>
                     <div className="flex justify-end mt-4">
                         <Button variant="outline" onClick={() => closeDialog('customer-payment')}>Close</Button>

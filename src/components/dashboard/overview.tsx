@@ -1,127 +1,64 @@
 "use client"
 
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts"
 import { useMemo } from "react"
 import { useAccounts } from "@/hooks/use-accounts"
 import { useTransactions } from "@/hooks/use-transactions"
-import {
-  startOfWeek,
-  startOfMonth,
-  startOfYear,
-  format,
-  subWeeks,
-  subMonths,
-  subYears,
-  isAfter,
-  parseISO
-} from "date-fns"
 
-export interface OverviewProps {
-  timeframe?: "weekly" | "monthly" | "yearly";
-}
-
-export function Overview({ timeframe = "monthly" }: OverviewProps) {
+export function Overview() {
   const { data: accounts, isLoading: isAccountsLoading } = useAccounts();
   const { transactions, isLoading: isTransactionsLoading } = useTransactions();
 
   const data = useMemo(() => {
-    if (!accounts.length || !transactions.length) return [];
+    if (!accounts || !accounts.length || !transactions || !transactions.length) return [];
 
-    const groupedData = new Map<string, { name: string, profit: number, expense: number, cost: number, sortKey: number }>();
+    const groupedData = new Map<string, { name: string, balance: number }>();
 
-    // Determine cutoff date for Weekly and Monthly (last 12 units)
-    let cutoffDate: Date | null = null;
-    const now = new Date();
-    if (timeframe === "weekly") {
-      cutoffDate = subWeeks(now, 12);
-    } else if (timeframe === "monthly") {
-      cutoffDate = subMonths(now, 12);
-    }
+    // Group transactions by account
+    const accountTotals = new Map<string, { debit: number, credit: number }>();
+    transactions.forEach(t => {
+      const accNo = t.accountNumber?.toString();
+      if (!accNo) return;
+      const current = accountTotals.get(accNo) || { debit: 0, credit: 0 };
+      accountTotals.set(accNo, {
+        debit: current.debit + (t.debit || 0),
+        credit: current.credit + (t.credit || 0)
+      });
+    });
 
-    transactions.forEach((t) => {
-      // 1. Validate transaction date
-      let date: Date;
-      if (typeof t.date === 'string') {
-        date = parseISO(t.date);
-      } else if (typeof t.date === 'object' && t.date && 'seconds' in (t.date as any)) {
-        date = new Date((t.date as any).seconds * 1000);
+    accounts.forEach((account) => {
+      const accNo = account.account_no.toString();
+      const txs = accountTotals.get(accNo);
+      if (!txs) return;
+
+      const type = account.account_type || "Unknown";
+      const debit = txs.debit;
+      const credit = txs.credit;
+
+      let balance = 0;
+      // Asset/Expense: Debit - Credit
+      // Liability/Equity/Income: Credit - Debit
+      if (['Asset', 'Expense', 'Bank', 'Cost of Sales'].includes(type) || account.account_name.toLowerCase().includes('purchases')) {
+        balance = debit - credit;
       } else {
-        date = new Date(t.date as any);
+        balance = credit - debit;
       }
 
-      if (isNaN(date.getTime())) return;
-      if (cutoffDate && !isAfter(date, cutoffDate)) return;
-
-      // 2. Link transaction to Account
-      const account = accounts.find(acc => acc.account_no?.toString() === t.accountNumber?.toString());
-      if (!account) return;
-
-      // 3. Determine Group Key and Name
-      let key: string;
-      let name: string;
-      let sortKey: number;
-
-      if (timeframe === "weekly") {
-        const weekStart = startOfWeek(date);
-        key = format(weekStart, "yyyy-ww");
-        name = `Week ${format(weekStart, "ww")}`;
-        sortKey = weekStart.getTime();
-      } else if (timeframe === "monthly") {
-        const monthStart = startOfMonth(date);
-        key = format(monthStart, "yyyy-MM");
-        name = format(monthStart, "MMM");
-        sortKey = monthStart.getTime();
-      } else {
-        const yearStart = startOfYear(date);
-        key = format(yearStart, "yyyy");
-        name = format(yearStart, "yyyy");
-        sortKey = yearStart.getTime();
-      }
-
-      if (!groupedData.has(key)) {
-        groupedData.set(key, {
-          name,
-          profit: 0,
-          expense: 0,
-          cost: 0,
-          sortKey
+      if (!groupedData.has(type)) {
+        groupedData.set(type, {
+          name: type,
+          balance: 0,
         });
       }
 
-      const entry = groupedData.get(key)!;
-      const debit = t.debit || 0;
-      const credit = t.credit || 0;
-
-      // 4. Calculate Metrics based on Account Type
-      // Income Accounts: Credit increases Income, Debit decreases
-      if (account.account_type === 'Income') {
-        const netIncome = credit - debit;
-        entry.profit += netIncome;
-      }
-
-      // Expense Accounts: Debit increases Expense, Credit decreases
-      else if (account.account_type === 'Expense') {
-        const netExpense = debit - credit;
-
-        // Distinguish Cost (COGS) vs Regular Expense
-        const isCost = account.account_name.toLowerCase().includes('cost') ||
-          account.account_name.toLowerCase().includes('cogs') ||
-          account.account_name.toLowerCase().includes('purchases');
-
-        if (isCost) {
-          entry.cost += netExpense;
-          entry.profit -= netExpense; // Cost reduces profit
-        } else {
-          entry.expense += netExpense;
-          entry.profit -= netExpense; // Expense reduces profit
-        }
-      }
+      const entry = groupedData.get(type)!;
+      entry.balance += balance;
     });
 
     return Array.from(groupedData.values())
-      .sort((a, b) => a.sortKey - b.sortKey);
+      .sort((a, b) => b.balance - a.balance);
 
-  }, [accounts, transactions, timeframe]);
+  }, [accounts, transactions]);
 
   const chartData = data;
 
@@ -136,90 +73,68 @@ export function Overview({ timeframe = "monthly" }: OverviewProps) {
   if (!chartData.length) {
     return (
       <div className="w-full h-[350px] flex items-center justify-center text-muted-foreground italic">
-        No financial data available for the selected timeframe.
+        No financial data available.
       </div>
     );
   }
 
+  const COLORS = {
+    'Asset': '#3b82f6',
+    'Liability': '#f43f5e',
+    'Equity': '#8b5cf6',
+    'Income': '#10b981',
+    'Expense': '#f59e0b',
+    'Bank': '#0ea5e9',
+    'Cost of Sales': '#ef4444',
+    'Other Income': '#14b8a6',
+    'Other Expense': '#f97316',
+    'Unknown': '#71717a'
+  } as Record<string, string>;
+
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <AreaChart data={chartData}>
-        <defs>
-          <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-          </linearGradient>
-        </defs>
+      <BarChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 20 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
         <XAxis
           dataKey="name"
           stroke="#71717a"
-          fontSize={10}
+          fontSize={12}
           tickLine={false}
           axisLine={false}
-          padding={{ left: 10, right: 10 }}
+          dy={10}
         />
         <YAxis
           stroke="#71717a"
-          fontSize={10}
+          fontSize={12}
           tickLine={false}
           axisLine={false}
           tickFormatter={(value) => `₱${(value / 1000).toFixed(0)}k`}
+          dx={-10}
         />
         <Tooltip
+          cursor={{ fill: '#27272a', opacity: 0.4 }}
           formatter={(value: number) => `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           contentStyle={{
             backgroundColor: '#09090b',
             borderRadius: '0.5rem',
             border: '1px solid #27272a',
-            fontSize: '12px'
+            fontSize: '12px',
+            color: '#fafafa',
           }}
-          itemStyle={{ padding: '0px' }}
+          itemStyle={{ padding: '0px', color: '#fafafa' }}
+          labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
         />
-        <Legend
-          verticalAlign="top"
-          height={40}
-          iconType="circle"
-          wrapperStyle={{ fontSize: '12px', paddingBottom: '10px' }}
-        />
-
-        <Area
-          type="monotone"
-          dataKey="cost"
-          name="Cost"
-          stroke="#3b82f6"
-          fillOpacity={1}
-          fill="url(#colorCost)"
-          strokeWidth={2}
-        />
-
-        <Area
-          type="monotone"
-          dataKey="expense"
-          name="Expenses"
-          stroke="#f43f5e"
-          fillOpacity={1}
-          fill="url(#colorExpenses)"
-          strokeWidth={2}
-        />
-
-        <Area
-          type="monotone"
-          dataKey="profit"
-          name="Profit"
-          stroke="#10b981"
-          fillOpacity={1}
-          fill="url(#colorProfit)"
-          strokeWidth={2}
-        />
-      </AreaChart>
+        <Bar
+          dataKey="balance"
+          name="Balance"
+          radius={[4, 4, 0, 0]}
+          maxBarSize={60}
+        >
+          {chartData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[entry.name] || COLORS['Unknown']} />
+          ))}
+        </Bar>
+      </BarChart>
     </ResponsiveContainer>
   )
 }

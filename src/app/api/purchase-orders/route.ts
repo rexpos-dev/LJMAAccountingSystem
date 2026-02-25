@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { postJournalEntry } from '@/lib/journal-helper';
 
 export async function GET(request: NextRequest) {
     try {
@@ -135,6 +136,20 @@ export async function POST(request: NextRequest) {
                     where: { id: liabilityAccount.id },
                     data: { balance: { increment: total || 0 } }
                 });
+
+                // Post Journal Entry for PO
+                // Debit: Inventory (1310) for Total
+                // Credit: Accounts Payable (Dynamic Liability Account) for Total
+                await postJournalEntry({
+                    date: po.date,
+                    referenceId: po.id, // Or another PO reference if available
+                    particulars: `Purchase Order`,
+                    user: 'System',
+                    lines: [
+                        { accountNo: 1310, debit: total || 0 }, // Inventory
+                        { accountNo: liabilityAccount.account_no, credit: total || 0 } // AP
+                    ]
+                }, tx);
 
                 return po;
             });

@@ -68,6 +68,9 @@ model Transaction {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
+  @@index([accountNumber, date])
+  @@index([code, date])
+  @@index([date])
   @@map("transactions")
 }
 
@@ -558,4 +561,29 @@ model PayablesLedger {
   updatedAt          DateTime @updatedAt
 
   @@map("payables_ledger")
+}
+
+model PosSale {
+  id             String   @id @default(cuid())
+  receiptId      String   @unique
+  date           DateTime
+  amount         Float
+  cashier        String?
+  syncedToLedger Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  @@map("pos_sales")
+}
+
+model CustomerPayment {
+  id             String   @id @default(cuid())
+  receiptId      String   @unique
+  customerId     String
+  date           DateTime
+  amount         Float
+  paymentMethod  String
+  syncedToLedger Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  @@map("customer_payments")
 }

@@ -20,31 +20,43 @@ export function StatsRow() {
         let receivables = 0;
         let payables = 0;
 
-        transactions.forEach((t) => {
-            // Find linked account
-            const account = accounts.find(acc => acc.account_no?.toString() === t.accountNumber?.toString());
-            if (!account) return;
+        // Group transactions by account
+        const accountTransactions = new Map<string, { debit: number, credit: number }>();
+        transactions.forEach(t => {
+            const accNo = t.accountNumber?.toString();
+            if (!accNo) return;
+            const current = accountTransactions.get(accNo) || { debit: 0, credit: 0 };
+            accountTransactions.set(accNo, {
+                debit: current.debit + (t.debit || 0),
+                credit: current.credit + (t.credit || 0)
+            });
+        });
 
-            const debit = t.debit || 0;
-            const credit = t.credit || 0;
+        accounts.forEach((account) => {
+            const accNo = account.account_no.toString();
+            const txs = accountTransactions.get(accNo);
+            if (!txs) return;
 
-            // Income (Credit Income increases Income)
-            if (account.account_type === 'Income') {
+            const debit = txs.debit;
+            const credit = txs.credit;
+            const type = account.account_type;
+            const name = account.account_name.toLowerCase();
+
+            // Normal Balance Logic based on baseType or common accounting rules
+            // Asset/Expense: Debit + , Credit -
+            // Liability/Equity/Income: Credit + , Debit -
+
+            // We use the account_type to categorization
+            if (type === 'Income') {
                 totalIncome += (credit - debit);
-            }
-            // Expense (Debit increases Expense)
-            else if (account.account_type === 'Expense') {
+            } else if (type === 'Expense' || type === 'Cost of Sales') {
                 totalExpenses += (debit - credit);
-            }
-            // Assets (specifically Receivables) - Debit increases
-            else if (account.account_type === 'Asset') {
-                if (account.account_name.toLowerCase().includes('receivable')) {
+            } else if (type === 'Asset' || type === 'Bank') {
+                if (name.includes('receivable')) {
                     receivables += (debit - credit);
                 }
-            }
-            // Liabilities (specifically Payables) - Credit increases
-            else if (account.account_type === 'Liability') {
-                if (account.account_name.toLowerCase().includes('payable')) {
+            } else if (type === 'Liability') {
+                if (name.includes('payable')) {
                     payables += (credit - debit);
                 }
             }

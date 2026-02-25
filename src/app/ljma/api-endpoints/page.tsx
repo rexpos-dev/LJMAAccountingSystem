@@ -187,38 +187,101 @@ export default function APIEndpointsPage() {
             icon: <Store className="w-5 h-5 text-blue-600" />,
             endpoints: [
                 { method: "POST", path: "/api/pos/checkout", description: "Process transaction checkout" },
-                { method: "GET", path: "/api/pos/shifts", description: "Manage cashier shifts" },
-                { method: "GET", path: "/api/pos/terminals", description: "List all POS terminals" },
                 { method: "POST", path: "/api/pos/cash-transfer", description: "Transfer cash between terminals" },
                 { method: "POST", path: "/api/pos/payment-validation", description: "Validate payment status" },
                 { method: "GET", path: "/api/pos/recent-sales", description: "Get recently completed sales" },
-                { method: "POST", path: "/api/pos/void-transaction", description: "Void a specific transaction" }
+                { method: "GET", path: "/api/pos/shifts", description: "Manage cashier shifts" },
+                { method: "GET", path: "/api/pos/terminals", description: "List all POS terminals" },
+                { method: "POST", path: "/api/pos/void-transaction", description: "Void a specific transaction" },
+                { method: "GET", path: "/api/pos-terminals", description: "Manage POS terminals" },
+                { method: "GET", path: "/api/pos-transactions", description: "Get POS transactions" }
             ]
         },
         {
-            title: "Sales & Transactions",
+            title: "Sales & Orders",
             icon: <TrendingUp className="w-5 h-5 text-purple-600" />,
             endpoints: [
                 { method: "GET", path: "/api/sales", description: "General sales overview" },
                 { method: "GET", path: "/api/sales/by-date", description: "Sales analytics by date" },
                 { method: "GET", path: "/api/sales/by-product", description: "Sales analytics by product" },
                 { method: "GET", path: "/api/sales/hourly", description: "Hourly sales breakdown" },
-                { method: "GET", path: "/api/sales/transactions", description: "History of all transactions" },
+                { method: "POST", path: "/api/sales/invoices/[id]/void", description: "Void a sales invoice" },
+                { method: "GET", path: "/api/sales/monthly-category", description: "Monthly sales by category" },
+                { method: "GET", path: "/api/sales/orders", description: "Manage sales orders" },
+                { method: "GET", path: "/api/sales/orders/[id]", description: "Get specific sales order" },
                 { method: "GET", path: "/api/sales/returns", description: "Handle sales returns" },
+                { method: "GET", path: "/api/sales/top-products", description: "Get top selling products" },
+                { method: "GET", path: "/api/sales/transactions", description: "History of all transactions" },
+                { method: "GET", path: "/api/sales/voids-report", description: "Report of voided transactions" },
                 { method: "GET", path: "/api/sales/x-reading", description: "Generate X-Reading report" },
-                { method: "GET", path: "/api/sales/z-reading", description: "Generate Z-Reading report" }
+                { method: "GET", path: "/api/sales/z-reading", description: "Generate Z-Reading report" },
+                { method: "GET", path: "/api/sales-areas", description: "Manage sales areas" },
+                { method: "GET", path: "/api/sales-groups", description: "Manage sales groups" },
+                { method: "GET", path: "/api/sales-persons", description: "Manage sales persons" },
+                { method: "GET", path: "/api/sales-persons/[id]", description: "Get specific sales person" }
             ]
         },
         {
-            title: "Inventory & Loyalty",
-            icon: <Database className="w-5 h-5 text-green-600" />,
+            title: "Customers & Loyalty",
+            icon: <Users className="w-5 h-5 text-indigo-500" />,
             endpoints: [
-                { method: "GET", path: "/api/products", description: "List available products" },
-                { method: "GET", path: "/api/stock-movements", description: "Track item movements" },
-                { method: "GET", path: "/api/bad-orders", description: "Log defective or expired goods" },
+                { method: "GET", path: "/api/customers", description: "Get all customers" },
+                { method: "GET", path: "/api/customers/[id]", description: "Get specific customer" },
+                { method: "GET", path: "/api/customers/balances", description: "Get customer balances" },
+                { method: "GET", path: "/api/customer-payments", description: "Get all customer payments" },
+                { method: "GET", path: "/api/customers/payments", description: "Manage customer payments" },
+                { method: "GET", path: "/api/customers/invoices/outstanding", description: "Get outstanding invoices" },
+                { method: "GET", path: "/api/customers/invoices/[id]", description: "Get customer invoices" },
+                { method: "POST", path: "/api/customers/invoices/[id]/payment", description: "Process customer payment" },
                 { method: "GET", path: "/api/customer-loyalty", description: "Get loyalty card data" },
                 { method: "POST", path: "/api/customer-loyalty/adjust-points", description: "Manually adjust points" },
-                { method: "GET", path: "/api/customer-loyalty/point-history", description: "View point activity log" }
+                { method: "GET", path: "/api/customer-loyalty/point-history", description: "View point activity log" },
+                { method: "GET", path: "/api/customer-loyalty/[id]", description: "Get specific loyalty data" }
+            ]
+        },
+        {
+            title: "Products & Inventory",
+            icon: <Package className="w-5 h-5 text-green-600" />,
+            endpoints: [
+                { method: "GET", path: "/api/products", description: "List available products" },
+                { method: "GET", path: "/api/products/[id]", description: "Get specific product details" },
+                { method: "GET", path: "/api/products/attributes", description: "Manage product attributes" },
+                { method: "GET", path: "/api/price-levels", description: "Manage product price levels" },
+                { method: "GET", path: "/api/stock-movements", description: "Track item movements" },
+                { method: "GET", path: "/api/stock-adjustments", description: "Manage stock adjustments" },
+                { method: "GET", path: "/api/stock-adjustments/[id]", description: "Get specific stock adjustment" },
+                { method: "GET", path: "/api/warehouses", description: "Manage warehouses" },
+                { method: "GET", path: "/api/warehouses/[id]", description: "Get specific warehouse" },
+                { method: "GET", path: "/api/bad-orders", description: "Log defective or expired goods" },
+                { method: "GET", path: "/api/bad-orders/stats", description: "Get bad orders statistics" },
+                { method: "GET", path: "/api/bad-orders/[id]", description: "Get specific bad order" },
+                { method: "POST", path: "/api/send-products", description: "Send products" }
+            ]
+        },
+        {
+            title: "Purchasing & Suppliers",
+            icon: <Truck className="w-5 h-5 text-amber-600" />,
+            endpoints: [
+                { method: "GET", path: "/api/purchase-orders", description: "Get all purchase orders" },
+                { method: "GET", path: "/api/purchase-orders/[id]", description: "Get specific purchase order" },
+                { method: "GET", path: "/api/suppliers", description: "Get all suppliers" },
+                { method: "GET", path: "/api/suppliers/[id]", description: "Get specific supplier" },
+                { method: "GET", path: "/api/suppliers/[id]/balance", description: "Get supplier balance" },
+                { method: "GET", path: "/api/temp-suppliers", description: "Manage temporary suppliers" }
+            ]
+        },
+        {
+            title: "Finance & Accounts",
+            icon: <Activity className="w-5 h-5 text-emerald-600" />,
+            endpoints: [
+                { method: "GET", path: "/api/accounts", description: "Manage chart of accounts" },
+                { method: "GET", path: "/api/payment-methods", description: "Manage payment methods" },
+                { method: "GET", path: "/api/payment-methods/[id]", description: "Get specific payment method" },
+                { method: "GET", path: "/api/payment-terms", description: "Manage payment terms" },
+                { method: "GET", path: "/api/payment-term-types", description: "Manage payment term types" },
+                { method: "GET", path: "/api/transaction-references", description: "Manage transaction references" },
+                { method: "GET", path: "/api/transactions/all-references", description: "Get all references" },
+                { method: "GET", path: "/api/transactions/last-references", description: "Get last references" }
             ]
         },
         {
@@ -227,26 +290,54 @@ export default function APIEndpointsPage() {
             endpoints: [
                 { method: "GET", path: "/api/pos-settings", description: "Retrieve terminal settings" },
                 { method: "POST", path: "/api/pos-settings/upload-logo", description: "Upload receipt/display logo" },
+                { method: "GET", path: "/api/loyalty-settings", description: "Manage loyalty program settings" },
+                { method: "GET", path: "/api/loyalty-settings/[id]", description: "Get specific loyalty setting" },
                 { method: "GET", path: "/api/settings/api-config", description: "External API connection config" },
-                { method: "POST", path: "/api/data-management/reset", description: "Reset terminal data" }
+                { method: "GET", path: "/api/settings/api-connection", description: "Test API connection" },
+                { method: "GET", path: "/api/settings/external-api", description: "Manage external API settings" },
+                { method: "GET", path: "/api/settings/tax-rates", description: "Manage tax rates" },
+                { method: "GET", path: "/api/settings/tax-rates/[id]", description: "Get specific tax rate" },
+                { method: "GET", path: "/api/settings/database", description: "Database settings" }
+            ]
+        },
+        {
+            title: "Data Operations & Backup",
+            icon: <Database className="w-5 h-5 text-teal-600" />,
+            endpoints: [
+                { method: "GET", path: "/api/data", description: "General data operations" },
+                { method: "POST", path: "/api/data-management/reset", description: "Reset terminal data" },
+                { method: "GET", path: "/api/data-management/export/products", description: "Export products data" },
+                { method: "POST", path: "/api/data-management/import/products", description: "Import products data" },
+                { method: "GET", path: "/api/settings/backup/files", description: "List backup files" },
+                { method: "GET", path: "/api/settings/backup/download/[filename]", description: "Download specific backup" },
+                { method: "POST", path: "/api/settings/backup/manual", description: "Trigger manual backup" },
+                { method: "POST", path: "/api/settings/backup/schedule", description: "Configure backup schedule" },
+                { method: "GET", path: "/api/migrate", description: "Database migration operations" },
+                { method: "POST", path: "/api/forward", description: "Forward data operations" },
+                { method: "GET", path: "/api/external-api/logs", description: "View external API sync logs" },
+                { method: "POST", path: "/api/external-api/logs/[id]/retry", description: "Retry failed API sync" }
             ]
         },
         {
             title: "Reports",
             icon: <FileBarChart className="w-5 h-5 text-orange-600" />,
             endpoints: [
+                { method: "GET", path: "/api/reports/adjustments", description: "Stock adjustments report" },
                 { method: "GET", path: "/api/reports/inventory", description: "Generate inventory level reports" },
+                { method: "GET", path: "/api/reports/movements", description: "Stock movements report" },
                 { method: "GET", path: "/api/reports/soa", description: "Statement of Account reports" },
-                { method: "GET", path: "/api/reports/velocity", description: "Item sales velocity analytics" },
-                { method: "GET", path: "/api/reports/stats", description: "General performance statistics" }
+                { method: "GET", path: "/api/reports/stats", description: "General performance statistics" },
+                { method: "GET", path: "/api/reports/velocity", description: "Item sales velocity analytics" }
             ]
         },
         {
-            title: "Authentication",
+            title: "Authentication & Users",
             icon: <Lock className="w-5 h-5 text-red-500" />,
             endpoints: [
-                { method: "POST", path: "/api/auth/login", description: "POS terminal login" },
-                { method: "POST", path: "/api/auth/signup", description: "Register new cashier/user" }
+                { method: "POST", path: "/api/auth/login", description: "User or POS terminal login" },
+                { method: "POST", path: "/api/auth/signup", description: "Register new user" },
+                { method: "GET", path: "/api/users", description: "Manage system users" },
+                { method: "GET", path: "/api/users/[uid]", description: "Get specific user details" }
             ]
         }
     ];

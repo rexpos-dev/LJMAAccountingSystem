@@ -17,15 +17,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { useSalesUsers } from '@/hooks/use-sales-users';
+import { useCustomerBalances, CustomerBalance } from '@/hooks/use-customer-balances';
 import { Search, RefreshCw } from 'lucide-react';
 
 export default function CustomerBalancePage() {
   const { openDialogs, closeDialog } = useDialog();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: salesUsers } = useSalesUsers();
+
+  const { balances, isLoading: isLoadingBalances, refreshBalances } = useCustomerBalances();
+
+  const filteredBalances = balances.filter((b) =>
+    b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    b.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -38,15 +45,18 @@ export default function CustomerBalancePage() {
   }, [openDialogs['customer-balance']]);
 
   const handleRefresh = () => {
-    // TODO: implement refresh
+    refreshBalances();
     toast({ title: 'Refreshed', description: 'Refreshed customer balances' });
   };
 
   return (
     <Dialog open={openDialogs['customer-balance']} onOpenChange={() => closeDialog('customer-balance' as any)}>
       <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Customer Balances</DialogTitle>
+          <Button variant="outline" size="icon" onClick={handleRefresh} title="Refresh" className="h-8 w-8">
+            <RefreshCw className={`h-4 w-4 ${isLoadingBalances ? 'animate-spin' : ''}`} />
+          </Button>
         </DialogHeader>
 
         {/* Top controls: Save/Print, Date range, options, Show Statement, Search */}
@@ -137,11 +147,34 @@ export default function CustomerBalancePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  No customer balances to display.
-                </TableCell>
-              </TableRow>
+              {isLoadingBalances ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    Loading customer balances...
+                  </TableCell>
+                </TableRow>
+              ) : filteredBalances.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No customer balances to display.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredBalances.map((customer: CustomerBalance) => (
+                  <TableRow key={customer.id}>
+                    <TableCell className="font-medium text-xs">{customer.id}</TableCell>
+                    <TableCell className="font-semibold">{customer.name}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">-</TableCell>
+                    <TableCell className="text-right text-muted-foreground">-</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(customer.balance || 0))}
+                    </TableCell>
+                    <TableCell className="text-right text-red-600 font-medium whitespace-nowrap">
+                      {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(customer.balance || 0))}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </ScrollArea>

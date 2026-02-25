@@ -50,6 +50,9 @@ interface Customer {
     email: string;
     isActive: boolean;
     creditLimit: number;
+    loyaltyPointsBalance?: number;
+    customerBalance?: number;
+    customerPayment?: number;
 }
 
 export default function CustomersReport() {
@@ -189,16 +192,17 @@ export default function CustomersReport() {
                             <TableRow className="bg-muted/50 border-b-2">
                                 <TableHead className="w-[100px] font-bold">Code</TableHead>
                                 <TableHead className="font-bold">Customer Name</TableHead>
-                                <TableHead className="font-bold">Contact Person</TableHead>
-                                <TableHead className="font-bold">Address</TableHead>
                                 <TableHead className="font-bold text-right">Credit Limit</TableHead>
+                                <TableHead className="font-bold text-right">Customer Balance</TableHead>
+                                <TableHead className="font-bold text-right">Customer Payment</TableHead>
+                                <TableHead className="font-bold text-right">Loyalty Points</TableHead>
                                 <TableHead className="font-bold text-center">Status</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {error ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-64 text-center">
+                                    <TableCell colSpan={7} className="h-64 text-center">
                                         <div className="flex flex-col items-center gap-2">
                                             <span className="text-red-500 font-medium">{error}</span>
                                         </div>
@@ -206,7 +210,7 @@ export default function CustomersReport() {
                                 </TableRow>
                             ) : isLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-64 text-center">
+                                    <TableCell colSpan={7} className="h-64 text-center">
                                         <div className="flex flex-col items-center gap-2">
                                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                             <span className="text-muted-foreground italic">Fetching data...</span>
@@ -218,12 +222,17 @@ export default function CustomersReport() {
                                     <TableRow key={customer.id} className="hover:bg-muted/20 transition-colors">
                                         <TableCell className="font-medium text-primary">{customer.code}</TableCell>
                                         <TableCell className="font-bold">{customer.customerName}</TableCell>
-                                        <TableCell>{customer.contactFirstName || 'N/A'}</TableCell>
-                                        <TableCell className="max-w-[200px] truncate" title={customer.address}>
-                                            {customer.address || 'No address'}
-                                        </TableCell>
                                         <TableCell className="text-right font-mono text-xs">
                                             {formatCurrency(customer.creditLimit || 0)}
+                                        </TableCell>
+                                        <TableCell className="text-right font-mono text-xs">
+                                            {formatCurrency(customer.customerBalance || 0)}
+                                        </TableCell>
+                                        <TableCell className="text-right font-mono text-xs">
+                                            {formatCurrency(customer.customerPayment || 0)}
+                                        </TableCell>
+                                        <TableCell className="text-right font-mono text-xs text-primary font-bold">
+                                            {customer.loyaltyPointsBalance?.toLocaleString() || '0'}
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${customer.isActive
@@ -237,7 +246,7 @@ export default function CustomersReport() {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground italic">
+                                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground italic">
                                         No customer data found.
                                     </TableCell>
                                 </TableRow>

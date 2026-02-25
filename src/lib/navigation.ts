@@ -87,6 +87,7 @@ export const navItems: NavItem[] = [
     subItems: [
       { title: "Invoices", href: "#", dialogId: "invoice-list" },
       { title: "Create New Invoice", href: "/todo/create-invoice", dialogId: "create-invoice", hideForRoles: ['Auditor'] },
+      { title: "POS Sales Detail", href: "#", dialogId: "pos-sales-detail", hideForRoles: ['Auditor'] },
       { title: "Inventory", href: "/sales/inventory", dialogId: "inventory", permissions: ['Inventory'] },
     ],
   },
