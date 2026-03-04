@@ -1,0 +1,12 @@
+Creating MariaDB pool...
+Error: error parsing connection string 'mysql://root:123700@localhost:3306/ljma_accounting'. format must be 'mariadb://[<user>[:<password>]@]<host>[:<port>]/[<db>[?<opt1>=<value1>[&<opt2>=<value2>]]]'
+    at ConnectionOptions.parse (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\mariadb\lib\config\connection-options.js:293:13)
+    at new PoolOptions (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\mariadb\lib\config\pool-options.js:11:26)
+    at Object.createPool (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\node_modules\mariadb\promise.js:44:19)
+    at testConnection (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\test-mariadb-adapter.js:8:26)
+    at Object.<anonymous> (E:\SOFTWARE\FIREBASE PROJECT\LJMAAccounting\test-mariadb-adapter.js:26:1)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)

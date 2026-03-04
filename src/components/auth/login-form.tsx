@@ -17,7 +17,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Loader2, Lock, Mail } from 'lucide-react';
+import { Loader2, Lock, Mail, Phone, User } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Username is required' }),
@@ -28,6 +37,10 @@ export function LoginForm() {
     const { login } = useAuth();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [showContactDialog, setShowContactDialog] = useState(false);
+    const [contactName, setContactName] = useState('');
+    const [contactNumber, setContactNumber] = useState('');
+    const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -77,6 +90,48 @@ export function LoginForm() {
             setLoading(false);
         }
     }
+
+    const handleContactSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!contactName || !contactNumber) {
+            toast({
+                title: 'Validation Error',
+                description: 'Please provide both your name and contact number.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        setIsSubmittingContact(true);
+        try {
+            const response = await fetch('/api/auth/contact-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: contactName, phone: contactNumber }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send request');
+            }
+
+            toast({
+                title: 'Request Sent',
+                description: 'Administration has been notified. We will call you back shortly.',
+            });
+            setShowContactDialog(false);
+            setContactName('');
+            setContactNumber('');
+        } catch (error) {
+            console.error('Contact request error:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to send request. Please try again later.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsSubmittingContact(false);
+        }
+    };
 
     return (
         <Card className="w-full max-w-md mx-auto border-none shadow-2xl bg-white/80 backdrop-blur-md dark:bg-slate-900/80">
@@ -160,8 +215,71 @@ export function LoginForm() {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 text-center text-sm text-muted-foreground">
                 <div className="w-full border-t border-muted/20 pt-4">
-                    Don't have an account? <span className="text-primary font-semibold hover:underline cursor-pointer">Contact Administration</span>
+                    Don't have an account? <span
+                        className="text-primary font-semibold hover:underline cursor-pointer"
+                        onClick={() => setShowContactDialog(true)}
+                    >
+                        Contact Administration
+                    </span>
                 </div>
+
+                <Dialog open={showContactDialog} onOpenChange={setShowContactDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Contact Administration</DialogTitle>
+                            <DialogDescription>
+                                Leave your details below and our administrator will reach out to you to set up your account.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleContactSubmit} className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Full Name</Label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        id="name"
+                                        placeholder="John Doe"
+                                        className="pl-10"
+                                        value={contactName}
+                                        onChange={(e) => setContactName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="phone">Number to call</Label>
+                                <div className="relative">
+                                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="0912 345 6789"
+                                        className="pl-10"
+                                        value={contactNumber}
+                                        onChange={(e) => setContactNumber(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <DialogFooter className="pt-4">
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={isSubmittingContact}
+                                >
+                                    {isSubmittingContact ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Sending Request...
+                                        </>
+                                    ) : (
+                                        'Submit Request'
+                                    )}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </CardFooter>
         </Card>
     );

@@ -17,6 +17,15 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -35,13 +44,12 @@ import {
     X,
     Pencil,
     Search,
-    Printer,
-    HelpCircle,
     Eye,
     MoreVertical,
     FileText,
     Upload,
-    History
+    History,
+    Filter
 } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { cn } from '@/lib/utils';
@@ -63,24 +71,26 @@ export default function PurchaseOrderListDialog() {
     const [orders, setOrders] = useState<PurchaseOrder[]>([]);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [showRestrictedAlert, setShowRestrictedAlert] = useState(false);
     const { toast } = useToast();
 
     // Filters
     const [period, setPeriod] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
     const [supplierFilter, setSupplierFilter] = useState('all');
-    const [displayOrders, setDisplayOrders] = useState('Recorded');
-    const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-    const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const [suppliers, setSuppliers] = useState<any[]>([]);
 
     useEffect(() => {
         if (openDialogs['purchase-order-list']) {
-            fetchOrders();
             fetchSuppliers();
+            fetchOrders(true);
         }
     }, [openDialogs['purchase-order-list']]);
+
 
     // Re-fetch when creation dialog closes to update list
     useEffect(() => {
@@ -97,25 +107,64 @@ export default function PurchaseOrderListDialog() {
     }, [openDialogs['bulk-upload-purchase-order']]);
 
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (ignoreFilters = false) => {
         setLoading(true);
+        setError(null);
         try {
             const params = new URLSearchParams();
-            if (statusFilter !== 'all') params.append('status', statusFilter);
-            if (supplierFilter !== 'all') params.append('supplierId', supplierFilter);
-            // Add date filter logic if needed based on period selection
+            if (!ignoreFilters) {
+                if (statusFilter !== 'all') params.append('status', statusFilter);
+                if (supplierFilter !== 'all') params.append('supplierId', supplierFilter);
+
+                if (startDate) params.append('startDate', startDate);
+                if (endDate) params.append('endDate', endDate);
+            }
 
             const res = await fetch(`/api/purchase-orders?${params.toString()}`);
-            if (res.ok) {
-                const data = await res.json();
-                setOrders(data);
-            }
-        } catch (error) {
+            if (!res.ok) throw new Error('Failed to fetch purchase orders');
+            const data = await res.json();
+            setOrders(data);
+        } catch (error: any) {
             console.error('Failed to fetch orders', error);
+            setError(error.message === 'Failed to fetch purchase orders' ? 'Failed to fetch purchase orders.' : 'No connection on API. Please check your network and try again.');
             toast({ title: 'Error', description: 'Failed to fetch purchase orders', variant: 'destructive' });
         } finally {
             setLoading(false);
         }
+    };
+
+    const handlePeriodChange = (val: string) => {
+        setPeriod(val);
+        const now = new Date();
+        let start = now;
+        let end = now;
+
+        switch (val) {
+            case 'today':
+                start = now;
+                end = now;
+                break;
+            case 'week':
+                // Get start of week (Sunday)
+                start = new Date(now.setDate(now.getDate() - now.getDay()));
+                end = new Date();
+                break;
+            case 'month':
+                // Get start of month
+                start = new Date(now.getFullYear(), now.getMonth(), 1);
+                end = new Date();
+                break;
+            case 'all':
+                // Clear filters or set to very early date if needed
+                setStartDate('');
+                setEndDate('');
+                return;
+            default:
+                return;
+        }
+
+        setStartDate(format(start, 'yyyy-MM-dd'));
+        setEndDate(format(end, 'yyyy-MM-dd'));
     };
 
     const fetchSuppliers = async () => {
@@ -166,6 +215,13 @@ export default function PurchaseOrderListDialog() {
     const handleEdit = (id?: string) => {
         const targetId = id || selectedOrderId;
         if (!targetId) return;
+
+        // Check if order is editable based on status
+        const order = orders.find(o => o.id === targetId);
+        if (order && (order.status === 'Approved' || order.status === 'Disapproved' || order.status === 'Rejected' || order.status === 'Void')) {
+            setShowRestrictedAlert(true);
+            return;
+        }
 
         setDialogData('create-purchase-order', { mode: 'edit', orderId: targetId });
         openDialog('create-purchase-order');
@@ -222,7 +278,8 @@ export default function PurchaseOrderListDialog() {
         let newStatus = '';
         switch (action) {
             case 'Approve': newStatus = 'Approved'; break;
-            case 'Disapprove': newStatus = 'Rejected'; break; // Or Disapproved
+            case 'Disapprove': newStatus = 'Disapproved'; break;
+            case 'Receive': newStatus = 'Closed'; break;
             case 'Void': newStatus = 'Void'; break;
             case 'Reorder':
                 // Reorder logic might be different (clone order), for now just ignore
@@ -269,19 +326,15 @@ export default function PurchaseOrderListDialog() {
                     <ToolbarButton icon={History} label="Purchase History" onClick={handlePurchaseHistory} disabled={!selectedOrderId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedOrderId} />
-                    <ToolbarButton icon={Printer} label="Print" />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Upload} label="Bulk Upload" onClick={handleBulkUpload} />
-                    <div className="ml-auto flex items-center">
-                        <ToolbarButton icon={HelpCircle} label="Help" />
-                    </div>
                 </div>
 
                 {/* Filters */}
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-muted/20 border-b">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Period:</span>
-                        <Select value={period} onValueChange={setPeriod}>
+                        <Select value={period} onValueChange={handlePeriodChange}>
                             <SelectTrigger className="h-8">
                                 <SelectValue placeholder="Period" />
                             </SelectTrigger>
@@ -315,17 +368,7 @@ export default function PurchaseOrderListDialog() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">Display Orders:</span>
-                        <Select value={displayOrders} onValueChange={setDisplayOrders}>
-                            <SelectTrigger className="h-8">
-                                <SelectValue placeholder="Recorded" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Recorded">Recorded</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Status:</span>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -337,10 +380,19 @@ export default function PurchaseOrderListDialog() {
                                 <SelectItem value="Open">Open</SelectItem>
                                 <SelectItem value="Approved">Approved</SelectItem>
                                 <SelectItem value="Closed">Closed</SelectItem>
-                                <SelectItem value="Rejected">Rejected</SelectItem>
+                                <SelectItem value="Disapproved">Disapproved</SelectItem>
                                 <SelectItem value="Void">Void</SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            className="h-8 bg-blue-600 hover:bg-blue-700 text-white gap-2 w-full"
+                            onClick={() => fetchOrders()}
+                        >
+                            <Filter className="h-4 w-4" />
+                            Filter
+                        </Button>
                     </div>
                 </div>
 
@@ -358,7 +410,11 @@ export default function PurchaseOrderListDialog() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {loading ? (
+                            {error ? (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="h-24 text-center text-red-500 font-medium">{error}</TableCell>
+                                </TableRow>
+                            ) : loading ? (
                                 <TableRow>
                                     <TableCell colSpan={6} className="h-24 text-center">Loading orders...</TableCell>
                                 </TableRow>
@@ -395,10 +451,20 @@ export default function PurchaseOrderListDialog() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleAction('Approve', order.id)}>Approve</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('Disapprove', order.id)}>Disapprove</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('Void', order.id)}>Void</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleAction('Reorder', order.id)}>Reorder</DropdownMenuItem>
+                                                    {order.status === 'Approved' ? (
+                                                        <>
+                                                            <DropdownMenuItem onClick={() => handleAction('Receive', order.id)}>Receive</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Void', order.id)}>Void</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Reorder', order.id)}>Reorder</DropdownMenuItem>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <DropdownMenuItem onClick={() => handleAction('Approve', order.id)}>Approve</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Disapprove', order.id)}>Disapprove</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Void', order.id)}>Void</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleAction('Reorder', order.id)}>Reorder</DropdownMenuItem>
+                                                        </>
+                                                    )}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -415,6 +481,20 @@ export default function PurchaseOrderListDialog() {
                     <div>Total: ₱{totalAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</div>
                 </div>
             </DialogContent>
+
+            <AlertDialog open={showRestrictedAlert} onOpenChange={setShowRestrictedAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Unable to edit</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Please contact the admin.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction onClick={() => setShowRestrictedAlert(false)}>OK</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Dialog>
     );
 }

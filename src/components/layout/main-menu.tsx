@@ -31,7 +31,15 @@ export function MainMenu() {
         <MenubarTrigger>Sales</MenubarTrigger>
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('inventory')}>Inventory</MenubarItem>
-          <MenubarItem>Placeholder</MenubarItem>
+          <MenubarItem onClick={() => openDialog('pos-sales-detail')}>POS Sales Detail</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
+        <MenubarTrigger>Reports</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={() => openDialog('general-ledger-dialog')}>General Ledger</MenubarItem>
+          <MenubarItem onClick={() => openDialog('income-statement')}>Income Statement</MenubarItem>
+          <MenubarItem onClick={() => openDialog('balance-sheet')}>Balance Sheet</MenubarItem>
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>

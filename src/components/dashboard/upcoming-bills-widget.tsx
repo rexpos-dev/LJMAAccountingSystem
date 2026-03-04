@@ -14,8 +14,8 @@ export function UpcomingBillsWidget() {
         // Sum of all Payable accounts
         const payables = accounts
             .filter(acc =>
-                (acc.type === 'Liability' && acc.name.toLowerCase().includes('payable')) ||
-                acc.name.toLowerCase() === 'accounts payable'
+                (acc.account_type === 'Liability' && acc.account_name.toLowerCase().includes('payable')) ||
+                acc.account_name.toLowerCase() === 'accounts payable'
             );
 
         const total = payables.reduce((sum, acc) => sum + (acc.balance || 0), 0);

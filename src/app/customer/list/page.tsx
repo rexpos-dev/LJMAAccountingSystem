@@ -48,14 +48,14 @@ interface Customer {
 }
 
 export default function CustomerListPage() {
-  const { openDialogs, closeDialog, openDialog } = useDialog();
+  const { openDialogs, openDialog, closeDialog, setDialogData } = useDialog();
   const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
 
   const fetchCustomers = async () => {
     setIsLoading(true);
@@ -189,7 +189,8 @@ export default function CustomerListPage() {
               disabled={!selectedCustomer}
               onClick={() => {
                 if (selectedCustomer) {
-                  openDialog('add-customer', selectedCustomer);
+                  setDialogData('add-customer', selectedCustomer);
+                  openDialog('add-customer');
                 }
               }}
             >
@@ -262,11 +263,10 @@ export default function CustomerListPage() {
                     <TableCell>{customer.phonePrimary || '-'}</TableCell>
                     <TableCell>{customer.email || '-'}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        customer.isActive
+                      <span className={`px-2 py-1 rounded-full text-xs ${customer.isActive
                           ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
-                      }`}>
+                        }`}>
                         {customer.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </TableCell>

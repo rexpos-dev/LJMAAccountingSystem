@@ -61,7 +61,7 @@ export default function CreateInvoicePage() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const [selectedDepositAccount, setSelectedDepositAccount] = useState<string>('');
-  const { customers, refetch: refetchCustomers } = useCustomers();
+  const { customers, refreshCustomers } = useCustomers();
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
 
   const addItem = (product: any) => {
@@ -326,9 +326,9 @@ export default function CreateInvoicePage() {
                                 <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
                               ) : (
                                 <>
-                                  {accounts.filter(acc => acc.bank === 'Yes' || acc.type === 'Asset').map(account => (
-                                    <SelectItem key={account.id || account.name} value={account.id || account.name}>
-                                      {account.name}
+                                  {accounts.filter(acc => acc.bank === 'Yes' || acc.account_type === 'Asset').map(account => (
+                                    <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                      {account.account_name}
                                     </SelectItem>
                                   ))}
                                 </>

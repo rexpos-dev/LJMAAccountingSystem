@@ -6,6 +6,7 @@ export interface ExternalProduct {
   description: string | null;
   category: string | null;
   brand: string | null;
+  unitOfMeasure: string | null;
   stock: number;
   price: string;
   cost: string | null;
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `http://192.168.1.163:9003/api/products?${externalParams.toString()}`,
+      `http://192.168.1.163:3001/api/products?${externalParams.toString()}`,
       {
         method: 'GET',
         headers: {

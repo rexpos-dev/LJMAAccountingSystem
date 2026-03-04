@@ -30,8 +30,24 @@ export function NotificationBell() {
         // Mark notification as read
         await markAsRead(notification.id);
 
-        // Redirect to dashboard where calendar is
-        router.push('/dashboard');
+        // Redirect based on type
+        switch (notification.type) {
+            case 'reminder_create':
+            case 'reminder_update':
+            case 'reminder_delete':
+                router.push('/dashboard');
+                break;
+            case 'REQUEST_VERIFICATION':
+                if (notification.entityId) {
+                    router.push(`/requests?id=${notification.entityId}`);
+                } else {
+                    router.push('/requests');
+                }
+                break;
+            default:
+                // Default fallback
+                router.push('/dashboard');
+        }
     };
 
     return (

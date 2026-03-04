@@ -1,12 +1,22 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth-server';
 
 export async function GET(request: Request) {
     try {
-        const notifications = await prisma.notification.findMany({
-            where: { isRead: false },
-            orderBy: { createdAt: 'desc' },
-        });
+        const session = await getSession();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const userId = (session as any).id;
+
+        // Use raw query because Prisma Client types might be inconsistent across build environments
+        const notifications = await prisma.$queryRaw`
+            SELECT * FROM notification 
+            WHERE isRead = 0 AND (userId = ${userId} OR userId IS NULL)
+            ORDER BY createdAt DESC
+        `;
 
         return NextResponse.json(notifications);
     } catch (error: any) {

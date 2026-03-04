@@ -43,56 +43,113 @@ async function generateEN13Code(): Promise<string> {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limitParam = searchParams.get('limit');
-    const offsetParam = searchParams.get('offset');
+    const limitParam = searchParams.get('limit') || '10';
+    const offsetParam = searchParams.get('offset') || '0';
 
-    // Parse query params if provided
-    const take = limitParam ? parseInt(limitParam) : undefined;
-    const skip = offsetParam ? parseInt(offsetParam) : undefined;
+    console.log('Starting to fetch customers from external API...');
 
-    console.log('Starting to fetch customers...');
+    const limit = parseInt(limitParam);
+    const offset = parseInt(offsetParam);
+    const page = Math.floor(offset / limit) + 1;
 
-    // Fetch customers with their loyalty points in a single query
-    const customers = await prisma.customer.findMany({
-      orderBy: { createdAt: 'desc' },
-      take,
-      skip,
-      include: {
-        loyaltyPoints: {
-          select: {
-            totalPoints: true
-          }
-        }
-      }
+    // Fetch from external API
+    const externalUrl = new URL('http://192.168.1.163:3001/api/customers');
+    externalUrl.searchParams.append('limit', limitParam);
+    externalUrl.searchParams.append('page', page.toString());
+    const search = searchParams.get('search');
+    if (search) {
+      externalUrl.searchParams.append('search', search);
+    }
+
+    const response = await fetch(externalUrl.toString(), {
+      next: { revalidate: 0 } // Disable caching to get fresh data
     });
 
-    console.log(`Found ${customers.length} customers`);
+    if (!response.ok) {
+      throw new Error(`External API returned ${response.status}`);
+    }
 
-    // Calculate total balance in memory
-    const customersWithBalance = customers.map((customer) => {
-      const totalBalance = customer.loyaltyPoints.reduce(
-        (sum, point) => sum + point.totalPoints,
-        0
-      );
+    const externalData = await response.json();
 
-      // Remove the raw loyaltyPoints array from the response to keep it clean
-      // and match the expected response shape
-      const { loyaltyPoints, ...customerData } = customer;
+    let rawData = [];
+    if (Array.isArray(externalData)) {
+      rawData = externalData;
+    } else if (externalData && Array.isArray(externalData.data)) {
+      rawData = externalData.data;
+    }
+
+    console.log(`Found ${rawData.length} customers from external API`);
+
+    // Fetch local invoices mapping to these external customers
+    const customerIds = rawData.map((c: any) => c.id);
+
+    // We only need to fetch invoices if there are customers
+    let localInvoices: any[] = [];
+    if (customerIds.length > 0) {
+      localInvoices = await prisma.invoice.findMany({
+        where: {
+          customerId: { in: customerIds }
+        },
+        select: {
+          id: true,
+          customerId: true,
+          total: true,
+          status: true,
+        }
+      });
+    }
+
+    // Map external data to our UI's expected format and calculate balances
+    const mappedCustomers = rawData.map((item: any) => {
+      // Find all invoices for this specific customer
+      const customerInvoices = localInvoices.filter(inv => inv.customerId === item.id);
+
+      const customerBalance = customerInvoices
+        .filter(inv => inv.status !== 'Paid')
+        .reduce((sum, inv) => sum + inv.total, 0);
+
+      const customerPayment = customerInvoices
+        .filter(inv => inv.status === 'Paid')
+        .reduce((sum, inv) => sum + inv.total, 0);
 
       return {
-        ...customerData,
-        loyaltyPointsBalance: totalBalance,
+        id: item.id,
+        code: item.id, // Using id as fallback for code, since the UI expects code
+        customerName: item.name || 'N/A',
+        contactFirstName: null,
+        address: item.address || item.billingAddress || null,
+        phonePrimary: item.contactNumber || null,
+        email: null,
+        isActive: item.active === 1 || item.active === true,
+        creditLimit: item.creditLimit ? parseFloat(item.creditLimit) : 0,
+        loyaltyPointsBalance: item.loyaltyPoints ? parseFloat(item.loyaltyPoints) : 0,
+        customerBalance,
+        customerPayment,
+        isTaxExempt: false,
+        paymentTerms: item.paymentTerms || 'days',
+        paymentTermsValue: '30',
+        salesperson: item.salesPerson || null,
+        customerGroup: item.salesGroup || 'default',
+        isEntitledToLoyaltyPoints: true,
+        pointSetting: null,
+        loyaltyCalculationMethod: 'automatic',
+        loyaltyCardNumber: null,
+        createdAt: item.createdAt || new Date().toISOString(),
+        updatedAt: item.updatedAt || new Date().toISOString(),
       };
     });
 
-    console.log('Successfully processed customers with loyalty balances');
-    return NextResponse.json(customersWithBalance);
+    console.log('Successfully processed external customers with calculated balances');
+    return NextResponse.json(mappedCustomers);
   } catch (error: any) {
-    console.error('Error fetching customers detailed:', error);
+    console.error('❌ [API/Customers] Error fetching external customers:', error);
+    if (error.code) console.error('Error Code:', error.code);
+    if (error.meta) console.error('Error Meta:', JSON.stringify(error.meta));
+
     return NextResponse.json(
       {
-        error: 'Failed to fetch customers',
-        details: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
+        error: 'Failed to fetch external customers',
+        details: error.message || error.toString(),
       },
       { status: 500 }
     );

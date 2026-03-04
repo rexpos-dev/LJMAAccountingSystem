@@ -1,0 +1,25 @@
+﻿node.exe : 
+unhandledRejection [Error: 
+EISDIR: illegal operation on 
+a directory, lstat 'E:'] {
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (unhandl  
+  edReject..., lstat 'E:']   
+  {:String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+  errno: -4068,
+  code: 'EISDIR',
+  syscall: 'lstat',
+  path: 'E:'
+}

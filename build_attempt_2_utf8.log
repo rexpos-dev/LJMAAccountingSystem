@@ -1,0 +1,56 @@
+﻿
+> nextn@0.1.0 build
+> next build
+
+node.exe :  ΓÜá 
+Invalid 
+next.config.ts 
+options detected: 
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: ( ΓÜá Inval   
+ id ne...ions dete    
+cted: :String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+ ΓÜá     Unrecognized 
+key(s) in object: 
+'outputFileTracing'
+ ΓÜá See more info 
+here: https://nextjs.o
+rg/docs/messages/inval
+id-next-config
+   Γû▓ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+unhandledRejection 
+TypeError: The 
+argument 'path' must 
+be a string, 
+Uint8Array, or URL 
+without null bytes. 
+Received 'E:\\SOFTWARE
+\\\x00#FIREBASE PROJEC
+T\\LJMAAccounting\\nod
+e_modules\\date-fns\\e
+sm\\constants\\index.j
+s'
+    at new Promise 
+(<anonymous>) {
+  code: 'ERR_INVALID_A
+RG_VALUE'
+}

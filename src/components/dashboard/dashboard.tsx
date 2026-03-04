@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useDialog } from "@/components/layout/dialog-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -93,9 +94,11 @@ export function Dashboard() {
 
         {/* Main Chart: Financial Overview */}
         <Card className="col-span-1 lg:col-span-4">
-          <CardHeader>
-            <CardTitle className="font-headline">Financial Overview</CardTitle>
-            <CardDescription>Cost, Expenses, and Profit Trends</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="space-y-1">
+              <CardTitle className="font-headline text-white">Financial Overview</CardTitle>
+              <CardDescription>Chart of Accounts Balances by Account Type</CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="pl-2">
             <Overview />

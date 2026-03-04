@@ -1,19 +1,72 @@
 'use client';
 
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useDialog } from '@/components/layout/dialog-provider';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 export default function BalanceSheetDialog() {
-    const { openDialogs, closeDialog } = useDialog();
+    const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
+    const [reportDate, setReportDate] = useState<Date | undefined>(new Date());
+
+    const handleRunReport = () => {
+        setDialogData('balance-sheet-report', { reportDate });
+        closeDialog('balance-sheet');
+        openDialog('balance-sheet-report');
+    };
 
     return (
         <Dialog open={openDialogs['balance-sheet']} onOpenChange={() => closeDialog('balance-sheet')}>
-            <DialogContent>
+            <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Balance Sheet</DialogTitle>
                 </DialogHeader>
-                <div className="p-4">
-                    <p>Balance Sheet Dialog Configuration Placeholder</p>
+                <div className="p-6 space-y-4">
+                    <div className="space-y-2">
+                        <Label>As of Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !reportDate && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {reportDate ? format(reportDate, "MM/dd/yyyy") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={reportDate}
+                                    onSelect={setReportDate}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                    <div className="pt-4 border-t flex justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => closeDialog('balance-sheet')}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleRunReport}
+                        >
+                            Run Report
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

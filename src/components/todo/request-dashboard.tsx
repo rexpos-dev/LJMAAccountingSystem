@@ -13,6 +13,7 @@ import {
     CheckCircle,
     Plus
 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { NewRequestDialog } from '@/components/todo/new-request-dialog';
 import { RequestTable } from '@/components/todo/request-table';
 import { StatCard } from '@/components/dashboard/stat-card';
@@ -28,11 +29,15 @@ interface RequestStats {
     releasedAndReceived: number;
 }
 
+import { RequestDetailsDialog } from './request-details-dialog';
+
 export function RequestDashboard() {
     const [stats, setStats] = useState<RequestStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [openNewRequest, setOpenNewRequest] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const searchParams = useSearchParams();
+    const requestIdFromUrl = searchParams.get('id');
 
     const fetchStats = () => {
         fetch('/api/requests/stats')
@@ -49,11 +54,41 @@ export function RequestDashboard() {
 
     useEffect(() => {
         fetchStats();
-    }, [refreshKey]);
+
+        const handleUpdate = () => fetchStats();
+        const handleOpenDetails = (e: any) => {
+            const { id, mode } = e.detail;
+            console.log(`Opening details for ${id} in ${mode} mode`);
+            // Set state to open details dialog
+            setSelectedRequestId(id);
+            setDetailMode(mode);
+            setOpenDetails(true);
+        };
+
+        window.addEventListener('request-updated', handleUpdate);
+        window.addEventListener('request-open-details', handleOpenDetails);
+
+        return () => {
+            window.removeEventListener('request-updated', handleUpdate);
+            window.removeEventListener('request-open-details', handleOpenDetails);
+        };
+    }, []);
+
+    const [selectedRequestId, setSelectedRequestId] = useState<string | null>(requestIdFromUrl);
+    const [detailMode, setDetailMode] = useState<'view' | 'edit'>('view');
+    const [openDetails, setOpenDetails] = useState(!!requestIdFromUrl);
 
     const handleRequestCreated = () => {
         setOpenNewRequest(false);
-        setRefreshKey(prev => prev + 1); // Trigger refresh
+        fetchStats(); // Refresh stats locally
+        setRefreshKey(prev => prev + 1); // Trigger table refresh
+    };
+
+    const handleDetailsClosed = () => {
+        setOpenDetails(false);
+        setSelectedRequestId(null);
+        setRefreshKey(prev => prev + 1); // Refresh table
+        fetchStats(); // Refresh stats
     };
 
     if (loading) {
@@ -74,6 +109,13 @@ export function RequestDashboard() {
     return (
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
             <NewRequestDialog open={openNewRequest} onOpenChange={setOpenNewRequest} onRequestCreated={handleRequestCreated} />
+            <RequestDetailsDialog
+                open={openDetails}
+                requestId={selectedRequestId}
+                mode={detailMode}
+                onOpenChange={setOpenDetails}
+                onSuccess={handleDetailsClosed}
+            />
             <div className="flex items-center justify-between space-y-2">
                 <h2 className="text-3xl font-bold tracking-tight font-headline">Request Dashboard</h2>
                 <div className="flex items-center space-x-2">

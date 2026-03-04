@@ -2,15 +2,67 @@ import { prisma } from './prisma'
 
 // Account operations
 export const getAccounts = async () => {
-  return await prisma.account.findMany({
-    orderBy: { accnt_no: 'asc' },
-  })
+  try {
+    const accounts = await prisma.$queryRaw`
+            SELECT * FROM chart_of_account 
+            ORDER BY account_no ASC
+        `;
+    return Array.isArray(accounts) ? accounts : [];
+  } catch (error) {
+    console.error('Error in getAccounts:', error);
+    return [];
+  }
 }
 
 export const getBankAccounts = async () => {
-  return await prisma.account.findMany({
-    where: { bank: 'Yes' },
-  })
+  try {
+    const accounts = await prisma.$queryRaw`
+            SELECT * FROM chart_of_account 
+            WHERE bank = 'Yes'
+        `;
+    return Array.isArray(accounts) ? accounts : [];
+  } catch (error) {
+    console.error('Error in getBankAccounts:', error);
+    return [];
+  }
+}
+
+export const applyTransactionToAccountBalance = async (
+  accountNumber: string,
+  debit: number,
+  credit: number
+) => {
+  try {
+    const accountNoInt = parseInt(accountNumber, 10);
+    if (isNaN(accountNoInt)) return;
+
+    const account = await prisma.account.findUnique({
+      where: { account_no: accountNoInt },
+      include: { accountTypeRel: true }
+    });
+
+    if (!account) return;
+
+    // Default to Asset logic if baseType is unknown
+    const baseType = account.accountTypeRel?.baseType || 'Asset';
+    let balanceChange = 0;
+
+    if (baseType === 'Asset' || baseType === 'Expense') {
+      balanceChange = debit - credit;
+    } else {
+      // Liability, Equity, Income, etc.
+      balanceChange = credit - debit;
+    }
+
+    if (balanceChange !== 0) {
+      await prisma.account.update({
+        where: { id: account.id },
+        data: { balance: { increment: balanceChange } }
+      });
+    }
+  } catch (error) {
+    console.error('Error updating account balance:', error);
+  }
 }
 
 export const updateAccountBalance = async (id: string, balance: number) => {
@@ -21,28 +73,63 @@ export const updateAccountBalance = async (id: string, balance: number) => {
 }
 
 export const createAccount = async (data: {
-  accnt_no: number;
-  accnt_type_no: number;
-  name: string;
-  type: string;
+  account_no: number;
+  account_type_no: number;
+  account_name: string;
+  account_description?: string;
+  account_type: string;
+  account_type_id?: string;
   header: string;
   bank: string;
-  category?: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
   balance?: number;
+  date_created?: Date;
 }) => {
   return await prisma.account.create({
     data,
   })
 }
 
+export const upsertAccount = async (data: {
+  account_no: number;
+  account_type_no: number;
+  account_name: string;
+  account_description?: string;
+  account_type: string;
+  account_type_id?: string;
+  header: string;
+  bank: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
+  balance?: number;
+  date_created?: Date;
+}) => {
+  const { account_no, ...updateData } = data;
+  return await prisma.account.upsert({
+    where: { account_no },
+    update: {
+      ...updateData,
+    },
+    create: data,
+  })
+}
+
 export const updateAccount = async (id: string, data: {
-  accnt_no?: number;
-  name?: string;
-  type?: string;
+  account_no?: number;
+  account_name?: string;
+  account_description?: string;
+  account_type?: string;
+  account_type_id?: string;
   header?: string;
   bank?: string;
-  category?: string;
+  account_category?: string;
+  account_status?: string;
+  fs_category?: string;
   balance?: number;
+  date_created?: Date;
 }) => {
   return await prisma.account.update({
     where: { id },
@@ -62,6 +149,13 @@ export const getTransactions = async (limit?: number, offset?: number) => {
     orderBy: { seq: 'asc' },
     take: limit,
     skip: offset,
+  })
+}
+
+export const getRecentTransactions = async (limit: number = 5) => {
+  return await prisma.transaction.findMany({
+    orderBy: { date: 'desc' },
+    take: limit,
   })
 }
 

@@ -20,9 +20,12 @@ export function useUserPermissions() {
 export interface CreateUserPermissionInput {
   username: string;
   firstName: string;
+  middleName?: string;
   lastName: string;
+  designation?: string;
   contactNo?: string;
   accountType: string;
+  formPermissions?: string;
   password?: string;
   permissions: string[];
 }
@@ -66,9 +69,12 @@ export function useUpdateUserPermission() {
       id,
       username,
       firstName,
+      middleName,
       lastName,
+      designation,
       contactNo,
       accountType,
+      formPermissions,
       password,
       permissions,
       isActive,
@@ -76,9 +82,12 @@ export function useUpdateUserPermission() {
       id: string;
       username?: string;
       firstName?: string;
+      middleName?: string;
       lastName?: string;
+      designation?: string;
       contactNo?: string;
       accountType?: string;
+      formPermissions?: string;
       password?: string;
       permissions?: string[];
       isActive?: boolean;
@@ -88,7 +97,7 @@ export function useUpdateUserPermission() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, username, firstName, lastName, contactNo, accountType, password, permissions, isActive }),
+        body: JSON.stringify({ id, username, firstName, middleName, lastName, designation, contactNo, accountType, formPermissions, password, permissions, isActive }),
       });
 
       if (!response.ok) {

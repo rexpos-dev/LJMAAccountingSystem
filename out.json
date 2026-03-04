@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "pay_1768639080241_pe18ohx4o",
+      "customer_id": "1",
+      "payment_type": "Cash",
+      "payment_date": "2026-01-17T08:37:16.000Z",
+      "amount": "600.00",
+      "reference": "Ref: inv_1766991918676_hdq2zojih",
+      "note": "Payment for Invoice #inv_1766991918676_hdq2zojih. Deposit to: Cash On Hand",
+      "created_at": "2026-01-17T08:38:00.000Z",
+      "updated_at": "2026-01-17T08:38:00.000Z",
+      "customer_name": "Juan Dela Cruz",
+      "contact_number": "09171234567"
+    },
+    {
+      "id": "pay_1768632827596_s8xf3u20j",
+      "customer_id": "CUST-QJX6HM7N8",
+      "payment_type": "Cash",
+      "payment_date": "2026-01-17T06:53:27.000Z",
+      "amount": "6590.00",
+      "reference": "Ref: inv_1768632370238_na8sqv28j",
+      "note": "Payment for Invoice #inv_1768632370238_na8sqv28j. Deposit to: Cash On Hand",
+      "created_at": "2026-01-17T06:53:47.000Z",
+      "updated_at": "2026-01-17T06:53:47.000Z",
+      "customer_name": "jhazon",
+      "contact_number": "09381583922"
+    }
+  ]
+}

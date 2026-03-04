@@ -45,41 +45,41 @@ export default function ReportsPage() {
 
     const financialReports = [
         { title: "Balance Sheet", onClick: () => openDialog('balance-sheet'), className: `${tileClass} col-span-2 h-32` },
-        { title: "Cash Flow Statement", href: "/reports/cash-flow", className: `${tileClass} col-span-1 h-32` },
-        { title: "Trial Balance", href: "/reports/trial-balance", className: `${tileClass} col-span-1 h-32` },
-        { title: "Consolidated Reports", href: "/reports/consolidated", className: `${tileClass} col-span-2 h-32` },
-        { title: "Income Statement Analysis", href: "/reports/income-statement-analysis", className: `${tileClass} col-span-1 h-32` },
+        { title: "Cash Flow Statement", onClick: () => openDialog('cash-flow-statement-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Trial Balance", onClick: () => openDialog('trial-balance-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Consolidated Reports", onClick: () => openDialog('consolidated-reports-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Income Statement Analysis", onClick: () => openDialog('income-statement-analysis-dialog'), className: `${tileClass} col-span-1 h-32` },
         { title: "Income Statement", onClick: () => openDialog('income-statement'), className: `${tileClass} col-span-1 h-32` },
     ];
 
     const salesReports = [
-        { title: "Invoices Report", href: "/reports/invoices", className: `${tileClass} col-span-2 h-32` },
-        { title: "Quotes Report", href: "/reports/quotes", className: `${tileClass} col-span-1 h-32` },
-        { title: "Orders Report", href: "/reports/orders", className: `${tileClass} col-span-1 h-32` },
-        { title: "Sales Invoice Payment Report", href: "/reports/sales-payments", className: `${tileClass} col-span-2 h-32` },
-        { title: "Items Per Customer", href: "/reports/items-per-customer", className: `${tileClass} col-span-1 h-32` },
-        { title: "Customer Sales Report", href: "/reports/customer-sales", className: `${tileClass} col-span-1 h-32` },
+        { title: "Invoices Report", onClick: () => openDialog('invoices-report-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Quotes Report", onClick: () => openDialog('quotes-report-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Orders Report", onClick: () => openDialog('orders-report-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Sales Invoice Payment Report", onClick: () => openDialog('sales-invoice-payment-report-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Items Per Customer", onClick: () => openDialog('items-per-customer-report-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Customer Sales Report", onClick: () => openDialog('customer-sales-report-dialog'), className: `${tileClass} col-span-1 h-32` },
     ];
 
     const operationsReports = [
-        { title: "Inventory Report", href: "/sales/inventory", className: `${tileClass} col-span-2 h-32` },
-        { title: "Item Sales Report", href: "/reports/item-sales", className: `${tileClass} col-span-1 h-32` },
-        { title: "Salesperson Report", href: "/reports/salesperson", className: `${tileClass} col-span-1 h-32` },
-        { title: "Unpaid Accounts Report", href: "/reports/unpaid-accounts", className: `${tileClass} col-span-2 h-32` },
-        { title: "Accounts Payable Report", href: "/reports/accounts-payable", className: `${tileClass} col-span-1 h-32` },
-        { title: "Payments Of Accounts Payable Report", href: "/reports/ap-payments", className: `${tileClass} col-span-2 h-32` },
-        { title: "Accounts Receivable Aging Report", href: "/reports/ar-aging", className: `${tileClass} col-span-2 h-32` },
-        { title: "Customers Report", href: "/reports/customers", className: `${tileClass} col-span-1 h-32` },
+        { title: "Inventory Report", onClick: () => openDialog('inventory-report-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Item Sales Report", onClick: () => openDialog('item-sales-report-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Salesperson Report", onClick: () => openDialog('salesperson-report-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Unpaid Accounts Report", onClick: () => openDialog('unpaid-accounts-report-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Accounts Payable Report", onClick: () => openDialog('accounts-payable-report-dialog'), className: `${tileClass} col-span-1 h-32` },
+        { title: "Payments Of Accounts Payable Report", onClick: () => openDialog('ap-payments-report-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Accounts Receivable Aging Report", onClick: () => openDialog('ar-aging-report-dialog'), className: `${tileClass} col-span-2 h-32` },
+        { title: "Customers Report", onClick: () => openDialog('customers-report-dialog'), className: `${tileClass} col-span-1 h-32` },
     ];
 
     const complianceReports = [
-        { title: "Reconciliation Report", href: "/banking/reconcile", className: `${tileClass} col-span-2 h-32` },
-        { title: "Account Enquiry", href: "/reports/account-enquiry", className: `${tileClass} col-span-1 h-32` },
-        { title: "Chart Of Accounts", href: "/configuration/chart-of-accounts", className: `${tileClass} col-span-1 h-32` },
-        { title: "Mileage Reports", href: "/reports/mileage", className: `${tileClass} col-span-1 h-32` },
-        { title: "VAT/Sales Tax Report", href: "/reports/tax", className: `${tileClass} col-span-1 h-32` },
-        { title: "Budget Reports", href: "/reports/budget", className: `${tileClass} col-span-1 h-32` },
-        { title: "Custom Reports", href: "/reports/custom", className: `${tileClass} col-span-1 h-32` },
+        { title: "Reconciliation Report", onClick: () => openDialog('reconciliation-report-dialog' as any), className: `${tileClass} col-span-2 h-32` },
+        { title: "Account Enquiry", onClick: () => openDialog('account-enquiry-report-dialog' as any), className: `${tileClass} col-span-1 h-32` },
+        { title: "Chart Of Accounts", onClick: () => openDialog('chart-of-accounts-report-dialog' as any), className: `${tileClass} col-span-1 h-32` },
+        { title: "Mileage Reports", onClick: () => openDialog('mileage-report-dialog' as any), className: `${tileClass} col-span-1 h-32` },
+        { title: "VAT/Sales Tax Report", onClick: () => openDialog('tax-report-dialog' as any), className: `${tileClass} col-span-1 h-32` },
+        { title: "Budget Reports", onClick: () => openDialog('budget-report-dialog' as any), className: `${tileClass} col-span-1 h-32` },
+        { title: "Custom Reports", onClick: () => openDialog('custom-report-dialog' as any), className: `${tileClass} col-span-1 h-32` },
     ];
 
     return (

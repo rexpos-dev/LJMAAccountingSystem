@@ -2,9 +2,12 @@ export interface UserPermission {
   id: string;
   username: string;
   firstName: string;
+  middleName?: string;
   lastName: string;
+  designation?: string;
   contactNo?: string;
   accountType: string;
+  formPermissions?: string;
   password?: string;
   permissions: string; // JSON string containing permissions
   isActive: boolean;

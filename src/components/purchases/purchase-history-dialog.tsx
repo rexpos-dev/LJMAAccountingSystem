@@ -24,7 +24,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { FileDown, FileText, Download, Search } from 'lucide-react';
+import { FileDown, FileText, Download, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -67,10 +67,13 @@ export default function PurchaseHistoryDialog() {
     const { toast } = useToast();
     const [order, setOrder] = useState<PurchaseOrder | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
     const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     // Helper function to format currency with commas
     const formatCurrency = (amount: number): string => {
@@ -86,16 +89,23 @@ export default function PurchaseHistoryDialog() {
         }
     }, [isOpen, data]);
 
+    // Reset to page 1 when filters change or order changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, categoryFilter, dateFrom, dateTo, order]);
+
     const fetchPurchaseOrder = async (orderId: string) => {
         setLoading(true);
+        setError(null);
         try {
             const response = await fetch(`/api/purchase-orders/${orderId}`);
             if (!response.ok) throw new Error('Failed to fetch purchase order');
 
             const data = await response.json();
             setOrder(data);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching purchase order:', error);
+            setError(error.message === 'Failed to fetch purchase order' ? 'Failed to fetch purchase history.' : 'No connection on API. Please check your network and try again.');
             toast({
                 title: "Error",
                 description: "Failed to load purchase history.",
@@ -335,6 +345,14 @@ export default function PurchaseHistoryDialog() {
         return items;
     }, [order, searchQuery, categoryFilter, dateFrom, dateTo]);
 
+    // Paginate items
+    const paginatedItems = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredItems.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredItems, currentPage, itemsPerPage]);
+
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
             <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col p-0 gap-0 sm:rounded-lg overflow-hidden">
@@ -374,6 +392,10 @@ export default function PurchaseHistoryDialog() {
                     {loading ? (
                         <div className="flex items-center justify-center h-full">
                             <p className="text-muted-foreground">Loading purchase history...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-red-500 font-medium">{error}</p>
                         </div>
                     ) : order ? (
                         <div className="space-y-4">
@@ -507,8 +529,8 @@ export default function PurchaseHistoryDialog() {
                                             </tr>
                                         </thead>
                                         <tbody className="[&_tr:last-child]:border-0">
-                                            {filteredItems.length > 0 ? (
-                                                filteredItems.map((item) => (
+                                            {paginatedItems.length > 0 ? (
+                                                paginatedItems.map((item) => (
                                                     <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
                                                         <td className="p-4 align-middle">{item.category || '-'}</td>
                                                         <td className="p-4 align-middle">{item.sku || '-'}</td>
@@ -537,6 +559,78 @@ export default function PurchaseHistoryDialog() {
                                         </tbody>
                                     </table>
                                 </div>
+                                {totalPages > 0 && (
+                                    <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-t">
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <span>Show</span>
+                                            <Select
+                                                value={itemsPerPage.toString()}
+                                                onValueChange={(value) => {
+                                                    setItemsPerPage(Number(value));
+                                                    setCurrentPage(1);
+                                                }}
+                                            >
+                                                <SelectTrigger className="h-8 w-[70px]">
+                                                    <SelectValue placeholder={itemsPerPage} />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {[10, 25, 50, 100].map((size) => (
+                                                        <SelectItem key={size} value={size.toString()}>
+                                                            {size}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <span>entries</span>
+                                            <span className="mx-2">|</span>
+                                            <span>
+                                                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredItems.length)} to {Math.min(currentPage * itemsPerPage, filteredItems.length)} of {filteredItems.length} entries
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-1">
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => setCurrentPage(1)}
+                                                disabled={currentPage === 1}
+                                            >
+                                                <ChevronsLeft className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                                disabled={currentPage === 1}
+                                            >
+                                                <ChevronLeft className="h-4 w-4" />
+                                            </Button>
+                                            <div className="flex items-center px-3 h-8 text-sm font-medium">
+                                                Page {currentPage} of {totalPages}
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                <ChevronRight className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => setCurrentPage(totalPages)}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                <ChevronsRight className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex justify-end p-4 bg-muted/50 rounded-lg">

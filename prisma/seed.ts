@@ -13,20 +13,20 @@ async function main() {
 
   // Seed accounts
   const accounts = [
-    { accnt_no: 1110, name: 'Checking Account', balance: 50000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { accnt_no: 1120, name: 'Savings Account', balance: 100000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { accnt_no: 1150, name: 'Undeposited Funds', balance: 0, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { accnt_no: 1190, name: 'Petty Cash', balance: 5000, type: 'Asset', header: 'No', bank: 'Yes', category: 'Assets' },
-    { accnt_no: 1210, name: 'Accounts Receivable', balance: 25000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
-    { accnt_no: 1310, name: 'Inventory', balance: 75000, type: 'Asset', header: 'No', bank: 'No', category: 'Assets' },
-    { accnt_no: 2110, name: 'Credit Card', balance: -15000, type: 'Liability', header: 'No', bank: 'Yes', category: 'Liabilities' },
-    { accnt_no: 2150, name: 'Loan', balance: -50000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
-    { accnt_no: 2210, name: 'Accounts Payable', balance: -30000, type: 'Liability', header: 'No', bank: 'No', category: 'Liabilities' },
+    { account_no: 1110, account_name: 'Checking Account', balance: 50000, account_type: 'Asset', header: 'No', bank: 'Yes', account_category: 'Assets' },
+    { account_no: 1120, account_name: 'Savings Account', balance: 100000, account_type: 'Asset', header: 'No', bank: 'Yes', account_category: 'Assets' },
+    { account_no: 1150, account_name: 'Undeposited Funds', balance: 0, account_type: 'Asset', header: 'No', bank: 'Yes', account_category: 'Assets' },
+    { account_no: 1190, account_name: 'Petty Cash', balance: 5000, account_type: 'Asset', header: 'No', bank: 'Yes', account_category: 'Assets' },
+    { account_no: 1210, account_name: 'Accounts Receivable', balance: 25000, account_type: 'Asset', header: 'No', bank: 'No', account_category: 'Assets' },
+    { account_no: 1310, account_name: 'Inventory', balance: 75000, account_type: 'Asset', header: 'No', bank: 'No', account_category: 'Assets' },
+    { account_no: 2110, account_name: 'Credit Card', balance: -15000, account_type: 'Liability', header: 'No', bank: 'Yes', account_category: 'Liabilities' },
+    { account_no: 2150, account_name: 'Loan', balance: -50000, account_type: 'Liability', header: 'No', bank: 'No', account_category: 'Liabilities' },
+    { account_no: 2210, account_name: 'Accounts Payable', balance: -30000, account_type: 'Liability', header: 'No', bank: 'No', account_category: 'Liabilities' },
   ]
 
   for (const account of accounts) {
     await prisma.account.upsert({
-      where: { accnt_no: account.accnt_no },
+      where: { account_no: account.account_no },
       update: {},
       create: account,
     })

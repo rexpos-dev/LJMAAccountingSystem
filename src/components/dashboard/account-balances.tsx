@@ -13,7 +13,7 @@ export function AccountBalances() {
 
         const getBalance = (match: (name: string, type: string) => boolean) =>
             accounts
-                .filter(acc => match(acc.name || '', acc.type || ''))
+                .filter(acc => match(acc.account_name || '', acc.account_type || ''))
                 .reduce((sum, acc) => sum + (acc.balance || 0), 0);
 
         // Flexible matching for account names

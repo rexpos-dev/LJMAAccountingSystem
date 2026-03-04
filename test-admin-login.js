@@ -5,9 +5,7 @@ const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
 const connectionString = process.env.DATABASE_URL;
 
 async function testAdminLogin() {
-    const prisma = new PrismaClient({
-        adapter: new PrismaMariaDb(connectionString),
-    });
+    const prisma = new PrismaClient();
 
     const username = 'admin@ljma.com';
     const password = 'admin123';

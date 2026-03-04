@@ -26,6 +26,7 @@ export interface ExternalProduct {
   description: string | null;
   category: string | null;
   brand: string | null;
+  unitOfMeasure: string | null;
   stock: number;
   price: string;
   cost: string | null;
@@ -301,6 +302,7 @@ export function useExternalProducts(page: number = 1, limit: number = 10, search
 
   return {
     externalProducts,
+    allProducts,
     isLoading,
     error,
     pagination,

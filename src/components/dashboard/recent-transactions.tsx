@@ -1,32 +1,12 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useTransactions } from "@/hooks/use-transactions";
+import { useRecentTransactions } from "@/hooks/use-transactions";
 import { format } from "date-fns";
-import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function RecentTransactions() {
-    const { transactions, isLoading } = useTransactions();
-
-    const recentTransactions = useMemo(() => {
-        if (!transactions) return [];
-
-        // Sort by date (descending) and take top 5
-        return [...transactions]
-            .sort((a, b) => {
-                const getDate = (dateVal: any) => {
-                    if (!dateVal) return 0;
-                    if (typeof dateVal === 'string') return new Date(dateVal).getTime();
-                    if (typeof dateVal === 'object' && 'seconds' in dateVal) return dateVal.seconds * 1000;
-                    return new Date(dateVal).getTime();
-                };
-                const dateA = getDate(a.date);
-                const dateB = getDate(b.date);
-                return dateB - dateA; // Descending
-            })
-            .slice(0, 5);
-    }, [transactions]);
+    const { transactions: recentTransactions, isLoading } = useRecentTransactions(5);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-PH', {
@@ -80,7 +60,7 @@ export function RecentTransactions() {
                                     {format(date, "MM/dd")}
                                 </div>
                                 <div className="col-span-2 font-medium truncate">
-                                    {t.particulars || "Transaction"}
+                                    {t.particulars || t.accountName || t.code || "Transaction"}
                                 </div>
                                 <div className={`col-span-1 text-right font-bold ${isIncome ? 'text-emerald-500' : 'text-red-500'}`}>
                                     {isIncome ? '+' : '-'} {formatCurrency(displayAmount)}

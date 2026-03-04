@@ -322,8 +322,8 @@ export default function EnterCashSaleDialog() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {bankAccounts.map(account => (
-                                                <SelectItem key={account.id} value={account.name}>
-                                                    {account.name}
+                                                <SelectItem key={account.id} value={account.account_name}>
+                                                    {account.account_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

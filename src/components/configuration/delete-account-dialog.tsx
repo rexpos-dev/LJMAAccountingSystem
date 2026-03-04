@@ -44,7 +44,7 @@ export default function DeleteAccountDialog() {
 
       toast({
         title: "Account Deleted",
-        description: `Account "${account.name}" has been successfully deleted.`,
+        description: `Account "${account.account_name}" has been successfully deleted.`,
       });
 
       window.dispatchEvent(new CustomEvent('accounts-refresh'));
@@ -74,7 +74,7 @@ export default function DeleteAccountDialog() {
             <div className='flex items-center gap-4 pt-4'>
               <Info className='w-8 h-8 text-primary flex-shrink-0' />
               <p>
-                Are you sure you want to delete account "{account?.accnt_no}"?
+                Are you sure you want to delete account "{account?.account_no}"?
               </p>
             </div>
           </AlertDialogDescription>

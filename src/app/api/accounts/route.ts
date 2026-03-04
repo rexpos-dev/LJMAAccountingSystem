@@ -7,42 +7,46 @@ export async function GET(request: Request) {
     const bank = searchParams.get('bank');
     const type = searchParams.get('type');
 
-    let accounts;
+    let accounts: any[] = [];
     if (bank === 'yes') {
       accounts = await getBankAccounts();
     } else {
       accounts = await getAccounts();
     }
 
-    // Filter by type if provided
-    if (type) {
-      accounts = accounts.filter((acc: any) => acc.type === type);
+    if (type && Array.isArray(accounts)) {
+      accounts = accounts.filter((acc: any) => acc.account_type === type);
     }
 
-    return NextResponse.json(accounts);
+    return NextResponse.json(Array.isArray(accounts) ? accounts : []);
   } catch (error) {
-    console.error('Error fetching accounts:', error);
-    return NextResponse.json({ error: 'Failed to fetch accounts' }, { status: 500 });
+    console.error('Error fetching accounts API:', error);
+    // Always return an array to prevent frontend crashes
+    return NextResponse.json([]);
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { accnt_no, accnt_type_no, name, type, header, bank, category, balance } = body;
+    const { account_no, account_type_no, account_name, account_description, account_type, account_type_id, header, bank, account_category, account_status, fs_category, balance } = body;
 
-    if (!accnt_no || !accnt_type_no || !name || !type) {
-      return NextResponse.json({ error: 'Missing required fields: accnt_no, accnt_type_no, name, type' }, { status: 400 });
+    if (!account_no || !account_type_no || !account_name || !account_type) {
+      return NextResponse.json({ error: 'Missing required fields: account_no, account_type_no, account_name, account_type' }, { status: 400 });
     }
 
     const account = await createAccount({
-      accnt_no: parseInt(accnt_no, 10),
-      accnt_type_no: parseInt(accnt_type_no, 10),
-      name,
-      type,
+      account_no: parseInt(account_no, 10),
+      account_type_no: parseInt(account_type_no, 10),
+      account_name,
+      account_description,
+      account_type,
+      account_type_id,
       header: header || 'No',
       bank: bank || 'No',
-      category,
+      account_category,
+      account_status: account_status || 'Active',
+      fs_category,
       balance: balance || 0,
     });
 
@@ -59,19 +63,23 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, accnt_no, accnt_type_no, name, type, header, bank, category, balance } = body;
+    const { id, account_no, account_type_no, account_name, account_description, account_type, account_type_id, header, bank, account_category, account_status, fs_category, balance } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
     }
 
     const updateData: any = {};
-    if (accnt_no !== undefined) updateData.accnt_no = parseInt(accnt_no, 10);
-    if (name !== undefined) updateData.name = name;
-    if (type !== undefined) updateData.type = type;
+    if (account_no !== undefined) updateData.account_no = parseInt(account_no, 10);
+    if (account_name !== undefined) updateData.account_name = account_name;
+    if (account_description !== undefined) updateData.account_description = account_description;
+    if (account_type !== undefined) updateData.account_type = account_type;
+    if (account_type_id !== undefined) updateData.account_type_id = account_type_id;
     if (header !== undefined) updateData.header = header;
     if (bank !== undefined) updateData.bank = bank;
-    if (category !== undefined) updateData.category = category;
+    if (account_category !== undefined) updateData.account_category = account_category;
+    if (account_status !== undefined) updateData.account_status = account_status;
+    if (fs_category !== undefined) updateData.fs_category = fs_category;
     if (balance !== undefined) updateData.balance = parseFloat(balance) || 0;
 
     const account = await updateAccount(id, updateData);

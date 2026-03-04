@@ -102,10 +102,10 @@ export default function AccountTransferDialog() {
             const transactions = [
                 {
                     transNo: nextReference,
-                    accountNumber: fromAcc.accnt_no.toString(),
-                    accountName: fromAcc.name,
+                    accountNumber: fromAcc.account_no.toString(),
+                    accountName: fromAcc.account_name,
                     date: date,
-                    particulars: memo || `Transfer to ${toAcc.name}`,
+                    particulars: memo || `Transfer to ${toAcc.account_name}`,
                     debit: 0,
                     credit: numericAmount, // Credit source (Asset decreases)
                     user: 'System', // Replace with actual user if available
@@ -113,10 +113,10 @@ export default function AccountTransferDialog() {
                 },
                 {
                     transNo: nextReference,
-                    accountNumber: toAcc.accnt_no.toString(),
-                    accountName: toAcc.name,
+                    accountNumber: toAcc.account_no.toString(),
+                    accountName: toAcc.account_name,
                     date: date,
-                    particulars: memo || `Transfer from ${fromAcc.name}`,
+                    particulars: memo || `Transfer from ${fromAcc.account_name}`,
                     debit: numericAmount, // Debit destination (Asset increases)
                     credit: 0,
                     user: 'System',
@@ -136,7 +136,7 @@ export default function AccountTransferDialog() {
 
             toast({
                 title: "Transfer Successful",
-                description: `Successfully transferred ${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(numericAmount)} from ${fromAcc.name} to ${toAcc.name}.`,
+                description: `Successfully transferred ${new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(numericAmount)} from ${fromAcc.account_name} to ${toAcc.account_name}.`,
             });
 
             // Refresh accounts references
@@ -187,7 +187,7 @@ export default function AccountTransferDialog() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {availableFromAccounts.map(acc => (
-                                        <SelectItem key={acc.id} value={acc.id}>{acc.name}</SelectItem>
+                                        <SelectItem key={acc.id} value={acc.id}>{acc.account_name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -200,7 +200,7 @@ export default function AccountTransferDialog() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {availableToAccounts.map(acc => (
-                                        <SelectItem key={acc.id} value={acc.id}>{acc.name}</SelectItem>
+                                        <SelectItem key={acc.id} value={acc.id}>{acc.account_name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>

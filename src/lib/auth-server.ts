@@ -22,6 +22,7 @@ export async function verifyToken(token: string) {
         });
         return payload;
     } catch (error) {
+        console.error('verifyToken: Failed to verify token:', error);
         return null;
     }
 }
@@ -29,7 +30,10 @@ export async function verifyToken(token: string) {
 export async function getSession() {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
-    if (!token) return null;
+    if (!token) {
+        // console.log('getSession: No auth_token cookie found');
+        return null;
+    }
     return await verifyToken(token);
 }
 

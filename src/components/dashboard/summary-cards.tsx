@@ -29,7 +29,7 @@ export function SummaryCards() {
     }
 
     const getBalance = (accountName: string) => {
-      const account = accounts.find((acc) => acc.name === accountName);
+      const account = accounts.find((acc) => acc.account_name === accountName);
       return account?.balance ?? 0;
     };
 
@@ -37,9 +37,9 @@ export function SummaryCards() {
     const savingsBalance = getBalance('Savings Account');
     const arBalance = getBalance('Accounts Receivable');
 
-    const totalAssets = accounts.filter(a => a.type === 'Asset').reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
-    const totalLiabilities = accounts.filter(a => a.type === 'Liability').reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
-    const totalEquity = accounts.filter(a => a.type === 'Equity').reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
+    const totalAssets = accounts.filter(a => a.account_type === 'Asset').reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
+    const totalLiabilities = accounts.filter(a => a.account_type === 'Liability').reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
+    const totalEquity = accounts.filter(a => a.account_type === 'Equity').reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
 
     return [
       { title: 'Checking Account', value: formatCurrency(checkingBalance) },

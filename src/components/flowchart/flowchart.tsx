@@ -96,6 +96,7 @@ export function Flowchart() {
     // Reports
     { id: "income-statement", content: "Income Statement", position: { top: 0, left: 700 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("income-statement") },
     { id: "journal", content: "Journal", position: { top: 0, left: 870 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick('view-journal') },
+    { id: "general-ledger", content: "General Ledger", position: { top: 0, left: 1040 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("general-ledger-dialog") },
     { id: "balance-sheet", content: "Balance Sheet", position: { top: 150, left: 780 }, color: "bg-gray-800", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("balance-sheet") },
 
     // Budgets & Chart of Accounts
@@ -122,8 +123,6 @@ export function Flowchart() {
       disabled: isAudit
     },
 
-    // Options
-    { id: "configure-express-accounts", content: "Configure Options", position: { top: 0, left: 1040 }, color: "bg-gray-600", size: { width: 200, height: 100 } },
   ];
 
   const arrows = [

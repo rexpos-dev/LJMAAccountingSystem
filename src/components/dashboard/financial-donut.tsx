@@ -30,14 +30,14 @@ export function FinancialDonut() {
       };
     }
 
-    const incomeAccounts = accounts.filter(acc => acc.type === 'Income');
-    const expenseAccounts = accounts.filter(acc => acc.type === 'Expense');
-    const assetAccounts = accounts.filter(acc => acc.type === 'Asset');
+    const incomeAccounts = accounts.filter(acc => acc.account_type === 'Income');
+    const expenseAccounts = accounts.filter(acc => acc.account_type === 'Expense');
+    const assetAccounts = accounts.filter(acc => acc.account_type === 'Asset');
 
     const totalRevenue = sumBalances(incomeAccounts);
     const totalExpense = sumBalances(expenseAccounts);
     const cashOnHand = sumBalances(
-      assetAccounts.filter(acc => acc.bank === 'Yes' || (acc.category ?? '').toLowerCase().includes('cash'))
+      assetAccounts.filter(acc => acc.bank === 'Yes' || (acc.account_category ?? '').toLowerCase().includes('cash'))
     );
 
     const netIncome = totalRevenue - totalExpense;

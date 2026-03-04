@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
+import { postJournalEntry } from '@/lib/journal-helper';
 
 export async function POST(req: Request) {
     try {
@@ -44,35 +45,56 @@ export async function POST(req: Request) {
         });
         const existingProductIds = new Set(existingProducts.map(p => p.id));
 
-        const invoice = await prisma.invoice.create({
-            data: {
-                invoiceNumber,
-                customerId,
-                customerPONumber,
-                date: new Date(date),
-                dueDate: dueDate ? new Date(dueDate) : null,
-                terms,
-                salesperson,
-                depositAccount,
-                billingAddress,
-                shippingAddress,
-                subtotal: parseFloat(subtotal),
-                total: parseFloat(total),
-                status: 'Open',
-                items: {
-                    create: items.map((item: any) => ({
-                        // Only link productId if it exists in our local DB
-                        productId: existingProductIds.has(item.id) ? item.id : undefined,
-                        description: item.name || item.description,
-                        quantity: parseFloat(item.qty) || 0,
-                        unitPrice: parseFloat(item.unitPrice) || 0,
-                        total: (parseFloat(item.qty) || 0) * (parseFloat(item.unitPrice) || 0),
-                    })),
+        const invoice = await prisma.$transaction(async (tx) => {
+            const inv = await tx.invoice.create({
+                data: {
+                    invoiceNumber,
+                    customerId,
+                    customerPONumber,
+                    date: new Date(date),
+                    dueDate: dueDate ? new Date(dueDate) : null,
+                    terms,
+                    salesperson,
+                    depositAccount,
+                    billingAddress,
+                    shippingAddress,
+                    subtotal: parseFloat(subtotal),
+                    total: parseFloat(total),
+                    status: 'Open',
+                    items: {
+                        create: items.map((item: any) => ({
+                            // Only link productId if it exists in our local DB
+                            productId: existingProductIds.has(item.id) ? item.id : undefined,
+                            description: item.name || item.description,
+                            quantity: parseFloat(item.qty) || 0,
+                            unitPrice: parseFloat(item.unitPrice) || 0,
+                            total: (parseFloat(item.qty) || 0) * (parseFloat(item.unitPrice) || 0),
+                        })),
+                    },
                 },
-            },
-            include: {
-                items: true,
-            },
+                include: {
+                    items: true,
+                },
+            });
+
+            // Post Journal Entry for Invoice Creation
+            // Debit: Accounts Receivable (1210) for Total
+            // Credit: Sales Revenue (4000) for Subtotal
+            // (Assuming no tax handling right now based on existing implementation)
+            const amtTotal = parseFloat(total) || 0;
+
+            await postJournalEntry({
+                date: inv.date,
+                referenceId: inv.invoiceNumber,
+                particulars: `Sales Invoice - ${inv.invoiceNumber}`,
+                user: salesperson || 'System',
+                lines: [
+                    { accountNo: 1210, debit: amtTotal }, // AR
+                    { accountNo: 4000, credit: amtTotal } // Revenue
+                ]
+            }, tx);
+
+            return inv;
         });
 
         return NextResponse.json(invoice, { status: 201 });
@@ -129,7 +151,7 @@ export async function GET(req: Request) {
         // Map to a consistent format
         const formattedInvoices = invoices.map(inv => ({
             ...inv,
-            customerName: inv.customer?.customerName || inv.customer?.name || 'Unknown',
+            customerName: inv.customer?.customerName || 'Unknown',
             salespersonName: inv.salesperson || '',
         }));
 

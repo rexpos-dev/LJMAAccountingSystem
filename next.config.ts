@@ -36,6 +36,8 @@ const nextConfig: NextConfig = {
       config.plugins = config.plugins.filter(
         (plugin: any) => plugin.constructor.name !== 'TraceEntryPointsPlugin'
       );
+      // Exclude cardinal as it's an optional dependency of mysql2/mysqldump that causes build issues
+      config.externals = [...(config.externals || []), 'cardinal'];
     }
     return config;
   },

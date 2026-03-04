@@ -23,9 +23,6 @@ import {
     Pencil,
     Mail,
     Phone,
-    FileText,
-    Briefcase,
-    HelpCircle,
     ChevronDown
 } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
@@ -181,15 +178,11 @@ export default function SupplierListDialog() {
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Mail} label="Email" onClick={handleEmail} disabled={!selectedSupplierId} />
                     <ToolbarButton icon={Phone} label="Call" onClick={handleCall} disabled={!selectedSupplierId} />
-                    <div className="w-px h-8 bg-border mx-1" />
-                    <ToolbarButton icon={FileText} label="Statement" hasDropdown disabled />
-                    <ToolbarButton icon={Briefcase} label="Suite" hasDropdown disabled />
                     <div className="ml-auto flex items-center gap-2">
                         <Button variant="ghost" size="icon" onClick={fetchSuppliers} title="Refresh List">
                             <span className="sr-only">Refresh</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-rotate-cw"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>
                         </Button>
-                        <ToolbarButton icon={HelpCircle} label="Help" />
                     </div>
                 </div>
 

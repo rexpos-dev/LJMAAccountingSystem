@@ -61,7 +61,6 @@ export const navItems: NavItem[] = [
     subItems: [
       { title: "Create first invoice", href: "/todo/create-invoice", dialogId: "create-invoice" },
       { title: "Enter your first payment", href: "/todo/enter-payment", dialogId: "enter-payment" },
-      { title: "Run statements", href: "/todo/run-statements" },
       { title: "Requests", href: "/requests" },
     ],
 
@@ -88,6 +87,7 @@ export const navItems: NavItem[] = [
     subItems: [
       { title: "Invoices", href: "#", dialogId: "invoice-list" },
       { title: "Create New Invoice", href: "/todo/create-invoice", dialogId: "create-invoice", hideForRoles: ['Auditor'] },
+      { title: "POS Sales Detail", href: "#", dialogId: "pos-sales-detail", hideForRoles: ['Auditor'] },
       { title: "Inventory", href: "/sales/inventory", dialogId: "inventory", permissions: ['Inventory'] },
     ],
   },

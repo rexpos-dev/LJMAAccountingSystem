@@ -63,8 +63,8 @@ export async function processBackup(jobId: string) {
             const output = fs.createWriteStream(zipPath);
             const archive = archiver('zip', { zlib: { level: 9 } });
 
-            output.on('close', resolve);
-            archive.on('error', reject);
+            output.on('close', () => resolve(undefined));
+            archive.on('error', (err) => reject(err));
 
             archive.pipe(output);
             archive.file(sqlPath, { name: `${fileName}.sql` });
