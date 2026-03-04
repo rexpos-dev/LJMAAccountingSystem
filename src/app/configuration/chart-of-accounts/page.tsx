@@ -64,7 +64,8 @@ const formatCurrency = (amount: number) => {
 };
 
 
-export default function ChartOfAccountsPage({ onAccountSelect, selectedAccount }: { onAccountSelect: (account: Account | null) => void, selectedAccount: Account | null }) {
+
+export default function ChartOfAccountsPage({ onAccountSelect = () => { }, selectedAccount = null }: { onAccountSelect?: (account: Account | null) => void, selectedAccount?: Account | null }) {
   const { openDialogs, closeDialog, openDialog } = useDialog();
 
   // Use database data instead of mock data

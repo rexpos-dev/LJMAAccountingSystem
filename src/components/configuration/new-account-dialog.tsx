@@ -51,6 +51,7 @@ export default function NewAccountDialog() {
   const [fsCategory, setFsCategory] = useState('');
   const [openingBalance, setOpeningBalance] = useState('0.00');
   const [type, setType] = useState<string>('');
+  const [dateCreated, setDateCreated] = useState(new Date().toISOString().split('T')[0]);
 
   // State for Create New Account Type dialog
   const [isCreatingNewType, setIsCreatingNewType] = useState(false);
@@ -176,6 +177,7 @@ export default function NewAccountDialog() {
           account_description: description || null,
           account_status: accountStatus,
           fs_category: fsCategory || type,
+          date_created: dateCreated ? new Date(dateCreated).toISOString() : new Date().toISOString(),
         }),
       });
 
@@ -195,6 +197,7 @@ export default function NewAccountDialog() {
       setAccountCategory('');
       setFsCategory('');
       setOpeningBalance('0.00');
+      setDateCreated(new Date().toISOString().split('T')[0]);
       if (accountTypes.length > 0) {
         handleTypeChange(accountTypes[0].name, (accountTypes[0] as any).baseType);
       } else {
@@ -284,8 +287,9 @@ export default function NewAccountDialog() {
                   </Label>
                   <Input
                     id="date-created"
-                    value={new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    readOnly
+                    type="date"
+                    value={dateCreated}
+                    onChange={(e) => setDateCreated(e.target.value)}
                   />
                 </div>
 

@@ -1,19 +1,17 @@
-require('dotenv').config();
-const { prisma } = require('./src/lib/prisma');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-async function test() {
-    try {
-        const suppliers = await prisma.supplier.findMany({ select: { id: true }, take: 1 });
-        console.log('✅ Connection successful. Found', suppliers.length, 'suppliers.');
-
-        const salesUsers = await prisma.salesUser.findMany({ select: { id: true }, take: 1 });
-        console.log('✅ Found', salesUsers.length, 'sales users.');
-
-        process.exit(0);
-    } catch (err) {
-        console.error('❌ Connection failed:', err);
-        process.exit(1);
-    }
+async function main() {
+    const allAccounts = await prisma.account.findMany();
+    console.log('All accounts:', allAccounts);
 }
 
-test();
+main()
+    .catch((e: any) => {
+        throw e;
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
+
+export { };

@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const response = await fetch(
-            `http://192.168.1.163:3001/api/sales/transactions?${externalParams.toString()}`,
+            `http://192.168.1.163:3000/api/sales/transactions?${externalParams.toString()}`,
             {
                 method: 'GET',
                 headers: {

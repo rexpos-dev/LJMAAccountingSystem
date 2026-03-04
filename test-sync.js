@@ -1,0 +1,1 @@
+const { fetch } = require('undici'); async function main() { console.log('Starting sync...'); try { const res = await fetch('http://localhost:3000/api/sync/pos', { method: 'POST' }); const json = await res.json(); console.dir(json, {depth: null}); } catch(e) { console.error(e); } } main();

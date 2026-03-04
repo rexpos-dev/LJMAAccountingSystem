@@ -29,8 +29,10 @@ import {
     X,
     Pencil,
     HelpCircle,
-    Briefcase,
-    FileText,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
     RefreshCw,
     Banknote // Using Banknote as valid import if available, or fallback to file-text logic
 } from 'lucide-react';
@@ -67,54 +69,55 @@ export default function AccountsPayableListDialog() {
     const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [suppliers, setSuppliers] = useState<any[]>([]);
 
+    // Pagination
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(50);
+    const [totalCount, setTotalCount] = useState(0);
+
     useEffect(() => {
         if (openDialogs['accounts-payable']) {
             fetchPayables();
             fetchSuppliers();
         }
-    }, [openDialogs['accounts-payable']]);
+    }, [openDialogs['accounts-payable'], page, pageSize, period, supplierFilter, startDate, endDate]);
 
-    // Fetch Payables (Using Purchase Orders as source for now)
+    // Fetch Payables
     const fetchPayables = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/purchase-orders');
+            const params = new URLSearchParams({
+                limit: pageSize.toString(),
+                offset: ((page - 1) * pageSize).toString(),
+                status: 'all', // Can be refined if needed
+                supplierId: supplierFilter === 'all' ? '' : supplierFilter,
+                startDate: period === 'all' ? '' : startDate,
+                endDate: period === 'all' ? '' : endDate,
+            });
+
+            const res = await fetch(`/api/purchase-orders?${params.toString()}`);
             if (res.ok) {
-                const data = await res.json();
+                const result = await res.json();
+                const data = result.data || [];
+                setTotalCount(result.totalCount || 0);
+
                 // Map POs to Payable format
                 const mappedData: Payable[] = data.map((po: any) => ({
                     id: po.id,
                     date: po.date,
-                    dueDate: new Date(new Date(po.date).setDate(new Date(po.date).getDate() + 30)).toISOString(), // Mock 30 days term
+                    dueDate: new Date(new Date(po.date).setDate(new Date(po.date).getDate() + 30)).toISOString(),
                     reference: po.id.slice(0, 8),
                     poReference: po.orderNumber || po.id.slice(0, 6),
                     payableNo: `PRC${(po.orderNumber || po.id.slice(0, 5)).replace(/\D/g, '')}`,
                     supplierName: po.supplier?.name || 'Unknown',
                     supplierId: po.supplierId || po.supplier?.id || '',
                     amount: po.total,
-                    dueAmount: po.status === 'Paid' ? 0 : po.total, // Assuming none paid yet unless status is Paid
+                    dueAmount: po.status === 'Paid' ? 0 : po.total,
                     status: po.status === 'Approved' ? 'Not Paid' : po.status
                 }));
                 setPayables(mappedData);
             }
         } catch (error) {
             console.error('Failed to fetch payables', error);
-            // Mock data if API fails or is empty for demo
-            setPayables([
-                {
-                    id: '1',
-                    date: '2026-01-19',
-                    dueDate: '2026-02-18',
-                    reference: '',
-                    poReference: '10000',
-                    payableNo: 'PRC10000',
-                    supplierName: 'tete',
-                    supplierId: '1',
-                    amount: 1680.00,
-                    dueAmount: 1680.00,
-                    status: 'Not Paid'
-                }
-            ]);
         } finally {
             setLoading(false);
         }
@@ -319,8 +322,70 @@ export default function AccountsPayableListDialog() {
                 </div>
 
                 {/* Footer */}
-                <div className="bg-background p-2 border-t flex items-center text-sm px-4">
-                    <span className="font-medium">{payables.length} Bills. Total ₱{totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                <div className="bg-background p-2 border-t flex flex-col sm:flex-row items-center justify-between text-sm px-4 gap-2">
+                    <div className="flex items-center gap-4">
+                        <span className="font-medium">{totalCount} Bills. Total ₱{totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 mr-4">
+                            <span className="text-muted-foreground whitespace-nowrap text-[11px]">Rows per page:</span>
+                            <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(parseInt(v)); setPage(1); }}>
+                                <SelectTrigger className="h-7 w-[70px] text-[11px]">
+                                    <SelectValue placeholder={pageSize.toString()} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {[10, 20, 50, 100].map(size => (
+                                        <SelectItem key={size} value={size.toString()}>{size}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setPage(1)}
+                                disabled={page === 1}
+                            >
+                                <ChevronsLeft className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                                disabled={page === 1}
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+
+                            <div className="flex items-center px-4 h-8 border rounded-md bg-muted/20 min-w-[80px] justify-center text-[12px] font-medium">
+                                Page {page} of {Math.max(1, Math.ceil(totalCount / pageSize))}
+                            </div>
+
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setPage(prev => Math.min(Math.ceil(totalCount / pageSize), prev + 1))}
+                                disabled={page >= Math.ceil(totalCount / pageSize)}
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setPage(Math.ceil(totalCount / pageSize))}
+                                disabled={page >= Math.ceil(totalCount / pageSize)}
+                            >
+                                <ChevronsRight className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

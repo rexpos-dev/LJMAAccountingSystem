@@ -1,18 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { useState, useCallback } from 'react';
+import { DialogId, DialogContext, useDialog } from './dialog-context';
+export { useDialog };
+
 
 // Import all dialog components
 import CustomerListDialog from '@/components/customer/customer-list-dialog';
 import { AddCustomerDialog } from '@/components/customer/add-customer-dialog';
-
 import CustomerPaymentDialog from '@/components/customer/customer-payment-dialog';
 import AddCustomerPaymentDialog from '@/components/customer/add-customer-payment-dialog';
 import CustomerLoyaltyPointsDialog from '@/components/customer/customer-loyalty-points-dialog';
@@ -97,18 +92,18 @@ import CustomReport from '@/components/reports/custom-report';
 import PosSalesDetailDialog from '@/components/reports/pos-sales-detail-dialog';
 import GeneralLedgerDialog from '@/components/reports/general-ledger-dialog';
 import GeneralLedgerReport from '@/components/reports/general-ledger-report';
-
+import { ToAuditReportDialog } from '@/components/reports/to-audit-report-dialog';
+import ConsignmentOutrightReportDialog from '@/components/reports/consignment-outright-report-dialog';
+import ConsignmentOutrightReport from '@/components/reports/consignment-outright-report';
 import EnterCashSaleDialog from '@/components/transactions/enter-cash-sale-dialog';
 import { EnterDirectPaymentsDialog } from '@/components/transactions/enter-direct-payments-dialog';
 import { EnterPaymentsOfAccountsPayableDialog } from '@/components/transactions/enter-payments-of-accounts-payable-dialog';
 import CreatePurchaseOrderDialog from '@/components/purchases/create-purchase-order-dialog';
 import SupplierListDialog from '@/components/purchases/supplier-list-dialog';
 import AddSupplierDialog from '@/components/purchases/add-supplier-dialog';
-
 import PurchaseOrderListDialog from '@/components/purchases/purchase-order-list-dialog';
 import ViewPurchaseOrderDialog from '@/components/purchases/view-purchase-order-dialog';
 import InvoiceListDialog from '@/components/invoices/invoice-list-dialog';
-
 import AccountsPayableListDialog from '@/components/purchases/accounts-payable-list-dialog';
 import { EnterAccountsPayableDialog } from '@/components/purchases/enter-accounts-payable-dialog';
 import CalendarModal from '@/components/dashboard/calendar-modal';
@@ -123,9 +118,11 @@ import ReceiptsDepositsDialog from '@/app/banking/receipts-deposits/page';
 import CustomerBalanceDialog from '@/app/customer/balance/page';
 import BackupSchedulerDialog from '@/components/backup/backup-scheduler-dialog';
 import BalanceSheetReportDialog from '@/components/reports/balance-sheet-report';
-
-
-/* ... */
+import BankSettingsDialog from '@/components/configuration/bank-settings-dialog';
+import AddBankAccountDialog from '@/components/configuration/add-bank-account-dialog';
+import EditBankAccountDialog from '@/components/configuration/edit-bank-account-dialog';
+import BankHistoryDialog from '@/components/banking/bank-history-dialog';
+import AddBankTransactionDialog from '@/components/banking/add-bank-transaction-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -147,6 +144,7 @@ const dialogComponents = {
   'delete-account': DeleteAccountDialog,
   'reconcile-account': ReconcileAccountDialog,
   'account-transfer': AccountTransferDialog,
+  'add-bank-transaction': AddBankTransactionDialog,
   'create-invoice': CreateInvoiceDialog,
   'enter-cash-sale': EnterCashSaleDialog,
   'add-sales-user': AddSalesUserDialog,
@@ -237,20 +235,14 @@ const dialogComponents = {
   'pos-sales-detail': PosSalesDetailDialog,
   'general-ledger-dialog': GeneralLedgerDialog,
   'general-ledger-report': GeneralLedgerReport,
+  'to-audit-report': ToAuditReportDialog,
+  'consignment-outright-report-dialog': ConsignmentOutrightReportDialog,
+  'consignment-outright-report': ConsignmentOutrightReport,
+  'bank-settings': BankSettingsDialog,
+  'add-bank-account': AddBankAccountDialog,
+  'edit-bank-account': EditBankAccountDialog,
+  'bank-history': BankHistoryDialog,
 };
-
-type DialogId = keyof typeof dialogComponents;
-
-
-interface DialogContextType {
-  openDialogs: Record<string, boolean>;
-  openDialog: (id: DialogId) => void;
-  closeDialog: (id: DialogId) => void;
-  getDialogData: (id: DialogId) => any;
-  setDialogData: (id: DialogId, data: any) => void;
-}
-
-const DialogContext = createContext<DialogContextType | undefined>(undefined);
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {
   const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
@@ -292,12 +284,4 @@ export function DialogProvider({ children }: { children: React.ReactNode }) {
       })}
     </DialogContext.Provider>
   );
-}
-
-export function useDialog() {
-  const context = useContext(DialogContext);
-  if (context === undefined) {
-    throw new Error('useDialog must be used within a DialogProvider');
-  }
-  return context;
 }

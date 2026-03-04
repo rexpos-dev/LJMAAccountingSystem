@@ -18,6 +18,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -45,6 +47,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useDialog } from "./dialog-provider";
@@ -86,6 +90,7 @@ function SidebarNav() {
   const pathname = usePathname();
   const { openDialog } = useDialog();
   const { user } = useAuth();
+  const { state } = useSidebar();
   const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -156,7 +161,48 @@ function SidebarNav() {
       ? item.subItems.some((sub) => pathname.startsWith(sub.href))
       : pathname.startsWith(item.href);
 
+    const isCollapsed = state === "collapsed";
+
     if (item.subItems && visibleSubItems && visibleSubItems.length > 0) {
+      if (isCollapsed) {
+        return (
+          <DropdownMenu key={item.title}>
+            <SidebarMenuItem className="w-full">
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  isActive={isActive}
+                  className="w-full justify-start"
+                  tooltip={item.title}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span className="sr-only">{item.title}</span>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+            </SidebarMenuItem>
+            <DropdownMenuContent side="right" align="start" className="min-w-56">
+              <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {visibleSubItems.map((subItem) => (
+                <DropdownMenuItem key={subItem.title} asChild>
+                  <Link
+                    href={subItem.href}
+                    className={cn(
+                      "cursor-pointer w-full",
+                      pathname === subItem.href && "bg-accent text-accent-foreground"
+                    )}
+                    onClick={(e: any) =>
+                      handleNavClick(e, subItem.href, subItem.dialogId as any)
+                    }
+                  >
+                    {subItem.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      }
+
       return (
         <Collapsible key={item.title} defaultOpen={isActive} className="w-full">
           <SidebarMenuItem className="w-full">
@@ -226,6 +272,34 @@ function SidebarNav() {
   return <SidebarMenu>{navItems.map((item) => renderNavItem(item))}</SidebarMenu>;
 }
 
+function SidebarHeaderContent({ profile, isLoading }: { profile: any, isLoading: boolean }) {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  return (
+    <div className={cn(
+      "flex items-center gap-2 p-2 transition-all duration-200",
+      isCollapsed ? "justify-center p-0 h-10" : "pr-4"
+    )}>
+      <PanelsTopLeft className={cn(
+        "text-primary shrink-0 transition-all duration-200",
+        isCollapsed ? "w-6 h-6" : "w-8 h-8"
+      )} />
+      {!isCollapsed && (
+        <div className="flex flex-col truncate">
+          {isLoading ? (
+            <Skeleton className="h-7 w-40" />
+          ) : (
+            <h1 className="text-xl font-bold font-headline truncate max-w-[200px]" title={profile?.businessName || "LJMA FinancePro"}>
+              {profile?.businessName || "LJMA FinancePro"}
+            </h1>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = React.useState(false);
@@ -260,27 +334,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <SidebarProvider>
-        <Sidebar>
+        <Sidebar collapsible="icon">
           <SidebarHeader>
-            <div className="flex items-center gap-2 p-2 pr-4">
-              <PanelsTopLeft className="w-8 h-8 text-primary" />
-              {isLoading ? (
-                <Skeleton className="h-7 w-40" />
-              ) : (
-                <h1 className="text-xl font-bold font-headline truncate max-w-[200px]" title={profile?.businessName || "LJMA FinancePro"}>
-                  {profile?.businessName || "LJMA FinancePro"}
-                </h1>
-              )}
-            </div>
+            <SidebarHeaderContent profile={profile} isLoading={isLoading} />
           </SidebarHeader>
           <SidebarContent>
             <SidebarNav />
           </SidebarContent>
           <SidebarFooter>{/* Footer content if any */}</SidebarFooter>
+          <SidebarRail />
         </Sidebar >
         <SidebarInset className="flex flex-col">
           <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <SidebarTrigger className="md:hidden" />
+            <SidebarTrigger className="-ml-1" />
             <Breadcrumbs />
             <div className="flex items-center gap-2 ml-auto">
               <ThemeToggle />

@@ -40,8 +40,8 @@ import { useState, useEffect } from 'react';
 import format from '@/lib/date-format';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { useSuppliers } from '@/hooks/use-suppliers';
 import { useBankAccounts } from '@/hooks/use-accounts';
+import { useSuppliers } from '@/hooks/use-suppliers';
 import { useToast } from '@/hooks/use-toast';
 
 export function EnterPaymentsOfAccountsPayableDialog() {
@@ -311,11 +311,15 @@ export function EnterPaymentsOfAccountsPayableDialog() {
                         <SelectValue placeholder="Select Supplier" />
                       </SelectTrigger>
                       <SelectContent>
-                        {suppliers.filter(s => s.id).map((s) => (
-                          <SelectItem key={s.id} value={s.id}>
-                            {s.name}
-                          </SelectItem>
-                        ))}
+                        {suppliers && suppliers.length > 0 ? (
+                          suppliers.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="none" disabled>No Suppliers Found</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                     <div className="flex gap-1">

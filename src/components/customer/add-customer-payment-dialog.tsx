@@ -15,14 +15,17 @@ import {
 } from '@/components/ui/select';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useCustomers } from '@/hooks/use-customers';
+import { useBankAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AddCustomerPaymentDialog() {
     const { openDialogs, closeDialog } = useDialog();
     const { customers, isLoading: isLoadingCustomers } = useCustomers();
+    const { accounts: bankAccounts, isLoading: isLoadingAccounts } = useBankAccounts();
     const { toast } = useToast();
 
     const [customerId, setCustomerId] = useState('');
+    const [depositAccountId, setDepositAccountId] = useState('');
     const [paymentType, setPaymentType] = useState('Cash');
     const [date, setDate] = useState('');
     const [amount, setAmount] = useState('');
@@ -34,6 +37,7 @@ export default function AddCustomerPaymentDialog() {
         if (openDialogs['add-customer-payment']) {
             // Reset form when opened
             setCustomerId('');
+            setDepositAccountId('');
             setPaymentType('Cash');
             setDate(new Date().toISOString().split('T')[0]);
             setAmount('');
@@ -43,7 +47,7 @@ export default function AddCustomerPaymentDialog() {
     }, [openDialogs['add-customer-payment']]);
 
     const handleSave = async () => {
-        if (!customerId || !amount || !date) {
+        if (!customerId || !amount || !date || !depositAccountId) {
             toast({
                 title: 'Validation Error',
                 description: 'Please fill in all required fields.',
@@ -55,23 +59,43 @@ export default function AddCustomerPaymentDialog() {
         try {
             setIsSubmitting(true);
             const selectedCustomer = customers.find(c => c.id === customerId);
+            const selectedDepositAccount = bankAccounts.find(a => a.id === depositAccountId);
 
-            const transactionData = {
-                accountNumber: selectedCustomer?.code || customerId, // Use code or ID
-                accountName: selectedCustomer?.customerName,
-                date: new Date(date),
-                transNo: reference,
-                particulars: note,
-                credit: parseFloat(amount), // Credit customer account (payment received)
-                debit: 0,
-                type: 'Payment', // Custom field if supported or just implied
-                ledger: paymentType, // e.g. "Cash"
-            };
+            if (!selectedDepositAccount) {
+                throw new Error("Deposit account not found");
+            }
+
+            const transactions = [
+                {
+                    accountNumber: selectedCustomer?.code || customerId, // Use code or ID
+                    accountName: selectedCustomer?.customerName,
+                    date: new Date(date),
+                    transNo: reference,
+                    particulars: note || `Payment received from ${selectedCustomer?.customerName}`,
+                    credit: parseFloat(amount), // Credit customer account (payment received)
+                    debit: 0,
+                    type: 'Payment',
+                    ledger: paymentType,
+                    user: 'System'
+                },
+                {
+                    accountNumber: selectedDepositAccount.account_no.toString(),
+                    accountName: selectedDepositAccount.account_name,
+                    date: new Date(date),
+                    transNo: reference,
+                    particulars: note || `Payment deposited from ${selectedCustomer?.customerName}`,
+                    credit: 0,
+                    debit: parseFloat(amount), // Debit deposit account
+                    type: 'Payment',
+                    ledger: paymentType,
+                    user: 'System'
+                }
+            ];
 
             const response = await fetch('/api/transactions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(transactionData),
+                body: JSON.stringify({ transactions }),
             });
 
             if (!response.ok) {
@@ -114,6 +138,22 @@ export default function AddCustomerPaymentDialog() {
                                 {customers.map((customer) => (
                                     <SelectItem key={customer.id} value={customer.id}>
                                         {customer.customerName}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="depositAccount">Deposit To</Label>
+                        <Select value={depositAccountId} onValueChange={setDepositAccountId} disabled={isLoadingAccounts}>
+                            <SelectTrigger id="depositAccount">
+                                <SelectValue placeholder="Select deposit account" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {bankAccounts.map((account) => (
+                                    <SelectItem key={account.id} value={account.id}>
+                                        {account.account_name} ({account.account_no})
                                     </SelectItem>
                                 ))}
                             </SelectContent>

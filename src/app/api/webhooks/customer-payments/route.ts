@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         }
 
         const payment = await prisma.$transaction(async (tx) => {
-            // Save local record of the Customer Payment
+            // 1. Save local record of the Customer Payment
             const customerPayment = await tx.customerPayment.create({
                 data: {
                     receiptId,
@@ -25,23 +25,63 @@ export async function POST(req: Request) {
                     date: new Date(date),
                     amount: parseFloat(amount),
                     paymentMethod: paymentMethod || 'Cash',
-                    syncedToLedger: true
+                    syncedToLedger: (paymentMethod?.toLowerCase() === 'cash' || !paymentMethod) // Only cash synced immediately
                 }
             });
 
-            // Auto-post the journal entry
-            // Debit: Cash on Hand (1000)
-            // Credit: Accounts Receivable (1210)
-            await postJournalEntry({
-                date: customerPayment.date,
-                referenceId: customerPayment.receiptId,
-                particulars: `Customer Payment - ${paymentMethod}`,
-                user: 'System',
-                lines: [
-                    { accountNo: 1000, debit: customerPayment.amount }, // Cash
-                    { accountNo: 1210, credit: customerPayment.amount } // Decrease AR
-                ]
-            }, tx);
+            // 2. Handle Banking Integration
+            if (paymentMethod?.toLowerCase() !== 'cash' && paymentMethod) {
+                // Find a bank account that contains the payment method name (e.g., "G-Cash", "BPI", etc.)
+                // or just "Online"
+                const bankAccount = await tx.bankAccount.findFirst({
+                    where: {
+                        OR: [
+                            { account_name: { contains: paymentMethod } },
+                            { account_name: { contains: 'Online' } }
+                        ]
+                    }
+                }) || await tx.bankAccount.findFirst({ where: { is_active: true } });
+
+                if (bankAccount) {
+                    const bt = await tx.bankTransaction.create({
+                        data: {
+                            bankAccountId: bankAccount.id,
+                            type: 'CASH_IN',
+                            status: 'TO_AUDIT',
+                            amount: customerPayment.amount,
+                            balanceAfter: 0,
+                            particulars: `Customer Payment - ${paymentMethod} (${customerPayment.receiptId})`,
+                            sourceType: 'CUSTOMER_PAYMENT',
+                            sourceId: customerPayment.id,
+                            date: customerPayment.date
+                        }
+                    });
+
+                    // Create Audit Log
+                    await tx.auditLog.create({
+                        data: {
+                            actionType: 'Bank Deposit',
+                            transactionId: bt.id,
+                            amount: customerPayment.amount,
+                            details: `Online Customer Payment (${paymentMethod}) requires audit.`,
+                            status: 'To Audit'
+                        }
+                    });
+                }
+            } else {
+                // Immediate post for Cash
+                const { postJournalEntry } = await import('@/lib/journal-helper');
+                await postJournalEntry({
+                    date: customerPayment.date,
+                    referenceId: customerPayment.receiptId,
+                    particulars: `Customer Payment - Cash`,
+                    user: 'System',
+                    lines: [
+                        { accountNo: 1000, debit: customerPayment.amount }, // Cash
+                        { accountNo: 1210, credit: customerPayment.amount } // Decrease AR
+                    ]
+                }, tx);
+            }
 
             return customerPayment;
         });

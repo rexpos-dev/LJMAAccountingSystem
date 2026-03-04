@@ -92,49 +92,51 @@ export function Overview() {
   } as Record<string, string>;
 
   return (
-    <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 20 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
-        <XAxis
-          dataKey="name"
-          stroke="#71717a"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          dy={10}
-        />
-        <YAxis
-          stroke="#71717a"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `₱${(value / 1000).toFixed(0)}k`}
-          dx={-10}
-        />
-        <Tooltip
-          cursor={{ fill: '#27272a', opacity: 0.4 }}
-          formatter={(value: number) => `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-          contentStyle={{
-            backgroundColor: '#09090b',
-            borderRadius: '0.5rem',
-            border: '1px solid #27272a',
-            fontSize: '12px',
-            color: '#fafafa',
-          }}
-          itemStyle={{ padding: '0px', color: '#fafafa' }}
-          labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
-        />
-        <Bar
-          dataKey="balance"
-          name="Balance"
-          radius={[4, 4, 0, 0]}
-          maxBarSize={60}
-        >
-          {chartData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[entry.name] || COLORS['Unknown']} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="w-full h-[350px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
+          <XAxis
+            dataKey="name"
+            stroke="#71717a"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+            dy={10}
+          />
+          <YAxis
+            stroke="#71717a"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `₱${(value / 1000).toFixed(0)}k`}
+            dx={-10}
+          />
+          <Tooltip
+            cursor={{ fill: '#27272a', opacity: 0.4 }}
+            formatter={(value: number) => `₱${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            contentStyle={{
+              backgroundColor: '#09090b',
+              borderRadius: '0.5rem',
+              border: '1px solid #27272a',
+              fontSize: '12px',
+              color: '#fafafa',
+            }}
+            itemStyle={{ padding: '0px', color: '#fafafa' }}
+            labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
+          />
+          <Bar
+            dataKey="balance"
+            name="Balance"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={60}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[entry.name] || COLORS['Unknown']} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

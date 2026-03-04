@@ -82,3 +82,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAccounts, getBankAccounts, createAccount, updateAccount, deleteAccount } from '@/lib/database';
+import { getAccounts, getBankAccountsFromCOA, createAccount, updateAccount, deleteAccount } from '@/lib/database';
 
 export async function GET(request: Request) {
   try {
@@ -9,7 +9,7 @@ export async function GET(request: Request) {
 
     let accounts: any[] = [];
     if (bank === 'yes') {
-      accounts = await getBankAccounts();
+      accounts = await getBankAccountsFromCOA();
     } else {
       accounts = await getAccounts();
     }
@@ -29,7 +29,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { account_no, account_type_no, account_name, account_description, account_type, account_type_id, header, bank, account_category, account_status, fs_category, balance } = body;
+    const {
+      account_no, account_type_no, account_name, account_description,
+      account_type, account_type_id, header, bank, account_category,
+      account_status, fs_category, balance,
+      bank_code, bank_name, bank_account_no, currency, branch,
+      linked_gl_id, opening_balance, opening_date
+    } = body;
 
     if (!account_no || !account_type_no || !account_name || !account_type) {
       return NextResponse.json({ error: 'Missing required fields: account_no, account_type_no, account_name, account_type' }, { status: 400 });
@@ -48,6 +54,14 @@ export async function POST(request: Request) {
       account_status: account_status || 'Active',
       fs_category,
       balance: balance || 0,
+      bank_code,
+      bank_name,
+      bank_account_no,
+      currency: currency || 'PHP',
+      branch,
+      linked_gl_id,
+      opening_balance: opening_balance || 0,
+      opening_date: opening_date ? new Date(opening_date) : undefined,
     });
 
     return NextResponse.json(account, { status: 201 });
@@ -63,7 +77,13 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, account_no, account_type_no, account_name, account_description, account_type, account_type_id, header, bank, account_category, account_status, fs_category, balance } = body;
+    const {
+      id, account_no, account_type_no, account_name, account_description,
+      account_type, account_type_id, header, bank, account_category,
+      account_status, fs_category, balance,
+      bank_code, bank_name, bank_account_no, currency, branch,
+      linked_gl_id, opening_balance, opening_date
+    } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
@@ -81,6 +101,14 @@ export async function PUT(request: Request) {
     if (account_status !== undefined) updateData.account_status = account_status;
     if (fs_category !== undefined) updateData.fs_category = fs_category;
     if (balance !== undefined) updateData.balance = parseFloat(balance) || 0;
+    if (bank_code !== undefined) updateData.bank_code = bank_code;
+    if (bank_name !== undefined) updateData.bank_name = bank_name;
+    if (bank_account_no !== undefined) updateData.bank_account_no = bank_account_no;
+    if (currency !== undefined) updateData.currency = currency;
+    if (branch !== undefined) updateData.branch = branch;
+    if (linked_gl_id !== undefined) updateData.linked_gl_id = linked_gl_id;
+    if (opening_balance !== undefined) updateData.opening_balance = parseFloat(opening_balance) || 0;
+    if (opening_date !== undefined) updateData.opening_date = opening_date ? new Date(opening_date) : null;
 
     const account = await updateAccount(id, updateData);
 

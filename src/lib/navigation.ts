@@ -50,7 +50,6 @@ export const navItems: NavItem[] = [
       { title: "Customer Balance", href: "/customer/balance", dialogId: "customer-balance", permissions: ['Customer Balances'] },
       { title: "Customer Payment", href: "/customer/payment", dialogId: "customer-payment", permissions: ['Customer Payment'], hideForRoles: ['Auditor'] },
       { title: "Customer Loyalty Points", href: "/customer/loyalty-points", dialogId: "customer-loyalty-points", permissions: ['Customer Loyalty Points'] },
-      { title: "Loyalty Settings", href: "/customer/loyalty-settings", dialogId: "loyalty-settings", permissions: ['Loyalty Points Setting'], hideForRoles: ['Auditor'] },
     ],
   },
   {
@@ -109,8 +108,11 @@ export const navItems: NavItem[] = [
     icon: Landmark,
     hideForRoles: ['Auditor'], // Assuming banking actions are transactional
     subItems: [
-      { title: "Bank reconciliation", href: "/banking/reconcile", dialogId: "reconcile-account" },
-      { title: "Account transfer", href: "/banking/transfer", dialogId: "account-transfer" },
+      { title: "Bank Accounts", href: "/setting/bank-settings", dialogId: "bank-settings" },
+      { title: "Bank Transactions", href: "/banking/history", dialogId: "bank-history" },
+      { title: "Transfers", href: "/banking/transfer", dialogId: "account-transfer" },
+      { title: "Reconciliation", href: "/banking/reconcile", dialogId: "reconcile-account" },
+      { title: "Receipts & Deposits", href: "/banking/receipts-deposits", dialogId: "receipts-deposits" },
     ]
   },
   {

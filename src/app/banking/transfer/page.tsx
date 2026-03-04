@@ -30,10 +30,10 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useMemo, useEffect } from 'react';
 import format from '@/lib/date-format';
-import type { Account } from '@/types/account';
+import { useBankAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
-import { recordAccountTransfer } from '@/ai/flows/account-transfer-flow';
-import { mockAccounts } from '@/app/configuration/chart-of-accounts/mock-accounts';
+// import { recordAccountTransfer } from '@/ai/flows/account-transfer-flow';
+// import { mockAccounts } from '@/app/configuration/chart-of-accounts/mock-accounts';
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-PH', {
@@ -58,9 +58,7 @@ export default function AccountTransferPage() {
   const [fromAccountId, setFromAccountId] = useState<string | undefined>();
   const [toAccountId, setToAccountId] = useState<string | undefined>();
 
-  // Use mock data for bank accounts
-  const bankAccounts = mockAccounts.filter(account => account.bank === 'Yes');
-  const isLoading = false;
+  const { accounts: bankAccounts, isLoading } = useBankAccounts();
 
 
   const selectedFromAccount = useMemo(() => {
@@ -90,20 +88,31 @@ export default function AccountTransferPage() {
     }
 
     try {
-      // Mock implementation - just log and show success
-      console.log('Mock account transfer:', {
-        fromAccountId: selectedFromAccount.id!,
-        toAccountId: selectedToAccount.id!,
-        amount,
-        date,
-        fromAccountName: selectedFromAccount.account_name,
-        toAccountName: selectedToAccount.account_name,
+      const response = await fetch('/api/banking/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fromGlId: selectedFromAccount.id!,
+          toGlId: selectedToAccount.id!,
+          amount,
+          date: date.toISOString(),
+          memo: `Transfer from ${selectedFromAccount.account_name} to ${selectedToAccount.account_name}`,
+          user: 'admin' // Placeholder for current user
+        })
       });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to record transfer');
+      }
 
       toast({
         title: 'Success',
         description: 'Account transfer recorded successfully.',
       });
+
+      // Update local storage/state if needed, but the hook might handle it or we can dispatch a refresh event
+      window.dispatchEvent(new CustomEvent('bank-accounts-refresh'));
 
       // Reset form
       setFromAccountId(undefined);
@@ -112,7 +121,7 @@ export default function AccountTransferPage() {
       setDate(new Date());
       closeDialog('account-transfer');
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to record transfer:', error);
       toast({
         variant: 'destructive',

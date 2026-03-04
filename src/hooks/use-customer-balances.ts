@@ -25,11 +25,12 @@ export function useCustomerBalances() {
             if (searchQuery) params.append('search', searchQuery);
 
             const url = `/api/customers/balances${params.toString() ? `?${params.toString()}` : ''}`;
-            const response = await fetch(url);
+            const response = await fetch(url).catch(() => null);
 
-            if (!response.ok) {
-                const errBody = await response.json().catch(() => null);
-                throw new Error(errBody?.error || response.statusText || 'Failed to fetch customer balances');
+            if (!response || !response.ok) {
+                console.warn('Silent fallback: Failed to fetch customer balances');
+                setBalances([]);
+                return;
             }
 
             const responseData = await response.json();

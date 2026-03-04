@@ -14,7 +14,7 @@ export const getAccounts = async () => {
   }
 }
 
-export const getBankAccounts = async () => {
+export const getBankAccountsFromCOA = async () => {
   try {
     const accounts = await prisma.$queryRaw`
             SELECT * FROM chart_of_account 
@@ -22,9 +22,357 @@ export const getBankAccounts = async () => {
         `;
     return Array.isArray(accounts) ? accounts : [];
   } catch (error) {
-    console.error('Error in getBankAccounts:', error);
+    console.error('Error in getBankAccountsFromCOA:', error);
     return [];
   }
+}
+
+// Dedicated Bank Account operations
+export const getAllBankAccounts = async (onlyApproved = false) => {
+  try {
+    const where: any = {};
+    if (onlyApproved) {
+      where.audit_status = 'DONE';
+    }
+
+    return await prisma.bankAccount.findMany({
+      where,
+      include: {
+        gl_account: true
+      },
+      orderBy: {
+        bank_code: 'asc'
+      }
+    });
+  } catch (error) {
+    console.error('Error in getAllBankAccounts:', error);
+    return [];
+  }
+}
+
+export const getBankTransactionsHistory = async (params: {
+  bankAccountId?: string;
+  status?: string;
+  type?: string;
+  startDate?: Date;
+  endDate?: Date;
+  search?: string;
+}) => {
+  try {
+    const { bankAccountId, status, type, startDate, endDate, search } = params;
+    const where: any = {};
+    if (bankAccountId) where.bankAccountId = bankAccountId;
+    if (status && status !== 'ALL') where.status = status;
+    if (type && type !== 'ALL') where.type = type;
+
+    if (startDate || endDate) {
+      where.date = {};
+      if (startDate) where.date.gte = startDate;
+      if (endDate) where.date.lte = endDate;
+    }
+
+    if (search) {
+      where.OR = [
+        { reference: { contains: search, mode: 'insensitive' } },
+        { particulars: { contains: search, mode: 'insensitive' } },
+        { bankAccount: { account_name: { contains: search, mode: 'insensitive' } } },
+        { bankAccount: { bank_name: { contains: search, mode: 'insensitive' } } }
+      ];
+    }
+
+    return await prisma.bankTransaction.findMany({
+      where,
+      include: {
+        bankAccount: {
+          include: {
+            gl_account: true
+          }
+        }
+      },
+      orderBy: {
+        date: 'desc'
+      }
+    });
+  } catch (error) {
+    console.error('Error in getBankTransactionsHistory:', error);
+    return [];
+  }
+}
+
+export const createBankAccount = async (data: any) => {
+  const { user, ...bankAccountData } = data;
+  const account = await prisma.bankAccount.create({
+    data: bankAccountData,
+    include: {
+      gl_account: true
+    }
+  });
+
+  const refNo = Math.floor(Date.now() / 1000).toString();
+
+  // Create Audit Log for Phase 1 Registration
+  await prisma.auditLog.create({
+    data: {
+      actionType: 'Bank Registration',
+      transactionId: refNo,
+      bankName: account.bank_name,
+      initiatedBy: user || 'System',
+      amount: bankAccountData.opening_balance || 0,
+      details: `New bank account registration for ${account.bank_name} - ${account.account_name} (${account.account_number}). Needs audit before becoming active.`,
+      status: 'To Audit'
+    }
+  });
+
+  return account;
+}
+
+export const updateBankAccount = async (id: string, data: any) => {
+  return await prisma.bankAccount.update({
+    where: { id },
+    data,
+    include: {
+      gl_account: true
+    }
+  });
+}
+
+export const deleteBankAccount = async (id: string) => {
+  return await prisma.bankAccount.delete({
+    where: { id }
+  });
+}
+
+// Bank Transaction details
+export const getBankTransactions = async (accountNumber: string) => {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        accountNumber: accountNumber
+      },
+      orderBy: { date: 'desc' }
+    });
+    return transactions;
+  } catch (error) {
+    console.error('Error in getBankTransactions:', error);
+    return [];
+  }
+}
+
+export const recordBankTransfer = async (data: {
+  fromBankAccountId: string;
+  toBankAccountId: string;
+  amount: number;
+  date: Date;
+  reference?: string;
+  memo?: string;
+  user: string;
+}) => {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Create Outgoing Bank Transaction (DRAFT/TO_AUDIT)
+    const withdrawal = await tx.bankTransaction.create({
+      data: {
+        bankAccountId: data.fromBankAccountId,
+        type: 'TRANSFER_OUT',
+        status: 'TO_AUDIT',
+        amount: data.amount,
+        balanceAfter: 0, // Will be updated upon posting
+        reference: data.reference,
+        particulars: data.memo || `Transfer to ${data.toBankAccountId}`,
+        sourceType: 'TRANSFER',
+        date: data.date
+      }
+    });
+
+    // 2. Create Incoming Bank Transaction
+    const deposit = await tx.bankTransaction.create({
+      data: {
+        bankAccountId: data.toBankAccountId,
+        type: 'TRANSFER_IN',
+        status: 'TO_AUDIT',
+        amount: data.amount,
+        balanceAfter: 0,
+        reference: data.reference,
+        particulars: data.memo || `Transfer from ${data.fromBankAccountId}`,
+        sourceType: 'TRANSFER',
+        date: data.date
+      }
+    });
+
+    // 3. Create Audit Logs
+    const fromBank = await tx.bankAccount.findUnique({ where: { id: data.fromBankAccountId } });
+    const toBank = await tx.bankAccount.findUnique({ where: { id: data.toBankAccountId } });
+
+    await tx.auditLog.create({
+      data: {
+        actionType: 'Bank Transfer Out',
+        transactionId: withdrawal.id,
+        bankName: fromBank?.bank_name || 'Bank',
+        initiatedBy: data.user,
+        amount: data.amount,
+        details: data.memo || `Bank Transfer Request: Outgoing`,
+        status: 'To Audit'
+      }
+    });
+
+    await tx.auditLog.create({
+      data: {
+        actionType: 'Bank Transfer In',
+        transactionId: deposit.id,
+        bankName: toBank?.bank_name || 'Bank',
+        initiatedBy: data.user,
+        amount: data.amount,
+        details: data.memo || `Bank Transfer Request: Incoming`,
+        status: 'To Audit'
+      }
+    });
+
+    return { withdrawal, deposit };
+  });
+}
+
+export const recordBankAdjustment = async (data: {
+  bankAccountId: string;
+  amount: number;
+  type: 'DEBIT' | 'CREDIT';
+  date: Date;
+  reference?: string;
+  memo?: string;
+  user: string;
+}) => {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Create Bank Transaction
+    const bt = await tx.bankTransaction.create({
+      data: {
+        bankAccountId: data.bankAccountId,
+        type: 'ADJUSTMENT',
+        status: 'TO_AUDIT',
+        amount: Math.abs(data.amount),
+        balanceAfter: 0,
+        reference: data.reference,
+        particulars: data.memo || 'Bank Adjustment',
+        sourceType: 'ADJUSTMENT',
+        date: data.date
+      }
+    });
+
+    const bank = await tx.bankAccount.findUnique({ where: { id: data.bankAccountId } });
+
+    // 2. Create Audit Log
+    await tx.auditLog.create({
+      data: {
+        actionType: 'Bank Adjustment',
+        transactionId: bt.id,
+        bankName: bank?.bank_name || 'Bank',
+        initiatedBy: data.user,
+        amount: Math.abs(data.amount),
+        details: data.memo || `Bank Adjustment Request`,
+        status: 'To Audit'
+      }
+    });
+
+    return { success: true, transactionId: bt.id };
+  });
+}
+
+export const recordBankDeposit = async (data: {
+  bankGlId: string;
+  amount: number;
+  date: Date;
+  reference?: string;
+  memo?: string;
+  user: string;
+  allocations: { accountId: string; amount: number; memo?: string }[];
+}) => {
+  return await prisma.$transaction(async (tx) => {
+    const bankAccount = await tx.account.findUnique({ where: { id: data.bankGlId } });
+    if (!bankAccount) throw new Error('Bank account not found');
+
+    const totalAllocated = data.allocations.reduce((sum, a) => sum + a.amount, 0);
+    if (Math.abs(totalAllocated - data.amount) > 0.01) {
+      throw new Error('Total allocations must equal the deposit amount');
+    }
+
+    // 1. Debit Bank Account
+    const bankTx = await tx.transaction.create({
+      data: {
+        date: data.date,
+        code: 'DEPOSIT',
+        particulars: data.memo || 'Bank Deposit',
+        transNo: data.reference || `DEP-${Date.now()}`,
+        accountNumber: bankAccount.account_no.toString(),
+        accountName: bankAccount.account_name,
+        debit: data.amount,
+        credit: 0,
+        user: data.user
+      }
+    });
+
+    // 2. Credit Allocation Accounts
+    for (const alloc of data.allocations) {
+      const targetAcc = await tx.account.findUnique({ where: { id: alloc.accountId } });
+      if (!targetAcc) throw new Error(`Allocation account ${alloc.accountId} not found`);
+
+      await tx.transaction.create({
+        data: {
+          date: data.date,
+          code: 'DEPOSIT',
+          particulars: alloc.memo || data.memo || 'Deposit Allocation',
+          transNo: data.reference || `DEP-${Date.now()}`,
+          accountNumber: targetAcc.account_no.toString(),
+          accountName: targetAcc.account_name,
+          debit: 0,
+          credit: alloc.amount,
+          user: data.user
+        }
+      });
+
+      // Update target account balance (assuming standard credit decrease/increase depending on type)
+      // For Income accounts, Credit increases balance.
+      await tx.account.update({
+        where: { id: targetAcc.id },
+        data: { balance: { increment: alloc.amount } } // Simplification: assuming Income/Liability for deposits
+      });
+    }
+
+    // Update bank balance
+    await tx.account.update({
+      where: { id: bankAccount.id },
+      data: { balance: { increment: data.amount } }
+    });
+
+    // 3. Create Audit Log
+    const bankAccountEntry = await tx.bankAccount.findFirst({ where: { gl_account_id: data.bankGlId } });
+
+    await tx.auditLog.create({
+      data: {
+        actionType: 'Bank Deposit',
+        transactionId: data.reference || `DEP-${Date.now()}`,
+        bankName: bankAccountEntry?.bank_name || bankAccount.account_name,
+        initiatedBy: data.user,
+        amount: data.amount,
+        details: data.memo || `Bank Deposit to ${bankAccount.account_name}`,
+        status: 'To Audit'
+      }
+    });
+
+    // 4. Record Bank Transaction for History
+    if (bankAccountEntry) {
+      const updatedAccount = await tx.account.findUnique({ where: { id: data.bankGlId } });
+      await tx.bankTransaction.create({
+        data: {
+          bankAccountId: bankAccountEntry.id,
+          transactionId: bankTx.id,
+          type: 'CASH_IN',
+          amount: data.amount,
+          balanceAfter: updatedAccount?.balance || 0,
+          reference: data.reference,
+          particulars: data.memo || 'Bank Deposit'
+        }
+      });
+    }
+
+    return { success: true };
+  });
 }
 
 export const applyTransactionToAccountBalance = async (
@@ -86,9 +434,18 @@ export const createAccount = async (data: {
   fs_category?: string;
   balance?: number;
   date_created?: Date;
+  bank_code?: string;
+  bank_name?: string;
+  bank_account_no?: string;
+  currency?: string;
+  branch?: string;
+  linked_gl_id?: string;
+  opening_balance?: number;
+  opening_date?: Date;
 }) => {
+  const { bank_code, bank_name, bank_account_no, currency, branch, ...accountData } = data;
   return await prisma.account.create({
-    data,
+    data: accountData,
   })
 }
 
@@ -106,14 +463,25 @@ export const upsertAccount = async (data: {
   fs_category?: string;
   balance?: number;
   date_created?: Date;
+  bank_code?: string;
+  bank_name?: string;
+  bank_account_no?: string;
+  currency?: string;
+  branch?: string;
+  linked_gl_id?: string;
+  opening_balance?: number;
+  opening_date?: Date;
 }) => {
-  const { account_no, ...updateData } = data;
+  const { account_no, bank_code, bank_name, bank_account_no, currency, branch, ...updateData } = data;
   return await prisma.account.upsert({
     where: { account_no },
     update: {
       ...updateData,
     },
-    create: data,
+    create: {
+      account_no,
+      ...updateData,
+    },
   })
 }
 
@@ -130,10 +498,19 @@ export const updateAccount = async (id: string, data: {
   fs_category?: string;
   balance?: number;
   date_created?: Date;
+  bank_code?: string;
+  bank_name?: string;
+  bank_account_no?: string;
+  currency?: string;
+  branch?: string;
+  linked_gl_id?: string;
+  opening_balance?: number;
+  opening_date?: Date;
 }) => {
+  const { bank_code, bank_name, bank_account_no, currency, branch, ...updateData } = data;
   return await prisma.account.update({
     where: { id },
-    data,
+    data: updateData,
   })
 }
 

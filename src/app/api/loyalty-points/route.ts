@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get('page') || '1';
 
     // Fetch from external API
-    const externalUrl = new URL('http://192.168.1.163:3001/api/customer-loyalty');
+    const externalUrl = new URL('http://192.168.1.163:3000/api/customer-loyalty');
     externalUrl.searchParams.append('search', search);
     externalUrl.searchParams.append('limit', limit);
     externalUrl.searchParams.append('page', page);

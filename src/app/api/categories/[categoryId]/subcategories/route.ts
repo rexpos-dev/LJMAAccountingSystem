@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: Promise<{ categoryId: string }> }
 ) {
   try {
-    const categoryId = params.categoryId;
+    const { categoryId } = await params;
 
     const subcategories = await prisma.category.findMany({
       where: { parentCategoryId: categoryId },

@@ -6,31 +6,39 @@ import { AuditCard } from "./audit-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
-export interface AuditAccount {
+export interface AuditItem {
     id: string;
-    name: string;
-    accountNumber: string;
-    balance: number;
-    status: "to-audit" | "ongoing" | "done" | "history";
+    actionType: string;
+    transactionId: string | null;
+    details: string | null;
+    amount: number | null;
+    status: string;
+    assignee: string | null;
+    remarks: string | null;
+    date: string;
+    bankName: string | null;
+    initiatedBy: string | null;
 }
 
 interface AuditColumnProps {
-    id: "to-audit" | "ongoing" | "done" | "history";
+    id: "to-audit" | "ongoing" | "done" | "history" | string;
     title: string;
-    items: AuditAccount[];
+    items: AuditItem[];
     color?: string; // Tailwind color class for header maybe
-    onViewHistory: (account: AuditAccount) => void;
+    auditors: { id: string, username: string, name: string }[];
+    onViewHistory: (account: AuditItem) => void;
+    onAssign: (auditId: string, assignee: string) => void;
 }
 
-export function AuditColumn({ id, title, items, color, onViewHistory }: AuditColumnProps) {
+export function AuditColumn({ id, title, items, color, auditors, onViewHistory, onAssign }: AuditColumnProps) {
     const { setNodeRef } = useDroppable({
         id: id,
     });
 
     return (
         <div className="flex flex-col h-full bg-muted/40 rounded-lg border border-border/50">
-            <div className={cn("p-4 font-semibold text-sm border-b uppercase tracking-wider", color)}>
-                {title} <span className="ml-2 text-xs text-muted-foreground font-normal bg-background px-2 py-0.5 rounded-full border">{items.length}</span>
+            <div className={cn("p-4 font-semibold text-sm border-b uppercase tracking-wider rounded-t-lg", color)}>
+                {title} <span className="ml-2 text-xs font-medium bg-background/90 text-foreground px-2 py-0.5 rounded-full shadow-sm">{items.length}</span>
             </div>
             <ScrollArea className="flex-1 p-3">
                 <div ref={setNodeRef} className="min-h-[150px] space-y-3">
@@ -39,9 +47,12 @@ export function AuditColumn({ id, title, items, color, onViewHistory }: AuditCol
                             <AuditCard
                                 key={item.id}
                                 id={item.id}
-                                accountName={item.name}
-                                accountNumber={item.accountNumber}
-                                balance={item.balance}
+                                actionType={item.actionType}
+                                transactionId={item.transactionId}
+                                bankName={item.bankName}
+                                amount={item.amount}
+                                initiatedBy={item.initiatedBy}
+                                date={item.date}
                                 status={item.status}
                                 onViewHistory={() => onViewHistory(item)}
                             />

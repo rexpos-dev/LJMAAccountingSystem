@@ -37,6 +37,7 @@ export function MainMenu() {
       <MenubarMenu>
         <MenubarTrigger>Reports</MenubarTrigger>
         <MenubarContent>
+          <MenubarItem onClick={() => openDialog('to-audit-report')}>To Audit Items</MenubarItem>
           <MenubarItem onClick={() => openDialog('general-ledger-dialog')}>General Ledger</MenubarItem>
           <MenubarItem onClick={() => openDialog('income-statement')}>Income Statement</MenubarItem>
           <MenubarItem onClick={() => openDialog('balance-sheet')}>Balance Sheet</MenubarItem>
@@ -53,6 +54,7 @@ export function MainMenu() {
         <MenubarTrigger>Setting</MenubarTrigger>
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('business-setup')}>Business Setup</MenubarItem>
+          <MenubarItem onClick={() => openDialog('bank-settings' as any)}>Bank Settings</MenubarItem>
           <MenubarItem onClick={() => openDialog('backup-scheduler')}>Back up Data</MenubarItem>
         </MenubarContent>
       </MenubarMenu>

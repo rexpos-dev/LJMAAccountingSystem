@@ -1,0 +1,1 @@
+async function main() { console.log('Testing POS API Network...'); try { const res = await fetch('http://192.168.1.163:3001/api/sales'); console.log('Status:', res.status); const txt = await res.text(); console.log('Response (first 100 chars):', txt.substring(0, 100)); } catch(e) { console.error('Network Error:', e); } } main();

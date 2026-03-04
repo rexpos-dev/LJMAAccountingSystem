@@ -24,8 +24,48 @@ model Account {
   account_status      String       @default("Active")
   account_type_id     String?
   accountTypeRel      AccountType? @relation(fields: [account_type_id], references: [id])
+  
+  // GL Mapping fields
+  linked_gl_id        String?
+  opening_balance     Float?       @default(0)
+  opening_date        DateTime?
+  bankAccounts        BankAccount[]
 
   @@map("chart_of_account")
+}
+
+model BankAccount {
+  id              String      @id @default(cuid())
+  bank_code       String      @unique
+  bank_name       String
+  account_name    String
+  account_number  String
+  account_type    AccountTypeEnum
+  currency        String?     @default("PHP")
+  gl_account_id   String
+  gl_account      Account     @relation(fields: [gl_account_id], references: [id])
+  opening_balance Float?      @default(0)
+  opening_date    DateTime?
+  is_active       Boolean     @default(true)
+  audit_status    AuditStatus @default(TO_AUDIT)
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  bank_transactions BankTransaction[]
+  reconciliations   BankReconciliation[]
+
+  @@map("bank_accounts")
+}
+
+enum AccountTypeEnum {
+  CASH
+  BANK
+}
+
+enum AuditStatus {
+  DRAFT
+  TO_AUDIT
+  ONGOING
+  DONE
 }
 
 model AccountType {
@@ -163,6 +203,7 @@ model Product {
   history               ProductHistory[]
   purchaseOrderItems    PurchaseOrderItem[]
   requestItems          RequestItem[]
+  posSaleItems          PosSaleItem[]
 
   @@map("product")
 }
@@ -564,15 +605,50 @@ model PayablesLedger {
 }
 
 model PosSale {
-  id             String   @id @default(cuid())
-  receiptId      String   @unique
+  id             String        @id @default(cuid())
+  receiptId      String        @unique
   date           DateTime
   amount         Float
   cashier        String?
-  syncedToLedger Boolean  @default(false)
-  createdAt      DateTime @default(now())
+  syncedToLedger Boolean       @default(false)
+  subtotal       Float?        @default(0)
+  tax            Float?        @default(0)
+  discount       Float?        @default(0)
+  paymentMethod  String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  items          PosSaleItem[]
 
   @@map("pos_sales")
+}
+
+model PosSaleItem {
+  id            String   @id @default(cuid())
+  posSaleId     String
+  productId     String?
+  productName   String
+  quantity      Float
+  unitPrice     Float
+  total         Float
+  posSale       PosSale  @relation(fields: [posSaleId], references: [id], onDelete: Cascade)
+  product       Product? @relation(fields: [productId], references: [id])
+
+  @@index([posSaleId])
+  @@index([productId])
+  @@map("pos_sale_item")
+}
+
+model PosSyncLog {
+  id           String   @id @default(cuid())
+  endpoint     String   @unique
+  lastSyncedAt DateTime
+  status       String   @default("SUCCESS") // SUCCESS or FAILED
+  recordsAdded Int      @default(0)
+  errorMessage String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("pos_sync_log")
 }
 
 model CustomerPayment {
@@ -586,4 +662,79 @@ model CustomerPayment {
   createdAt      DateTime @default(now())
 
   @@map("customer_payments")
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  actionType    String   // e.g., "POS Batch Closed", "Journal Entry Posted", "Large Transaction Posted", "Manual Journal Created"
+  transactionId String?  // ID of the related transaction or batch
+  details       String?  @db.Text
+  amount        Float?
+  status        String   @default("To Audit") // "To Audit", "Audited"
+  assignee      String?  // Username of the assigned auditor
+  remarks       String?  @db.Text
+  auditedBy     String?  // User who audited this
+  auditedAt     DateTime?
+  bankName      String?
+  initiatedBy   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("audit_log")
+}
+
+enum BankTransactionType {
+  CASH_IN
+  CASH_OUT
+  TRANSFER_IN
+  TRANSFER_OUT
+  ADJUSTMENT
+}
+
+enum BankTransactionStatus {
+  DRAFT
+  TO_AUDIT
+  APPROVED
+  POSTED
+  RECONCILED
+  CANCELLED
+}
+
+model BankTransaction {
+  id              String                @id @default(cuid())
+  bankAccountId   String
+  bankAccount     BankAccount           @relation(fields: [bankAccountId], references: [id])
+  transactionId   String?               // Link to the general journal transaction
+  date            DateTime              @default(now())
+  type            BankTransactionType
+  status          BankTransactionStatus @default(DRAFT)
+  amount          Float
+  balanceAfter    Float
+  reference       String?
+  particulars     String?               @db.Text
+  isCleared       Boolean               @default(false)
+  clearedAt       DateTime?
+  sourceType      String?               // POS, AP, AR, EXPENSE, TRANSFER, ADJUSTMENT
+  sourceId        String?               // Link to original record
+  offsetGlAccountId String?             // Offset GL Account for double-entry
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@map("bank_transactions")
+}
+
+model BankReconciliation {
+  id               String      @id @default(cuid())
+  bankAccountId    String
+  bankAccount      BankAccount @relation(fields: [bankAccountId], references: [id])
+  statementDate    DateTime
+  statementBalance Float
+  systemBalance    Float
+  difference       Float
+  status           String      @default("OPEN") // OPEN, CLOSED
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@map("bank_reconciliations")
 }

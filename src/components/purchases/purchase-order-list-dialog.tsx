@@ -49,7 +49,8 @@ import {
     FileText,
     Upload,
     History,
-    Filter
+    Filter,
+    ArrowDownToLine
 } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { cn } from '@/lib/utils';
@@ -123,7 +124,8 @@ export default function PurchaseOrderListDialog() {
             const res = await fetch(`/api/purchase-orders?${params.toString()}`);
             if (!res.ok) throw new Error('Failed to fetch purchase orders');
             const data = await res.json();
-            setOrders(data);
+            // API returns paginated object: { data: PurchaseOrder[], totalCount: number, ... }
+            setOrders(Array.isArray(data.data) ? data.data : []);
         } catch (error: any) {
             console.error('Failed to fetch orders', error);
             setError(error.message === 'Failed to fetch purchase orders' ? 'Failed to fetch purchase orders.' : 'No connection on API. Please check your network and try again.');
@@ -306,7 +308,40 @@ export default function PurchaseOrderListDialog() {
         }
     };
 
-    const totalAmount = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+    const handleFetchPOS = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/sync/pos/purchase-orders', {
+                method: 'POST',
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                toast({
+                    title: 'POS Sync Successful',
+                    description: data.message || `Successfully synced ${data.results?.synced || 0} orders.`
+                });
+                fetchOrders();
+            } else {
+                toast({
+                    title: 'POS Sync Failed',
+                    description: data.error || 'Failed to fetch orders from POS.',
+                    variant: 'destructive'
+                });
+            }
+        } catch (error) {
+            console.error('POS Sync error:', error);
+            toast({
+                title: 'Network Error',
+                description: 'Could not connect to the system. Please check your network.',
+                variant: 'destructive'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const totalAmount = Array.isArray(orders) ? orders.reduce((sum, order) => sum + (order.total || 0), 0) : 0;
 
     return (
         <Dialog open={openDialogs['purchase-order-list']} onOpenChange={() => closeDialog('purchase-order-list')}>
@@ -328,6 +363,7 @@ export default function PurchaseOrderListDialog() {
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedOrderId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Upload} label="Bulk Upload" onClick={handleBulkUpload} />
+                    <ToolbarButton icon={ArrowDownToLine} label="Fetch POS" onClick={handleFetchPOS} disabled={loading} className="text-blue-600 hover:text-blue-700" />
                 </div>
 
                 {/* Filters */}

@@ -149,7 +149,7 @@ export default function CustomersReport() {
                             </div>
                         </div>
                         <div className="flex gap-4">
-                            <Card className="bg-muted/30 border-none">
+                            <Card className={summary.total > 0 ? "bg-blue-500/10 border-blue-500/20" : "bg-muted/30 border-none"}>
                                 <CardContent className="p-3 flex items-center gap-3">
                                     <div className="p-2 bg-blue-500/10 rounded-full">
                                         <Users className="w-4 h-4 text-blue-500" />
@@ -160,7 +160,7 @@ export default function CustomersReport() {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-muted/30 border-none">
+                            <Card className={summary.active > 0 ? "bg-green-500/10 border-green-500/20" : "bg-muted/30 border-none"}>
                                 <CardContent className="p-3 flex items-center gap-3">
                                     <div className="p-2 bg-green-500/10 rounded-full">
                                         <Activity className="w-4 h-4 text-green-500" />
@@ -171,7 +171,7 @@ export default function CustomersReport() {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-muted/30 border-none">
+                            <Card className={summary.totalCreditLimit > 0 ? "bg-amber-500/10 border-amber-500/20" : "bg-muted/30 border-none"}>
                                 <CardContent className="p-3 flex items-center gap-3">
                                     <div className="p-2 bg-amber-500/10 rounded-full">
                                         <CreditCard className="w-4 h-4 text-amber-500" />

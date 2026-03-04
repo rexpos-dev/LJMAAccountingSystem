@@ -472,6 +472,18 @@ export default function CreatePurchaseOrderDialog() {
                                 </div>
                             </div>
 
+
+
+                            <div className="grid gap-2">
+                                <Label>Vendor Address</Label>
+                                <Textarea
+                                    placeholder="[Enter vendor address]"
+                                    className="min-h-[100px] resize-none"
+                                    value={vendorAddress || ''}
+                                    onChange={(e) => setVendorAddress(e.target.value)}
+                                />
+                            </div>
+
                             <div className="grid gap-2">
                                 <Label htmlFor="depositAccount">Deposit Account (Liability)</Label>
                                 <Select value={depositAccount} onValueChange={setDepositAccount}>
@@ -489,16 +501,6 @@ export default function CreatePurchaseOrderDialog() {
                                         )}
                                     </SelectContent>
                                 </Select>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label>Vendor Address</Label>
-                                <Textarea
-                                    placeholder="[Enter vendor address]"
-                                    className="min-h-[100px] resize-none"
-                                    value={vendorAddress || ''}
-                                    onChange={(e) => setVendorAddress(e.target.value)}
-                                />
                             </div>
                         </div>
 

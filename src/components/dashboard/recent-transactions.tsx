@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function RecentTransactions() {
-    const { transactions: recentTransactions, isLoading } = useRecentTransactions(5);
+    const { transactions: recentTransactions, isLoading } = useRecentTransactions(10);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-PH', {
@@ -18,7 +18,7 @@ export function RecentTransactions() {
     };
 
     if (isLoading) {
-        return <Skeleton className="h-[300px] w-full" />;
+        return <Skeleton className="h-[500px] w-full" />;
     }
 
     return (

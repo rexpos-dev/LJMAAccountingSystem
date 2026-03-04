@@ -44,6 +44,10 @@ export function NotificationBell() {
                     router.push('/requests');
                 }
                 break;
+            case 'AuditAssignment':
+            case 'AuditComment':
+                router.push('/audit');
+                break;
             default:
                 // Default fallback
                 router.push('/dashboard');

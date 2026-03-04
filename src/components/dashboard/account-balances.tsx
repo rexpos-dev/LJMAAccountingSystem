@@ -50,31 +50,31 @@ export function AccountBalances() {
     }
 
     return (
-        <div className="space-y-4">
-            <h3 className="font-headline font-semibold text-lg text-primary">Account Balances</h3>
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card className="bg-slate-50 dark:bg-slate-900 border-l-4 border-l-blue-500">
-                    <CardHeader className="py-4">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Checking Accounts</CardTitle>
+        <div className="space-y-3">
+            <h3 className="font-headline font-bold text-lg text-white/90 px-1">Account Balances</h3>
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                <Card className="bg-white/5 border-none border-l-4 border-l-blue-500 backdrop-blur-sm">
+                    <CardHeader className="p-3 pb-1">
+                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Checking Accounts</CardTitle>
                     </CardHeader>
-                    <CardContent className="pb-4">
-                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{formatCurrency(balances.checking)}</div>
+                    <CardContent className="p-3 pt-0 pb-4">
+                        <div className="text-xl font-bold text-white font-headline">{formatCurrency(balances.checking)}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-slate-50 dark:bg-slate-900 border-l-4 border-l-green-500">
-                    <CardHeader className="py-4">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Savings Account</CardTitle>
+                <Card className="bg-white/5 border-none border-l-4 border-l-emerald-500 backdrop-blur-sm">
+                    <CardHeader className="p-3 pb-1">
+                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Savings Account</CardTitle>
                     </CardHeader>
-                    <CardContent className="pb-4">
-                        <div className="text-2xl font-bold text-green-900 dark:text-green-100">{formatCurrency(balances.savings)}</div>
+                    <CardContent className="p-3 pt-0 pb-4">
+                        <div className="text-xl font-bold text-white font-headline">{formatCurrency(balances.savings)}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-slate-50 dark:bg-slate-900 border-l-4 border-l-red-500">
-                    <CardHeader className="py-4">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Credit Card</CardTitle>
+                <Card className="bg-white/5 border-none border-l-4 border-l-rose-500 backdrop-blur-sm">
+                    <CardHeader className="p-3 pb-1">
+                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Credit Card</CardTitle>
                     </CardHeader>
-                    <CardContent className="pb-4">
-                        <div className="text-2xl font-bold text-red-900 dark:text-red-100">{formatCurrency(balances.creditCard)}</div>
+                    <CardContent className="p-3 pt-0 pb-4">
+                        <div className="text-xl font-bold text-white font-headline">{formatCurrency(balances.creditCard)}</div>
                     </CardContent>
                 </Card>
             </div>

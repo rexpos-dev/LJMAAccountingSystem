@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch from external API for this specific customer
-    const externalUrl = new URL('http://192.168.1.163:3001/api/customer-loyalty');
+    const externalUrl = new URL('http://192.168.1.163:3000/api/customer-loyalty');
     externalUrl.searchParams.append('search', customerId); // Assuming search can match customerId or name
     externalUrl.searchParams.append('limit', '1000'); // Get as many as possible to sum
 

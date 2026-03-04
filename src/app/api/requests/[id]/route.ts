@@ -1,13 +1,12 @@
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = params.id;
+        const { id } = await params;
         const requestData: any = await prisma.$queryRaw`
             SELECT * FROM request WHERE id = ${id}
         `;
@@ -32,10 +31,10 @@ export async function GET(
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = params.id;
+        const { id } = await params;
         const body = await req.json();
         const now = new Date();
 
@@ -57,8 +56,6 @@ export async function PATCH(
         updates.push(`updatedAt = ?`);
         values.push(now);
         values.push(id);
-
-        const query = `UPDATE request SET ${updates.join(', ')} WHERE id = ?`;
 
         // This is a bit tricky with queryRaw/executeRaw because and dynamic fields.
         // For simplicity and to bypass Prisma model issues, we use a slightly more manual approach if needed
@@ -93,10 +90,10 @@ export async function PATCH(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = params.id;
+        const { id } = await params;
 
         // Delete items first
         await prisma.$executeRaw`DELETE FROM request_item WHERE requestId = ${id}`;

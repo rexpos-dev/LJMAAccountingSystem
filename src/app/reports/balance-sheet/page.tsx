@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import format from '@/lib/date-format';
 
-export default function BalanceSheetPage({ onViewReport }: { onViewReport: (date: Date) => void }) {
+export default function BalanceSheetPage({ onViewReport = () => { } }: { onViewReport?: (date: Date) => void }) {
   const { openDialogs, closeDialog } = useDialog();
   const [date, setDate] = useState<Date | undefined>(undefined);
 

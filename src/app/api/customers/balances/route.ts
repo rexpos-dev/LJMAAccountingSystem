@@ -7,31 +7,26 @@ export async function GET(request: Request) {
 
         console.log('Fetching customer balances from external API...');
 
-        const externalUrl = new URL('http://192.168.1.163:3001/api/customers/balances');
+        const externalUrl = new URL('http://192.168.1.163:3000/api/customers/balances');
         if (search) {
             externalUrl.searchParams.append('search', search);
         }
 
         const response = await fetch(externalUrl.toString(), {
             next: { revalidate: 0 } // Disable caching for fresh data
-        });
+        }).catch(() => null);
 
-        if (!response.ok) {
-            throw new Error(`External API returned ${response.status}`);
+        if (!response || !response.ok) {
+            console.warn(`External API unavailable for customer balances. Returning empty array.`);
+            return NextResponse.json([]);
         }
 
         const externalData = await response.json();
 
         return NextResponse.json(externalData);
     } catch (error: any) {
-        console.error('❌ [API/Customers/Balances] Error fetching customer balances:', error);
+        console.warn('❌ [API/Customers/Balances] Silent Fallback: Error fetching customer balances:', error.message);
 
-        return NextResponse.json(
-            {
-                error: 'Failed to fetch customer balances',
-                details: error.message || error.toString(),
-            },
-            { status: 500 }
-        );
+        return NextResponse.json([]);
     }
 }

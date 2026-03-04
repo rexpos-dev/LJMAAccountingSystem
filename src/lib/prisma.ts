@@ -10,10 +10,9 @@ const globalForPrisma = globalThis as unknown as {
 
 let prismaInstance = globalForPrisma.prisma
 
-// Aggressive refresh in dev mode if salesUser is missing
-if (process.env.NODE_ENV !== 'production' && prismaInstance && !(prismaInstance as any).salesUser) {
-  console.log('🔄 [Prisma] SalesUser model missing from cached instance. FORCING REFRESH...');
-  console.log('🔄 [Prisma] Notifications enabled.'); // Trigger reload
+// Aggressive refresh in dev mode if salesUser or bankAccount is missing
+if (process.env.NODE_ENV !== 'production' && prismaInstance && (!(prismaInstance as any).salesUser || !(prismaInstance as any).bankAccount)) {
+  console.log('🔄 [Prisma] models missing from cached instance. FORCING REFRESH...');
   prismaInstance = undefined
 }
 
@@ -37,10 +36,10 @@ if (!prismaInstance) {
 
 if (typeof window === 'undefined') {
   const models = Object.keys(prismaInstance).filter(k => k[0] === k[0].toLowerCase() && !k.startsWith('_'));
-  if (!(prismaInstance as any).salesUser) {
-    console.error('❌ [Prisma] ERROR: salesUser model is missing from the client!');
+  if (!(prismaInstance as any).salesUser || !(prismaInstance as any).bankAccount) {
+    console.error('❌ [Prisma] ERROR: Some models are missing from the client!');
   } else {
-    console.log('✅ [Prisma] salesUser model found.');
+    console.log('✅ [Prisma] models initialized properly.');
   }
 }
 

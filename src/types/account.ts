@@ -16,5 +16,13 @@ export interface Account {
   date_created?: Date | string;
   last_updated_at?: Date | string;
   account_type_id?: string;
+  bank_code?: string;
+  bank_name?: string;
+  bank_account_no?: string;
+  currency?: string;
+  branch?: string;
+  linked_gl_id?: string;
+  opening_balance?: number;
+  opening_date?: Date | string;
 }
 

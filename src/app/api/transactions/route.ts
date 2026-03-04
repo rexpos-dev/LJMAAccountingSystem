@@ -102,6 +102,19 @@ export async function POST(request: Request) {
       }
 
       createdTransactions.push(transaction);
+
+      // --- Audit Log Logic ---
+      const amount = Math.max(transaction.debit || 0, transaction.credit || 0);
+      await prisma.auditLog.create({
+        data: {
+          actionType: transaction.code === 'GJ' ? 'Journal Entry Posted' : 'Transaction Posted',
+          transactionId: transaction.transNo || transaction.id,
+          amount: amount,
+          details: `${transaction.code === 'GJ' ? 'Manual Journal Entry' : 'Transaction'}: ${transaction.particulars}`,
+          status: 'To Audit'
+        }
+      });
+      // --- End Audit Log Logic ---
     }
 
     // Return single transaction if only one was created, otherwise return array
