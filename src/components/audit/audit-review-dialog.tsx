@@ -74,9 +74,7 @@ export function AuditReviewDialog({
                 if (res.ok) {
                     const data = await res.json();
                     const filtered = data.filter((u: any) =>
-                        u.accountType === 'AUDIT' ||
-                        u.accountType === 'AUDITOR' ||
-                        (u.permissions && u.permissions.includes('AUDIT'))
+                        u.accountType?.toLowerCase() === 'auditor'
                     );
                     setUsers(filtered);
                 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { fetchWithCache } from '@/lib/api-cache';
 
 /**
  * Generate a unique EAN-13 loyalty card code
@@ -61,16 +62,18 @@ export async function GET(request: Request) {
       externalUrl.searchParams.append('search', search);
     }
 
-    const response = await fetch(externalUrl.toString(), {
-      next: { revalidate: 0 } // Disable caching to get fresh data
-    }).catch(() => null);
+    const result = await fetchWithCache<any>(
+      externalUrl.toString(),
+      { headers: { 'Cache-Control': 'no-cache' } },
+      15
+    );
 
-    if (!response || !response.ok) {
-      console.warn(`External API returned ${response?.status}. Gracefully returning empty array.`);
+    if (!result.success || !result.data) {
+      console.warn(`External API returned ${result.status || result.error}. Gracefully returning empty array.`);
       return NextResponse.json([]);
     }
 
-    const externalData = await response.json();
+    const externalData = result.data;
 
     let rawData = [];
     if (Array.isArray(externalData)) {

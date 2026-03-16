@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Network,
   Users,
+  UserCog,
   ClipboardList,
   FilePlus
 } from "lucide-react";
@@ -129,14 +130,23 @@ export const navItems: NavItem[] = [
     permissions: ['Dashboard'], // Or specific audit permission if exists
   },
   {
+    title: "User Management",
+    href: "#",
+    icon: UserCog,
+    permissions: ['Setup'],
+    subItems: [
+      { title: "Sales User", href: "/configuration/sales-users", dialogId: "sales-users" },
+      { title: "User Permissions", href: "/configuration/user-permissions", dialogId: "user-permissions", permissions: ['Add/Edit user'] },
+      { title: "Employee Directory", href: "/user-management/employee-directory", dialogId: "employee-directory" },
+    ]
+  },
+  {
     title: "Configuration",
     href: "#",
     icon: Settings,
     permissions: ['Setup'],
     subItems: [
       { title: "Chart Of Accounts", href: "/configuration/chart-of-accounts", dialogId: "chart-of-accounts" },
-      { title: "Sales User", href: "/configuration/sales-users", dialogId: "sales-users" },
-      { title: "User Permissions", href: "/configuration/user-permissions", dialogId: "user-permissions", permissions: ['Add/Edit user'] },
     ]
   },
   {
@@ -148,6 +158,7 @@ export const navItems: NavItem[] = [
       { title: "Business Setup", href: "/setting/business-setup", dialogId: "business-setup" },
       { title: "Set Up Web Access", href: "/todo/web-access" },
       { title: "Back up data", href: "/todo/backup", dialogId: "backup-scheduler", permissions: ['Backup Database'] },
+      { title: "Branch", href: "/setting/branches", dialogId: "branch-list" },
     ]
   }
 ];

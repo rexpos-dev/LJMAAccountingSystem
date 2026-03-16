@@ -43,6 +43,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 const requestItemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -62,9 +63,9 @@ const formSchema = z.object({
     items: z.array(requestItemSchema).min(1, 'At least one item is required'),
     requestedBy: z.string().optional(),
     chargeToName: z.string().optional(),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -80,6 +81,7 @@ export function HouseChargeForm({ initialData, mode = 'create', onSuccess, onCan
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "HOUSE CHARGE REQUEST FORM";
@@ -187,7 +189,26 @@ export function HouseChargeForm({ initialData, mode = 'create', onSuccess, onCan
                                 <FormField control={form.control} name="requesterName" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Requestor</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <Select value={field.value} onValueChange={(val) => {
+                                            field.onChange(val);
+                                            const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                            if (emp && emp.designation) {
+                                                form.setValue('position', emp.designation, { shouldValidate: true });
+                                            }
+                                        }} disabled={isReadOnly || employeesLoading}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 bg-background">
+                                                    <SelectValue placeholder="Select name" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {employees.map((emp: any) => (
+                                                    <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                        {emp.firstName} {emp.lastName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />

@@ -42,6 +42,8 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
+import { useBranches } from '@/hooks/use-branches';
 
 const itemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -58,9 +60,9 @@ const formSchema = z.object({
     location: z.string().optional(),
     depositAccount: z.string().optional(),
     items: z.array(itemSchema).min(1, 'At least one item is required'),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -77,6 +79,8 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
+    const { data: branches = [] } = useBranches();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
@@ -215,9 +219,37 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Requested By</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="Name" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" />
-                                    </FormControl>
+                                    <Select value={field.value} onValueChange={(val) => {
+                                        field.onChange(val);
+                                        const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                        if (emp) {
+                                            if (emp.branchesAssigned) {
+                                                const assignedBranch = String(emp.branchesAssigned);
+                                                form.setValue('department', assignedBranch, { shouldValidate: true });
+                                                // Find matching branch to get the address for the location field
+                                                const matchedBranch = branches.find((b: any) => 
+                                                    b.name.toLowerCase() === assignedBranch.toLowerCase() ||
+                                                    (b.code && b.code.toLowerCase() === assignedBranch.toLowerCase())
+                                                );
+                                                if (matchedBranch && matchedBranch.address) {
+                                                    form.setValue('location', matchedBranch.address, { shouldValidate: true });
+                                                }
+                                            }
+                                        }
+                                    }} disabled={isReadOnly || employeesLoading}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                                <SelectValue placeholder="Select name" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {employees.map((emp: any) => (
+                                                <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                    {emp.firstName} {emp.lastName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

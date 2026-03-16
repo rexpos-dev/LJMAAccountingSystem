@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchWithCache } from '@/lib/api-cache';
 
 export interface ExternalProduct {
   id: string;
@@ -47,22 +48,23 @@ export async function GET(request: NextRequest) {
   if (filterValue) externalParams.append('filterValue', filterValue);
 
   try {
-    const response = await fetch(
-      `http://192.168.1.163:3000/api/products?${externalParams.toString()}`,
+    const fetchUrl = `http://192.168.1.163:3000/api/products?${externalParams.toString()}`;
+    const result = await fetchWithCache<ExternalProductResponse>(
+      fetchUrl,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      }
+      },
+      15 // 15 minutes TTL
     );
 
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
+    if (!result.success || !result.data) {
       console.error(
-        'External products API responded with non-OK status',
-        response.status,
-        text
+        'External products API responded with failure',
+        result.status,
+        result.error
       );
 
       const failureResponse: ExternalProductResponse = {
@@ -81,9 +83,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(failureResponse);
     }
 
-    const data: ExternalProductResponse = await response.json();
-
-    return NextResponse.json(data);
+    return NextResponse.json(result.data);
   } catch (error) {
     // Most likely a connection / timeout error to the external service
     console.error('Error fetching external products:', error);

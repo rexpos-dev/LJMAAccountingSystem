@@ -29,6 +29,8 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
+    SelectGroup,
+    SelectLabel,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -42,6 +44,9 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useRequests } from '@/hooks/use-requests';
+import { useBranches } from '@/hooks/use-branches';
+import { useEmployees } from '@/hooks/use-employees';
 
 // Schema Definition
 const itemSchema = z.object({
@@ -77,6 +82,7 @@ const formSchema = z.object({
     finalChargeTo: z.string().optional(),
     // Right side fields
     payTo: z.string().optional(),
+    requestFormFrom: z.string().optional(),
     accountNumber: z.string().optional(),
     expenseAcct: z.string().optional(),
     receivables: z.string().optional(),
@@ -87,8 +93,8 @@ const formSchema = z.object({
     amountInWords: z.string().optional(),
     // Signatures
     preparedBy: z.string().optional(),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
     receivedBy: z.string().optional(),
 });
 
@@ -105,9 +111,14 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: requests = [] } = useRequests();
+    const { data: branches = [] } = useBranches();
+    const { data: employees = [] } = useEmployees();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
+
+    const approvedRequests = requests.filter((r: any) => r.status === 'Approved');
 
     // Filter users by role and specific form access
     const verifiers = userPermissions.filter(u => {
@@ -126,6 +137,9 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
         defaultValues: {
             controlNo: initialData?.requestNumber || '',
             date: initialData?.date ? new Date(initialData.date) : new Date(),
+            payTo: initialData?.requesterName || '',
+            requestFormFrom: initialData?.requestFormFrom || '',
+            accountNumber: initialData?.accountNo || '',
             tlmc: initialData?.tlmc || false,
             sfl: initialData?.sfl || false,
             trucking: initialData?.trucking || false,
@@ -162,9 +176,35 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
         name: 'items',
     });
 
-    // Calculate total
     const watchedItems = form.watch('items');
     const total = (watchedItems || []).reduce((sum, item) => sum + ((item.qty || 0) * (item.amount || 0)), 0);
+
+    const branchItemsOptions = [
+        { name: 'tlmc', label: 'TLMC' },
+        { name: 'sfl', label: 'SFL' },
+        { name: 'trucking', label: 'Trucking' },
+        { name: 'maeccDav', label: 'MAECC DAV' },
+        { name: 'lfc', label: 'LFC' },
+        { name: 'rentalSpace', label: 'Rental Space' },
+        { name: 'maeccDeOro', label: 'MAECC De Oro' },
+        { name: 'maeccMars', label: 'MAECC Mars' },
+        { name: 'ktr', label: 'KTR' },
+        { name: 'repacking', label: 'Repacking' },
+        { name: 'chow2', label: 'Chow 2' },
+        { name: 'atr', label: 'ATR' },
+        { name: 'prorate', label: 'Prorate' },
+        { name: 'riceFarm', label: 'Rice Farm' },
+        { name: 'jyr', label: 'JYR' },
+    ];
+
+    const watchedBranches = form.watch(branchItemsOptions.map(b => b.name as any));
+    const selectedBranchLabels = branchItemsOptions.filter((b, i) => watchedBranches[i]).map(b => b.label.toLowerCase());
+
+    const filteredEmployees = employees.filter((emp: any) => {
+        if (!emp.branchesAssigned) return false;
+        const empBranches = emp.branchesAssigned.toLowerCase();
+        return selectedBranchLabels.some(label => empBranches.includes(label));
+    });
 
     async function onSubmit(data: FormValues) {
         if (isReadOnly) return;
@@ -173,6 +213,9 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
             const url = mode === 'edit' ? `/api/requests/${initialData.id}` : '/api/requests';
             const method = mode === 'edit' ? 'PATCH' : 'POST';
 
+            const selectedReq = approvedRequests.find((r: any) => r.id === data.payTo);
+            const actualRequesterName = selectedReq ? selectedReq.requesterName : data.payTo;
+
             const response = await fetch(url, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
@@ -180,6 +223,9 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                     ...data,
                     formName: 'DISBURSEMENT SLIP',
                     amount: total,
+                    requesterName: actualRequesterName,
+                    requestFormFrom: data.requestFormFrom,
+                    accountNo: data.accountNumber,
                     // Map items for the API
                     items: data.items.map(it => ({
                         description: it.particulars,
@@ -263,23 +309,7 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                                 <h3 className="text-sm font-bold uppercase tracking-tight">Company / Branch Selection</h3>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 p-4 bg-muted/20 rounded-lg border border-muted-foreground/10">
-                                {[
-                                    { name: 'tlmc', label: 'TLMC' },
-                                    { name: 'sfl', label: 'SFL' },
-                                    { name: 'trucking', label: 'Trucking' },
-                                    { name: 'maeccDav', label: 'MAECC DAV' },
-                                    { name: 'lfc', label: 'LFC' },
-                                    { name: 'rentalSpace', label: 'Rental Space' },
-                                    { name: 'maeccDeOro', label: 'MAECC De Oro' },
-                                    { name: 'maeccMars', label: 'MAECC Mars' },
-                                    { name: 'ktr', label: 'KTR' },
-                                    { name: 'repacking', label: 'Repacking' },
-                                    { name: 'chow2', label: 'Chow 2' },
-                                    { name: 'atr', label: 'ATR' },
-                                    { name: 'prorate', label: 'Prorate' },
-                                    { name: 'riceFarm', label: 'Rice Farm' },
-                                    { name: 'jyr', label: 'JYR' },
-                                ].map((item) => (
+                                {branchItemsOptions.map((item) => (
                                     <FormField
                                         key={item.name}
                                         control={form.control}
@@ -287,7 +317,29 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                                         render={({ field }) => (
                                             <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                                                 <FormControl>
-                                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isReadOnly} />
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={(checked) => {
+                                                            field.onChange(checked);
+                                                            if (checked && !isReadOnly) {
+                                                                // Find matching branch
+                                                                const matchedBranch = branches.find(b =>
+                                                                    b.name.toLowerCase() === item.label.toLowerCase() ||
+                                                                    (b.code && b.code.toLowerCase() === item.label.toLowerCase())
+                                                                );
+
+                                                                if (matchedBranch) {
+                                                                    if (matchedBranch.payTo) form.setValue('payTo', matchedBranch.payTo, { shouldValidate: true });
+                                                                    if (matchedBranch.accountNumber) form.setValue('accountNumber', matchedBranch.accountNumber, { shouldValidate: true });
+                                                                    if (matchedBranch.expenseAcct) form.setValue('expenseAcct', matchedBranch.expenseAcct, { shouldValidate: true });
+                                                                    if (matchedBranch.receivables) form.setValue('receivables', matchedBranch.receivables, { shouldValidate: true });
+                                                                    if (matchedBranch.depositAccount) form.setValue('depositAccount', matchedBranch.depositAccount, { shouldValidate: true });
+                                                                    if (matchedBranch.othersField) form.setValue('othersField', matchedBranch.othersField, { shouldValidate: true });
+                                                                }
+                                                            }
+                                                        }}
+                                                        disabled={isReadOnly}
+                                                    />
                                                 </FormControl>
                                                 <FormLabel className="text-[10px] font-semibold uppercase leading-none cursor-pointer">
                                                     {item.label}
@@ -336,7 +388,66 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                                 <FormField control={form.control} name="payTo" render={({ field }) => (
                                     <FormItem className="grid grid-cols-3 items-center gap-4 space-y-0">
                                         <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Pay To</FormLabel>
-                                        <FormControl className="col-span-2"><Input {...field} className="h-8 text-sm italic font-medium" disabled={isReadOnly} /></FormControl>
+                                        <Select value={field.value} onValueChange={async (val) => {
+                                            field.onChange(val);
+                                            try {
+                                                const res = await fetch(`/api/requests/${val}`);
+                                                if (!res.ok) return;
+                                                const reqData = await res.json();
+
+                                                if (reqData.accountNo) form.setValue('accountNumber', reqData.accountNo, { shouldValidate: true });
+                                                if (reqData.depositAccount) form.setValue('depositAccount', reqData.depositAccount, { shouldValidate: true });
+                                                if (reqData.items && reqData.items.length > 0) {
+                                                    const formattedItems = reqData.items.map((it: any) => ({
+                                                        qty: it.quantity || 0,
+                                                        unit: it.unit || '',
+                                                        particulars: it.description || '',
+                                                        amount: it.unitPrice || 0
+                                                    }));
+                                                    form.setValue('items', formattedItems, { shouldValidate: true });
+                                                }
+                                            } catch (error) {
+                                                console.error('Error fetching request details', error);
+                                            }
+                                        }} disabled={isReadOnly}>
+                                            <FormControl className="col-span-2">
+                                                <SelectTrigger className="h-8 text-sm italic font-medium bg-transparent">
+                                                    <SelectValue placeholder="-- Select Approved Request --" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel className="text-muted-foreground text-xs uppercase cursor-default">Approved Requests</SelectLabel>
+                                                    {approvedRequests.map((r: any) => (
+                                                        <SelectItem key={r.id} value={r.id}>
+                                                            {r.requestNumber} - {r.requesterName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                                {selectedBranchLabels.length > 0 && (
+                                                    <SelectGroup>
+                                                        <SelectLabel className="text-muted-foreground text-xs uppercase cursor-default">Employees (Selected Branches)</SelectLabel>
+                                                        {filteredEmployees.map((emp: any) => (
+                                                            <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                                {emp.firstName} {emp.lastName}
+                                                            </SelectItem>
+                                                        ))}
+                                                        {filteredEmployees.length === 0 && (
+                                                            <div className="p-2 text-xs text-muted-foreground text-center italic">No employees found for this branch</div>
+                                                        )}
+                                                    </SelectGroup>
+                                                )}
+                                                {field.value && !approvedRequests.find((r: any) => r.id === field.value) && !filteredEmployees.find((e: any) => `${e.firstName} ${e.lastName}` === field.value) && (
+                                                    <SelectItem value={field.value}>{field.value}</SelectItem>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="requestFormFrom" render={({ field }) => (
+                                    <FormItem className="grid grid-cols-3 items-center gap-4 space-y-0">
+                                        <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Request Form From</FormLabel>
+                                        <FormControl className="col-span-2"><Input {...field} className="h-8 text-sm" disabled={isReadOnly} /></FormControl>
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="accountNumber" render={({ field }) => (

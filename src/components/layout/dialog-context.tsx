@@ -119,7 +119,15 @@ export type DialogId =
     | 'add-bank-account'
     | 'edit-bank-account'
     | 'bank-history'
-    | 'add-bank-transaction';
+    | 'add-bank-transaction'
+    | 'branch-list'
+    | 'add-branch'
+    | 'employee-directory'
+    | 'add-employee'
+    | 'edit-employee'
+    | 'delete-employee'
+    | 'customer-statement'
+    | 'customer-ledger';
 
 export interface DialogContextType {
     openDialogs: Record<string, boolean>;

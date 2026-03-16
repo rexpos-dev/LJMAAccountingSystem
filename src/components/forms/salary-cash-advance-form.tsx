@@ -33,6 +33,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 const formSchema = z.object({
     date: z.date(),
@@ -61,6 +62,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "REQUEST AND AUTHORIZATION OF CASH ADVANCES";
@@ -197,14 +199,26 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                     control={form.control}
                                     name="requestor"
                                     render={({ field }) => (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                placeholder="[Full Name]"
-                                                className="h-7 min-w-[250px] max-w-[400px] border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary px-2 mx-2 text-center font-bold"
-                                                disabled={isReadOnly}
-                                            />
-                                        </FormControl>
+                                        <Select value={field.value} onValueChange={(val) => {
+                                            field.onChange(val);
+                                            const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                            if (emp && emp.employeeId) {
+                                                form.setValue('employeeId', emp.employeeId, { shouldValidate: true });
+                                            }
+                                        }} disabled={isReadOnly || employeesLoading}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-7 min-w-[250px] max-w-[400px] border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary px-2 mx-2 text-center font-bold">
+                                                    <SelectValue placeholder="[Select Name]" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {employees.map((emp: any) => (
+                                                    <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                        {emp.firstName} {emp.lastName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     )}
                                 />
                                 <span>, an employee of</span>

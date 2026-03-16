@@ -315,6 +315,8 @@ model UserPermission {
   password        String?
   designation     String?
   formPermissions String?
+  chatRooms       ChatParticipant[]
+  chatMessages    ChatMessage[]
 
   @@map("user_permission")
 }
@@ -737,4 +739,108 @@ model BankReconciliation {
   updatedAt        DateTime    @updatedAt
 
   @@map("bank_reconciliations")
+}
+
+
+model Branch {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  code           String?  @unique
+  type           String?  // Branch Type
+  logoUrl        String?  @db.LongText // For base64 logo
+  address        String?  @db.Text
+  phone          String?  // Contact Number
+  isActive       Boolean  @default(true)
+  
+  // Payment Details for Disbursement Slip
+  payTo          String?   
+  accountNumber  String?
+  expenseAcct    String?
+  receivables    String?
+  depositAccount String?   
+  othersField    String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("branches")
+}
+
+model Employee {
+  id               String   @id @default(cuid())
+  employeeId       String   @unique
+  firstName        String
+  lastName         String
+  designation      String?
+  branchesAssigned String?  @db.Text
+  status           String   @default("Active")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("employee")
+}
+
+model ApiCache {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  data      String   @db.LongText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("api_cache")
+}
+
+model ChatRoom {
+  id        String   @id @default(cuid())
+  name      String?  @db.VarChar(255)
+  isGroup   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ChatParticipant[]
+  messages     ChatMessage[]
+
+  @@map("chat_rooms")
+}
+
+model ChatParticipant {
+  id       String   @id @default(cuid())
+  roomId   String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  room ChatRoom       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user UserPermission @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@map("chat_participants")
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  roomId     String
+  senderId   String
+  senderName String
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+
+  room        ChatRoom         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  attachments ChatAttachment[]
+  user        UserPermission   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+model ChatAttachment {
+  id        String   @id @default(cuid())
+  messageId String
+  fileName  String
+  fileType  String
+  fileUrl   String
+  fileSize  Int
+  createdAt DateTime @default(now())
+
+  message ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("chat_attachments")
 }

@@ -19,7 +19,7 @@ import { useBankAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AddCustomerPaymentDialog() {
-    const { openDialogs, closeDialog } = useDialog();
+    const { openDialogs, closeDialog, getDialogData } = useDialog();
     const { customers, isLoading: isLoadingCustomers } = useCustomers();
     const { accounts: bankAccounts, isLoading: isLoadingAccounts } = useBankAccounts();
     const { toast } = useToast();
@@ -35,22 +35,43 @@ export default function AddCustomerPaymentDialog() {
 
     useEffect(() => {
         if (openDialogs['add-customer-payment']) {
-            // Reset form when opened
-            setCustomerId('');
-            setDepositAccountId('');
-            setPaymentType('Cash');
-            setDate(new Date().toISOString().split('T')[0]);
-            setAmount('');
-            setReference('');
-            setNote('');
+            const prefilledData = getDialogData('add-customer-payment' as any);
+
+            if (prefilledData) {
+                setCustomerId(prefilledData.customerId || '');
+                setAmount(prefilledData.amount?.toString() || '');
+                setReference(prefilledData.reference || '');
+                setPaymentType(prefilledData.paymentType || 'Cash');
+                setDate(() => {
+                    try {
+                        if (prefilledData.date) {
+                            const d = new Date(prefilledData.date);
+                            if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+                        }
+                    } catch (e) {
+                        console.error('Invalid prefilled date:', prefilledData.date);
+                    }
+                    return new Date().toISOString().split('T')[0];
+                });
+                setNote(prefilledData.note || '');
+            } else {
+                // Reset form when opened without data
+                setCustomerId('');
+                setDepositAccountId('');
+                setPaymentType('Cash');
+                setDate(new Date().toISOString().split('T')[0]);
+                setAmount('');
+                setReference('');
+                setNote('');
+            }
         }
-    }, [openDialogs['add-customer-payment']]);
+    }, [openDialogs['add-customer-payment'], getDialogData]);
 
     const handleSave = async () => {
-        if (!customerId || !amount || !date || !depositAccountId) {
+        if (!customerId || !amount || !date || !depositAccountId || !paymentType) {
             toast({
                 title: 'Validation Error',
-                description: 'Please fill in all required fields.',
+                description: 'Please fill in all required fields (Customer, Deposit To, Amount, Date, and Payment Type).',
                 variant: 'destructive',
             });
             return;
@@ -60,6 +81,7 @@ export default function AddCustomerPaymentDialog() {
             setIsSubmitting(true);
             const selectedCustomer = customers.find(c => c.id === customerId);
             const selectedDepositAccount = bankAccounts.find(a => a.id === depositAccountId);
+            const prefilledData = getDialogData('add-customer-payment' as any);
 
             if (!selectedDepositAccount) {
                 throw new Error("Deposit account not found");
@@ -67,12 +89,12 @@ export default function AddCustomerPaymentDialog() {
 
             const transactions = [
                 {
-                    accountNumber: selectedCustomer?.code || customerId, // Use code or ID
+                    accountNumber: selectedCustomer?.code || customerId,
                     accountName: selectedCustomer?.customerName,
                     date: new Date(date),
                     transNo: reference,
                     particulars: note || `Payment received from ${selectedCustomer?.customerName}`,
-                    credit: parseFloat(amount), // Credit customer account (payment received)
+                    credit: parseFloat(amount),
                     debit: 0,
                     type: 'Payment',
                     ledger: paymentType,
@@ -85,17 +107,23 @@ export default function AddCustomerPaymentDialog() {
                     transNo: reference,
                     particulars: note || `Payment deposited from ${selectedCustomer?.customerName}`,
                     credit: 0,
-                    debit: parseFloat(amount), // Debit deposit account
+                    debit: parseFloat(amount),
                     type: 'Payment',
                     ledger: paymentType,
                     user: 'System'
                 }
             ];
 
-            const response = await fetch('/api/transactions', {
+            // If it's an allocation (prefilled data exists), use the specialized endpoint
+            const apiUrl = prefilledData ? '/api/customers/payments/allocate' : '/api/transactions';
+            const body = prefilledData
+                ? { transactions, paymentData: { reference, amount, date, customerId } }
+                : { transactions };
+
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ transactions }),
+                body: JSON.stringify(body),
             });
 
             if (!response.ok) {
@@ -105,8 +133,11 @@ export default function AddCustomerPaymentDialog() {
 
             toast({
                 title: 'Success',
-                description: 'Payment added successfully.',
+                description: prefilledData ? 'Payment applied and saved successfully.' : 'Payment added successfully.',
             });
+
+            // Dispatch a refresh event for components listening (like CustomerPaymentDialog)
+            window.dispatchEvent(new CustomEvent('payment-saved'));
 
             closeDialog('add-customer-payment');
         } catch (error: any) {
@@ -129,7 +160,7 @@ export default function AddCustomerPaymentDialog() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="customer">Customer</Label>
+                        <Label htmlFor="customer">Customer <span className="text-destructive">*</span></Label>
                         <Select value={customerId} onValueChange={setCustomerId} disabled={isLoadingCustomers}>
                             <SelectTrigger id="customer">
                                 <SelectValue placeholder="Select a customer" />
@@ -145,7 +176,7 @@ export default function AddCustomerPaymentDialog() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="depositAccount">Deposit To</Label>
+                        <Label htmlFor="depositAccount">Deposit To <span className="text-destructive">*</span></Label>
                         <Select value={depositAccountId} onValueChange={setDepositAccountId} disabled={isLoadingAccounts}>
                             <SelectTrigger id="depositAccount">
                                 <SelectValue placeholder="Select deposit account" />
@@ -161,7 +192,7 @@ export default function AddCustomerPaymentDialog() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="paymentType">Payment Type</Label>
+                        <Label htmlFor="paymentType">Payment Type <span className="text-destructive">*</span></Label>
                         <Select value={paymentType} onValueChange={setPaymentType}>
                             <SelectTrigger id="paymentType">
                                 <SelectValue placeholder="Select payment type" />
@@ -175,7 +206,7 @@ export default function AddCustomerPaymentDialog() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="date">Date of payment</Label>
+                        <Label htmlFor="date">Date of payment <span className="text-destructive">*</span></Label>
                         <Input
                             id="date"
                             type="date"
@@ -185,7 +216,7 @@ export default function AddCustomerPaymentDialog() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="amount">Amount to be paid</Label>
+                        <Label htmlFor="amount">Amount to be paid <span className="text-destructive">*</span></Label>
                         <Input
                             id="amount"
                             type="number"

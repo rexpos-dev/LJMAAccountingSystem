@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 // Schema Definition
 const requestItemSchema = z.object({
@@ -60,9 +61,9 @@ const formSchema = z.object({
     depositAccount: z.string().optional(),
     items: z.array(requestItemSchema).min(1, 'At least one item is required'),
     // Signatures
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -78,6 +79,7 @@ export function AccountDeductionForm({ initialData, mode = 'create', onSuccess, 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
@@ -220,7 +222,28 @@ export function AccountDeductionForm({ initialData, mode = 'create', onSuccess, 
                         <FormField control={form.control} name="requesterName" render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Requestor</FormLabel>
-                                <FormControl><Input {...field} placeholder="Name" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" /></FormControl>
+                                <Select value={field.value} onValueChange={(val) => {
+                                    field.onChange(val);
+                                    const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                    if (emp) {
+                                        if (emp.designation) form.setValue('position', emp.designation, { shouldValidate: true });
+                                        if (emp.branchesAssigned) form.setValue('businessUnit', emp.branchesAssigned, { shouldValidate: true });
+                                        if (emp.employeeId) form.setValue('accountNo', emp.employeeId, { shouldValidate: true });
+                                    }
+                                }} disabled={isReadOnly || employeesLoading}>
+                                    <FormControl>
+                                        <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                            <SelectValue placeholder="Select employee" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {employees.map((emp: any) => (
+                                            <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                {emp.firstName} {emp.lastName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )} />

@@ -14,7 +14,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { useCustomerPayments, CustomerPayment } from '@/hooks/use-customer-payments';
-import { Plus, Search, RefreshCw } from 'lucide-react';
+import { Plus, Search, RefreshCw, MoreVertical, Printer, Ban, ClipboardCheck } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { format } from 'date-fns';
 
 export default function CustomerPaymentDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
@@ -41,8 +48,17 @@ export default function CustomerPaymentDialog() {
         if (openDialogs['customer-payment']) {
             if (!fromDate) setFromDate(new Date().toISOString().slice(0, 10));
             if (!toDate) setToDate(new Date().toISOString().slice(0, 10));
+            refreshPayments(); // Initial refresh when opened
         }
-    }, [openDialogs['customer-payment']]);
+
+        const handleRefresh = () => {
+            console.log('Refreshing payments due to update...');
+            refreshPayments();
+        };
+
+        window.addEventListener('payment-saved', handleRefresh);
+        return () => window.removeEventListener('payment-saved', handleRefresh);
+    }, [openDialogs['customer-payment'], refreshPayments]);
 
     const handleAdd = () => {
         openDialog('add-customer-payment'); // Correctly opens the Add form
@@ -68,6 +84,49 @@ export default function CustomerPaymentDialog() {
             paymentType: paymentType
         });
         openDialog('sales-invoice-payment-report');
+    };
+
+    const handleVoid = async (paymentId: string) => {
+        if (!confirm('Are you sure you want to void this payment? This action cannot be undone.')) return;
+
+        try {
+            const response = await fetch(`/api/customers/payments/${paymentId}/void`, {
+                method: 'POST'// Using POST for the void action
+            });
+
+            if (response.ok) {
+                toast({ title: 'Payment Voided', description: 'The payment has been successfully voided.' });
+                refreshPayments();
+            } else {
+                const error = await response.json();
+                toast({
+                    title: 'Error',
+                    description: error.message || 'Failed to void payment',
+                    variant: 'destructive'
+                });
+            }
+        } catch (err) {
+            console.error('Error voiding payment:', err);
+            toast({ title: 'Error', description: 'An unexpected error occurred.', variant: 'destructive' });
+        }
+    };
+
+    const handlePrintReceipt = (payment: CustomerPayment) => {
+        // Placeholder for print logic - could open a dedicated print dialog or use window.print with a specific layout
+        toast({ title: 'Printing Receipt', description: `Generating receipt for ${payment.reference}` });
+        window.print();
+    };
+
+    const handleAllocate = (payment: CustomerPayment) => {
+        setDialogData('add-customer-payment' as any, {
+            customerId: payment.customer_id,
+            amount: payment.amount,
+            reference: payment.reference,
+            paymentType: payment.payment_type,
+            date: payment.payment_date,
+            note: payment.note
+        });
+        openDialog('add-customer-payment');
     };
 
     return (
@@ -145,12 +204,11 @@ export default function CustomerPaymentDialog() {
                             <tr className="text-sm text-muted-foreground border-b">
                                 <th className="p-2 text-left">Customer Name</th>
                                 <th className="p-2 text-left">Amount Paid</th>
-                                <th className="p-2 text-left">Allocated</th>
-                                <th className="p-2 text-left">Left to allocate</th>
                                 <th className="p-2 text-left">Payment Type</th>
                                 <th className="p-2 text-left">Date of Payment</th>
-                                <th className="p-2 text-left">Reference</th>
+                                <th className="p-2 text-left w-[120px]">Reference</th>
                                 <th className="p-2 text-left">Note</th>
+                                <th className="p-2 text-center w-[80px]">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -184,8 +242,6 @@ export default function CustomerPaymentDialog() {
                                         <td className="p-2 text-green-600 font-semibold">
                                             {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(payment.amount || 0))}
                                         </td>
-                                        <td className="p-2 text-muted-foreground">-</td>
-                                        <td className="p-2 text-muted-foreground">-</td>
                                         <td className="p-2">{payment.payment_type || 'N/A'}</td>
                                         <td className="p-2">
                                             {(() => {
@@ -198,10 +254,48 @@ export default function CustomerPaymentDialog() {
                                         </td>
                                         <td className="p-2 text-xs text-muted-foreground truncate max-w-[120px]" title={payment.reference}>{payment.reference || '-'}</td>
                                         <td className="p-2 text-xs text-muted-foreground truncate max-w-[150px]" title={payment.note}>{payment.note || '-'}</td>
+                                        <td className="p-2 text-center">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleAllocate(payment)}>
+                                                        <ClipboardCheck className="mr-2 h-4 w-4" />
+                                                        Apply Payment
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handlePrintReceipt(payment)}>
+                                                        <Printer className="mr-2 h-4 w-4" />
+                                                        Print Receipt
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="text-destructive focus:text-destructive"
+                                                        onClick={() => handleVoid(payment.id)}
+                                                    >
+                                                        <Ban className="mr-2 h-4 w-4" />
+                                                        Void
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </td>
                                     </tr>
                                 ))
                             )}
                         </tbody>
+                        {filteredPayments.length > 0 && (
+                            <tfoot className="border-t bg-muted/30 font-bold text-sm">
+                                <tr>
+                                    <td className="p-2">Grand Total</td>
+                                    <td className="p-2 text-green-600">
+                                        {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(totalAmountPaid)}
+                                    </td>
+                                    <td className="p-2" colSpan={5}></td>
+                                </tr>
+                            </tfoot>
+                        )}
                     </table>
                 </ScrollArea>
 

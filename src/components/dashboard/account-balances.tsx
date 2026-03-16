@@ -51,30 +51,30 @@ export function AccountBalances() {
 
     return (
         <div className="space-y-3">
-            <h3 className="font-headline font-bold text-lg text-white/90 px-1">Account Balances</h3>
+            <h3 className="font-headline font-bold text-lg text-foreground/90 dark:text-white/90 px-1">Account Balances</h3>
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                <Card className="bg-white/5 border-none border-l-4 border-l-blue-500 backdrop-blur-sm">
+                <Card className="bg-background/50 border dark:bg-white/5 dark:border-none border-l-4 border-l-blue-500 backdrop-blur-sm">
                     <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Checking Accounts</CardTitle>
+                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Checking Accounts</CardTitle>
                     </CardHeader>
                     <CardContent className="p-3 pt-0 pb-4">
-                        <div className="text-xl font-bold text-white font-headline">{formatCurrency(balances.checking)}</div>
+                        <div className="text-xl font-bold text-foreground font-headline">{formatCurrency(balances.checking)}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white/5 border-none border-l-4 border-l-emerald-500 backdrop-blur-sm">
+                <Card className="bg-background/50 border dark:bg-white/5 dark:border-none border-l-4 border-l-emerald-500 backdrop-blur-sm">
                     <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Savings Account</CardTitle>
+                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Savings Account</CardTitle>
                     </CardHeader>
                     <CardContent className="p-3 pt-0 pb-4">
-                        <div className="text-xl font-bold text-white font-headline">{formatCurrency(balances.savings)}</div>
+                        <div className="text-xl font-bold text-foreground font-headline">{formatCurrency(balances.savings)}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white/5 border-none border-l-4 border-l-rose-500 backdrop-blur-sm">
+                <Card className="bg-background/50 border dark:bg-white/5 dark:border-none border-l-4 border-l-rose-500 backdrop-blur-sm">
                     <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Credit Card</CardTitle>
+                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Credit Card</CardTitle>
                     </CardHeader>
                     <CardContent className="p-3 pt-0 pb-4">
-                        <div className="text-xl font-bold text-white font-headline">{formatCurrency(balances.creditCard)}</div>
+                        <div className="text-xl font-bold text-foreground font-headline">{formatCurrency(balances.creditCard)}</div>
                     </CardContent>
                 </Card>
             </div>

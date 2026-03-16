@@ -123,6 +123,14 @@ import AddBankAccountDialog from '@/components/configuration/add-bank-account-di
 import EditBankAccountDialog from '@/components/configuration/edit-bank-account-dialog';
 import BankHistoryDialog from '@/components/banking/bank-history-dialog';
 import AddBankTransactionDialog from '@/components/banking/add-bank-transaction-dialog';
+import BranchListDialog from '@/components/configuration/branch-list-dialog';
+import AddBranchDialog from '@/components/configuration/add-branch-dialog';
+import EmployeeDirectoryDialog from '@/components/user-management/employee-directory-dialog';
+import AddEmployeeDialog from '@/components/user-management/add-employee-dialog';
+import EditEmployeeDialog from '@/components/user-management/edit-employee-dialog';
+import DeleteEmployeeDialog from '@/components/user-management/delete-employee-dialog';
+import CustomerStatementDialog from '@/components/customer/customer-statement-dialog';
+import CustomerLedgerDialog from '@/components/customer/customer-ledger-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -242,6 +250,14 @@ const dialogComponents = {
   'add-bank-account': AddBankAccountDialog,
   'edit-bank-account': EditBankAccountDialog,
   'bank-history': BankHistoryDialog,
+  'branch-list': BranchListDialog,
+  'add-branch': AddBranchDialog,
+  'employee-directory': EmployeeDirectoryDialog,
+  'add-employee': AddEmployeeDialog,
+  'edit-employee': EditEmployeeDialog,
+  'delete-employee': DeleteEmployeeDialog,
+  'customer-statement': CustomerStatementDialog,
+  'customer-ledger': CustomerLedgerDialog,
 };
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {

@@ -74,9 +74,9 @@ export function BankingStatsRow() {
     return (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             {items.map((item, index) => (
-                <Card key={index} className="overflow-hidden border-none bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                <Card key={index} className="overflow-hidden border-none bg-background/50 dark:bg-white/5 backdrop-blur-sm hover:bg-muted/50 dark:hover:bg-white/10 transition-colors">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-300">
+                        <CardTitle className="text-sm font-medium text-muted-foreground dark:text-slate-300">
                             {item.title}
                         </CardTitle>
                         <div className={`p-2 rounded-lg ${item.bg}`}>
@@ -84,14 +84,14 @@ export function BankingStatsRow() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold font-headline text-white mt-1">
+                        <div className="text-2xl font-bold font-headline text-foreground mt-1">
                             {item.value}
                         </div>
                         <div className="flex items-center mt-2">
                             {item.secondaryIcon && (
                                 <item.secondaryIcon className={`h-3 w-3 mr-1 ${item.color}`} />
                             )}
-                            <p className="text-xs text-slate-400">
+                            <p className="text-xs text-muted-foreground">
                                 {item.description}
                             </p>
                         </div>

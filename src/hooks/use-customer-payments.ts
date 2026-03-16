@@ -55,9 +55,9 @@ export function useCustomerPayments() {
         }
     }, []);
 
-    const refreshPayments = () => {
+    const refreshPayments = useCallback(() => {
         fetchPayments();
-    };
+    }, [fetchPayments]);
 
     useEffect(() => {
         fetchPayments();

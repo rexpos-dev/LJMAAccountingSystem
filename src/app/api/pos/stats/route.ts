@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { fetchWithCache } from '@/lib/api-cache';
 
 export async function GET() {
     try {
@@ -8,22 +9,21 @@ export async function GET() {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-            const response = await fetch('http://192.168.1.163:3000/api/reports/stats', {
+            const result = await fetchWithCache<any>('http://192.168.1.163:3000/api/reports/stats', {
                 method: 'GET',
                 signal: controller.signal,
                 headers: {
                     'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
                 }
-            });
+            }, 15);
 
             clearTimeout(timeoutId);
 
-            if (response.ok) {
-                const data = await response.json();
-                // Return the live data immediately
-                return NextResponse.json(data);
+            if (result.success && result.data) {
+                return NextResponse.json(result.data);
             }
-            console.warn(`POS API returned ${response.status} ${response.statusText}, falling back to local data`);
+            console.warn(`POS API returned false success or no data: ${result.error}, falling back to local data`);
         } catch (fetchError: any) {
             console.warn(`Failed to connect to POS API: ${fetchError.message}, falling back to local data`);
         }

@@ -63,6 +63,41 @@ export async function PATCH(
 
         if (body.status) {
             await prisma.$executeRaw`UPDATE request SET status = ${body.status}, updatedAt = ${now} WHERE id = ${id}`;
+
+            // Handle automatic Journal Entry when status becomes 'Released'
+            if (body.status === 'Released') {
+                const existingReq: any = await prisma.$queryRaw`SELECT * FROM request WHERE id = ${id}`;
+                if (existingReq && existingReq.length > 0) {
+                    const req = existingReq[0];
+                    // Verify it wasn't already released in some race condition
+                    try {
+                        const amount = req.amount || 0;
+                        const chargeToAcct = parseInt(req.chargeTo, 10);
+                        const depositAcct = parseInt(req.depositAccount, 10);
+
+                        if (!isNaN(chargeToAcct) && !isNaN(depositAcct) && amount > 0) {
+                            const { postJournalEntry } = await import('@/lib/journal-helper');
+                            await postJournalEntry({
+                                date: new Date(),
+                                referenceId: req.requestNumber,
+                                particulars: `Automatic Journal Entry for Released Request: ${req.purpose || req.formName}`,
+                                user: 'System', // Could use a session user if passed
+                                lines: [
+                                    { accountNo: chargeToAcct, debit: amount, credit: 0 },
+                                    { accountNo: depositAcct, debit: 0, credit: amount }
+                                ]
+                            });
+                            console.log(`Successfully posted Journal Entry for Request ${req.requestNumber}`);
+                        } else {
+                            console.warn(`Request ${req.requestNumber} released but missing valid chargeTo/depositAccount or amount is 0. Cannot post Journal Entry.`);
+                        }
+                    } catch (err: any) {
+                        console.error('Error posting journal entry for released request:', err);
+                        // We still allow the request to be marked as released even if journaling fails, 
+                        // or we could throw here. Opting to just log error for now to not block the release workflow.
+                    }
+                }
+            }
         }
 
         if (body.depositAccount !== undefined) {

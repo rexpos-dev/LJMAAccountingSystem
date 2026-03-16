@@ -28,7 +28,7 @@ export function BankBalancesChart() {
         return (
             <Card className="col-span-1 lg:col-span-4 h-[400px]">
                 <CardHeader>
-                    <CardTitle className="font-headline text-white">Bank-wise Balances</CardTitle>
+                    <CardTitle className="font-headline text-foreground">Bank-wise Balances</CardTitle>
                     <CardDescription>Current balance distribution across all banks</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground italic">
@@ -41,10 +41,10 @@ export function BankBalancesChart() {
     const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e', '#0ea5e9', '#14b8a6'];
 
     return (
-        <Card className="col-span-1 lg:col-span-4 border-none bg-white/5 backdrop-blur-sm">
+        <Card className="col-span-1 lg:col-span-4 border-none bg-background/50 dark:bg-white/5 backdrop-blur-sm shadow-sm hover:shadow transition-all">
             <CardHeader>
-                <CardTitle className="font-headline text-white">Bank-wise Balances</CardTitle>
-                <CardDescription className="text-slate-400">Liquidity distribution by bank account</CardDescription>
+                <CardTitle className="font-headline text-foreground">Bank-wise Balances</CardTitle>
+                <CardDescription className="text-muted-foreground">Liquidity distribution by bank account</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="h-[300px] w-full mt-4">

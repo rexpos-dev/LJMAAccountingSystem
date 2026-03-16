@@ -20,11 +20,13 @@ import {
 } from '@/components/ui/select';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
+import { useEmployees } from '@/hooks/use-employees';
 import Image from 'next/image';
 
 export default function CashFundRequestDialog() {
     const { openDialogs, closeDialog } = useDialog();
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const [formData, setFormData] = useState({
         controlNo: '',
         date: new Date().toISOString().split('T')[0],
@@ -254,11 +256,26 @@ export default function CashFundRequestDialog() {
                     <tbody>
                         <tr>
                             <td className="label-cell">Requestor</td>
-                            <td className="input-cell">
-                                <input
-                                    value={formData.requestor}
-                                    onChange={(e) => handleInputChange('requestor', e.target.value)}
-                                />
+                            <td className="input-cell" style={{ padding: 0 }}>
+                                <Select value={formData.requestor} onValueChange={(val) => {
+                                    handleInputChange('requestor', val);
+                                    const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                    if (emp) {
+                                        if (emp.designation) handleInputChange('position', emp.designation);
+                                        if (emp.employeeId) handleInputChange('tempAccountNo', emp.employeeId);
+                                    }
+                                }} disabled={employeesLoading}>
+                                    <SelectTrigger className="w-full h-full min-h-[30px] border-0 rounded-none focus:ring-0 shadow-none px-2 text-sm bg-transparent">
+                                        <SelectValue placeholder="Select name" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {employees.map((emp: any) => (
+                                            <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                {emp.firstName} {emp.lastName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </td>
                             <td className="label-cell">Position</td>
                             <td className="input-cell">

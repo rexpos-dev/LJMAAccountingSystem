@@ -9,6 +9,9 @@ export interface CustomerBalance {
     paymentTerms: string;
     invoiceCount: number;
     balance: string | number;
+    totalAmount: string | number;
+    amountPaid: string | number;
+    address?: string;
 }
 
 export function useCustomerBalances() {

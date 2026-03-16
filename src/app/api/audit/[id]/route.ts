@@ -26,15 +26,17 @@ export async function PATCH(
         });
 
         // Trigger Posting/Activation Logic for Bank Transactions
-        if (status === "Done Audit" && log.actionType?.toLowerCase().includes("bank") && log.transactionId) {
+        if (status && log.actionType?.toLowerCase().includes("bank") && log.transactionId) {
             try {
                 if (log.actionType === 'Bank Registration') {
-                    // Phase 1: Activate Bank Account
-                    await prisma.bankAccount.update({
-                        where: { id: log.transactionId },
-                        data: { audit_status: 'DONE' }
-                    });
-                } else {
+                    if (status === "Done Audit") {
+                        await prisma.bankAccount.update({ where: { id: log.transactionId }, data: { audit_status: 'DONE' } });
+                    } else if (status === "Ongoing Audit") {
+                        await prisma.bankAccount.update({ where: { id: log.transactionId }, data: { audit_status: 'ONGOING' } });
+                    } else if (status === "To Audit") {
+                        await prisma.bankAccount.update({ where: { id: log.transactionId }, data: { audit_status: 'TO_AUDIT' } });
+                    }
+                } else if (status === "Done Audit") {
                     // Phase 2: Post Transaction to GL
                     const { postBankTransactionToGL } = await import("@/lib/banking-service");
                     await postBankTransactionToGL(log.transactionId, log.assignee || 'System');

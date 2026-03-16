@@ -56,6 +56,7 @@ export function MainMenu() {
           <MenubarItem onClick={() => openDialog('business-setup')}>Business Setup</MenubarItem>
           <MenubarItem onClick={() => openDialog('bank-settings' as any)}>Bank Settings</MenubarItem>
           <MenubarItem onClick={() => openDialog('backup-scheduler')}>Back up Data</MenubarItem>
+          <MenubarItem onClick={() => openDialog('branch-list')}>Branch</MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

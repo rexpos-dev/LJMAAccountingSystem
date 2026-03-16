@@ -38,15 +38,15 @@ export function LatestBankTransactions() {
     };
 
     return (
-        <Card className="col-span-1 lg:col-span-3 border-none bg-white/5 backdrop-blur-sm">
+        <Card className="col-span-1 lg:col-span-3 border-none bg-background/50 dark:bg-white/5 backdrop-blur-sm shadow-sm hover:shadow transition-all">
             <CardHeader>
-                <CardTitle className="font-headline text-white text-lg">Latest 10 Transactions</CardTitle>
-                <CardDescription className="text-slate-400">Recent movements across all bank accounts</CardDescription>
+                <CardTitle className="font-headline text-foreground text-lg">Latest 10 Transactions</CardTitle>
+                <CardDescription className="text-muted-foreground">Recent movements across all bank accounts</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                     {transactions.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-8 text-slate-500 italic">
+                        <div className="flex flex-col items-center justify-center py-8 text-muted-foreground italic">
                             <Info className="h-8 w-8 mb-2 opacity-20" />
                             <p>No recent transactions</p>
                         </div>
@@ -65,25 +65,25 @@ export function LatestBankTransactions() {
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-white max-w-[180px] truncate">
+                                                <p className="text-sm font-medium text-foreground max-w-[180px] truncate">
                                                     {tx.particulars || tx.reference || "No details"}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className="text-[10px] text-slate-500 uppercase tracking-tighter">
+                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
                                                         {tx.bankAccount?.bank_name}
                                                     </span>
-                                                    <span className="text-[10px] text-slate-600">•</span>
-                                                    <span className="text-[10px] text-slate-500">
+                                                    <span className="text-[10px] text-muted-foreground">•</span>
+                                                    <span className="text-[10px] text-muted-foreground">
                                                         {format(new Date(tx.date), "MMM d, h:mm a")}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className={`text-sm font-bold ${isInflow ? 'text-emerald-400' : 'text-slate-200'}`}>
+                                            <p className={`text-sm font-bold ${isInflow ? 'text-emerald-500 dark:text-emerald-400' : 'text-foreground'}`}>
                                                 {isInflow ? '+' : '-'}{formatCurrency(Math.abs(tx.amount))}
                                             </p>
-                                            <p className="text-[10px] text-slate-500 mt-0.5 uppercase">
+                                            <p className="text-[10px] text-muted-foreground mt-0.5 uppercase">
                                                 {tx.type.replace('_', ' ')}
                                             </p>
                                         </div>

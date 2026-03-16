@@ -583,3 +583,62 @@ export const deleteConversionFactor = async (id: string) => {
     where: { id },
   })
 }
+
+// Branch operations
+export const getBranches = async () => {
+  try {
+    return await prisma.branch.findMany({
+      orderBy: { name: 'asc' }
+    });
+  } catch (error) {
+    console.error('Error in getBranches:', error);
+    return [];
+  }
+}
+
+export const createBranch = async (data: {
+  name: string;
+  code?: string;
+  type?: string;
+  logoUrl?: string;
+  address?: string;
+  phone?: string;
+  isActive?: boolean;
+  payTo?: string;
+  accountNumber?: string;
+  expenseAcct?: string;
+  receivables?: string;
+  depositAccount?: string;
+  othersField?: string;
+}) => {
+  return await prisma.branch.create({
+    data
+  });
+}
+
+export const updateBranch = async (id: string, data: {
+  name?: string;
+  code?: string;
+  type?: string;
+  logoUrl?: string;
+  address?: string;
+  phone?: string;
+  isActive?: boolean;
+  payTo?: string;
+  accountNumber?: string;
+  expenseAcct?: string;
+  receivables?: string;
+  depositAccount?: string;
+  othersField?: string;
+}) => {
+  return await prisma.branch.update({
+    where: { id },
+    data
+  });
+}
+
+export const deleteBranch = async (id: string) => {
+  return await prisma.branch.delete({
+    where: { id }
+  });
+}

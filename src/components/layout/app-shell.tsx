@@ -36,6 +36,7 @@ import { NotificationBell } from "./notification-bell";
 import { EmailButton } from "./email-button";
 import { Breadcrumbs } from "./breadcrumbs";
 import { ThemeToggle } from "./theme-toggle";
+import { ChatBox } from "../chat/chat-box";
 
 // ... (keep surrounding imports if range allows, but aiming for cleaner replacement)
 // Actually, I can't modify imports easily with a single chunk if they are far apart.
@@ -376,6 +377,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </main>
         </SidebarInset>
       </SidebarProvider >
+      <ChatBox />
     </>
   );
 }

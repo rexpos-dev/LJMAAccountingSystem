@@ -13,15 +13,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { useSalesUsers } from '@/hooks/use-sales-users';
 import { useCustomerBalances, CustomerBalance } from '@/hooks/use-customer-balances';
-import { Search, RefreshCw } from 'lucide-react';
+import { Search, RefreshCw, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function CustomerBalancePage() {
-  const { openDialogs, closeDialog } = useDialog();
+  const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -33,6 +39,10 @@ export default function CustomerBalancePage() {
     b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     b.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const totalAmountSum = filteredBalances.reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+  const amountPaidSum = filteredBalances.reduce((sum, b) => sum + Number(b.amountPaid || 0), 0);
+  const balanceSum = filteredBalances.reduce((sum, b) => sum + Number(b.balance || 0), 0);
 
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -75,7 +85,6 @@ export default function CustomerBalancePage() {
 
             <div className="flex items-center gap-3 ml-4">
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" /> Show All</label>
-              <label className="flex items-center gap-2 text-sm"><input type="checkbox" /> Allocated</label>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" /> Show Invoice Detail</label>
             </div>
 
@@ -140,22 +149,22 @@ export default function CustomerBalancePage() {
               <TableRow>
                 <TableHead>Code</TableHead>
                 <TableHead>Customer Name</TableHead>
-                <TableHead>Total Amount</TableHead>
+                <TableHead>Total Credit</TableHead>
                 <TableHead>Amount Paid</TableHead>
                 <TableHead>Balance</TableHead>
-                <TableHead>Total Due (Unallocated)</TableHead>
+                <TableHead className="w-[50px]">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoadingBalances ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     Loading customer balances...
                   </TableCell>
                 </TableRow>
               ) : filteredBalances.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No customer balances to display.
                   </TableCell>
                 </TableRow>
@@ -164,18 +173,59 @@ export default function CustomerBalancePage() {
                   <TableRow key={customer.id}>
                     <TableCell className="font-medium text-xs">{customer.id}</TableCell>
                     <TableCell className="font-semibold">{customer.name}</TableCell>
-                    <TableCell className="text-right text-muted-foreground">-</TableCell>
-                    <TableCell className="text-right text-muted-foreground">-</TableCell>
+                    <TableCell className="text-right">
+                      {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(customer.totalAmount || 0))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(customer.amountPaid || 0))}
+                    </TableCell>
                     <TableCell className="text-right font-medium">
                       {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(customer.balance || 0))}
                     </TableCell>
-                    <TableCell className="text-right text-red-600 font-medium whitespace-nowrap">
-                      {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(customer.balance || 0))}
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {
+                            setDialogData('customer-statement' as any, { id: customer.id, name: customer.name, address: customer.address });
+                            openDialog('customer-statement' as any);
+                          }}>
+                            Statement of Account
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setDialogData('customer-ledger' as any, { customer: { id: customer.id, name: customer.name } });
+                            openDialog('customer-ledger' as any);
+                          }}>
+                            Ledger
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))
               )}
             </TableBody>
+            {!isLoadingBalances && filteredBalances.length > 0 && (
+              <TableFooter>
+                <TableRow className="bg-muted/50 font-bold">
+                  <TableCell colSpan={2} className="text-right">Grand Total</TableCell>
+                  <TableCell className="text-right">
+                    {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(totalAmountSum)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amountPaidSum)}
+                  </TableCell>
+                  <TableCell className="text-right text-red-600">
+                    {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(balanceSum)}
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableFooter>
+            )}
           </Table>
         </ScrollArea>
 

@@ -42,6 +42,7 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 const itemSchema = z.object({
     purpose: z.string().min(1, 'Purpose is required'),
@@ -58,9 +59,9 @@ const formSchema = z.object({
     remarks: z.string().optional(),
     items: z.array(itemSchema).min(1, 'At least one item is required'),
     requestedBy: z.string().optional(),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -76,6 +77,7 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "PURCHASE ORDER REQUEST (EXTERNAL)";
@@ -224,58 +226,71 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Requestor</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder="Name of requestor" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="address"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Address</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder="Address details" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="depositAccount"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Deposit Account</FormLabel>
-                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                        <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly || employeesLoading}>
                                             <FormControl>
                                                 <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
-                                                    <SelectValue placeholder="-- Select --" />
+                                                    <SelectValue placeholder="Select name" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {accountsLoading ? (
-                                                    <div className="p-2 text-sm text-muted-foreground">Loading...</div>
-                                                ) : (!accounts || accounts.length === 0) ? (
-                                                    <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
-                                                ) : (
-                                                    <>
-                                                        {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
-                                                            <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
-                                                                {account.account_name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                {employees.map((emp: any) => (
+                                                    <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                        {emp.firstName} {emp.lastName}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="address"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Address</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder="Address details" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="depositAccount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Deposit Account</FormLabel>
+                                            <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                                <FormControl>
+                                                    <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                                        <SelectValue placeholder="-- Select --" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {accountsLoading ? (
+                                                        <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                    ) : (!accounts || accounts.length === 0) ? (
+                                                        <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                    ) : (
+                                                        <>
+                                                            {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                                <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                    {account.account_name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
                         <div className="space-y-4">
                             <FormField

@@ -88,9 +88,9 @@ export async function POST(req: Request) {
                 accountNo, depositAccount, purpose, amount, verifiedBy, approvedBy, processedBy, 
                 formName, status, createdAt, updatedAt, date
             ) VALUES (
-                ${id}, ${requestNumber}, ${body.requesterName || 'Unknown'}, ${body.position}, ${body.businessUnit}, ${body.chargeTo},
-                ${body.accountNo}, ${body.depositAccount}, ${body.purpose}, ${body.amount || 0}, ${body.verifiedBy}, ${body.approvedBy}, ${body.processedBy},
-                ${body.formName}, 'To Verify', ${now}, ${now}, ${now}
+                ${id}, ${requestNumber}, ${body.requesterName ?? 'Unknown'}, ${body.position ?? null}, ${body.businessUnit ?? null}, ${body.chargeTo ?? null},
+                ${body.accountNo ?? null}, ${body.depositAccount ?? null}, ${body.purpose ?? null}, ${body.amount ?? 0}, ${body.verifiedBy ?? null}, ${body.approvedBy ?? null}, ${body.processedBy ?? null},
+                ${body.formName ?? null}, 'To Verify', ${now}, ${now}, ${now}
             )
         `;
 
