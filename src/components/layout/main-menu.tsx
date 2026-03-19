@@ -35,6 +35,13 @@ export function MainMenu() {
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
+        <MenubarTrigger>Transactions</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={() => openDialog('journal-entry')}>Manual journal entry</MenubarItem>
+          <MenubarItem onClick={() => openDialog('view-journal')}>View journal</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
         <MenubarTrigger>Reports</MenubarTrigger>
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('to-audit-report')}>To Audit Items</MenubarItem>

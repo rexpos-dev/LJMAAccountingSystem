@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 export async function fetchWithCache<T>(
     url: string,
     options: RequestInit = {},
-    ttlMinutes: number = 15
+    ttlMinutes: number = 15,
+    forceRefresh: boolean = false
 ): Promise<{ success: boolean; data: T | null; cached: boolean; status?: number; error?: string }> {
     try {
         // Determine the cache key using the URL
@@ -18,15 +19,15 @@ export async function fetchWithCache<T>(
             return { success: true, data: await response.json(), cached: false };
         }
 
-        // Try to get from cache first
-        const cachedRecord = await prisma.apiCache.findUnique({
+        // Try to get from cache first (skip if forceRefresh is true)
+        const cachedRecord = forceRefresh ? null : await prisma.apiCache.findUnique({
             where: { endpoint: cacheKey },
         });
 
         const now = new Date();
-        const isStale = cachedRecord ? (now.getTime() - cachedRecord.updatedAt.getTime()) > (ttlMinutes * 60 * 1000) : true;
+        const isStale = (cachedRecord && !forceRefresh) ? (now.getTime() - cachedRecord.updatedAt.getTime()) > (ttlMinutes * 60 * 1000) : true;
 
-        if (cachedRecord && !isStale) {
+        if (cachedRecord && !isStale && !forceRefresh) {
             // Return fresh cache
             try {
                 const parsedData = JSON.parse(cachedRecord.data) as T;

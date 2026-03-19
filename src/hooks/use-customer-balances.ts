@@ -19,13 +19,14 @@ export function useCustomerBalances() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
-    const fetchBalances = async (searchQuery?: string) => {
+    const fetchBalances = async (searchQuery?: string, force: boolean = false) => {
         try {
             setIsLoading(true);
             setError(null);
 
             const params = new URLSearchParams();
             if (searchQuery) params.append('search', searchQuery);
+            if (force) params.append('force', 'true');
 
             const url = `/api/customers/balances${params.toString() ? `?${params.toString()}` : ''}`;
             const response = await fetch(url).catch(() => null);
@@ -54,8 +55,8 @@ export function useCustomerBalances() {
         }
     };
 
-    const refreshBalances = () => {
-        fetchBalances();
+    const refreshBalances = (force: boolean = false) => {
+        fetchBalances(undefined, force);
     };
 
     useEffect(() => {

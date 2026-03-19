@@ -6,6 +6,7 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search');
+        const force = searchParams.get('force') === 'true';
 
         console.log('Fetching customer balances from external API...');
 
@@ -17,7 +18,8 @@ export async function GET(request: Request) {
         const result = await fetchWithCache<any>(
             externalUrl.toString(),
             { headers: { 'Cache-Control': 'no-cache' } },
-            15
+            15,
+            force
         );
 
         if (!result.success || !result.data) {

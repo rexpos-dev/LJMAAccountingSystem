@@ -18,7 +18,7 @@ import { useDialog } from '@/components/layout/dialog-provider';
 import { useToast } from '@/hooks/use-toast';
 import { useSalesUsers } from '@/hooks/use-sales-users';
 import { useCustomerBalances, CustomerBalance } from '@/hooks/use-customer-balances';
-import { Search, RefreshCw, MoreVertical } from 'lucide-react';
+import { Search, RefreshCw, MoreVertical, Calculator } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,14 +59,24 @@ export default function CustomerBalancePage() {
     toast({ title: 'Refreshed', description: 'Refreshed customer balances' });
   };
 
+  const handleRecalculate = () => {
+    refreshBalances(true);
+    toast({ title: 'Recalculating', description: 'Recalculating absolute customer balances...' });
+  };
+
   return (
     <Dialog open={openDialogs['customer-balance']} onOpenChange={() => closeDialog('customer-balance' as any)}>
       <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Customer Balances</DialogTitle>
-          <Button variant="outline" size="icon" onClick={handleRefresh} title="Refresh" className="h-8 w-8">
-            <RefreshCw className={`h-4 w-4 ${isLoadingBalances ? 'animate-spin' : ''}`} />
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="icon" onClick={handleRefresh} title="Refresh" className="h-8 w-8">
+              <RefreshCw className={`h-4 w-4 ${isLoadingBalances ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleRecalculate} title="Recalculate Balances" className="h-8 w-8">
+              <Calculator className={`h-4 w-4 ${isLoadingBalances ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </DialogHeader>
 
         {/* Top controls: Save/Print, Date range, options, Show Statement, Search */}

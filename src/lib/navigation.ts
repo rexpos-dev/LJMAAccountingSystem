@@ -76,7 +76,6 @@ export const navItems: NavItem[] = [
       { title: "Manual journal entry", href: "/transactions/journal-entry", dialogId: "journal-entry" },
       { title: "View journal", href: "/transactions/view-journal", dialogId: "view-journal" }, // Maybe this should be visible? But it's in Transactions
       { title: "Reconcile account", href: "/banking/reconcile", dialogId: "reconcile-account" },
-      { title: "Recalculate Customers' Balances", href: "/transactions/recalculate" },
     ],
   },
   {
