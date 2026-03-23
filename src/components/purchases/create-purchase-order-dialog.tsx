@@ -52,6 +52,7 @@ interface PurchaseOrderItem {
     orderQty?: number;
     costPricePerCase?: number;
     costPricePerPiece?: number;
+    cost?: number;
 }
 
 const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product: any) => void }) => {
@@ -143,7 +144,10 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                             <div className="font-semibold">{product.name}</div>
                             <div className="flex justify-between items-center mt-1">
                                 <span className="text-xs text-muted-foreground">{product.sku || 'No SKU'}</span>
-                                {product.barcode && <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground">{product.barcode}</span>}
+                                <div className="flex items-center gap-2">
+                                    {product.cost && <span className="text-xs text-green-500 font-medium">₱{parseFloat(product.cost.toString()).toFixed(2)}</span>}
+                                    {product.barcode && <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground">{product.barcode}</span>}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -250,8 +254,10 @@ export default function CreatePurchaseOrderDialog() {
                         productId: item.productId, // Important for tracking
                         qtyPerCase: item.qtyPerCase || 1,
                         orderQty: item.orderQty || item.quantity || 0,
-                        costPricePerCase: item.costPricePerCase || (item.unitPrice * (item.qtyPerCase || 1)) || 0,
-                        costPricePerPiece: item.costPricePerPiece || item.unitPrice || 0
+                        costPricePerCase: item.costPricePerCase || item.cost || (item.unitPrice * (item.qtyPerCase || 1)) || 0,
+                        costPricePerPiece: item.costPricePerPiece || item.unitPrice || 0,
+                        unitPrice: item.unitPrice || item.costPricePerPiece || 0,
+                        cost: item.cost || item.costPricePerCase || 0
                     }));
                     setItems(mappedItems);
                 } else {
@@ -313,7 +319,10 @@ export default function CreatePurchaseOrderDialog() {
     const total = subtotal + taxAmount;
 
     const handleProductSelect = (product: any) => {
-        const costVal = product.cost ? parseFloat(product.cost.toString()) : 0;
+        // Robust cost detection from external/internal data
+        const rawCost = product.cost ?? product.costPrice ?? product.cost_price ?? product.unitPrice ?? product.price ?? 0;
+        const costVal = typeof rawCost === 'string' ? parseFloat(rawCost.replace(/,/g, '')) : (typeof rawCost === 'number' ? rawCost : 0);
+
         const newItem: PurchaseOrderItem = {
             id: Math.random().toString(36).substr(2, 9),
             qty: 1,
@@ -325,6 +334,7 @@ export default function CreatePurchaseOrderDialog() {
             orderQty: 1,
             costPricePerCase: costVal,
             costPricePerPiece: costVal,
+            cost: costVal,
             unitPrice: costVal,
             total: costVal
         };
@@ -346,19 +356,24 @@ export default function CreatePurchaseOrderDialog() {
             const updatedItem = { ...item, [field]: value };
 
             // Recalculate based on changed fields
-            if (field === 'qtyPerCase' || field === 'costPricePerCase' || field === 'orderQty') {
+            if (field === 'qtyPerCase' || field === 'costPricePerCase' || field === 'costPricePerPiece' || field === 'orderQty') {
                 const qtyPerCase = parseFloat(updatedItem.qtyPerCase?.toString() || '1') || 1;
                 const costPricePerCase = parseFloat(updatedItem.costPricePerCase?.toString() || '0') || 0;
                 const orderQty = parseFloat(updatedItem.orderQty?.toString() || '0') || 0;
 
-                updatedItem.costPricePerPiece = costPricePerCase / qtyPerCase;
-                updatedItem.unitPrice = updatedItem.costPricePerPiece;
+                if (field === 'costPricePerPiece') {
+                    updatedItem.unitPrice = value;
+                    // If piece cost changed, update case cost as well
+                    updatedItem.costPricePerCase = value * qtyPerCase;
+                } else if (field === 'costPricePerCase') {
+                    updatedItem.costPricePerPiece = costPricePerCase / qtyPerCase;
+                    updatedItem.unitPrice = updatedItem.costPricePerPiece;
+                } else {
+                    // qtyPerCase or orderQty changed
+                    updatedItem.costPricePerPiece = costPricePerCase / qtyPerCase;
+                    updatedItem.unitPrice = updatedItem.costPricePerPiece;
+                }
                 updatedItem.qty = orderQty * qtyPerCase;
-            } else if (field === 'costPricePerPiece') {
-                const costPricePerPiece = parseFloat(value?.toString() || '0') || 0;
-                const qtyPerCase = parseFloat(updatedItem.qtyPerCase?.toString() || '1') || 1;
-                updatedItem.costPricePerCase = costPricePerPiece * qtyPerCase;
-                updatedItem.unitPrice = costPricePerPiece;
             }
 
             return updatedItem;
@@ -617,7 +632,7 @@ export default function CreatePurchaseOrderDialog() {
                                                 <TableCell>
                                                     <Input
                                                         type="number"
-                                                        value={item.costPricePerCase ?? 0}
+                                                        value={item.costPricePerCase || item.cost || 0}
                                                         className="h-8 text-right"
                                                         onChange={(e) => updateItem(item.id, 'costPricePerCase', parseFloat(e.target.value) || 0)}
                                                     />

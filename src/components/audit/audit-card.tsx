@@ -12,8 +12,12 @@ import {
     User,
     Calendar,
     ChevronRight,
-    GripVertical
+    GripVertical,
+    ChevronDown,
+    ChevronUp
 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface AuditCardProps {
     id: string;
@@ -47,6 +51,9 @@ export function AuditCard({
         isDragging,
     } = useSortable({ id });
 
+    const isPostStatus = status.toLowerCase().includes('done') || status.toLowerCase().includes('history');
+    const [isExpanded, setIsExpanded] = useState(!isPostStatus);
+
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -69,11 +76,22 @@ export function AuditCard({
             >
                 <CardContent className="p-4">
                     {/* Header: Action Type & Drag Handle */}
-                    <div className="flex items-start justify-between mb-3">
-                        <div className="space-y-1">
+                    <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
                             <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider py-0 px-2 bg-muted/50 rounded-sm">
                                 {actionType}
                             </Badge>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5 rounded-full hover:bg-muted"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded(!isExpanded);
+                                }}
+                            >
+                                {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                            </Button>
                         </div>
                         {isDragEnabled && (
                             <div
@@ -87,48 +105,63 @@ export function AuditCard({
                         )}
                     </div>
 
-                    {/* Main Content Area */}
-                    <div className="space-y-3">
-                        {/* Transaction No & Bank */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="flex items-center gap-2">
-                                <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
-                                <span className="text-xs font-mono font-bold truncate">
-                                    {transactionId || 'N/A'}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Banknote className="h-3 w-3 text-muted-foreground shrink-0" />
-                                <span className="text-xs font-semibold truncate capitalize">
-                                    {bankName || 'No Bank'}
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Amount */}
-                        <div className="bg-muted/30 p-2 rounded-lg border border-border/50">
-                            <div className="text-[10px] uppercase font-bold text-muted-foreground mb-0.5">Amount</div>
-                            <div className="text-lg font-mono font-black text-primary">
+                    {/* Transaction ID summary when collapsed */}
+                    {!isExpanded && (
+                        <div className="flex items-center gap-2">
+                            <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
+                            <span className="text-xs font-mono font-bold truncate">
+                                {transactionId || 'N/A'}
+                            </span>
+                            <span className="text-[10px] font-mono font-black text-primary ml-auto">
                                 ₱{amount?.toLocaleString(undefined, { minimumFractionDigits: 2 }) || '0.00'}
-                            </div>
+                            </span>
                         </div>
+                    )}
 
-                        {/* Metadata: Created By & Date */}
-                        <div className="flex items-center justify-between pt-1 border-t border-border/50 mt-2">
-                            <div className="flex items-center gap-1.5 min-w-0">
-                                <User className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-[10px] font-medium text-muted-foreground truncate">
-                                    {initiatedBy || 'System'}
-                                </span>
+                    {/* Main Content Area - Expandable */}
+                    {isExpanded && (
+                        <div className="space-y-3 mt-3">
+                            {/* Transaction No & Bank */}
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="flex items-center gap-2">
+                                    <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
+                                    <span className="text-xs font-mono font-bold truncate">
+                                        {transactionId || 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Banknote className="h-3 w-3 text-muted-foreground shrink-0" />
+                                    <span className="text-xs font-semibold truncate capitalize">
+                                        {bankName || 'No Bank'}
+                                    </span>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                                <Calendar className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-[10px] font-medium text-muted-foreground">
-                                    {date ? format(new Date(date), 'MMM dd, HH:mm') : '--'}
-                                </span>
+
+                            {/* Amount */}
+                            <div className="bg-muted/30 p-2 rounded-lg border border-border/50">
+                                <div className="text-[10px] uppercase font-bold text-muted-foreground mb-0.5">Amount</div>
+                                <div className="text-lg font-mono font-black text-primary">
+                                    ₱{amount?.toLocaleString(undefined, { minimumFractionDigits: 2 }) || '0.00'}
+                                </div>
+                            </div>
+
+                            {/* Metadata: Created By & Date */}
+                            <div className="flex items-center justify-between pt-1 border-t border-border/50 mt-2">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                    <User className="h-3 w-3 text-muted-foreground" />
+                                    <span className="text-[10px] font-medium text-muted-foreground truncate">
+                                        {initiatedBy || 'System'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                                    <span className="text-[10px] font-medium text-muted-foreground">
+                                        {date ? format(new Date(date), 'MMM dd, HH:mm') : '--'}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Review Indicator (Visible on hover) */}
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-2 transition-all">

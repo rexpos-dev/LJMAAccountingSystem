@@ -46,6 +46,7 @@ interface PurchaseHistoryItem {
     pieces: number | null;
     costPricePerCase: number | null;
     costPricePerPiece: number | null;
+    cost?: number | null;
     discount1: number | null;
     discount2: number | null;
     discount3: number | null;
@@ -154,7 +155,7 @@ export default function PurchaseHistoryDialog() {
                 item.offtake || '',
                 item.orderQty || '',
                 item.pieces || '',
-                item.costPricePerCase || '',
+                item.costPricePerCase || item.cost || '',
                 item.costPricePerPiece || '',
                 item.discount1 || '',
                 item.discount2 || '',
@@ -247,7 +248,7 @@ export default function PurchaseHistoryDialog() {
                                 <td>${item.offtake || '-'}</td>
                                 <td>${item.orderQty || '-'}</td>
                                 <td>${item.pieces || '-'}</td>
-                                <td>${item.costPricePerCase || '-'}</td>
+                                <td>${item.costPricePerCase || item.cost || '-'}</td>
                                 <td>${item.costPricePerPiece || '-'}</td>
                                 <td>${item.discount1 || '-'}</td>
                                 <td>${item.discount2 || '-'}</td>
@@ -541,7 +542,7 @@ export default function PurchaseHistoryDialog() {
                                                         <td className="p-4 align-middle text-right">{item.offtake || '-'}</td>
                                                         <td className="p-4 align-middle text-right">{item.orderQty || '-'}</td>
                                                         <td className="p-4 align-middle text-right">{item.pieces || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.costPricePerCase ? `₱${formatCurrency(item.costPricePerCase)}` : '-'}</td>
+                                                        <td className="p-4 align-middle text-right">{(item.costPricePerCase || item.cost) ? `₱${formatCurrency(item.costPricePerCase || (item.cost ?? 0))}` : '-'}</td>
                                                         <td className="p-4 align-middle text-right">{item.costPricePerPiece ? `₱${formatCurrency(item.costPricePerPiece)}` : '-'}</td>
                                                         <td className="p-4 align-middle text-right">{item.discount1 || '-'}</td>
                                                         <td className="p-4 align-middle text-right">{item.discount2 || '-'}</td>

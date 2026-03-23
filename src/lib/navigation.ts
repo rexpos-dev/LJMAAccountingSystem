@@ -72,7 +72,7 @@ export const navItems: NavItem[] = [
     hideForRoles: ['Auditor'], // Transactional actions disabled
     subItems: [
       { title: "Make a payment", href: "/transactions/make-payment" },
-      { title: "Receive a payment", href: "/transactions/receive-payment" },
+      { title: "Received a Payment", href: "/banking/receipts-deposits", dialogId: "receipts-deposits" },
       { title: "Manual journal entry", href: "/transactions/journal-entry", dialogId: "journal-entry" },
       { title: "View journal", href: "/transactions/view-journal", dialogId: "view-journal" }, // Maybe this should be visible? But it's in Transactions
       { title: "Reconcile account", href: "/banking/reconcile", dialogId: "reconcile-account" },

@@ -18,9 +18,12 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarMenuBadge,
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useDialog } from "./dialog-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { navItems, type NavItem } from "@/lib/navigation";
@@ -52,7 +55,6 @@ import {
   DropdownMenuLabel,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useDialog } from "./dialog-provider";
 import dynamic from 'next/dynamic';
 import NewAccountDialog from "../configuration/new-account-dialog";
 import EditTransactionDialog from "../transactions/edit-transaction-dialog";
@@ -92,7 +94,39 @@ function SidebarNav() {
   const { openDialog } = useDialog();
   const { user } = useAuth();
   const { state } = useSidebar();
+  const { notifications } = useNotifications();
   const [isMounted, setIsMounted] = React.useState(false);
+
+  const getUnreadCount = (item: NavItem | { title: string, href: string }) => {
+    if (!notifications) return 0;
+
+    return notifications.filter(n => {
+      // Map notification types to nav items
+      if (item.href === '/requests' || item.title === 'Requests') {
+        return n.type === 'REQUEST_VERIFICATION';
+      }
+      if (item.href === '/audit' || item.title === 'Audit') {
+        return n.type === 'AuditAssignment' || n.type === 'AuditComment';
+      }
+      if (item.href === '/configuration/user-permissions' || item.title === 'User Permissions') {
+        return n.type === 'ACCESS_REQUEST';
+      }
+      if (item.href === '/dashboard' || item.title === 'Dashboard') {
+        return n.type?.startsWith('reminder_');
+      }
+      return false;
+    }).length;
+  };
+
+  const getItemCount = (navItem: NavItem) => {
+    let count = getUnreadCount(navItem);
+    if (navItem.subItems) {
+      navItem.subItems.forEach(sub => {
+        count += getUnreadCount(sub);
+      });
+    }
+    return count;
+  };
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -177,6 +211,9 @@ function SidebarNav() {
                 >
                   <item.icon className="h-4 w-4" />
                   <span className="sr-only">{item.title}</span>
+                  {getItemCount(item) > 0 && (
+                    <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-destructive border-2 border-sidebar" />
+                  )}
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
             </SidebarMenuItem>
@@ -218,6 +255,11 @@ function SidebarNav() {
                     <div className="flex items-center gap-2">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
+                      {getItemCount(item) > 0 && (
+                        <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
+                          {getItemCount(item)}
+                        </SidebarMenuBadge>
+                      )}
                     </div>
                     <ChevronsUpDown className="h-4 w-4" />
                   </div>
@@ -236,7 +278,14 @@ function SidebarNav() {
                       handleNavClick(e, subItem.href, subItem.dialogId as any)
                     }
                   >
-                    <Link href={subItem.href}>{subItem.title}</Link>
+                    <Link href={subItem.href}>
+                      <span>{subItem.title}</span>
+                      {getUnreadCount(subItem) > 0 && (
+                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+                          {getUnreadCount(subItem)}
+                        </span>
+                      )}
+                    </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
               ))}
@@ -259,6 +308,11 @@ function SidebarNav() {
           >
             <item.icon className="h-4 w-4" />
             <span>{item.title}</span>
+            {getItemCount(item) > 0 && (
+              <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
+                {getItemCount(item)}
+              </SidebarMenuBadge>
+            )}
             {item.label && (
               <span className="ml-auto bg-accent text-accent-foreground text-xs px-2 py-0.5 rounded-full">
                 {item.label}

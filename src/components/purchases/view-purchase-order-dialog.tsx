@@ -31,6 +31,7 @@ interface PurchaseOrderItem {
     orderQty?: number;
     costPricePerCase?: number;
     costPricePerPiece?: number;
+    cost?: number;
 }
 
 interface PurchaseOrder {
@@ -205,7 +206,7 @@ export default function ViewPurchaseOrderDialog() {
                                                 <td className="px-3 py-2 border-r align-top text-xs font-medium">{item.itemDescription}</td>
                                                 <td className="px-2 py-2 border-r align-top text-right text-xs">{item.qtyPerCase || 1}</td>
                                                 <td className="px-2 py-2 border-r align-top text-right text-xs font-semibold">{item.orderQty || item.quantity}</td>
-                                                <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerCase || (item.unitPrice * (item.qtyPerCase || 1))).toFixed(2)}</td>
+                                                <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerCase || item.cost || (item.unitPrice * (item.qtyPerCase || 1))).toFixed(2)}</td>
                                                 <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerPiece || item.unitPrice).toFixed(2)}</td>
                                                 <td className="px-3 py-2 border-r align-top text-right text-xs text-muted-foreground">{item.buyingUom || "pc"}</td>
                                                 <td className="px-4 py-2 align-top text-right text-xs font-bold">{item.total.toFixed(2)}</td>
