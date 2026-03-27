@@ -77,7 +77,7 @@ export default function ReportsPage() {
 
     const salesReports = [
         { title: "Invoices Report", onClick: () => openDialog('invoices-report-dialog'), className: `${tileClass} col-span-2 h-32`, isActive: summary.hasInvoices },
-        { title: "Quotes Report", onClick: () => openDialog('quotes-report-dialog'), className: `${tileClass} col-span-1 h-32`, isActive: summary.hasOrders },
+        { title: "Cash Advance Report", onClick: () => openDialog('cash-advance-report-dialog'), className: `${tileClass} col-span-1 h-32`, isActive: summary.hasOrders },
         { title: "Orders Report", onClick: () => openDialog('orders-report-dialog'), className: `${tileClass} col-span-1 h-32`, isActive: summary.hasOrders },
         { title: "Sales Invoice Payment Report", onClick: () => openDialog('sales-invoice-payment-report-dialog'), className: `${tileClass} col-span-2 h-32`, isActive: summary.hasInvoices },
         { title: "Items Per Customer", onClick: () => openDialog('items-per-customer-report-dialog'), className: `${tileClass} col-span-1 h-32`, isActive: summary.hasCustomers },

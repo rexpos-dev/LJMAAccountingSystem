@@ -178,39 +178,6 @@ export default function CreatePurchaseOrderDialog() {
     const [editOrderId, setEditOrderId] = useState<string | null>(null);
     const [customUomRows, setCustomUomRows] = useState<Record<string, boolean>>({});
 
-    useEffect(() => {
-        const fetchLiabilityAccounts = async () => {
-            try {
-                const res = await fetch('/api/accounts');
-                if (res.ok) {
-                    const data = await res.json();
-                    const liabilities = data.filter((acc: any) =>
-                        acc.account_type?.toLowerCase().includes('liability') ||
-                        acc.header?.toLowerCase().includes('liability') ||
-                        acc.account_category?.toLowerCase().includes('liability')
-                    );
-                    setLiabilityAccounts(liabilities);
-                }
-            } catch (error) {
-                console.error('Failed to fetch liability accounts', error);
-            }
-        };
-
-        if (openDialogs['create-purchase-order']) {
-            fetchSuppliers();
-            fetchLiabilityAccounts();
-            const data = getDialogData('create-purchase-order');
-            if (data?.mode === 'edit' && data?.orderId) {
-                setMode('edit');
-                setEditOrderId(data.orderId);
-                fetchOrderDetails(data.orderId);
-            } else {
-                // Reset form for create mode
-                resetForm();
-            }
-        }
-    }, [openDialogs['create-purchase-order']]);
-
     const resetForm = () => {
         setSupplierId('');
         setVendorAddress('');
@@ -225,14 +192,45 @@ export default function CreatePurchaseOrderDialog() {
         setEditOrderId(null);
     };
 
-    const fetchOrderDetails = async (id: string) => {
+    const handleClose = () => {
+        closeDialog('create-purchase-order');
+        resetForm();
+    };
+
+    const fetchSuppliers = async () => {
         try {
-            // Reusing list API logic: fetch all and find (since endpoint doesn't support direct ID fetch yet)
-            // Ideally should be GET /api/purchase-orders/[id] or ?id=...
-            const res = await fetch(`/api/purchase-orders`);
+            const res = await fetch('/api/suppliers');
             if (res.ok) {
                 const data = await res.json();
-                const order = data.find((o: any) => o.id === id);
+                setSuppliers(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch suppliers', error);
+        }
+    };
+
+    const fetchLiabilityAccounts = async () => {
+        try {
+            const res = await fetch('/api/accounts');
+            if (res.ok) {
+                const data = await res.json();
+                const liabilities = data.filter((acc: any) =>
+                    acc.account_type?.toLowerCase().includes('liability') ||
+                    acc.header?.toLowerCase().includes('liability') ||
+                    acc.account_category?.toLowerCase().includes('liability')
+                );
+                setLiabilityAccounts(liabilities);
+            }
+        } catch (error) {
+            console.error('Failed to fetch liability accounts', error);
+        }
+    };
+
+    const fetchOrderDetails = async (id: string) => {
+        try {
+            const res = await fetch(`/api/purchase-orders/${id}`);
+            if (res.ok) {
+                const order = await res.json();
                 if (order) {
                     setSupplierId(order.supplierId);
                     // Trigger address update based on supplier if needed, but order might have custom address
@@ -243,7 +241,6 @@ export default function CreatePurchaseOrderDialog() {
                     setComments(order.comments || '');
                     setPrivateComments(order.privateComments || '');
                     setDepositAccount(order.depositAccount || '');
-
 
                     // Map items
                     const mappedItems = order.items.map((item: any) => ({
@@ -271,17 +268,22 @@ export default function CreatePurchaseOrderDialog() {
         }
     };
 
-    const fetchSuppliers = async () => {
-        try {
-            const res = await fetch('/api/suppliers');
-            if (res.ok) {
-                const data = await res.json();
-                setSuppliers(data);
+    useEffect(() => {
+        if (openDialogs['create-purchase-order']) {
+            fetchSuppliers();
+            fetchLiabilityAccounts();
+            const data = getDialogData('create-purchase-order');
+            if (data?.mode === 'edit' && data?.orderId) {
+                setMode('edit');
+                setEditOrderId(data.orderId);
+                fetchOrderDetails(data.orderId);
+            } else {
+                // Reset form for create mode
+                resetForm();
             }
-        } catch (error) {
-            console.error('Failed to fetch suppliers', error);
         }
-    };
+    }, [openDialogs['create-purchase-order']]);
+
 
     const handleSupplierChange = (id: string) => {
         setSupplierId(id);
@@ -381,10 +383,6 @@ export default function CreatePurchaseOrderDialog() {
     };
 
 
-    const handleClose = () => {
-        closeDialog('create-purchase-order');
-        resetForm();
-    };
 
     const handleSave = async () => {
         if (!supplierId) {

@@ -126,7 +126,6 @@ export default function IncomeStatementPage() {
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button variant="secondary">Help</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

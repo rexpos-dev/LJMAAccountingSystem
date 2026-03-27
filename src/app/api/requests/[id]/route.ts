@@ -38,82 +38,175 @@ export async function PATCH(
         const body = await req.json();
         const now = new Date();
 
-        // Dynamically build update query for PATCH
-        const updates: string[] = [];
-        const values: any[] = [];
-
-        Object.entries(body).forEach(([key, value]) => {
-            if (key !== 'id' && key !== 'items') {
-                updates.push(`${key} = ?`);
-                values.push(value);
-            }
-        });
-
-        if (updates.length === 0) {
-            return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+        // --- Handle individual field updates (non-status) ---
+        if (body.depositAccount !== undefined) {
+            await prisma.$executeRaw`UPDATE request SET depositAccount = ${body.depositAccount}, updatedAt = ${now} WHERE id = ${id}`;
+        }
+        if (body.verifiedBy !== undefined) {
+            await prisma.$executeRaw`UPDATE request SET verifiedBy = ${body.verifiedBy}, updatedAt = ${now} WHERE id = ${id}`;
+        }
+        if (body.approvedBy !== undefined) {
+            await prisma.$executeRaw`UPDATE request SET approvedBy = ${body.approvedBy}, updatedAt = ${now} WHERE id = ${id}`;
+        }
+        if (body.processedBy !== undefined) {
+            await prisma.$executeRaw`UPDATE request SET processedBy = ${body.processedBy}, updatedAt = ${now} WHERE id = ${id}`;
         }
 
-        updates.push(`updatedAt = ?`);
-        values.push(now);
-        values.push(id);
-
-        // This is a bit tricky with queryRaw/executeRaw because and dynamic fields.
-        // For simplicity and to bypass Prisma model issues, we use a slightly more manual approach if needed
-        // but let's try a simpler way for status/signatures specifically which are most common action fixes.
-
+        // --- Handle status update ---
         if (body.status) {
+            console.log(`[API] Updating request ${id} status to: ${body.status}`);
             await prisma.$executeRaw`UPDATE request SET status = ${body.status}, updatedAt = ${now} WHERE id = ${id}`;
 
-            // Handle automatic Journal Entry when status becomes 'Released'
-            if (body.status === 'Released') {
-                const existingReq: any = await prisma.$queryRaw`SELECT * FROM request WHERE id = ${id}`;
-                if (existingReq && existingReq.length > 0) {
-                    const req = existingReq[0];
-                    // Verify it wasn't already released in some race condition
-                    try {
-                        const amount = req.amount || 0;
-                        const chargeToAcct = parseInt(req.chargeTo, 10);
-                        const depositAcct = parseInt(req.depositAccount, 10);
+            // =============================================================
+            // RELEASE PAYMENT FLOW
+            // Triggered when status is set to 'Released' or 'Received'
+            // =============================================================
+            if (body.status === 'Released' || body.status === 'Received') {
+                console.log(`[API] Triggering Release Payment flow for status: ${body.status}`);
+                const existingReqs: any[] = await prisma.$queryRaw`SELECT * FROM request WHERE id = ${id}`;
 
-                        if (!isNaN(chargeToAcct) && !isNaN(depositAcct) && amount > 0) {
+                if (existingReqs && existingReqs.length > 0) {
+                    const reqData = existingReqs[0];
+
+                    // Fetch request items (for inventory & product tracking)
+                    const requestItems: any[] = await prisma.$queryRaw`
+                        SELECT ri.*, p.id as product_db_id, p.stockQuantity
+                        FROM request_item ri
+                        LEFT JOIN product p ON p.id = ri.productId
+                        WHERE ri.requestId = ${id}
+                    `;
+
+                    const amount = reqData.amount || 0;
+                    const chargeToAcct = parseInt(reqData.chargeTo, 10);
+                    const depositAcct = parseInt(reqData.depositAccount, 10);
+                    const releasedBy = body.releasedBy || reqData.processedBy || 'Treasurer';
+                    const isCashAdvance = reqData.formName === 'REQUEST AND AUTHORIZATION OF CASH ADVANCES';
+
+                    // ----------------------------------------------------------
+                    // 1. JOURNAL ENTRIES (Accounting)
+                    // ----------------------------------------------------------
+                    if (!isNaN(chargeToAcct) && !isNaN(depositAcct) && amount > 0) {
+                        try {
                             const { postJournalEntry } = await import('@/lib/journal-helper');
                             await postJournalEntry({
-                                date: new Date(),
-                                referenceId: req.requestNumber,
-                                particulars: `Automatic Journal Entry for Released Request: ${req.purpose || req.formName}`,
-                                user: 'System', // Could use a session user if passed
+                                date: now,
+                                referenceId: reqData.requestNumber,
+                                particulars: `Released Payment: ${reqData.purpose || reqData.formName || 'Disbursement'} - ${reqData.requesterName}`,
+                                user: releasedBy,
                                 lines: [
                                     { accountNo: chargeToAcct, debit: amount, credit: 0 },
-                                    { accountNo: depositAcct, debit: 0, credit: amount }
+                                    { accountNo: depositAcct, debit: 0, credit: amount },
                                 ]
                             });
-                            console.log(`Successfully posted Journal Entry for Request ${req.requestNumber}`);
-                        } else {
-                            console.warn(`Request ${req.requestNumber} released but missing valid chargeTo/depositAccount or amount is 0. Cannot post Journal Entry.`);
+                            console.log(`[RELEASE] Journal Entry posted for ${reqData.requestNumber}`);
+                        } catch (err: any) {
+                            // Log but do not block. Journal errors are logged to console and audit.
+                            console.error(`[RELEASE] Journal Entry failed for ${reqData.requestNumber}:`, err.message);
                         }
+                    } else {
+                        console.warn(`[RELEASE] Skipped Journal Entry for ${reqData.requestNumber}: missing chargeTo/depositAccount or zero amount.`);
+                    }
+
+                    // ----------------------------------------------------------
+                    // 2. ACCOUNTS PAYABLE (AP) - PayablesLedger
+                    // ----------------------------------------------------------
+                    try {
+                        // Fetch account info for AP ledger record
+                        const chargeAccount: any[] = !isNaN(chargeToAcct)
+                            ? await prisma.$queryRaw`SELECT account_no, account_name FROM chart_of_account WHERE account_no = ${chargeToAcct} LIMIT 1`
+                            : [];
+
+                        await prisma.payablesLedger.create({
+                            data: {
+                                date: now,
+                                reference: reqData.requestNumber,
+                                ledger: 'Disbursement',
+                                accountNumber: chargeAccount[0]?.account_no?.toString() || reqData.chargeTo,
+                                accountName: chargeAccount[0]?.account_name || 'Expense Account',
+                                accountDescription: reqData.purpose || reqData.formName,
+                                debitAmount: amount,
+                                creditAmount: 0,
+                                user: releasedBy,
+                            }
+                        });
+                        console.log(`[RELEASE] AP Payables Ledger entry created for ${reqData.requestNumber}`);
                     } catch (err: any) {
-                        console.error('Error posting journal entry for released request:', err);
-                        // We still allow the request to be marked as released even if journaling fails, 
-                        // or we could throw here. Opting to just log error for now to not block the release workflow.
+                        console.error(`[RELEASE] AP Ledger failed for ${reqData.requestNumber}:`, err.message);
+                    }
+
+                    // ----------------------------------------------------------
+                    // 3. INVENTORY - InventoryTransaction + Stock Update
+                    // Only processes items with a linked productId
+                    // ----------------------------------------------------------
+                    for (const item of requestItems) {
+                        if (!item.productId) continue;
+                        try {
+                            // Create an inventory withdrawal record
+                            await prisma.inventoryTransaction.create({
+                                data: {
+                                    productId: item.productId,
+                                    type: 'Disbursement Out',
+                                    quantity: -(item.quantity || 0), // Negative = stock reduction
+                                    referenceId: reqData.requestNumber,
+                                    status: 'Completed',
+                                }
+                            });
+
+                            // Decrement stock quantity on the Product record
+                            await prisma.product.update({
+                                where: { id: item.productId },
+                                data: { stockQuantity: { decrement: item.quantity || 0 } }
+                            });
+                            console.log(`[RELEASE] Inventory updated: Product ${item.productId}, Qty -${item.quantity}`);
+                        } catch (err: any) {
+                            console.error(`[RELEASE] Inventory update failed for product ${item.productId}:`, err.message);
+                        }
+                    }
+
+                    // ----------------------------------------------------------
+                    // 4. ADVANCES - Update cash advance requests to "Settled"
+                    // ----------------------------------------------------------
+                    if (isCashAdvance) {
+                        try {
+                            await prisma.$executeRaw`
+                                UPDATE request SET status = 'Settled', updatedAt = ${now}
+                                WHERE id = ${id} AND formName = 'REQUEST AND AUTHORIZATION OF CASH ADVANCES'
+                            `;
+                            console.log(`[RELEASE] Cash advance ${reqData.requestNumber} marked as Settled.`);
+                        } catch (err: any) {
+                            console.error(`[RELEASE] Advances update failed:`, err.message);
+                        }
+                    }
+
+                    // ----------------------------------------------------------
+                    // 5. AUDIT TRAIL - Log the Release action explicitly
+                    // ----------------------------------------------------------
+                    try {
+                        await prisma.auditLog.create({
+                            data: {
+                                date: now,
+                                actionType: 'Payment Released',
+                                transactionId: reqData.requestNumber,
+                                details: `Payment released for Request #${reqData.requestNumber} | Payee: ${reqData.requesterName} | Amount: ₱${amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })} | Form: ${reqData.formName || 'Disbursement Slip'} | Released by: ${releasedBy}`,
+                                amount: amount,
+                                status: 'To Audit',
+                                initiatedBy: releasedBy,
+                            }
+                        });
+                        console.log(`[RELEASE] Audit trail logged for ${reqData.requestNumber}`);
+                    } catch (err: any) {
+                        console.error(`[RELEASE] Audit log failed:`, err.message);
                     }
                 }
             }
         }
 
-        if (body.depositAccount !== undefined) {
-            await prisma.$executeRaw`UPDATE request SET depositAccount = ${body.depositAccount}, updatedAt = ${now} WHERE id = ${id}`;
-        }
+        // If no recognized field in body
+        const hasAnyUpdate = body.status || body.depositAccount !== undefined ||
+            body.verifiedBy !== undefined || body.approvedBy !== undefined || body.processedBy !== undefined;
 
-        if (body.verifiedBy !== undefined) {
-            await prisma.$executeRaw`UPDATE request SET verifiedBy = ${body.verifiedBy}, updatedAt = ${now} WHERE id = ${id}`;
-        }
-
-        if (body.approvedBy !== undefined) {
-            await prisma.$executeRaw`UPDATE request SET approvedBy = ${body.approvedBy}, updatedAt = ${now} WHERE id = ${id}`;
-        }
-
-        if (body.processedBy !== undefined) {
-            await prisma.$executeRaw`UPDATE request SET processedBy = ${body.processedBy}, updatedAt = ${now} WHERE id = ${id}`;
+        if (!hasAnyUpdate) {
+            return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
         }
 
         return NextResponse.json({ success: true });

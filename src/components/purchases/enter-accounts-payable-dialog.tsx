@@ -553,7 +553,6 @@ export function EnterAccountsPayableDialog() {
                         {isSubmitting ? 'Recording...' : 'Record'}
                     </Button>
                     <Button variant="secondary" onClick={() => closeDialog('enter-ap')} disabled={isSubmitting}>Cancel</Button>
-                    <Button variant="outline" disabled={isSubmitting}>Help</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

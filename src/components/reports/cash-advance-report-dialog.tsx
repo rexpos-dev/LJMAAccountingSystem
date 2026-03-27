@@ -11,22 +11,22 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-export default function QuotesReportDialog() {
+export default function CashAdvanceReportDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const [fromDate, setFromDate] = useState<Date | undefined>(new Date());
     const [toDate, setToDate] = useState<Date | undefined>(new Date());
 
     const handleRunReport = () => {
-        setDialogData('quotes-report', { fromDate, toDate });
-        closeDialog('quotes-report-dialog');
-        openDialog('quotes-report');
+        setDialogData('cash-advance-report', { fromDate, toDate });
+        closeDialog('cash-advance-report-dialog');
+        openDialog('cash-advance-report');
     };
 
     return (
-        <Dialog open={openDialogs['quotes-report-dialog']} onOpenChange={() => closeDialog('quotes-report-dialog')}>
+        <Dialog open={openDialogs['cash-advance-report-dialog']} onOpenChange={() => closeDialog('cash-advance-report-dialog')}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Quotes Report</DialogTitle>
+                    <DialogTitle>Cash Advance Report</DialogTitle>
                 </DialogHeader>
                 <div className="p-6 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -85,7 +85,7 @@ export default function QuotesReportDialog() {
                     <div className="pt-4 border-t flex justify-end gap-2">
                         <Button
                             variant="outline"
-                            onClick={() => closeDialog('quotes-report-dialog')}
+                            onClick={() => closeDialog('cash-advance-report-dialog')}
                         >
                             Cancel
                         </Button>

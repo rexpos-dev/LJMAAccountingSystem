@@ -81,8 +81,10 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
     const { user } = useAuth();
     const formName = "CONTRACTOR CASH ADVANCE MONITORING FILE";
 
-    const verifiers = userPermissions.filter(u => u.isActive && u.formPermissions === 'Verifier');
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+
+    const verifiers = userPermissions.filter(u => u.isActive && (u.formPermissions === 'Verifier' || isAdmin(u)));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),

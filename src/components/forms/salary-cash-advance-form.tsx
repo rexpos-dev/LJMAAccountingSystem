@@ -72,8 +72,11 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
     const formName = "REQUEST AND AUTHORIZATION OF CASH ADVANCES";
     const printRef = useRef<HTMLDivElement>(null);
 
-    const staff = userPermissions.filter(u => u.isActive);
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
+    const staff = userPermissions.filter(u => u.isActive && isAdminStaff(u));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
 
     const currentUserName = `${user?.firstName} ${user?.lastName}`;
 

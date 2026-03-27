@@ -18,6 +18,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useAccounts } from '@/hooks/use-accounts';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 export default function GeneralLedgerDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
@@ -31,6 +34,8 @@ export default function GeneralLedgerDialog() {
     });
     const [toDate, setToDate] = useState<Date | undefined>(new Date());
     const [accountId, setAccountId] = useState<string>('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isAccountPopoverOpen, setIsAccountPopoverOpen] = useState(false);
 
     const handleRunReport = () => {
         setDialogData('general-ledger-report' as any, {
@@ -41,6 +46,15 @@ export default function GeneralLedgerDialog() {
         closeDialog('general-ledger-dialog' as any);
         openDialog('general-ledger-report' as any);
     };
+
+    const filteredAccounts = accounts?.filter(acc =>
+        acc.account_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        acc.account_no.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const selectedAccount = accountId === 'all'
+        ? null
+        : accounts?.find(acc => acc.id === accountId);
 
     return (
         <Dialog open={openDialogs['general-ledger-dialog'] || false} onOpenChange={() => closeDialog('general-ledger-dialog' as any)}>
@@ -54,19 +68,85 @@ export default function GeneralLedgerDialog() {
                 <div className="p-6 space-y-6">
                     <div className="space-y-2">
                         <Label>Select Account</Label>
-                        <Select value={accountId} onValueChange={setAccountId} disabled={accountsLoading}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="All Accounts" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">-- All Accounts --</SelectItem>
-                                {accounts?.map((acc) => (
-                                    <SelectItem key={acc.id} value={acc.id}>
-                                        {acc.account_no} - {acc.account_name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Popover open={isAccountPopoverOpen} onOpenChange={setIsAccountPopoverOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={isAccountPopoverOpen}
+                                    className="w-full justify-between font-normal"
+                                    disabled={accountsLoading}
+                                >
+                                    <span className="truncate">
+                                        {accountId === 'all'
+                                            ? "All Accounts"
+                                            : selectedAccount
+                                                ? `${selectedAccount.account_no} - ${selectedAccount.account_name}`
+                                                : "Select account..."}
+                                    </span>
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                                <div className="p-2 border-b">
+                                    <div className="flex items-center px-2 bg-muted/50 rounded-md">
+                                        <Search className="h-4 w-4 mr-2 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Search account..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="h-9 border-0 bg-transparent focus-visible:ring-0 px-0"
+                                        />
+                                    </div>
+                                </div>
+                                <ScrollArea className="h-72">
+                                    <div className="p-1">
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start font-normal"
+                                            onClick={() => {
+                                                setAccountId('all');
+                                                setIsAccountPopoverOpen(false);
+                                                setSearchQuery('');
+                                            }}
+                                        >
+                                            <Check
+                                                className={cn(
+                                                    "mr-2 h-4 w-4",
+                                                    accountId === 'all' ? "opacity-100" : "opacity-0"
+                                                )}
+                                            />
+                                            -- All Accounts --
+                                        </Button>
+                                        {filteredAccounts?.map((acc) => (
+                                            <Button
+                                                key={acc.id}
+                                                variant="ghost"
+                                                className="w-full justify-start font-normal"
+                                                onClick={() => {
+                                                    setAccountId(acc.id || '');
+                                                    setIsAccountPopoverOpen(false);
+                                                    setSearchQuery('');
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        accountId === acc.id ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                <span className="truncate">{acc.account_no} - {acc.account_name}</span>
+                                            </Button>
+                                        ))}
+                                        {filteredAccounts?.length === 0 && (
+                                            <div className="py-6 text-center text-sm text-muted-foreground">
+                                                No account found.
+                                            </div>
+                                        )}
+                                    </div>
+                                </ScrollArea>
+                            </PopoverContent>
+                        </Popover>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

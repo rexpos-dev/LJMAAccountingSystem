@@ -92,12 +92,17 @@ export function AuditReviewDialog({
         setIsSubmitting(true);
 
         try {
+            // Find the selected user to get their ID for notifications
+            const selectedUser = users.find(u => (u.username || `${u.firstName} ${u.lastName}`) === assignee);
+            const assigneeId = selectedUser?.id || null;
+
             const res = await fetch(`/api/audit/${item.id}/review`, {
                 method: "POST",
                 body: JSON.stringify({
                     decision,
                     remarks,
-                    assignee
+                    assignee,
+                    assigneeId
                 }),
                 headers: { "Content-Type": "application/json" }
             });

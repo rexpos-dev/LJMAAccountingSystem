@@ -85,7 +85,8 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
     const { user } = useAuth();
     const formName = "JOB ORDER REQUEST FORM INTERNAL";
 
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),

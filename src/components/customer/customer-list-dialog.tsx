@@ -334,9 +334,6 @@ export default function CustomerListDialog() {
                 <RefreshCw className="h-4 w-4" />
                 <span className="sr-only">Refresh</span>
               </Button>
-              <Button variant="outline" onClick={() => closeDialog('customer-list')}>
-                Close
-              </Button>
             </div>
           </div>
         </div>

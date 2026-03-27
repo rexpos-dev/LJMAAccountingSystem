@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
     Menubar,
     MenubarContent,
@@ -30,11 +30,17 @@ import {
     Printer,
     Save,
     ListVideo,
+    ChevronLeft,
+    ChevronRight,
+    Search,
+    RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-provider';
 import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface AuditLog {
     id: string;
@@ -53,24 +59,34 @@ export function ToAuditReport() {
     const [data, setData] = useState<AuditLog[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 15;
 
     const dialogData = getDialogData('to-audit-report' as any);
-    const fromDateStr = dialogData?.fromDate;
-    const toDateStr = dialogData?.toDate;
+
+    // Initial dates from dialog provider or current date
+    const [localFromDate, setLocalFromDate] = useState<string>(
+        dialogData?.fromDate || new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]
+    );
+    const [localToDate, setLocalToDate] = useState<string>(
+        dialogData?.toDate || new Date().toISOString().split('T')[0]
+    );
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         if (openDialogs['to-audit-report' as any]) {
             fetchReportData();
+            setCurrentPage(1);
         }
-    }, [openDialogs['to-audit-report' as any], fromDateStr, toDateStr]);
+    }, [openDialogs['to-audit-report' as any], localFromDate, localToDate]);
 
     const fetchReportData = async () => {
         setLoading(true);
         setError(null);
         try {
             const params = new URLSearchParams();
-            if (fromDateStr) params.append('fromDate', fromDateStr);
-            if (toDateStr) params.append('toDate', toDateStr);
+            if (localFromDate) params.append('fromDate', localFromDate);
+            if (localToDate) params.append('toDate', localToDate);
 
             const response = await fetch(`/api/reports/to-audit?${params.toString()}`);
             if (!response.ok) {
@@ -86,16 +102,32 @@ export function ToAuditReport() {
         }
     };
 
-    const fromDate = fromDateStr ? new Date(fromDateStr) : new Date();
-    const toDate = toDateStr ? new Date(toDateStr) : new Date();
-    const dateDisplay = fromDateStr && toDateStr
-        ? `${format(fromDate, 'MM/dd/yyyy')} - ${format(toDate, 'MM/dd/yyyy')}`
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+        const lowerSearch = searchTerm.toLowerCase();
+        return data.filter(log =>
+            log.actionType.toLowerCase().includes(lowerSearch) ||
+            (log.transactionId && log.transactionId.toLowerCase().includes(lowerSearch)) ||
+            (log.details && log.details.toLowerCase().includes(lowerSearch)) ||
+            (log.assignee && log.assignee.toLowerCase().includes(lowerSearch))
+        );
+    }, [data, searchTerm]);
+
+    const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE) || 1;
+
+    const paginatedData = useMemo(() => {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredData.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredData, currentPage]);
+
+    const dateDisplay = localFromDate && localToDate
+        ? `${format(new Date(localFromDate), 'MM/dd/yyyy')} - ${format(new Date(localToDate), 'MM/dd/yyyy')}`
         : 'All Time';
 
     const formatCurrency = (value: number | null | undefined) => {
         if (value === null || value === undefined) return '-';
         if (value === 0) return '-';
-        return `₱ ${value.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",")}`;
+        return `₱ ${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     };
 
     return (
@@ -114,10 +146,49 @@ export function ToAuditReport() {
                             </MenubarContent>
                         </MenubarMenu>
                     </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => window.print()}><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
+                    <div className="flex items-center justify-between p-2 border-b bg-muted/10">
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
+                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => window.print()}><Printer className="h-5 w-5" /><span>Print</span></Button>
+                            <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
+                            <div className="w-px h-10 bg-border mx-2" />
+                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => fetchReportData()}><RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} /><span>Refresh</span></Button>
+                        </div>
+
+                        <div className="flex items-center gap-4 px-4">
+                            <div className="flex items-center gap-2">
+                                <Label htmlFor="from-date" className="text-xs font-medium uppercase text-muted-foreground whitespace-nowrap">From</Label>
+                                <Input
+                                    id="from-date"
+                                    type="date"
+                                    className="h-9 w-[150px]"
+                                    value={localFromDate}
+                                    onChange={(e) => setLocalFromDate(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Label htmlFor="to-date" className="text-xs font-medium uppercase text-muted-foreground whitespace-nowrap">To</Label>
+                                <Input
+                                    id="to-date"
+                                    type="date"
+                                    className="h-9 w-[150px]"
+                                    value={localToDate}
+                                    onChange={(e) => setLocalToDate(e.target.value)}
+                                />
+                            </div>
+                            <div className="relative w-64">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search action, ID, or details..."
+                                    className="h-9 pl-9"
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </header>
 
@@ -136,7 +207,7 @@ export function ToAuditReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
-                    {loading ? (
+                    {loading && data.length === 0 ? (
                         <div className="flex justify-center items-center h-32">
                             <span className="text-muted-foreground animate-pulse">Fetching audit records...</span>
                         </div>
@@ -144,14 +215,14 @@ export function ToAuditReport() {
                         <div className="flex justify-center items-center h-32 text-destructive">
                             {error}
                         </div>
-                    ) : data.length === 0 ? (
+                    ) : filteredData.length === 0 ? (
                         <div className="flex justify-center items-center h-32 text-muted-foreground">
-                            No records found requiring audit.
+                            {searchTerm ? `No records found matching "${searchTerm}"` : "No records found requiring audit for this period."}
                         </div>
                     ) : (
                         <div className="pb-8">
                             <Table>
-                                <TableHeader>
+                                <TableHeader className="sticky top-0 z-10 bg-card shadow-sm">
                                     <TableRow className="bg-muted/30 hover:bg-muted/30">
                                         <TableHead className="w-[120px]">Date</TableHead>
                                         <TableHead className="w-[180px]">Action Type</TableHead>
@@ -163,7 +234,7 @@ export function ToAuditReport() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {data.map((log) => (
+                                    {paginatedData.map((log) => (
                                         <TableRow key={log.id}>
                                             <TableCell>{format(new Date(log.date), 'MM/dd/yyyy HH:mm')}</TableCell>
                                             <TableCell className="font-medium">{log.actionType}</TableCell>
@@ -189,7 +260,43 @@ export function ToAuditReport() {
                         </div>
                     )}
                 </ScrollArea>
+
+                {/* Pagination Footer */}
+                {!loading && filteredData.length > 0 && (
+                    <div className="p-4 border-t bg-muted/20 flex items-center justify-between">
+                        <div className="text-sm text-muted-foreground">
+                            Showing <span className="text-white font-medium">{Math.min(filteredData.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)}</span> to <span className="text-white font-medium">{Math.min(filteredData.length, currentPage * ITEMS_PER_PAGE)}</span> of <span className="text-white font-medium">{filteredData.length}</span> records
+                            {searchTerm && <span className="ml-2">(filtered from {data.length} total)</span>}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="h-8"
+                            >
+                                <ChevronLeft className="h-4 w-4 mr-1" />
+                                Previous
+                            </Button>
+                            <div className="px-3 text-sm font-medium">
+                                Page {currentPage} of {totalPages}
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="h-8"
+                            >
+                                Next
+                                <ChevronRight className="h-4 w-4 ml-1" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     );
 }
+

@@ -51,8 +51,8 @@ import IncomeStatementAnalysisReport from '@/components/reports/income-statement
 import IncomeStatementReport from '@/components/reports/income-statement-report';
 import InvoicesReportDialog from '@/components/reports/invoices-report-dialog';
 import InvoicesReport from '@/components/reports/invoices-report';
-import QuotesReportDialog from '@/components/reports/quotes-report-dialog';
-import QuotesReport from '@/components/reports/quotes-report';
+import CashAdvanceReportDialog from '@/components/reports/cash-advance-report-dialog';
+import CashAdvanceReport from '@/components/reports/cash-advance-report';
 import SalesInvoicePaymentReportDialog from '@/components/reports/sales-invoice-payment-report-dialog';
 import SalesInvoicePaymentReport from '@/components/reports/sales-invoice-payment-report';
 import InventoryReportDialog from '@/components/reports/inventory-report-dialog';
@@ -131,6 +131,7 @@ import EditEmployeeDialog from '@/components/user-management/edit-employee-dialo
 import DeleteEmployeeDialog from '@/components/user-management/delete-employee-dialog';
 import CustomerStatementDialog from '@/components/customer/customer-statement-dialog';
 import CustomerLedgerDialog from '@/components/customer/customer-ledger-dialog';
+import { DisbursementDialog } from '@/components/transactions/disbursement-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -202,8 +203,8 @@ const dialogComponents = {
   'income-statement-report': IncomeStatementReport,
   'invoices-report-dialog': InvoicesReportDialog,
   'invoices-report': InvoicesReport,
-  'quotes-report-dialog': QuotesReportDialog,
-  'quotes-report': QuotesReport,
+  'cash-advance-report-dialog': CashAdvanceReportDialog,
+  'cash-advance-report': CashAdvanceReport,
   'orders-report-dialog': OrdersReportDialog,
   'orders-report': OrdersReport,
   'sales-invoice-payment-report-dialog': SalesInvoicePaymentReportDialog,
@@ -258,6 +259,7 @@ const dialogComponents = {
   'delete-employee': DeleteEmployeeDialog,
   'customer-statement': CustomerStatementDialog,
   'customer-ledger': CustomerLedgerDialog,
+  'disbursement-dialog': DisbursementDialog,
 };
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {

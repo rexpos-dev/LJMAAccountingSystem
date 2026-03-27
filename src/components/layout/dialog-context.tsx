@@ -71,8 +71,8 @@ export type DialogId =
     | 'income-statement-report'
     | 'invoices-report-dialog'
     | 'invoices-report'
-    | 'quotes-report-dialog'
-    | 'quotes-report'
+    | 'cash-advance-report-dialog'
+    | 'cash-advance-report'
     | 'orders-report-dialog'
     | 'orders-report'
     | 'sales-invoice-payment-report-dialog'
@@ -127,7 +127,8 @@ export type DialogId =
     | 'edit-employee'
     | 'delete-employee'
     | 'customer-statement'
-    | 'customer-ledger';
+    | 'customer-ledger'
+    | 'disbursement-dialog';
 
 export interface DialogContextType {
     openDialogs: Record<string, boolean>;

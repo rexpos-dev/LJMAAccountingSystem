@@ -82,15 +82,20 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
     const { user } = useAuth();
     const formName = "PURCHASE ORDER REQUEST (EXTERNAL)";
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Filter users by role
-    const staff = userPermissions.filter(u => u.isActive);
+    const staff = userPermissions.filter(u => u.isActive && isAdminStaff(u));
     const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
         try {
             const perms = JSON.parse(u.permissions);
-            return u.isActive && (u.formPermissions === 'Verifier' || u.accountType === 'Admin') && perms.includes(formName);
+            return u.formPermissions === 'Verifier' && perms.includes(formName);
         } catch { return false; }
     });
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
 
     const currentUserName = `${user?.firstName} ${user?.lastName}`;
 

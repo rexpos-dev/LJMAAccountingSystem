@@ -268,9 +268,12 @@ export function AuditBoard() {
             return nextItems;
         });
 
+        const selectedAuditor = auditors.find(a => (a.username === assignee || a.name === assignee));
+        const assigneeId = selectedAuditor?.id || null;
+
         fetch(`/api/audit/${auditId}`, {
             method: 'PATCH',
-            body: JSON.stringify({ assignee }),
+            body: JSON.stringify({ assignee, assigneeId }),
             headers: { 'Content-Type': 'application/json' }
         }).catch(console.error);
     };

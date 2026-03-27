@@ -85,15 +85,20 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
 
     const { user } = useAuth();
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Filter users by role and specific form access
     const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
         try {
             const perms = JSON.parse(u.permissions);
-            return u.isActive && u.formPermissions === 'Verifier' && perms.includes(formName);
+            return u.formPermissions === 'Verifier' && perms.includes(formName);
         } catch { return false; }
     });
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => u.isActive && isAdminStaff(u));
 
     const currentVerifierName = verifiers.find(v => v.username === user?.username) ? `${user?.firstName} ${user?.lastName}` : '';
 
@@ -227,7 +232,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                                                 const assignedBranch = String(emp.branchesAssigned);
                                                 form.setValue('department', assignedBranch, { shouldValidate: true });
                                                 // Find matching branch to get the address for the location field
-                                                const matchedBranch = branches.find((b: any) => 
+                                                const matchedBranch = branches.find((b: any) =>
                                                     b.name.toLowerCase() === assignedBranch.toLowerCase() ||
                                                     (b.code && b.code.toLowerCase() === assignedBranch.toLowerCase())
                                                 );

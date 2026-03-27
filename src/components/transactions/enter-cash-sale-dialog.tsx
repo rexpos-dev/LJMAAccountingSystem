@@ -404,10 +404,9 @@ export default function EnterCashSaleDialog() {
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button variant="secondary">Help</Button>
                     </div>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 }

@@ -60,7 +60,7 @@ export const navItems: NavItem[] = [
     hideForRoles: ['Auditor'], // Auditors don't do To-Do tasks
     subItems: [
       { title: "Create first invoice", href: "/todo/create-invoice", dialogId: "create-invoice" },
-      { title: "Enter your first payment", href: "/todo/enter-payment", dialogId: "enter-payment" },
+      { title: "Enter your first payment", href: "/todo/enter-payment", dialogId: "enter-payments" },
       { title: "Requests", href: "/requests" },
     ],
 
@@ -71,7 +71,7 @@ export const navItems: NavItem[] = [
     icon: ArrowRightLeft,
     hideForRoles: ['Auditor'], // Transactional actions disabled
     subItems: [
-      { title: "Make a payment", href: "/transactions/make-payment" },
+      { title: "Make a payment", href: "#", dialogId: "enter-payments" },
       { title: "Received a Payment", href: "/banking/receipts-deposits", dialogId: "receipts-deposits" },
       { title: "Manual journal entry", href: "/transactions/journal-entry", dialogId: "journal-entry" },
       { title: "View journal", href: "/transactions/view-journal", dialogId: "view-journal" }, // Maybe this should be visible? But it's in Transactions

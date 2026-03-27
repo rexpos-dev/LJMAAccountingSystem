@@ -86,9 +86,20 @@ export function HouseChargeForm({ initialData, mode = 'create', onSuccess, onCan
     const { user } = useAuth();
     const formName = "HOUSE CHARGE REQUEST FORM";
 
-    const verifiers = userPermissions.filter(u => u.isActive && u.formPermissions === 'Verifier');
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && u.formPermissions === 'Processor');
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
+    const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
+        return u.formPermissions === 'Verifier';
+    });
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdminStaff(u)) return true;
+        return u.formPermissions === 'Processor';
+    });
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),

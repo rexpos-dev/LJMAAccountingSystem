@@ -91,10 +91,13 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
     const { user } = useAuth();
     const formName = "STORE USE REQUEST FORM";
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Permissions for signatures
-    const verifiers = userPermissions.filter(u => u.isActive && (u.accountType === 'Verifier' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Approver' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'Processor' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const verifiers = userPermissions.filter(u => u.isActive && (u.formPermissions === 'Verifier' || isAdmin(u)));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => u.isActive && isAdminStaff(u));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),

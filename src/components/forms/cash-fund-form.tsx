@@ -74,15 +74,20 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
 
     const { user } = useAuth();
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Filter users by role and specific form access
     const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
         try {
             const perms = JSON.parse(u.permissions);
-            return u.isActive && u.formPermissions === 'Verifier' && perms.includes("CASH / FUND REQUEST FORM");
+            return u.formPermissions === 'Verifier' && perms.includes("CASH / FUND REQUEST FORM");
         } catch { return false; }
     });
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => u.isActive && isAdminStaff(u));
 
     const currentVerifierName = verifiers.find(v => v.username === user?.username) ? `${user?.firstName} ${user?.lastName}` : '';
 

@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Eye, Edit, CheckCircle, Play, Ban, Trash, ShieldCheck } from 'lucide-react';
+import { MoreHorizontal, Eye, Edit, CheckCircle, Play, Ban, Trash, ShieldCheck, Banknote } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,6 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import format from '@/lib/date-format';
 import { useAuth } from '@/components/providers/auth-provider';
+import { useDialog } from '@/components/layout/dialog-provider';
 
 interface Request {
     id: string;
@@ -47,11 +48,14 @@ export function RequestTable() {
     const [requests, setRequests] = useState<Request[]>([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
-    
+    const { openDialog, setDialogData } = useDialog();
+
     // Role checks
-    const isVerifier = user?.formPermissions === 'Verifier';
-    const isApprover = !isVerifier && ['Administrator', 'Admin'].includes(user?.accountType || '');
-    const isProcessor = !isVerifier && ['Administrator', 'Admin', 'AdminStaff'].includes(user?.accountType || '');
+    const isAdmin = ['Administrator', 'Admin', 'Super Admin'].includes(user?.accountType || '');
+    const isTreasurer = user?.accountType === 'Treasurer';
+    const isVerifier = isAdmin || user?.formPermissions === 'Verifier';
+    const isApprover = isAdmin || user?.formPermissions === 'Approver';
+    const isProcessor = isAdmin || user?.formPermissions === 'Processor' || user?.accountType === 'AdminStaff';
     const currentUserName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.username || 'Unknown User';
 
     const fetchRequests = () => {
@@ -111,24 +115,24 @@ export function RequestTable() {
             let newStatus = '';
             let updatePayload: any = {};
             switch (action) {
-                case 'verify': 
-                    newStatus = 'To Approve'; 
+                case 'verify':
+                    newStatus = 'To Approve';
                     updatePayload = { status: newStatus, verifiedBy: currentUserName };
                     break;
-                case 'approve': 
-                    newStatus = 'To Process'; 
+                case 'approve':
+                    newStatus = 'To Process';
                     updatePayload = { status: newStatus, approvedBy: currentUserName };
                     break;
-                case 'process': 
-                    newStatus = 'Released'; 
+                case 'process':
+                    newStatus = 'Released';
                     updatePayload = { status: newStatus, processedBy: currentUserName };
                     break;
-                case 'release': 
-                    newStatus = 'Received'; 
+                case 'release':
+                    newStatus = 'Received';
                     updatePayload = { status: newStatus };
                     break;
-                case 'void': 
-                    newStatus = 'Void'; 
+                case 'void':
+                    newStatus = 'Void';
                     updatePayload = { status: newStatus };
                     break;
             }
@@ -227,21 +231,47 @@ export function RequestTable() {
                                 </DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuLabel>Actions</DropdownMenuLabel>
                                         <DropdownMenuItem onClick={() => handleAction('view', request.id)}><Eye className="mr-2 h-4 w-4" /> View</DropdownMenuItem>
                                         <DropdownMenuSeparator />
-                                        {request.status === 'To Verify' && isVerifier && (
+
+                                        {!isTreasurer && request.status === 'To Verify' && isVerifier && (
                                             <DropdownMenuItem onClick={() => handleAction('verify', request.id)}><ShieldCheck className="mr-2 h-4 w-4" /> Verify</DropdownMenuItem>
                                         )}
-                                        {request.status === 'To Approve' && isApprover && (
+                                        {!isTreasurer && request.status === 'To Approve' && isApprover && (
                                             <DropdownMenuItem onClick={() => handleAction('approve', request.id)}><CheckCircle className="mr-2 h-4 w-4" /> Approve</DropdownMenuItem>
                                         )}
-                                        {request.status === 'To Process' && isProcessor && (
+                                        {!isTreasurer && request.status === 'To Process' && isProcessor && (
                                             <DropdownMenuItem onClick={() => handleAction('process', request.id)}><Play className="mr-2 h-4 w-4" /> Process</DropdownMenuItem>
                                         )}
-                                        {request.status === 'Released' && isProcessor && (
+                                        {!isTreasurer && request.status === 'Released' && isProcessor && (
                                             <DropdownMenuItem onClick={() => handleAction('release', request.id)}><CheckCircle className="mr-2 h-4 w-4" /> Mark Received</DropdownMenuItem>
                                         )}
+
+                                        {isTreasurer && (request.status === 'To Process') && (
+                                            <DropdownMenuItem
+                                                onClick={async (e) => {
+                                                    try {
+                                                        // Fetch the full request including items
+                                                        const res = await fetch(`/api/requests/${request.id}`);
+                                                        if (!res.ok) throw new Error('Failed to fetch request details');
+                                                        const fullData = await res.json();
+                                                        setDialogData('disbursement-dialog', { initialData: fullData });
+                                                        openDialog('disbursement-dialog');
+                                                    } catch (error) {
+                                                        console.error("Error fetching request for disbursement:", error);
+                                                        // Fallback to basic request data if fetch fails
+                                                        setDialogData('disbursement-dialog', { initialData: request });
+                                                        openDialog('disbursement-dialog');
+                                                    }
+                                                }}
+                                            >
+                                                <Banknote className="mr-2 h-4 w-4" /> Disburse
+                                            </DropdownMenuItem>
+                                        )}
+
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => handleAction('void', request.id)} className="text-destructive"><Ban className="mr-2 h-4 w-4" /> Void</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleAction('delete', request.id)} className="text-destructive"><Trash className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+                                        {!isTreasurer && (
+                                            <DropdownMenuItem onClick={() => handleAction('delete', request.id)} className="text-destructive"><Trash className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+                                        )}
                                     </DropdownMenuContent></DropdownMenu>
                                 </TableCell></TableRow>
                         ))

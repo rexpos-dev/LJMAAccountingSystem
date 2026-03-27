@@ -30,7 +30,6 @@ import {
   Save,
   Mail,
   ListVideo,
-  CaseSensitive,
   HelpCircle,
 } from 'lucide-react';
 import format from '@/lib/date-format';
@@ -168,14 +167,8 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
                 <MenubarItem>Print</MenubarItem>
                 <MenubarItem>Save</MenubarItem>
                 <MenubarItem>Email</MenubarItem>
-                <MenubarItem>Fax</MenubarItem>
-                <MenubarItem>Suite</MenubarItem>
-                <MenubarSeparator />
                 <MenubarItem onClick={() => closeDialog('balance-sheet-report')}>Close</MenubarItem>
               </MenubarContent>
-            </MenubarMenu>
-            <MenubarMenu>
-              <MenubarTrigger>Help</MenubarTrigger>
             </MenubarMenu>
           </Menubar>
           <div className="flex items-center gap-2 p-2 border-b">
@@ -183,8 +176,6 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
             <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
             <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
             <Button variant="ghost" size="sm" className="flex-col h-auto"><Mail className="h-5 w-5" /><span>Email</span></Button>
-            <Button variant="ghost" size="sm" className="flex-col h-auto"><CaseSensitive className="h-5 w-5" /><span>Fax</span></Button>
-            <Button variant="ghost" size="sm" className="flex-col h-auto"><File className="h-5 w-5" /><span>Suite</span></Button>
           </div>
         </header>
 

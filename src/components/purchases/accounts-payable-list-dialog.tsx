@@ -28,7 +28,6 @@ import {
     Plus,
     X,
     Pencil,
-    HelpCircle,
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
@@ -208,15 +207,10 @@ export default function AccountsPayableListDialog() {
     return (
         <Dialog open={openDialogs['accounts-payable']} onOpenChange={() => closeDialog('accounts-payable')}>
             <DialogContent className="max-w-[1000px] h-[80vh] flex flex-col p-0 gap-0 sm:rounded-lg overflow-hidden">
-                <DialogHeader className="px-4 py-2 border-b bg-background z-10 flex flex-row items-center justify-between space-y-0">
+                <DialogHeader className="px-4 py-2 border-b bg-background z-10">
                     <DialogTitle className="flex items-center gap-2">
                         Accounts Payable
                     </DialogTitle>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => closeDialog('accounts-payable')} className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full">
-                            <X className="h-4 w-4" />
-                        </Button>
-                    </div>
                 </DialogHeader>
 
                 {/* Toolbar */}
@@ -229,9 +223,7 @@ export default function AccountsPayableListDialog() {
 
                     <ToolbarButton icon={RefreshCw} label="Refresh" onClick={handleRefresh} />
 
-                    <div className="ml-auto flex items-center">
-                        <ToolbarButton icon={HelpCircle} label="Help" />
-                    </div>
+
                 </div>
 
                 {/* Filters */}

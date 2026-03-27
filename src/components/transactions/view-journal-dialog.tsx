@@ -57,6 +57,8 @@ export default function ViewJournalDialog() {
     const [referenceFilter, setReferenceFilter] = useState('');
     const [accountNumberFilter, setAccountNumberFilter] = useState('');
     const [accountNameFilter, setAccountNameFilter] = useState('');
+    const [fromDate, setFromDate] = useState<string>('');
+    const [toDate, setToDate] = useState<string>('');
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
 
@@ -143,9 +145,30 @@ export default function ViewJournalDialog() {
             const refMatch = !referenceFilter || (transaction.transNo && transaction.transNo.toLowerCase().includes(referenceFilter.toLowerCase()));
             const accNumMatch = !accountNumberFilter || (transaction.accountNumber && transaction.accountNumber.toLowerCase().includes(accountNumberFilter.toLowerCase()));
             const accNameMatch = !accountNameFilter || (transaction.accountName && transaction.accountName.toLowerCase().includes(accountNameFilter.toLowerCase()));
-            return refMatch && accNumMatch && accNameMatch;
+
+            const getSafeDate = (d: any) => {
+                if (!d) return null;
+                if (d instanceof Date) return d;
+                if (d.toDate && typeof d.toDate === 'function') return d.toDate();
+                return new Date(d);
+            };
+
+            const rawDate = getSafeDate(transaction.date);
+            const transDate = rawDate ? new Date(rawDate) : null;
+            if (transDate) transDate.setHours(0, 0, 0, 0);
+
+            const start = fromDate ? new Date(fromDate) : null;
+            if (start) start.setHours(0, 0, 0, 0);
+
+            const end = toDate ? new Date(toDate) : null;
+            if (end) end.setHours(0, 0, 0, 0);
+
+            const dateMatch = (!start || (transDate && transDate >= start)) &&
+                (!end || (transDate && transDate <= end));
+
+            return refMatch && accNumMatch && accNameMatch && dateMatch;
         });
-    }, [transactions, referenceFilter, accountNumberFilter, accountNameFilter]);
+    }, [transactions, referenceFilter, accountNumberFilter, accountNameFilter, fromDate, toDate]);
 
     const paginatedTransactions = useMemo(() => {
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -159,7 +182,7 @@ export default function ViewJournalDialog() {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [itemsPerPage, referenceFilter, accountNumberFilter, accountNameFilter]);
+    }, [itemsPerPage, referenceFilter, accountNumberFilter, accountNameFilter, fromDate, toDate]);
 
     const handleNextPage = () => {
         setCurrentPage(prev => Math.min(prev + 1, totalPages));
@@ -294,6 +317,40 @@ export default function ViewJournalDialog() {
                                 />
                             </div>
                         </div>
+                        <div className="grid gap-1.5 w-[150px] text-xs">
+                            <Label htmlFor="filter-from-date" className="font-semibold">From Date</Label>
+                            <Input
+                                id="filter-from-date"
+                                type="date"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(e.target.value)}
+                                className="h-8"
+                            />
+                        </div>
+                        <div className="grid gap-1.5 w-[150px] text-xs">
+                            <Label htmlFor="filter-to-date" className="font-semibold">To Date</Label>
+                            <Input
+                                id="filter-to-date"
+                                type="date"
+                                value={toDate}
+                                onChange={(e) => setToDate(e.target.value)}
+                                className="h-8"
+                            />
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 text-xs px-2"
+                            onClick={() => {
+                                setFromDate('');
+                                setToDate('');
+                                setReferenceFilter('');
+                                setAccountNumberFilter('');
+                                setAccountNameFilter('');
+                            }}
+                        >
+                            Reset
+                        </Button>
                     </div>
                 </div>
 
@@ -398,9 +455,7 @@ export default function ViewJournalDialog() {
                     </div>
                 </div>
 
-                <DialogFooter className="border-t pt-3 mt-auto">
-                    <Button variant="outline" onClick={() => closeDialog('view-journal')}>Close</Button>
-                </DialogFooter>
+                {/* Redundant footer close removed to favor top-right X */}
             </DialogContent>
         </Dialog >
     );

@@ -69,7 +69,7 @@ export function Flowchart() {
       position: { top: 0, left: 400 },
       color: !isAudit ? "bg-gray-600" : "bg-gray-400",
       size: { width: 200, height: 100 },
-      onClick: !isAudit ? () => handleNodeClick("enter-payment") : undefined,
+      onClick: !isAudit ? () => handleNodeClick("enter-payments") : undefined,
       disabled: isAudit
     },
     {

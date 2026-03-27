@@ -21,6 +21,7 @@ export async function GET() {
         const isVerifier = user.formPermissions === 'Verifier';
         const isSuperAdmin = user.accountType === 'Super Admin';
         const isAdmin = ['Administrator', 'Admin'].includes(user.accountType);
+        const isTreasurer = user.accountType === 'Treasurer';
 
         if (isSuperAdmin && !isVerifier) {
             // Only Super Admins who are NOT specifically verifiers see everything
@@ -28,8 +29,8 @@ export async function GET() {
             return NextResponse.json(requests);
         }
 
-        if (isAdmin && !isVerifier) {
-            // Other Admins who are NOT verifiers currently also see everything 
+        if ((isAdmin || isTreasurer) && !isVerifier) {
+            // Other Admins and Treasurers who are NOT verifiers currently also see everything 
             // but the user wants them to be restricted if they are verifiers.
             // Let's keep this as seeing everything UNLESS they are a verifier.
             const requests = await prisma.$queryRaw`SELECT * FROM request ORDER BY createdAt DESC`;
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
                 formName, status, createdAt, updatedAt, date
             ) VALUES (
                 ${id}, ${requestNumber}, ${body.requesterName ?? 'Unknown'}, ${body.position ?? null}, ${body.businessUnit ?? null}, ${body.chargeTo ?? null},
-                ${body.accountNo ?? null}, ${body.depositAccount ?? null}, ${body.purpose ?? null}, ${body.amount ?? 0}, ${body.verifiedBy ?? null}, ${body.approvedBy ?? null}, ${body.processedBy ?? null},
+                ${body.accountNo ?? body.employeeId ?? null}, ${body.depositAccount ?? null}, ${body.purpose ?? null}, ${body.amount ?? 0}, ${body.verifiedBy ?? null}, ${body.approvedBy ?? null}, ${body.processedBy ?? null},
                 ${body.formName ?? null}, 'To Verify', ${now}, ${now}, ${now}
             )
         `;

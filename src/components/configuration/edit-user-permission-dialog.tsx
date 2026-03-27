@@ -169,6 +169,18 @@ export default function EditUserPermissionDialog() {
     'Add/Edit Price Type'
   ];
 
+  const TREASURER_PERMISSIONS = [
+    'Dashboard',
+    'Cashier Admin',
+    'DISBURSEMENT SLIP',
+    'CASH / FUND REQUEST FORM',
+    'CASH ADVANCE REQUEST FOR CONTRACTOR',
+    'REQUEST AND AUTHORIZATION OF CASH ADVANCES',
+    'Reports',
+    'Income Statement',
+    'Balance Sheet'
+  ];
+
   const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => {
       const updates: any = { [field]: value };
@@ -184,6 +196,8 @@ export default function EditUserPermissionDialog() {
           updates.permissions = ALL_PERMISSIONS;
         } else if (value === 'Purchaser') {
           updates.permissions = PURCHASER_PERMISSIONS;
+        } else if (value === 'Treasurer') {
+          updates.permissions = TREASURER_PERMISSIONS;
         }
       }
 
@@ -350,6 +364,7 @@ export default function EditUserPermissionDialog() {
                     <SelectItem value="AdminStaff">Admin Staff</SelectItem>
                     <SelectItem value="Auditor">Auditor</SelectItem>
                     <SelectItem value="Purchaser">Purchaser</SelectItem>
+                    <SelectItem value="Treasurer">Treasurer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -212,13 +212,11 @@ export default function EnterPaymentPage() {
           </div>
         </ScrollArea>
         <DialogFooter className="border-t pt-4">
-          <Button variant="outline">Use Template...</Button>
           <div className="flex gap-2 ml-auto">
             <Button>Record</Button>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="secondary">Help</Button>
           </div>
         </DialogFooter>
       </DialogContent>

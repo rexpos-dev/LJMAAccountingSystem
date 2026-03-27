@@ -375,13 +375,7 @@ export default function InventoryDialog() {
             </div>
           )}
 
-          {/* Close Button */}
-          <div className="flex-shrink-0 flex justify-end p-4 border-t">
-            <Button onClick={() => closeDialog('inventory')} variant="outline">
-              <X className="h-4 w-4 mr-2" />
-              Close
-            </Button>
-          </div>
+          {/* Pagination and Summary already exist above */}
         </div>
       </DialogContent>
     </Dialog>

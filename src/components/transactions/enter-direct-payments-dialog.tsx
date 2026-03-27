@@ -286,13 +286,11 @@ export function EnterDirectPaymentsDialog() {
           </div>
         </ScrollArea>
         <DialogFooter>
-          <Button variant="outline">Use Template...</Button>
           <div className="flex-grow" />
           <Button>Record</Button>
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button variant="secondary">Help</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

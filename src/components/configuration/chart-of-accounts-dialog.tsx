@@ -12,7 +12,7 @@ import { useDialog } from '@/components/layout/dialog-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, HelpCircle, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
     Menubar,
     MenubarContent,
@@ -164,12 +164,7 @@ export default function ChartOfAccountsDialog() {
                                 <MenubarItem onClick={() => closeDialog('chart-of-accounts')}>Close <MenubarShortcut>Esc</MenubarShortcut></MenubarItem>
                             </MenubarContent>
                         </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Help Contents</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
+
                     </Menubar>
                     <div className="flex items-center gap-4 p-2 bg-muted/10">
                         <div className="flex gap-2">

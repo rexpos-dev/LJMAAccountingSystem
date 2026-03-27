@@ -8,7 +8,7 @@ export async function PATCH(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { status, assignee, remarks, notifyUserId } = body;
+        const { status, assignee, remarks, notifyUserId, assigneeId } = body;
 
         // Prepare update data
         const updateData: any = {};
@@ -44,6 +44,19 @@ export async function PATCH(
             } catch (postError) {
                 console.error("Failed to process bank audit approval action:", postError);
             }
+        }
+
+        // Create Notification for Assignee if provided
+        if (assigneeId) {
+            const notifId = crypto.randomUUID();
+            const now = new Date();
+            const actionDesc = log.actionType || 'Audit Item';
+            const refNo = log.transactionId || id;
+
+            await prisma.$executeRaw`
+                INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
+                VALUES (${notifId}, 'AUDIT_ASSIGNMENT', 'New Audit assigned to you', ${`You have been assigned to audit ${actionDesc} (${refNo}).`}, ${id}, ${assigneeId}, 0, ${now})
+            `;
         }
 
         return NextResponse.json(log);

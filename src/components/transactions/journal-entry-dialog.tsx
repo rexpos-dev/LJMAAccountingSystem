@@ -341,13 +341,11 @@ export default function JournalEntryDialog() {
 
                 </ScrollArea>
                 <DialogFooter className="mt-4">
-                    <Button variant="outline">Use Template...</Button>
                     <div className="flex-grow" />
                     <Button onClick={handleRecord} disabled={isSaving}>
                         {isSaving ? 'Recording...' : 'Record'}
                     </Button>
                     <Button variant="outline" onClick={handleClose} disabled={isSaving}>Cancel</Button>
-                    <Button variant="secondary">Help</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

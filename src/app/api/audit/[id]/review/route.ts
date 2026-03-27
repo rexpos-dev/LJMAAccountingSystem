@@ -9,7 +9,7 @@ export async function POST(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { decision, remarks, assignee } = body;
+        const { decision, remarks, assignee, assigneeId } = body;
 
         if (!decision || !['APPROVE', 'REJECT', 'ASSIGN_ONLY'].includes(decision)) {
             return NextResponse.json({ error: "Invalid decision" }, { status: 400 });
@@ -53,6 +53,19 @@ export async function POST(
                         data: { status: 'DRAFT' }
                     });
                 }
+            }
+
+            // 4. Create Notification for Assignee if provided
+            if (assigneeId && (decision === 'ASSIGN_ONLY' || assignee !== log.assignee)) {
+                const notifId = crypto.randomUUID();
+                const now = new Date();
+                const actionDesc = updatedLog.actionType || 'Audit Item';
+                const refNo = updatedLog.transactionId || id;
+
+                await tx.$executeRaw`
+                    INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
+                    VALUES (${notifId}, 'AUDIT_ASSIGNMENT', 'New Audit assigned to you', ${`You have been assigned to audit ${actionDesc} (${refNo}).`}, ${id}, ${assigneeId}, 0, ${now})
+                `;
             }
 
             return updatedLog;

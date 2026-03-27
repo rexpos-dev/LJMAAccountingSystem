@@ -39,12 +39,9 @@ import {
     Mail,
     Save,
     Briefcase,
-    HelpCircle,
     Eye,
     MoreVertical,
     FileText,
-    Banknote,
-    Phone,
     Copy,
     LogOut,
     RefreshCw
@@ -255,16 +252,10 @@ export default function InvoiceListDialog() {
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Printer} label="Print" disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Mail} label="Email" disabled={!selectedInvoiceId} />
-                    <ToolbarButton icon={Phone} label="Fax" disabled={!selectedInvoiceId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Save} label="Save" />
-                    <ToolbarButton icon={Banknote} label="Export to EDI" />
 
                     <ToolbarButton icon={RefreshCw} label="Refresh" onClick={handleRefresh} />
-
-                    <div className="ml-auto flex items-center">
-                        <ToolbarButton icon={HelpCircle} label="Help" />
-                    </div>
                 </div>
 
                 {/* Filters */}

@@ -70,6 +70,9 @@ interface PurchaseOrder {
 export default function PurchaseOrderListDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const [orders, setOrders] = useState<PurchaseOrder[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -88,9 +91,15 @@ export default function PurchaseOrderListDialog() {
     useEffect(() => {
         if (openDialogs['purchase-order-list']) {
             fetchSuppliers();
-            fetchOrders(true);
+            fetchOrders(true, true);
         }
     }, [openDialogs['purchase-order-list']]);
+
+    useEffect(() => {
+        if (openDialogs['purchase-order-list']) {
+            fetchOrders();
+        }
+    }, [page]);
 
 
     // Re-fetch when creation dialog closes to update list
@@ -108,10 +117,16 @@ export default function PurchaseOrderListDialog() {
     }, [openDialogs['bulk-upload-purchase-order']]);
 
 
-    const fetchOrders = async (ignoreFilters = false) => {
+    const fetchOrders = async (ignoreFilters = false, resetPage = false) => {
         setLoading(true);
         setError(null);
         try {
+            const currentPage = resetPage ? 1 : page;
+            if (resetPage && page !== 1) {
+                setPage(1);
+                return; // useEffect will trigger fetchOrders(false, false)
+            }
+
             const params = new URLSearchParams();
             if (!ignoreFilters) {
                 if (statusFilter !== 'all') params.append('status', statusFilter);
@@ -121,11 +136,15 @@ export default function PurchaseOrderListDialog() {
                 if (endDate) params.append('endDate', endDate);
             }
 
+            params.append('limit', pageSize.toString());
+            params.append('offset', ((currentPage - 1) * pageSize).toString());
+
             const res = await fetch(`/api/purchase-orders?${params.toString()}`);
             if (!res.ok) throw new Error('Failed to fetch purchase orders');
             const data = await res.json();
             // API returns paginated object: { data: PurchaseOrder[], totalCount: number, ... }
             setOrders(Array.isArray(data.data) ? data.data : []);
+            setTotalCount(data.totalCount || 0);
         } catch (error: any) {
             console.error('Failed to fetch orders', error);
             setError(error.message === 'Failed to fetch purchase orders' ? 'Failed to fetch purchase orders.' : 'No connection on API. Please check your network and try again.');
@@ -424,7 +443,7 @@ export default function PurchaseOrderListDialog() {
                     <div className="flex items-center gap-2">
                         <Button
                             className="h-8 bg-blue-600 hover:bg-blue-700 text-white gap-2 w-full"
-                            onClick={() => fetchOrders()}
+                            onClick={() => fetchOrders(false, true)}
                         >
                             <Filter className="h-4 w-4" />
                             Filter
@@ -512,9 +531,35 @@ export default function PurchaseOrderListDialog() {
                 </div>
 
                 {/* Footer */}
-                <div className="bg-muted/50 p-2 border-t flex justify-between text-sm text-muted-foreground px-4">
-                    <div>{orders.length} Orders</div>
-                    <div>Total: ₱{totalAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</div>
+                <div className="bg-muted/50 p-2 border-t flex items-center justify-between text-sm text-muted-foreground px-4">
+                    <div className="flex items-center gap-4">
+                        <div>{totalCount} Orders Total</div>
+                        <div>Total: ₱{totalAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1 || loading}
+                        >
+                            Previous
+                        </Button>
+                        <span className="min-w-[100px] text-center">
+                            Page {page} of {Math.ceil(totalCount / pageSize) || 1}
+                        </span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8"
+                            onClick={() => setPage(p => p + 1)}
+                            disabled={page >= Math.ceil(totalCount / pageSize) || loading}
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
 

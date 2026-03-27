@@ -282,7 +282,6 @@ export default function ReceiptsDepositsPage() {
           </div>
         </ScrollArea>
         <DialogFooter>
-          <Button variant="outline">Use Template...</Button>
           <div className="flex-grow" />
           <Button onClick={handleRecord} disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -291,7 +290,6 @@ export default function ReceiptsDepositsPage() {
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button variant="secondary">Help</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

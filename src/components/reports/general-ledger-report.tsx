@@ -30,6 +30,7 @@ import {
     Printer,
     Save,
     ListVideo,
+    ArrowLeft,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-provider';
@@ -62,7 +63,7 @@ interface GLAccount {
 }
 
 export default function GeneralLedgerReport() {
-    const { openDialogs, closeDialog, getDialogData } = useDialog();
+    const { openDialogs, closeDialog, getDialogData, openDialog } = useDialog();
     const [data, setData] = useState<GLAccount[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -114,6 +115,11 @@ export default function GeneralLedgerReport() {
         return `₱ ${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     };
 
+    const handleBack = () => {
+        closeDialog('general-ledger-report' as any);
+        openDialog('general-ledger-dialog' as any);
+    };
+
     return (
         <Dialog open={openDialogs['general-ledger-report'] || false} onOpenChange={() => closeDialog('general-ledger-report' as any)}>
             <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0">
@@ -122,6 +128,8 @@ export default function GeneralLedgerReport() {
                         <MenubarMenu>
                             <MenubarTrigger>Report</MenubarTrigger>
                             <MenubarContent>
+                                <MenubarItem onClick={handleBack}><ArrowLeft className="mr-2 h-4 w-4" />Back to Options</MenubarItem>
+                                <MenubarSeparator />
                                 <MenubarItem>Print Preview</MenubarItem>
                                 <MenubarItem>Print</MenubarItem>
                                 <MenubarItem>Save</MenubarItem>
@@ -134,6 +142,11 @@ export default function GeneralLedgerReport() {
                         </MenubarMenu>
                     </Menubar>
                     <div className="flex items-center gap-2 p-2 border-b">
+                        <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={handleBack}>
+                            <ArrowLeft className="h-5 w-5" />
+                            <span>Back</span>
+                        </Button>
+                        <div className="w-px h-8 bg-border mx-1" />
                         <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
                         <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => window.print()}><Printer className="h-5 w-5" /><span>Print</span></Button>
                         <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
