@@ -38,6 +38,7 @@
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 221.2 83.2% 53.3%;
   }
+
   .dark {
     --background: 220 20% 15%;
     --foreground: 210 40% 98%;
@@ -78,6 +79,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -86,4 +88,68 @@
 .vertical-text {
   writing-mode: vertical-rl;
   text-orientation: mixed;
+}
+
+@media print {
+
+  /* Hide all buttons, inputs, textareas, and selects */
+  button,
+  input,
+  textarea,
+  select {
+    display: none !important;
+  }
+
+  /* Ensure all content is visible and scrollable areas are expanded */
+  body,
+  html {
+    height: auto !important;
+    overflow: visible !important;
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Override Radix UI dialog lock on body */
+  body[style] {
+    overflow: visible !important;
+  }
+
+  /* Ensure elements with overflow are visible for printing */
+  * {
+    overflow: visible !important;
+  }
+
+  /* Make Dialogs print nicely */
+  [role="dialog"] {
+    position: static !important;
+    transform: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide overlays */
+  div[data-state="open"][class*="fixed inset-0"] {
+    display: none !important;
+  }
+
+  /* Force tables to print properly */
+  table {
+    width: 100% !important;
+    page-break-inside: auto !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  /* Keep basic layout purely text and tables */
+  .no-print,
+  .print\:hidden {
+    display: none !important;
+  }
 }

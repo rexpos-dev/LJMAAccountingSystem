@@ -25,8 +25,10 @@ import { useDialog } from "@/components/layout/dialog-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Filter, RotateCcw, Loader2 } from "lucide-react";
+import { CalendarIcon, Filter, RotateCcw, Loader2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import { useAuth } from "@/components/providers/auth-provider";
 
 // Initial Layout Data
 const initialData: Record<string, AuditItem[]> = {
@@ -37,6 +39,8 @@ const initialData: Record<string, AuditItem[]> = {
 };
 
 export function AuditBoard() {
+    const { user } = useAuth();
+
     const [items, setItems] = useState<Record<string, AuditItem[]>>(initialData);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [originalColumn, setOriginalColumn] = useState<string | null>(null);
@@ -44,6 +48,7 @@ export function AuditBoard() {
     const [isFiltering, setIsFiltering] = useState(false);
 
     // Filter State
+    const [searchQuery, setSearchQuery] = useState("");
     const [fromDate, setFromDate] = useState<string>("");
     const [toDate, setToDate] = useState<string>("");
 
@@ -78,7 +83,7 @@ export function AuditBoard() {
                 const status = log.status?.toLowerCase() || 'to audit';
                 if (status.includes('ongoing')) categorized["ongoing"].push(log);
                 else if (status.includes('done') || status === 'audited') categorized["done"].push(log);
-                else if (status.includes('history')) categorized["history"].push(log);
+                else if (status.includes('history') || status.includes('approve') || status.includes('reject')) categorized["history"].push(log);
                 else categorized["to-audit"].push(log);
             });
 
@@ -118,6 +123,7 @@ export function AuditBoard() {
     };
 
     const handleReset = () => {
+        setSearchQuery("");
         setFromDate("");
         setToDate("");
         // Use timeout to ensure state is updated before fetching
@@ -282,11 +288,52 @@ export function AuditBoard() {
         Object.values(items).flat().find(item => item.id === activeId)
     ) : null;
 
+    const accountType = user?.accountType?.toLowerCase() || '';
+    const isAdmin = accountType.includes('admin');
+    const currentAssigneeName = user?.username || `${user?.firstName} ${user?.lastName}`;
+
+    const filteredItems = Object.fromEntries(
+        Object.entries(items).map(([key, colItems]) => [
+            key,
+            colItems.filter((item) => {
+                // Role-based visibility logic:
+                // Admins see everything. In the "history" column, everyone sees everything.
+                // Otherwise, you only see what is assigned to you.
+                if (!isAdmin && key !== 'history' && item.assignee !== currentAssigneeName) {
+                    return false;
+                }
+
+                const q = searchQuery.toLowerCase();
+                if (!q) return true;
+                return (
+                    item.transactionId?.toLowerCase().includes(q) ||
+                    item.bankName?.toLowerCase().includes(q) ||
+                    item.assignee?.toLowerCase().includes(q) ||
+                    item.initiatedBy?.toLowerCase().includes(q) ||
+                    item.details?.toLowerCase().includes(q) ||
+                    item.actionType?.toLowerCase().includes(q)
+                );
+            }),
+        ])
+    ) as Record<string, AuditItem[]>;
 
     return (
         <div className="flex flex-col h-[calc(100vh-100px)] w-full gap-4">
             {/* Filter Section */}
             <div className="bg-card p-4 rounded-lg border shadow-sm flex flex-wrap items-end gap-4">
+                <div className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
+                    <Label htmlFor="searchQuery" className="text-xs font-semibold flex items-center gap-2">
+                        <Search className="h-3 w-3" /> Search
+                    </Label>
+                    <Input
+                        id="searchQuery"
+                        type="text"
+                        placeholder="Search Account No., Names, Transaction, Ref, Invoice..."
+                        className="h-9 text-xs"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
                 <div className="flex flex-col gap-1.5">
                     <Label htmlFor="fromDate" className="text-xs font-semibold flex items-center gap-2">
                         <CalendarIcon className="h-3 w-3" /> From Date
@@ -354,7 +401,7 @@ export function AuditBoard() {
                         <AuditColumn
                             id="to-audit"
                             title="To Audit"
-                            items={items["to-audit"]}
+                            items={filteredItems["to-audit"]}
                             color="bg-blue-600 text-white border-blue-600"
                             auditors={auditors}
                             onViewHistory={handleViewHistory}
@@ -363,7 +410,7 @@ export function AuditBoard() {
                         <AuditColumn
                             id="ongoing"
                             title="Ongoing Audit"
-                            items={items["ongoing"]}
+                            items={filteredItems["ongoing"]}
                             color="bg-amber-500 text-white border-amber-500"
                             auditors={auditors}
                             onViewHistory={handleViewHistory}
@@ -372,7 +419,7 @@ export function AuditBoard() {
                         <AuditColumn
                             id="done"
                             title="Done Audit"
-                            items={items["done"]}
+                            items={filteredItems["done"]}
                             color="bg-emerald-600 text-white border-emerald-600"
                             auditors={auditors}
                             onViewHistory={handleViewHistory}
@@ -381,7 +428,7 @@ export function AuditBoard() {
                         <AuditColumn
                             id="history"
                             title="Audit History"
-                            items={items["history"]}
+                            items={filteredItems["history"]}
                             color="bg-slate-700 text-white border-slate-700"
                             auditors={auditors}
                             onViewHistory={handleViewHistory}

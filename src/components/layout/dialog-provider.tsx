@@ -132,6 +132,7 @@ import DeleteEmployeeDialog from '@/components/user-management/delete-employee-d
 import CustomerStatementDialog from '@/components/customer/customer-statement-dialog';
 import CustomerLedgerDialog from '@/components/customer/customer-ledger-dialog';
 import { DisbursementDialog } from '@/components/transactions/disbursement-dialog';
+import HistoryLogsDialog from '@/components/configuration/history-logs-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -260,6 +261,7 @@ const dialogComponents = {
   'customer-statement': CustomerStatementDialog,
   'customer-ledger': CustomerLedgerDialog,
   'disbursement-dialog': DisbursementDialog,
+  'history-logs': HistoryLogsDialog,
 };
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {

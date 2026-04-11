@@ -3118,3 +3118,16 @@ Processed account (created/updated): 1050020
 Processed account (created/updated): 1050037
 Processed account (created/updated): 1050021
 Processed account (created/updated): 1050017
+
+[2026-04-10T08:42:55.487Z] Bulk upload started
+Parsed 8 rows
+Validation result: true, Errors: 0
+Processing 8 validated rows
+Processed account (created/updated): 1000
+Processed account (created/updated): 1100
+Processed account (created/updated): 2000
+Processed account (created/updated): 3000
+Processed account (created/updated): 4000
+Processed account (created/updated): 5000
+Processed account (created/updated): 6000
+Processed account (created/updated): 7000

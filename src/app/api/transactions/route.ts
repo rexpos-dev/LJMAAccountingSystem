@@ -187,6 +187,50 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 });
     }
 
+    // Fetch the transaction first so we can check its transNo
+    const transaction = await prisma.transaction.findUnique({
+      where: { id },
+      select: { id: true, transNo: true, particulars: true, date: true },
+    });
+
+    if (!transaction) {
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+    }
+
+    // --- Audit History Guard ---
+    // If this transaction has a transNo, check whether any AuditLog record
+    // references it. AuditLog.transactionId stores the transNo string.
+    if (transaction.transNo) {
+      const auditCount = await prisma.auditLog.count({
+        where: { transactionId: transaction.transNo },
+      });
+
+      if (auditCount > 0) {
+        // Fetch the most recent audit record for the error payload
+        const latest = await prisma.auditLog.findFirst({
+          where: { transactionId: transaction.transNo },
+          orderBy: { createdAt: 'desc' },
+          select: { createdAt: true, status: true, actionType: true },
+        });
+
+        return NextResponse.json(
+          {
+            error: 'TRANSACTION_HAS_HISTORY',
+            message:
+              `Transaction "${transaction.transNo}" cannot be deleted because it has ${auditCount} audit history record(s). ` +
+              `Transactions with audit trails are protected to maintain data integrity.`,
+            transactionRef: transaction.transNo,
+            count: auditCount,
+            latestAction: latest?.actionType ?? null,
+            latestStatus: latest?.status ?? null,
+            latestAt: latest?.createdAt ?? null,
+          },
+          { status: 409 }
+        );
+      }
+    }
+    // --- End Audit History Guard ---
+
     await prisma.transaction.delete({
       where: { id },
     });

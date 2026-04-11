@@ -14,6 +14,7 @@ import {
     Plus
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { useAuth } from '@/components/providers/auth-provider';
 import { NewRequestDialog } from '@/components/todo/new-request-dialog';
 import { RequestTable } from '@/components/todo/request-table';
 import { StatCard } from '@/components/dashboard/stat-card';
@@ -32,6 +33,7 @@ interface RequestStats {
 import { RequestDetailsDialog } from './request-details-dialog';
 
 export function RequestDashboard() {
+    const { user } = useAuth();
     const [stats, setStats] = useState<RequestStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [openNewRequest, setOpenNewRequest] = useState(false);
@@ -119,7 +121,10 @@ export function RequestDashboard() {
             <div className="flex items-center justify-between space-y-2">
                 <h2 className="text-3xl font-bold tracking-tight font-headline">Request Dashboard</h2>
                 <div className="flex items-center space-x-2">
-                    <Button onClick={() => setOpenNewRequest(true)}>
+                    <Button
+                        onClick={() => setOpenNewRequest(true)}
+                        disabled={(user?.accountType || '').trim().toLowerCase() === 'treasurer'}
+                    >
                         <Plus className="mr-2 h-4 w-4" />
                         New Request
                     </Button>

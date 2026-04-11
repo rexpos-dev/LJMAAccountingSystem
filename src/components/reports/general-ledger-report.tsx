@@ -18,6 +18,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
     Dialog,
     DialogContent,
@@ -31,6 +32,7 @@ import {
     Save,
     ListVideo,
     ArrowLeft,
+    Search,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-provider';
@@ -67,6 +69,7 @@ export default function GeneralLedgerReport() {
     const [data, setData] = useState<GLAccount[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const dialogData = getDialogData('general-ledger-report' as any);
     const fromDateStr = dialogData?.fromDate;
@@ -120,6 +123,19 @@ export default function GeneralLedgerReport() {
         openDialog('general-ledger-dialog' as any);
     };
 
+    const filteredData = data.filter(account => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+            account.accountNo.toString().includes(query) ||
+            account.accountName.toLowerCase().includes(query) ||
+            account.transactions.some(tx =>
+                tx.transNo.toLowerCase().includes(query) ||
+                tx.particulars.toLowerCase().includes(query)
+            )
+        );
+    });
+
     return (
         <Dialog open={openDialogs['general-ledger-report'] || false} onOpenChange={() => closeDialog('general-ledger-report' as any)}>
             <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0">
@@ -150,6 +166,16 @@ export default function GeneralLedgerReport() {
                         <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
                         <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => window.print()}><Printer className="h-5 w-5" /><span>Print</span></Button>
                         <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
+
+                        <div className="ml-auto relative w-64 mr-2">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search by account or trans. no..."
+                                className="pl-9 h-9"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </header>
 
@@ -176,13 +202,13 @@ export default function GeneralLedgerReport() {
                         <div className="flex justify-center items-center h-32 text-destructive">
                             {error}
                         </div>
-                    ) : data.length === 0 ? (
+                    ) : filteredData.length === 0 ? (
                         <div className="flex justify-center items-center h-32 text-muted-foreground">
-                            No transactions found for the selected period.
+                            {searchQuery ? "No matches found." : "No transactions found for the selected period."}
                         </div>
                     ) : (
                         <div className="space-y-8 pb-8 print:space-y-6">
-                            {data.map((account) => (
+                            {filteredData.map((account) => (
                                 <div key={account.accountId} className="border rounded-md overflow-hidden bg-card/50 break-inside-avoid">
                                     <div className="bg-muted px-4 py-2 border-b flex justify-between items-center">
                                         <h3 className="font-bold text-lg">{account.accountNo} - {account.accountName}</h3>

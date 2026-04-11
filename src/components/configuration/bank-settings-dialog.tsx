@@ -242,12 +242,14 @@ export default function BankSettingsDialog() {
                                                 </td>
                                                 <td className="p-4 align-middle text-center">
                                                     <span className={cn(
-                                                        "px-2 py-0.5 rounded-full text-[10px] font-medium",
-                                                        account.audit_status === 'DONE' ? "bg-blue-100 text-blue-700" :
-                                                            account.audit_status === 'ONGOING' ? "bg-yellow-100 text-yellow-700" :
-                                                                "bg-gray-100 text-gray-700"
+                                                        "px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider",
+                                                        account.audit_status?.toUpperCase() === 'APPROVED' ? "bg-emerald-100 text-emerald-700" :
+                                                            account.audit_status?.toUpperCase() === 'DONE' ? "bg-blue-100 text-blue-700" :
+                                                                account.audit_status?.toUpperCase() === 'REJECTED' ? "bg-rose-100 text-rose-700" :
+                                                                    account.audit_status?.toUpperCase() === 'ONGOING' ? "bg-yellow-100 text-yellow-700" :
+                                                                        "bg-gray-100 text-gray-700"
                                                     )}>
-                                                        {account.audit_status?.replace('_', ' ') || 'TO AUDIT'}
+                                                        {account.audit_status?.replace('_', ' ').toUpperCase() || 'TO AUDIT'}
                                                     </span>
                                                 </td>
                                                 <td className="p-4 align-middle text-center">

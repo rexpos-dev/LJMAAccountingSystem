@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useAuth } from '@/components/providers/auth-provider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -126,6 +126,34 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
             processedBy: initialData?.processedBy || '',
         },
     });
+
+    // Re-populate the form whenever initialData loads (async fetch from dialog)
+    useEffect(() => {
+        if (!initialData) return;
+        form.reset({
+            date: initialData.date ? new Date(initialData.date) : new Date(),
+            requestor: initialData.requesterName || initialData.requestor || '',
+            position: initialData.position || '',
+            businessUnit: initialData.businessUnit || '',
+            purpose: initialData.purpose || '',
+            chargeTo: initialData.chargeTo || '',
+            accountNo: initialData.accountNo || '',
+            depositAccount: initialData.depositAccount || '',
+            items: initialData.items?.length > 0
+                ? initialData.items.map((it: any) => ({
+                    description: it.description || '',
+                    quantity: Number(it.quantity) || 1,
+                    amount: Number(it.unitPrice ?? it.amount) || 0,
+                }))
+                : [{ description: '', quantity: 1, amount: 0 }],
+            requestedBy: initialData.requestedBy || currentUserName,
+            checkedBy: initialData.checkedBy || '',
+            verifiedBy: initialData.verifiedBy || '',
+            approvedBy: initialData.approvedBy || '',
+            processedBy: initialData.processedBy || '',
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialData]);
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,

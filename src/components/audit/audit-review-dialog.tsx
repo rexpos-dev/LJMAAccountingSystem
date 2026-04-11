@@ -12,6 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
     CheckCircle2,
     XCircle,
     MessageSquare,
@@ -22,7 +30,13 @@ import {
     History,
     ShieldCheck,
     AlertTriangle,
-    Loader2
+    Loader2,
+    Map,
+    ArrowRight,
+    UserCheck,
+    Activity,
+    CheckCircle,
+    Clock
 } from "lucide-react";
 import { format } from "date-fns";
 import { useState, useEffect } from "react";
@@ -107,7 +121,10 @@ export function AuditReviewDialog({
                 headers: { "Content-Type": "application/json" }
             });
 
-            if (!res.ok) throw new Error("Failed to process audit review");
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.details || "Failed to process audit review");
+            }
 
             let title = "Transaction Approved";
             let description = "The transaction has been posted to the ledger.";
@@ -133,11 +150,11 @@ export function AuditReviewDialog({
             if (decision !== 'ASSIGN_ONLY') {
                 onOpenChange(false);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             toast({
                 title: "Error",
-                description: "Failed to process request. Please try again.",
+                description: error?.message || "Failed to process request. Please try again.",
                 variant: "destructive"
             });
         } finally {
@@ -222,6 +239,12 @@ export function AuditReviewDialog({
                             <div className="p-3 bg-muted/30 rounded-lg text-sm leading-relaxed border border-border/50 max-h-[100px] overflow-auto">
                                 {item.details || 'No additional details provided.'}
                             </div>
+                        </div>
+                        <div className="space-y-4 pt-6 mt-6 border-t border-border/50">
+                            <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-2">
+                                <FileText className="h-3 w-3" /> Transaction Ledger History
+                            </h4>
+                            <TransactionLedgerHistory transactionId={item.transactionId || ''} />
                         </div>
                     </div>
 
@@ -316,4 +339,99 @@ function DetailItem({ icon: Icon, label, value, mono = false }: { icon: any, lab
             </div>
         </div>
     );
+}
+
+function TransactionLedgerHistory({ transactionId }: { transactionId: string }) {
+    const [ledgers, setLedgers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!transactionId) {
+            setLoading(false);
+            return;
+        }
+
+        async function fetchLedger() {
+            try {
+                setLoading(true);
+                const res = await fetch(`/api/transactions/by-reference?ref=${transactionId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setLedgers(data);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchLedger();
+    }, [transactionId]);
+
+    // calculate totals
+    const totalDebit = ledgers.reduce((sum, item) => sum + (item.debit || 0), 0);
+    const totalCredit = ledgers.reduce((sum, item) => sum + (item.credit || 0), 0);
+    const isBalanced = Math.round(Math.abs(totalDebit - totalCredit) * 100) === 0;
+
+    return (
+        <div className="space-y-3">
+            <div className="rounded-md border bg-background">
+                <Table>
+                    <TableHeader className="bg-muted/50">
+                        <TableRow className="hover:bg-transparent">
+                            <TableHead className="w-[100px] text-[10px] font-bold text-muted-foreground uppercase">Date</TableHead>
+                            <TableHead className="text-[10px] font-bold text-muted-foreground uppercase">Account</TableHead>
+                            <TableHead className="text-[10px] font-bold text-muted-foreground text-right w-[100px] uppercase">Debit (₱)</TableHead>
+                            <TableHead className="text-[10px] font-bold text-muted-foreground text-right w-[100px] uppercase">Credit (₱)</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center">
+                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mx-auto" />
+                                </TableCell>
+                            </TableRow>
+                        ) : ledgers.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={4} className="h-24 text-center text-xs text-muted-foreground">
+                                    No ledger details found for this transaction.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            <>
+                                {ledgers.map((l) => (
+                                    <TableRow key={l.id}>
+                                        <TableCell className="text-[9px] py-1.5 align-top whitespace-nowrap">{l.date ? format(new Date(l.date), 'MMM dd, yyyy') : '-'}</TableCell>
+                                        <TableCell className="text-[11px] py-1.5 font-medium leading-tight">
+                                            <div className="line-clamp-2">{l.accountName || l.particulars || 'G/L Adjustment'}</div>
+                                            {l.accountNumber && <div className="text-[9px] text-muted-foreground font-mono mt-0.5">{l.accountNumber}</div>}
+                                        </TableCell>
+                                        <TableCell className="text-[11px] py-1.5 text-right tabular-nums font-mono align-top">{l.debit > 0 ? l.debit.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '-'}</TableCell>
+                                        <TableCell className="text-[11px] py-1.5 text-right tabular-nums font-mono align-top">{l.credit > 0 ? l.credit.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '-'}</TableCell>
+                                    </TableRow>
+                                ))}
+                                <TableRow className="bg-muted/30">
+                                    <TableCell colSpan={2} className="text-[10px] uppercase font-black text-right py-2">
+                                        Total
+                                    </TableCell>
+                                    <TableCell className={cn("text-[11px] font-black text-right tabular-nums font-mono py-2", !isBalanced && "text-destructive")}>
+                                        {totalDebit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </TableCell>
+                                    <TableCell className={cn("text-[11px] font-black text-right tabular-nums font-mono py-2", !isBalanced && "text-destructive")}>
+                                        {totalCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    </TableCell>
+                                </TableRow>
+                            </>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            {!loading && ledgers.length > 0 && !isBalanced && (
+                <div className="text-xs text-destructive flex items-center gap-1.5 font-medium p-2 bg-destructive/10 rounded-md">
+                    <AlertTriangle className="h-4 w-4" /> Unbalanced transaction detected. Difference: ₱{Math.abs(totalDebit - totalCredit).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+            )}
+        </div>
+    )
 }

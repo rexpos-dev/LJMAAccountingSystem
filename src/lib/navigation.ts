@@ -13,7 +13,7 @@ import {
   Users,
   UserCog,
   ClipboardList,
-  FilePlus
+  FilePlus,
 } from "lucide-react";
 
 export interface NavItem {
@@ -158,6 +158,7 @@ export const navItems: NavItem[] = [
       { title: "Set Up Web Access", href: "/todo/web-access" },
       { title: "Back up data", href: "/todo/backup", dialogId: "backup-scheduler", permissions: ['Backup Database'] },
       { title: "Branch", href: "/setting/branches", dialogId: "branch-list" },
+      { title: "History Logs", href: "/setting/history-logs", dialogId: "history-logs", roles: ['Super Admin', 'Admin', 'Administrator'] },
     ]
   }
 ];

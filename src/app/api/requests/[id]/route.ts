@@ -38,24 +38,128 @@ export async function PATCH(
         const body = await req.json();
         const now = new Date();
 
+        // --- Helper to notify a specific matched user of a direct assignment ---
+        async function notifyAssignment(assignedName: string, roleName: string) {
+            if (!assignedName) return;
+            try {
+                const reqRows: any[] = await prisma.$queryRaw`SELECT requestNumber, formName FROM request WHERE id = ${id}`;
+                const reqInfo = reqRows[0];
+                const formName = reqInfo?.formName || 'General Request';
+                const requestNumber = reqInfo?.requestNumber || id;
+
+                const users: any[] = await prisma.$queryRaw`SELECT id, firstName, lastName FROM user_permission WHERE isActive = true`;
+                const matchedUser = users.find(u => `${u.firstName} ${u.lastName}` === assignedName);
+                if (matchedUser) {
+                    const notifId = crypto.randomUUID();
+                    await prisma.$executeRaw`
+                        INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
+                        VALUES (${notifId}, 'REQUEST_ASSIGNMENT', ${`Assigned as ${roleName}`}, ${`You have been assigned as the ${roleName} for Request ${requestNumber} (${formName}).`}, ${id}, ${matchedUser.id}, false, ${now})
+                    `;
+                }
+            } catch (err: any) {
+                console.error(`[NOTIFY] Failed to notify direct assignment for ${roleName}:`, err.message);
+            }
+        }
+
         // --- Handle individual field updates (non-status) ---
         if (body.depositAccount !== undefined) {
             await prisma.$executeRaw`UPDATE request SET depositAccount = ${body.depositAccount}, updatedAt = ${now} WHERE id = ${id}`;
         }
         if (body.verifiedBy !== undefined) {
             await prisma.$executeRaw`UPDATE request SET verifiedBy = ${body.verifiedBy}, updatedAt = ${now} WHERE id = ${id}`;
+            await notifyAssignment(body.verifiedBy, 'Verifier');
         }
         if (body.approvedBy !== undefined) {
             await prisma.$executeRaw`UPDATE request SET approvedBy = ${body.approvedBy}, updatedAt = ${now} WHERE id = ${id}`;
+            await notifyAssignment(body.approvedBy, 'Approver');
         }
         if (body.processedBy !== undefined) {
             await prisma.$executeRaw`UPDATE request SET processedBy = ${body.processedBy}, updatedAt = ${now} WHERE id = ${id}`;
+            await notifyAssignment(body.processedBy, 'Processor');
         }
 
         // --- Handle status update ---
         if (body.status) {
             console.log(`[API] Updating request ${id} status to: ${body.status}`);
             await prisma.$executeRaw`UPDATE request SET status = ${body.status}, updatedAt = ${now} WHERE id = ${id}`;
+
+            // ---------------------------------------------------------------
+            // NOTIFICATIONS - Notify next role in the workflow
+            // ---------------------------------------------------------------
+            try {
+                // Fetch the request details (formName, requestNumber, assignments) for notification
+                const reqRows: any[] = await prisma.$queryRaw`SELECT requestNumber, formName, approvedBy, processedBy FROM request WHERE id = ${id}`;
+                const reqInfo = reqRows[0];
+                const formName = reqInfo?.formName || 'General Request';
+                const requestNumber = reqInfo?.requestNumber || id;
+
+                // Determine which role should be notified based on new status
+                let targetRole: string | null = null;
+                let notifTitle = '';
+                let notifMessage = '';
+
+                let targetAssignedName: string | null = null;
+
+                if (body.status === 'To Approve') {
+                    targetRole = 'Approver';
+                    notifTitle = 'Request Pending Your Approval';
+                    notifMessage = `Request ${requestNumber} (${formName}) has been verified and is now awaiting your approval.`;
+                    targetAssignedName = reqInfo?.approvedBy || null;
+                } else if (body.status === 'To Process') {
+                    targetRole = 'Processor';
+                    notifTitle = 'Request Ready for Processing';
+                    notifMessage = `Request ${requestNumber} (${formName}) has been approved and is now ready for processing.`;
+                    targetAssignedName = reqInfo?.processedBy || null;
+                } else if (body.status === 'Released') {
+                    notifTitle = 'Your Request Has Been Released';
+                    notifMessage = `Your request ${requestNumber} (${formName}) has been processed and released.`;
+                }
+
+                if (targetRole) {
+                    // Fetch all active users
+                    const allUsers: any[] = await prisma.$queryRaw`
+                        SELECT id, firstName, lastName, permissions, accountType, formPermissions FROM user_permission
+                        WHERE isActive = true
+                    `;
+
+                    let eligible: any[] = [];
+
+                    // Priority: If a specific person was assigned, try to match exactly
+                    if (targetAssignedName) {
+                        const matchedUser = allUsers.find(u => `${u.firstName} ${u.lastName}` === targetAssignedName);
+                        if (matchedUser) {
+                            eligible.push(matchedUser);
+                        }
+                    }
+
+                    // Fallback: Notify all eligible candidates for the role including Admins
+                    if (eligible.length === 0) {
+                        eligible = allUsers.filter(u => {
+                            const isAdmin = ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+                            const isAdminStaff = isAdmin || u.accountType === 'AdminStaff';
+
+                            if (targetRole === 'Approver' && isAdmin) return true;
+                            if (targetRole === 'Processor' && isAdminStaff) return true;
+
+                            try {
+                                const perms = JSON.parse(u.permissions || '[]');
+                                return u.formPermissions === targetRole && perms.includes(formName);
+                            } catch { return false; }
+                        });
+                    }
+
+                    for (const user of eligible) {
+                        const notifId = crypto.randomUUID();
+                        await prisma.$executeRaw`
+                            INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
+                            VALUES (${notifId}, 'REQUEST_ASSIGNMENT', ${notifTitle}, ${notifMessage}, ${id}, ${user.id}, false, ${now})
+                        `;
+                    }
+                }
+            } catch (notifErr: any) {
+                // Never block the main update due to notification errors
+                console.error('[NOTIFY] Failed to send request notifications:', notifErr.message);
+            }
 
             // =============================================================
             // RELEASE PAYMENT FLOW

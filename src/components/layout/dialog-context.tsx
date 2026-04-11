@@ -128,7 +128,8 @@ export type DialogId =
     | 'delete-employee'
     | 'customer-statement'
     | 'customer-ledger'
-    | 'disbursement-dialog';
+    | 'disbursement-dialog'
+    | 'history-logs';
 
 export interface DialogContextType {
     openDialogs: Record<string, boolean>;

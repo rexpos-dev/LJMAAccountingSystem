@@ -12,6 +12,10 @@ import {
     Search,
     RefreshCw,
 } from 'lucide-react';
+import {
+    DeleteTransactionGuardDialog,
+    type DeleteGuardPayload,
+} from '@/components/transactions/delete-transaction-guard-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Menubar,
@@ -61,6 +65,11 @@ export default function ViewJournalDialog() {
     const [toDate, setToDate] = useState<string>('');
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
+
+    // --- Delete guard state ---
+    const [deleteGuardMode, setDeleteGuardMode] = useState<'confirm' | 'blocked' | null>(null);
+    const [deleteGuardPayload, setDeleteGuardPayload] = useState<DeleteGuardPayload | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchTransactions = async () => {
         try {
@@ -234,7 +243,55 @@ export default function ViewJournalDialog() {
         toast({ title: 'View', description: 'View functionality coming soon' });
     };
 
-    return (
+    // --- Delete handler: opens confirm dialog first, then checks API for history ---
+    const handleDeleteClick = () => {
+        if (!selectedEntry) return;
+        // Show confirm dialog first — the actual API call happens on confirm
+        setDeleteGuardPayload(null);
+        setDeleteGuardMode('confirm');
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!selectedEntry?.id) return;
+        setIsDeleting(true);
+        try {
+            const res = await fetch(`/api/transactions?id=${selectedEntry.id}`, {
+                method: 'DELETE',
+            });
+
+            if (res.status === 409) {
+                // Transaction has audit history — switch to blocked mode
+                const data: DeleteGuardPayload = await res.json();
+                setDeleteGuardPayload(data);
+                setDeleteGuardMode('blocked');
+                return;
+            }
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to delete transaction');
+            }
+
+            toast({
+                title: 'Transaction Deleted',
+                description: `Transaction "${selectedEntry.transNo || selectedEntry.id}" has been successfully removed.`,
+            });
+            setDeleteGuardMode(null);
+            setSelectedEntry(null);
+            fetchTransactions();
+        } catch (err: any) {
+            toast({
+                title: 'Error',
+                description: err.message || 'Failed to delete transaction. Please try again.',
+                variant: 'destructive',
+            });
+            setDeleteGuardMode(null);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    return (<>
         <Dialog open={openDialogs['view-journal']} onOpenChange={() => closeDialog('view-journal')}>
             <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
                 <DialogHeader className="flex-shrink-0">
@@ -247,7 +304,7 @@ export default function ViewJournalDialog() {
                             <Plus className="h-5 w-5" />
                             <span className="text-[10px]">Add</span>
                         </Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto" disabled={!selectedEntry}>
+                        <Button variant="ghost" size="sm" className="flex-col h-auto" disabled={!selectedEntry} onClick={handleDeleteClick}>
                             <Trash2 className="h-5 w-5 text-destructive" />
                             <span className="text-[10px]">Delete</span>
                         </Button>
@@ -457,6 +514,17 @@ export default function ViewJournalDialog() {
 
                 {/* Redundant footer close removed to favor top-right X */}
             </DialogContent>
-        </Dialog >
+        </Dialog>
+
+        {/* Delete guard dialog — lives outside the main Dialog to avoid stacking issues */}
+        <DeleteTransactionGuardDialog
+            mode={deleteGuardMode}
+            transaction={selectedEntry}
+            blockedPayload={deleteGuardPayload}
+            isDeleting={isDeleting}
+            onConfirm={handleDeleteConfirm}
+            onClose={() => setDeleteGuardMode(null)}
+        />
+    </>
     );
 }

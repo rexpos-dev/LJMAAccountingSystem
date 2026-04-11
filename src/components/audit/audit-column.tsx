@@ -19,6 +19,10 @@ export interface AuditItem {
     assignee: string | null;
     remarks: string | null;
     date: string;
+    createdAt?: string;
+    updatedAt?: string;
+    auditedAt?: string;
+    reviewedBy?: string;
     bankName: string | null;
     initiatedBy: string | null;
 }

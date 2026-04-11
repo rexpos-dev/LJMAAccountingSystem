@@ -39,7 +39,7 @@ export async function POST(
             if (decision !== 'ASSIGN_ONLY' && log.transactionId && log.actionType?.toLowerCase().includes("bank")) {
                 if (decision === 'APPROVE') {
                     // Update bank transaction to APPROVED first
-                    await tx.bankTransaction.update({
+                    await tx.bankTransaction.updateMany({
                         where: { id: log.transactionId },
                         data: { status: 'APPROVED' }
                     });
@@ -48,7 +48,7 @@ export async function POST(
                     // Note: We use the imported function but it might need a tx-safe version if we want it in this transaction
                 } else {
                     // Reject: Return to DRAFT
-                    await tx.bankTransaction.update({
+                    await tx.bankTransaction.updateMany({
                         where: { id: log.transactionId },
                         data: { status: 'DRAFT' }
                     });
@@ -82,9 +82,12 @@ export async function POST(
         return NextResponse.json(result);
     } catch (error: any) {
         console.error("Failed to process audit review:", error);
+
+        const isClientError = error.message === "Item already audited" || error.message === "Audit log not found";
+
         return NextResponse.json(
-            { error: "Failed to process audit review", details: error.message },
-            { status: 500 }
+            { error: isClientError ? error.message : "Failed to process audit review", details: error.message },
+            { status: isClientError ? 400 : 500 }
         );
     }
 }

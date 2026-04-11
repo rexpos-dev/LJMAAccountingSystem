@@ -186,7 +186,9 @@ export default function ReconcileAccountDialog() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {bankAccounts.map(acc => (
-                                        <SelectItem key={acc.id} value={acc.id || ''}>{acc.account_name}</SelectItem>
+                                        <SelectItem key={acc.id} value={acc.id || ''}>
+                                            {acc.bank_name} {acc.bank_account_no ? `- ${acc.bank_account_no}` : ''}
+                                        </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
