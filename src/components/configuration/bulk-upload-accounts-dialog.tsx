@@ -19,7 +19,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Upload, FileText, CheckCircle, XCircle, AlertCircle, Download } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { parseCSV, validateAccountsCSV, CSVValidationError } from '@/lib/bulk-upload-accounts-utils';
 

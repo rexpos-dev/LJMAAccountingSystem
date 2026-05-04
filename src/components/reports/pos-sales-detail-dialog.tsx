@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PhilippinePeso, ShoppingCart, Package, AlertTriangle, Hash } from 'lucide-react';
+import { PhilippinePeso, ShoppingCart, Package, AlertTriangle, Hash, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PosStats {
     totalRevenueAllTime: number;
@@ -86,11 +87,11 @@ export default function PosSalesDetailDialog() {
             <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 overflow-hidden">
                 <DialogHeader className="px-6 py-4 border-b bg-white dark:bg-slate-950 z-10 flex flex-row items-center justify-between">
                     <DialogTitle className="text-2xl font-bold">POS Sales Detail Dashboard</DialogTitle>
-                    <div>
-                        <button
+                    <div className="flex items-center gap-2">
+                        <Button
                             onClick={handleSync}
                             disabled={isSyncing || loading}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm h-9">
                             {isSyncing ? (
                                 <>
                                     <div className="animate-spin h-4 w-4 border-2 border-white border-b-transparent rounded-full mr-2" />
@@ -102,7 +103,15 @@ export default function PosSalesDetailDialog() {
                                     Sync with POS
                                 </>
                             )}
-                        </button>
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => closeDialog('pos-sales-detail' as any)}
+                            className="h-9 w-9 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full"
+                        >
+                            <X className="h-5 w-5" />
+                        </Button>
                     </div>
                 </DialogHeader>
 

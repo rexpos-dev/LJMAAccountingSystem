@@ -50,7 +50,7 @@ import {
 import { Account } from '@/types/account';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DeleteAccountDialog from '@/components/configuration/delete-account-dialog';
 import EditAccountDialog from '@/components/configuration/edit-account-dialog';
@@ -65,7 +65,8 @@ const formatCurrency = (amount: number) => {
 
 
 
-export default function ChartOfAccountsPage({ onAccountSelect = () => { }, selectedAccount = null }: { onAccountSelect?: (account: Account | null) => void, selectedAccount?: Account | null }) {
+export default function ChartOfAccountsPage(props: any) {
+  const { onAccountSelect = () => { }, selectedAccount = null } = props;
   const { openDialogs, closeDialog, openDialog } = useDialog();
 
   // Use database data instead of mock data

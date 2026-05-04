@@ -26,4 +26,6 @@ export interface Transaction {
   ftToLedger: string | null;
   ftToAccount: string | null;
   ssma_timestamp?: Timestamp | null;
+  profit_center_id?: string | null;
+  cost_center_id?: string | null;
 }

@@ -102,6 +102,8 @@ export function MainMenu() {
         </MenubarTrigger>
         <MenubarContent>
           <MenubarItem onClick={() => openDialog('chart-of-accounts')}>Chart of Accounts</MenubarItem>
+          <MenubarItem onClick={() => openDialog('profit-centers')}>Profit Centers</MenubarItem>
+          <MenubarItem onClick={() => openDialog('cost-centers')}>Cost Centers</MenubarItem>
           <MenubarItem onClick={() => openDialog('sales-users')} className="flex items-center justify-between">
             Sales Users
             {accessCount > 0 && (

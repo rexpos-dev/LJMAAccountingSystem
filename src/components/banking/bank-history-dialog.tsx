@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BankTransactionsTable } from '@/components/banking/bank-transactions-table';
@@ -21,7 +21,8 @@ import {
     Plus,
     Calendar as CalendarIcon,
     RefreshCw,
-    FilePlus
+    FilePlus,
+    ChevronUp
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -101,9 +102,9 @@ export default function BankHistoryDialog() {
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button className="gap-2 shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                                    <Button className="gap-2 shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98] group">
                                         <Plus className="h-4 w-4" /> New Transaction
-                                        <ChevronDown className="h-4 w-4 opacity-50" />
+                                        <ChevronUp className="h-4 w-4 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-56 p-1.5 shadow-xl">

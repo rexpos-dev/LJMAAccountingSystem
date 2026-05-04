@@ -129,17 +129,24 @@ export type DialogId =
     | 'customer-statement'
     | 'customer-ledger'
     | 'disbursement-dialog'
-    | 'history-logs';
+    | 'history-logs'
+    | 'profit-centers'
+    | 'accounting-flowchart'
+    | 'cost-centers'
+    | 'reports-dashboard'
+    | 'database-management';
 
 export interface DialogContextType {
     openDialogs: Record<string, boolean>;
-    openDialog: (id: DialogId) => void;
+    dialogVariants: Record<string, 'default' | 'top-drawer'>;
+    openDialog: (id: DialogId, options?: { variant?: 'default' | 'top-drawer' }) => void;
     closeDialog: (id: DialogId) => void;
     getDialogData: (id: DialogId) => any;
     setDialogData: (id: DialogId, data: any) => void;
 }
 
 export const DialogContext = createContext<DialogContextType | undefined>(undefined);
+export const DialogIdContext = createContext<DialogId | undefined>(undefined);
 
 export function useDialog() {
     const context = useContext(DialogContext);
@@ -147,4 +154,8 @@ export function useDialog() {
         throw new Error('useDialog must be used within a DialogProvider');
     }
     return context;
+}
+
+export function useDialogId() {
+    return useContext(DialogIdContext);
 }

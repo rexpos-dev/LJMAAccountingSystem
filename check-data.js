@@ -1,31 +1,23 @@
 
-const mysql = require("mysql2/promise");
+const mysql = require('mysql2/promise');
+const dotenv = require('dotenv');
+dotenv.config();
 
-async function checkData() {
-    const connection = await mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "123700",
-        database: "ljma_accounting"
-    });
-
+async function main() {
+    const dbUrlRaw = process.env.DATABASE_URL;
     try {
-        const [requestCount] = await connection.execute("SELECT COUNT(*) as count FROM request");
-        const [userCount] = await connection.execute("SELECT COUNT(*) as count FROM user_permission");
-        const [users] = await connection.execute("SELECT id, username, accountType, formPermissions FROM user_permission LIMIT 5");
-        const [requests] = await connection.execute("SELECT id, requestNumber, requesterName, status FROM request LIMIT 5");
-
-        console.log('--- DB DATA CHECK ---');
-        console.log('Total Requests:', requestCount[0].count);
-        console.log('Total Users:', userCount[0].count);
-        console.log('User Samples:', JSON.stringify(users, null, 2));
-        console.log('Request Samples:', JSON.stringify(requests, null, 2));
-
-    } catch (error) {
-        console.error('Error:', error);
-    } finally {
+        const connection = await mysql.createConnection(dbUrlRaw.replace('mariadb://', 'mysql://'));
+        const [rows] = await connection.execute('SELECT * FROM supplier WHERE name = "A BS"');
+        console.log(JSON.stringify(rows, (key, value) => {
+            if (typeof value === 'string') {
+                return value.replace(/[\x00-\x1F\x7F-\x9F]/g, (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`);
+            }
+            return value;
+        }, 2));
         await connection.end();
+    } catch (error) {
+        console.error('Error:', error.message);
     }
 }
 
-checkData();
+main();

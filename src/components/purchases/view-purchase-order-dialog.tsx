@@ -9,10 +9,10 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { X, Printer } from 'lucide-react';
+import { X, Printer, FileText, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming this exists
 
 interface PurchaseOrderItem {
@@ -118,171 +118,225 @@ export default function ViewPurchaseOrderDialog() {
 
     return (
         <Dialog open={openDialogs['view-purchase-order']} onOpenChange={() => closeDialog('view-purchase-order')}>
-            <DialogContent className="max-w-[1200px] h-screen sm:h-auto max-h-[95vh] flex flex-col p-0 overflow-hidden sm:rounded-lg">
+            <DialogContent className="max-w-[1200px] h-[95vh] flex flex-col p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
 
-                {/* Header / Title Bar */}
-                <div className="flex items-center justify-between px-6 py-4 border-b bg-background print:hidden">
-                    <DialogTitle>Purchase order details</DialogTitle>
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => closeDialog('view-purchase-order')}>
-                            <X className="h-4 w-4" />
-                        </Button>
+                <DialogHeader className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0 print:hidden">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.2)]">
+                            <FileText className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">
+                                Procurement Audit
+                            </DialogTitle>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">System Payload</span>
+                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Operational Intelligence</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex-1 overflow-auto p-12 bg-background text-foreground text-sm" id="printable-content">
+                    <button 
+                        onClick={() => closeDialog('view-purchase-order')}
+                        className="relative z-10 p-2 rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-all"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
+                </DialogHeader>
+
+                <div className="flex-1 overflow-auto bg-slate-900/50 p-4 md:p-12 custom-scrollbar relative print:bg-white print:p-0">
+                    {/* Thematic Background Pattern - Screen Only */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none print:hidden" 
+                        style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} 
+                    />
+
                     {loading ? (
-                        <div className="flex justify-center items-center h-40">Loading details...</div>
+                        <div className="flex flex-col justify-center items-center h-full gap-4 text-white/20">
+                            <div className="h-12 w-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                            <span className="text-xs font-black uppercase tracking-widest italic">Decrypting Payload...</span>
+                        </div>
                     ) : order ? (
-                        <div className="space-y-8">
+                        <div className="relative mx-auto max-w-[850px] bg-white text-slate-950 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-sm print:shadow-none print:rounded-none print:max-w-none" id="printable-content">
+                            <div className="p-8 md:p-16 space-y-10 print:p-0">
+                                {/* Top Header Section */}
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-4">
+                                        <div className="space-y-1">
+                                            <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">{businessProfile?.businessName || "GAUDENCIOS LUGAWAN"}</h1>
+                                            <div className="h-1 w-12 bg-slate-950" />
+                                        </div>
+                                        <div className="text-[11px] font-bold text-slate-500 space-y-0.5 uppercase tracking-wide">
+                                            <p>{businessProfile?.address || "TAGUM CITY, DAVAO DEL NORTE"}</p>
+                                            <p>COMMUNICATION: {businessProfile?.contactPhone || "NOT REGISTERED"}</p>
+                                            <p>DIGITAL: {businessProfile?.email || "pos@nenapps.com"}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right flex flex-col items-end">
+                                        <div className="text-[10px] font-black bg-slate-950 text-white px-3 py-1 mb-6 tracking-[0.3em] uppercase italic">
+                                            Purchase Order
+                                        </div>
+                                        <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-right">
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Issue Date</span>
+                                            <span className="text-xs font-bold">{format(new Date(order.date), 'MMMM d, yyyy')}</span>
 
-                            {/* Top Header Section */}
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h1 className="text-xl font-bold uppercase tracking-wide">{businessProfile?.businessName || "GAUDENCIOS LUGAWAN"}</h1>
-                                    <div className="text-muted-foreground mt-1">
-                                        <p>{businessProfile?.address || "TAGUM CITY"}</p>
-                                        <p>Phone: {businessProfile?.contactPhone || ""}</p>
-                                        <p>Email: {businessProfile?.email || "pos@nenapps.com"}</p>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fulfillment</span>
+                                            <span className="text-xs font-bold">{format(new Date(new Date(order.date).setDate(new Date(order.date).getDate() + 1)), 'MMMM d, yyyy')}</span>
+
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Control No.</span>
+                                            <span className="text-xs font-black font-mono">#{order.orderNumber || order.id.slice(0, 8).toUpperCase()}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <h1 className="text-3xl font-bold text-muted-foreground/30 uppercase tracking-widest mb-4">PURCHASE ORDER</h1>
-                                    <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-right text-sm">
-                                        <span className="text-muted-foreground">Issue Date</span>
-                                        <span>{format(new Date(order.date), 'MMMM d, yyyy')}</span>
 
-                                        <span className="text-muted-foreground">Delivery Date</span>
-                                        <span>{format(new Date(new Date(order.date).setDate(new Date(order.date).getDate() + 1)), 'MMMM d, yyyy')}</span> {/* Mock Delivery +1 Day */}
-
-                                        <span className="text-muted-foreground">Reference No.</span>
-                                        <span>{order.orderNumber || order.id.slice(0, 8).toUpperCase()}</span>
+                                {/* Addresses */}
+                                <div className="grid grid-cols-2 gap-16 pt-8 border-t border-slate-100">
+                                    <div className="space-y-3">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Recipient Vendor</h3>
+                                        <div className="space-y-1">
+                                            <div className="font-black text-sm uppercase italic">{order.supplier.name}</div>
+                                            <div className="text-[11px] font-bold text-slate-500 whitespace-pre-wrap uppercase leading-relaxed">
+                                                {order.vendorAddress || order.supplier.address || "DAVAO CITY"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Deployment Point</h3>
+                                        <div className="space-y-1">
+                                            <div className="font-black text-sm uppercase italic">{businessProfile?.businessName || "GAUDENCIOS LUGAWAN"}</div>
+                                            <div className="text-[11px] font-bold text-slate-500 whitespace-pre-wrap uppercase leading-relaxed">
+                                                {businessProfile?.address || "TAGUM CITY"}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Addresses */}
-                            <div className="grid grid-cols-2 gap-12 mt-8">
-                                <div>
-                                    <h3 className="text-muted-foreground mb-1">Order To</h3>
-                                    <div className="font-semibold uppercase">{order.supplier.name}</div>
-                                    <div className="text-muted-foreground whitespace-pre-wrap uppercase">
-                                        {order.vendorAddress || order.supplier.address || "DAVAO CITY"}
+                                {/* Notes / Terms */}
+                                <div className="bg-slate-50 p-4 border-l-4 border-slate-950 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol</span>
+                                        <span className="text-xs font-black uppercase italic">{order.supplier.paymentTerms || "Standard Net 30"}</span>
                                     </div>
+                                    <div className="text-[9px] font-bold text-slate-400 uppercase italic">Reference: Ledger Phase 1</div>
                                 </div>
-                                <div>
-                                    <h3 className="text-muted-foreground mb-1">Deliver To</h3>
-                                    <div className="font-semibold uppercase">{businessProfile?.businessName || "GAUDENCIOS LUGAWAN"}</div>
-                                    <div className="text-muted-foreground whitespace-pre-wrap uppercase">
-                                        {businessProfile?.address || "TAGUM CITY"}
-                                    </div>
-                                </div>
-                            </div>
 
-                            {/* Notes / Terms */}
-                            <div className="mt-8">
-                                <span className="underline">Payment Terms: {order.supplier.paymentTerms || "CASH"}</span>
-                            </div>
-
-                            {/* Items Table - Custom Styled to match image */}
-                            <div className="mt-4 border rounded-none overflow-hidden">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-muted/50 border-b">
-                                        <tr>
-                                            <th className="px-3 py-2 font-medium border-r w-[12%] text-xs uppercase tracking-wider">Barcode</th>
-                                            <th className="px-3 py-2 font-medium border-r w-[43%] text-xs uppercase tracking-wider">Name</th>
-                                            <th className="px-2 py-2 font-medium border-r text-right w-[5%] text-[10px] uppercase">QTY/Case</th>
-                                            <th className="px-3 py-2 font-medium border-r text-right w-[7%] text-[10px] uppercase">Order QTY</th>
-                                            <th className="px-3 py-2 font-medium border-r text-right w-[9%] text-[10px] uppercase">Cost/Case</th>
-                                            <th className="px-3 py-2 font-medium border-r text-right w-[9%] text-[10px] uppercase">Cost/Piece</th>
-                                            <th className="px-3 py-2 font-medium border-r text-right w-[5%] text-[10px] uppercase">UOM</th>
-                                            <th className="px-4 py-2 font-medium text-right w-[10%] text-xs uppercase tracking-wider">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y">
-                                        {order.items.map((item, idx) => (
-                                            <tr key={item.id || idx}>
-                                                <td className="px-3 py-2 border-r align-top text-[10px] break-all">{item.barcode || item.product?.barcode || "N/A"}</td>
-                                                <td className="px-3 py-2 border-r align-top text-xs font-medium">{item.itemDescription}</td>
-                                                <td className="px-2 py-2 border-r align-top text-right text-xs">{item.qtyPerCase || 1}</td>
-                                                <td className="px-2 py-2 border-r align-top text-right text-xs font-semibold">{item.orderQty || item.quantity}</td>
-                                                <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerCase || item.cost || (item.unitPrice * (item.qtyPerCase || 1))).toFixed(2)}</td>
-                                                <td className="px-3 py-2 border-r align-top text-right text-xs">{(item.costPricePerPiece || item.unitPrice).toFixed(2)}</td>
-                                                <td className="px-3 py-2 border-r align-top text-right text-xs text-muted-foreground">{item.buyingUom || "pc"}</td>
-                                                <td className="px-4 py-2 align-top text-right text-xs font-bold">{item.total.toFixed(2)}</td>
+                                {/* Items Table */}
+                                <div className="mt-8 border border-slate-200">
+                                    <table className="w-full text-left text-[11px]">
+                                        <thead className="bg-slate-950 text-white">
+                                            <tr>
+                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 w-[15%]">Identifier</th>
+                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 w-[40%]">Designation</th>
+                                                <th className="px-2 py-3 font-black uppercase tracking-widest border-r border-white/10 text-right w-[10%]">Quantum</th>
+                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 text-right w-[12%]">Cost/Unit</th>
+                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 text-center w-[10%]">UOM</th>
+                                                <th className="px-4 py-3 font-black uppercase tracking-widest text-right w-[13%]">Subtotal</th>
                                             </tr>
-                                        ))}
-                                        {/* Filler rows to match height if needed, or min-height on tbody */}
-                                        {Array.from({ length: Math.max(0, 5 - order.items.length) }).map((_, i) => (
-                                            <tr key={`filler-${i}`}>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4 border-r">&nbsp;</td>
-                                                <td className="px-4 py-4">&nbsp;</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                    <tfoot className="border-t">
-                                        <tr>
-                                            <td colSpan={6} rowSpan={4} className="border-r border-b text-xs p-4 align-top text-muted-foreground italic">
-                                                {order.comments && (
-                                                    <div className="mb-2">
-                                                        <span className="font-semibold block not-italic uppercase text-[10px] mb-1">Remarks:</span>
-                                                        {order.comments}
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {order.items.map((item, idx) => (
+                                                <tr key={item.id || idx} className="hover:bg-slate-50/50 transition-colors">
+                                                    <td className="px-3 py-3 border-r border-slate-100 font-mono text-[10px] text-slate-400">{item.barcode || item.product?.barcode || "NON-EXT"}</td>
+                                                    <td className="px-3 py-3 border-r border-slate-100 font-black uppercase text-slate-800">{item.itemDescription}</td>
+                                                    <td className="px-3 py-3 border-r border-slate-100 text-right font-bold">{item.orderQty || item.quantity}</td>
+                                                    <td className="px-3 py-3 border-r border-slate-100 text-right font-bold text-slate-600">{(item.costPricePerPiece || item.unitPrice).toFixed(2)}</td>
+                                                    <td className="px-3 py-3 border-r border-slate-100 text-center font-bold text-slate-400 uppercase">{item.buyingUom || "pc"}</td>
+                                                    <td className="px-4 py-3 text-right font-black text-slate-950 italic">₱{item.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                                                </tr>
+                                            ))}
+                                            {/* Filler rows for aesthetic balance */}
+                                            {Array.from({ length: Math.max(0, 3 - order.items.length) }).map((_, i) => (
+                                                <tr key={`filler-${i}`}>
+                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 py-4">&nbsp;</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                        <tfoot className="border-t-2 border-slate-950">
+                                            <tr className="bg-slate-50">
+                                                <td colSpan={4} className="p-6 align-top border-r border-slate-200">
+                                                    <div className="space-y-4">
+                                                        <div className="space-y-1">
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Authorization Notes</span>
+                                                            <div className="text-[10px] font-bold text-slate-500 uppercase leading-relaxed italic max-w-[400px]">
+                                                                {order.comments || "THIS IS A COMPUTER-GENERATED PAYLOAD. PHYSICAL SIGNATURE MAY BE REQUIRED BY EXTERNAL ENTITIES FOR COMPLETE PROTOCOL VALIDATION."}
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-[9px] font-black text-slate-300 uppercase tracking-tighter">
+                                                            // SYSTEM_AUTH_HASH: {order.id.toUpperCase()}
+                                                        </div>
                                                     </div>
-                                                )}
-                                            </td>
-                                            <td className="px-4 py-1 border-r text-right text-muted-foreground border-b text-xs">Shipping</td>
-                                            <td className="px-4 py-1 text-right border-b font-medium">0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="px-4 py-1 border-r text-right text-muted-foreground border-b text-xs">Vat included</td>
-                                            <td className="px-4 py-1 text-right border-b font-medium">{order.taxTotal.toFixed(2)}</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="px-4 py-1 border-r text-right text-muted-foreground border-b text-xs">Discount</td>
-                                            <td className="px-4 py-1 text-right border-b font-medium">0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td className="px-4 py-2 border-r text-right font-bold text-foreground bg-muted/50 border-b">Grand total</td>
-                                            <td className="px-4 py-2 text-right font-bold bg-muted/50 border-b">{order.total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            {/* Footer Signature */}
-                            <div className="mt-12 mb-8 pt-8">
-                                <div className="text-sm uppercase mb-12">
-                                    {businessProfile?.bankDetails || "CASH DEPOSIT / PAYMENT"}
+                                                </td>
+                                                <td colSpan={2} className="p-0 align-top">
+                                                    <div className="grid grid-cols-2 text-[10px] font-black uppercase tracking-widest">
+                                                        <div className="px-4 py-3 border-b border-r border-slate-200 text-slate-400">Subtotal</div>
+                                                        <div className="px-4 py-3 border-b border-slate-200 text-right font-bold text-slate-600">₱{order.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                                        
+                                                        <div className="px-4 py-3 border-b border-r border-slate-200 text-slate-400 italic">VAT Base</div>
+                                                        <div className="px-4 py-3 border-b border-slate-200 text-right font-bold text-slate-600">₱{order.taxTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                                        
+                                                        <div className="px-4 py-3 border-r border-slate-200 text-slate-400">Logistics</div>
+                                                        <div className="px-4 py-3 text-right font-bold text-slate-600">₱0.00</div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center bg-slate-950 text-white p-4">
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Total Payload</span>
+                                                        <span className="text-xl font-black italic tracking-tighter">₱{order.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
-                                <div className="flex justify-end items-end gap-2">
-                                    <span className="mb-1 text-sm text-muted-foreground">Authorized by:</span>
-                                    <div className="w-64 border-b border-muted-foreground/50"></div>
+
+                                {/* Footer Signature */}
+                                <div className="mt-16 pt-12 flex justify-between items-end">
+                                    <div className="space-y-2">
+                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Financial Channel</div>
+                                        <div className="text-xs font-black uppercase italic text-slate-700">
+                                            {businessProfile?.bankDetails || "SETTLEMENT VIA CORPORATE CHECK / DEPOSIT"}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-3">
+                                        <div className="w-64 border-b-2 border-slate-950"></div>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Authorized Intelligence Representative</span>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                     ) : (
-                        <div className="text-center text-muted-foreground py-10">
-                            Failed to load order details.
+                        <div className="flex flex-col items-center justify-center h-full gap-4 text-white/10">
+                            <X className="h-12 w-12" />
+                            <p className="text-xs font-black uppercase tracking-widest">Data Stream Terminated</p>
                         </div>
                     )}
                 </div>
 
-                <DialogFooter className="border-t p-4 flex justify-between items-center bg-background print:hidden">
-                    <div className="flex-1"></div>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={handlePrint}>
-                            <Printer className="mr-2 h-4 w-4" />
-                            Print
+                <DialogFooter className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0 print:hidden">
+
+                    <div className="flex items-center gap-2 text-white/20">
+                        <ShieldCheck className="h-4 w-4" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Audit Trail Synchronized</span>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => closeDialog('view-purchase-order')}
+                            className="px-6 h-12 rounded-xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-xs"
+                        >
+                            Dismiss
                         </Button>
-                        <Button variant="outline" onClick={() => closeDialog('view-purchase-order')}>
-                            Close
+                        <Button 
+                            onClick={handlePrint}
+                            className="px-8 h-12 rounded-xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all gap-2"
+                        >
+                            <Printer className="h-4 w-4" />
+                            Print Payload
                         </Button>
                     </div>
                 </DialogFooter>

@@ -26,9 +26,18 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useExternalProducts, ExternalProduct } from '@/hooks/use-products';
-import { Search, Filter, CalendarIcon, Plus, X } from 'lucide-react';
+import { 
+  Search, 
+  Filter, 
+  CalendarIcon, 
+  Plus, 
+  X, 
+  RefreshCw, 
+  ChevronLeft, 
+  ChevronRight 
+} from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -135,249 +144,357 @@ export default function InventoryDialog() {
     refreshExternalProducts();
   };
 
-  return (
-    <Dialog open={openDialogs['inventory']} onOpenChange={() => closeDialog('inventory')}>
-      <DialogContent className="max-w-7xl h-[90vh] flex flex-col">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle>Stock Products</DialogTitle>
-            {!isAuditor && (
-              <Button onClick={() => openDialog('add-product' as any)} variant="outline">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Products
-              </Button>
-            )}
-          </div>
-        </DialogHeader>
+    return (
+        <Dialog open={openDialogs['inventory']} onOpenChange={() => closeDialog('inventory')}>
+            <DialogContent className="max-w-[95vw] w-[1450px] h-[92vh] flex flex-col p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+                {/* Premium Operational Header */}
+                <div className="px-10 py-8 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className="p-4 rounded-[2rem] bg-primary/20 text-primary border border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.2)]">
+                            <Filter className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-4xl font-black italic tracking-tighter uppercase leading-none text-white">Logistics Matrix</DialogTitle>
+                            <div className="flex items-center gap-3 mt-3">
+                                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-black">Inventory Core</span>
+                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em]">Stock Intelligence Network</span>
+                            </div>
+                        </div>
+                    </div>
 
-        <div className="flex-1 overflow-hidden flex flex-col">
-          {/* Filters and Search */}
-          <div className="flex flex-wrap gap-4 p-4 border-b">
-            <div className="flex-1 min-w-[200px]">
-              <Label htmlFor="search">Search</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="search"
-                  placeholder="Search products..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="flex-1"
-                />
-                <Button variant="outline" size="icon">
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/80">Active Monitoring</span>
+                        </div>
+                        <button 
+                            onClick={() => closeDialog('inventory')}
+                            className="p-3 rounded-2xl hover:bg-white/10 text-white/40 hover:text-white transition-all group"
+                        >
+                            <X className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+                        </button>
+                    </div>
+                </div>
 
-            <div className="min-w-[150px]">
-              <Label htmlFor="filterBy">Filter By</Label>
-              <Select value={filterBy} onValueChange={setFilterBy}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select filter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">Date</SelectItem>
-                  <SelectItem value="productName">Product Name</SelectItem>
-                  <SelectItem value="category">Category</SelectItem>
-                  <SelectItem value="code">Code</SelectItem>
-                  <SelectItem value="salesOrder">Sales Order</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Advanced Control Interface */}
+                <div className="flex-shrink-0 px-10 py-4 bg-white/[0.02] border-b border-white/5 flex flex-wrap items-center gap-6">
+                    <div className="flex items-center gap-3">
+                        {!isAuditor && (
+                            <Button 
+                                onClick={() => openDialog('add-product' as any)}
+                                className="bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl px-8 shadow-xl shadow-primary/20 transition-all active:scale-95"
+                            >
+                                <Plus className="h-5 w-5 mr-2 stroke-[3]" />
+                                Deploy Product
+                            </Button>
+                        )}
+                        <div className="w-px h-8 bg-white/10 mx-2" />
+                    </div>
 
-            <div className="min-w-[150px]">
-              <Label htmlFor="filterValue">Filter Value</Label>
-              {filterBy === 'date' ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={'outline'}
-                      className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !filterDate && 'text-muted-foreground'
-                      )}
+                    {/* Filters Container */}
+                    <div className="flex-1 flex flex-wrap items-center gap-4">
+                        <div className="relative flex-[1.5]">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                            <Input
+                                placeholder="Search by ID or Identity..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-12 h-12 bg-white/5 border-white/10 text-white rounded-2xl font-bold uppercase tracking-wider text-xs focus:ring-primary/20 placeholder:text-white/10"
+                            />
+                        </div>
+
+                        <div className="w-48">
+                            <Select value={filterBy} onValueChange={setFilterBy}>
+                                <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-2xl text-[10px] font-black uppercase text-white/60">
+                                    <SelectValue placeholder="Protocol" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                    <SelectItem value="date" className="text-[10px] font-black uppercase">Temporal</SelectItem>
+                                    <SelectItem value="productName" className="text-[10px] font-black uppercase">Identity</SelectItem>
+                                    <SelectItem value="category" className="text-[10px] font-black uppercase">Category</SelectItem>
+                                    <SelectItem value="code" className="text-[10px] font-black uppercase">Serial</SelectItem>
+                                    <SelectItem value="salesOrder" className="text-[10px] font-black uppercase">Directive</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="w-48">
+                            {filterBy === 'date' ? (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={'outline'}
+                                            className={cn(
+                                                'h-12 w-full justify-start text-left font-black uppercase tracking-widest text-[10px] bg-white/5 border-white/10 rounded-2xl',
+                                                !filterDate && 'text-white/20'
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {filterDate ? format(filterDate, 'MM/dd/yyyy') : <span>Temporal Lock</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10 shadow-2xl">
+                                        <Calendar
+                                            mode="single"
+                                            selected={filterDate}
+                                            onSelect={(date) => {
+                                                setFilterDate(date);
+                                                setFilterValue(date ? format(date, 'yyyy-MM-dd') : '');
+                                            }}
+                                            initialFocus
+                                            className="text-white"
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            ) : (
+                                <Input
+                                    placeholder="Matrix Value..."
+                                    value={filterValue}
+                                    onChange={(e) => setFilterValue(e.target.value)}
+                                    disabled={!filterBy}
+                                    className="h-12 bg-white/5 border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] focus:ring-primary/20 placeholder:text-white/10 disabled:opacity-20"
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Button 
+                                onClick={applyFilters} 
+                                variant="outline"
+                                className="h-12 border-primary/20 bg-primary/10 text-primary hover:bg-primary hover:text-black font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 transition-all shadow-xl shadow-primary/5"
+                            >
+                                <Filter className="h-4 w-4 mr-2" />
+                                Apply
+                            </Button>
+                            <Button 
+                                onClick={clearFilters} 
+                                variant="outline"
+                                className="h-12 border-white/10 bg-white/5 text-white/40 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 transition-all"
+                            >
+                                Clear
+                            </Button>
+                        </div>
+                    </div>
+
+                    <button 
+                        onClick={() => refreshExternalProducts()}
+                        className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all shadow-xl active:scale-95"
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filterDate ? format(filterDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={filterDate}
-                      onSelect={(date) => {
-                        setFilterDate(date);
-                        setFilterValue(date ? format(date, 'yyyy-MM-dd') : '');
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              ) : (
-                <Input
-                  id="filterValue"
-                  placeholder="Enter filter value"
-                  value={filterValue}
-                  onChange={(e) => setFilterValue(e.target.value)}
-                  disabled={!filterBy}
-                />
-              )}
-            </div>
-
-            <div className="flex items-end gap-2">
-              <Button onClick={applyFilters} variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Apply
-              </Button>
-              <Button onClick={clearFilters} variant="outline">
-                Clear
-              </Button>
-            </div>
-          </div>
-
-          {/* Products Table */}
-          <div className="flex-1 flex flex-col min-h-0">
-            {/* Fixed Header */}
-            <div className="flex-shrink-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">Select</TableHead>
-                    <TableHead className="w-24">SKU</TableHead>
-                    <TableHead className="min-w-48">Name</TableHead>
-                    <TableHead className="w-32">Barcode</TableHead>
-                    <TableHead className="w-32">Category</TableHead>
-                    <TableHead className="w-32">Brand</TableHead>
-                    <TableHead className="w-24 text-right">Price</TableHead>
-                    <TableHead className="w-24 text-right">Cost</TableHead>
-                    <TableHead className="w-20 text-right">Stock</TableHead>
-                    <TableHead className="w-28">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-              </Table>
-            </div>
-
-            {/* Scrollable Body */}
-            <div className="flex-1 overflow-auto">
-              <Table>
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={10} className="text-center py-8">
-                        Loading products...
-                      </TableCell>
-                    </TableRow>
-                  ) : error ? (
-                    <TableRow>
-                      <TableCell colSpan={10} className="text-center py-8 text-red-500 font-medium">
-                        {error.message.includes('Failed to fetch') || error.message.includes('Network') || error.message.includes('fetch')
-                          ? 'No connection on API. Please check your network and try again.'
-                          : `Error: ${error.message}`}
-                      </TableCell>
-                    </TableRow>
-                  ) : externalProducts.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={10} className="text-center py-8">
-                        No products found
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    externalProducts.map((product: ExternalProduct, index: number) => (
-                      <TableRow key={`${product.sku}-${index}`}>
-                        <TableCell className="w-16">
-                          <input
-                            type="radio"
-                            name="selectedProduct"
-                            value={product.sku}
-                            checked={selectedProducts === product.sku}
-                            onChange={(e) => setSelectedProducts(e.target.value)}
-                            className="w-4 h-4"
-                          />
-                        </TableCell>
-                        <TableCell className="w-24 font-medium">{product.sku}</TableCell>
-                        <TableCell className="min-w-48">{product.name}</TableCell>
-                        <TableCell className="w-32">{product.barcode || '-'}</TableCell>
-                        <TableCell className="w-32">{product.category || '-'}</TableCell>
-                        <TableCell className="w-32">{product.brand || '-'}</TableCell>
-                        <TableCell className="w-24 text-right">₱{Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
-                        <TableCell className="w-24 text-right">₱{product.cost ? Number(product.cost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}</TableCell>
-                        <TableCell className="w-20 text-right">{product.stock.toLocaleString()}</TableCell>
-                        <TableCell className="w-28">
-                          <Select
-                            value={selectedActions[product.sku] || ''}
-                            onValueChange={(value) => setSelectedActions(prev => ({ ...prev, [product.sku]: value }))}
-                          >
-                            <SelectTrigger className="w-24">
-                              <SelectValue placeholder="Action" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {!isAuditor && <SelectItem value="edit">Edit</SelectItem>}
-                              <SelectItem value="view">View</SelectItem>
-                              {!isAuditor && <SelectItem value="update">Update</SelectItem>}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-
-          {/* Pagination */}
-          {pagination && (
-            <div className="flex-shrink-0 flex items-center justify-between p-4 border-t">
-              <div className="text-sm text-muted-foreground">
-                Showing {pagination.offset + 1} to {Math.min(pagination.offset + externalProducts.length, pagination.total)} of {pagination.total} products
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm">
-                  Page {currentPage} of {Math.ceil(pagination.total / pagination.limit)}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(prev => prev + 1)}
-                  disabled={!pagination.hasMore}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Grand Total Summary */}
-          {!isLoading && externalProducts.length > 0 && (
-            <div className="flex-shrink-0 bg-muted/50 p-4 border-t">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="bg-background rounded-lg p-3 border">
-                  <div className="text-sm font-medium text-muted-foreground">No. of Items</div>
-                  <div className="text-2xl font-bold text-primary">{summaryTotals.itemCount.toLocaleString()}</div>
+                        <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
+                    </button>
                 </div>
-                <div className="bg-background rounded-lg p-3 border">
-                  <div className="text-sm font-medium text-muted-foreground">Total Costs</div>
-                  <div className="text-2xl font-bold text-orange-600">₱{summaryTotals.totalCosts.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                </div>
-                <div className="bg-background rounded-lg p-3 border">
-                  <div className="text-sm font-medium text-muted-foreground">Total Profit</div>
-                  <div className="text-2xl font-bold text-green-600">₱{summaryTotals.totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* Pagination and Summary already exist above */}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
+                <div className="flex-1 min-h-0 flex flex-col p-10 bg-black/20">
+                    {/* Matrix Viewport */}
+                    <div className="flex-1 flex flex-col min-h-0 bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+                        <div className="flex-1 overflow-auto custom-scrollbar">
+                            <table className="w-full border-separate border-spacing-0">
+                                <thead className="sticky top-0 z-30">
+                                    <tr className="bg-slate-900/90 backdrop-blur-md">
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Signal</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Serial</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Identity</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Category</th>
+                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Price Point</th>
+                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Unit Cost</th>
+                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Stock Level</th>
+                                        <th className="h-16 px-8 text-center text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5 pr-10">Command</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {isLoading ? (
+                                        <tr>
+                                            <td colSpan={8} className="h-96 text-center">
+                                                <div className="flex flex-col items-center gap-4 opacity-20">
+                                                    <RefreshCw className="h-12 w-12 animate-spin text-primary" />
+                                                    <span className="text-xs font-black uppercase tracking-[0.3em]">Synchronizing Logistics...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : error ? (
+                                        <tr>
+                                            <td colSpan={8} className="h-96 text-center">
+                                                <div className="flex flex-col items-center gap-4 text-red-500/60">
+                                                    <X className="h-12 w-12 opacity-50" />
+                                                    <span className="text-xs font-black uppercase tracking-[0.2em]">Transmission Error Detected</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : externalProducts.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={8} className="h-96 text-center">
+                                                <div className="flex flex-col items-center gap-4 opacity-10">
+                                                    <Search className="h-20 w-20" />
+                                                    <span className="text-sm font-black uppercase tracking-[0.4em]">Zero Assets Identified</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        externalProducts.map((product, index) => (
+                                            <tr 
+                                                key={`${product.sku}-${index}`}
+                                                onClick={() => setSelectedProducts(product.sku)}
+                                                className={cn(
+                                                    "cursor-pointer transition-all duration-300 group relative",
+                                                    selectedProducts === product.sku ? "bg-primary/10" : "hover:bg-white/[0.02]"
+                                                )}
+                                            >
+                                                <td className="px-8 py-5">
+                                                    <div className="flex justify-center">
+                                                        <div className={cn(
+                                                            "w-4 h-4 rounded-md border transition-all flex items-center justify-center",
+                                                            selectedProducts === product.sku ? "border-primary bg-primary text-black" : "border-white/10 bg-white/5"
+                                                        )}>
+                                                            {selectedProducts === product.sku && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-5">
+                                                    <span className="font-mono text-xs font-black tracking-tighter text-white/40 group-hover:text-primary transition-colors">
+                                                        {product.sku}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-5">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-black uppercase italic tracking-tight text-white group-hover:translate-x-1 transition-transform">
+                                                            {product.name}
+                                                        </span>
+                                                        <span className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                                                            {product.brand || "UNBRANDED ASSET"}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-5">
+                                                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/5 bg-white/5 text-white/40">
+                                                        {product.category || "UNCLASSIFIED"}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-5 text-right">
+                                                    <span className="text-sm font-black italic tracking-tighter text-primary">
+                                                        ₱{Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-5 text-right">
+                                                    <span className="text-sm font-black italic tracking-tighter text-white/40">
+                                                        ₱{product.cost ? Number(product.cost).toLocaleString(undefined, { minimumFractionDigits: 2 }) : '-'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-5 text-right">
+                                                    <div className="flex flex-col items-end">
+                                                        <span className={cn(
+                                                            "text-sm font-black tracking-tighter",
+                                                            product.stock <= 5 ? "text-red-400" : "text-white"
+                                                        )}>
+                                                            {product.stock.toLocaleString()}
+                                                        </span>
+                                                        {product.stock <= 5 && (
+                                                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-red-500/60 animate-pulse">Critical Level</span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-5 pr-10">
+                                                    <div className="flex justify-center">
+                                                        <Select
+                                                            value={selectedActions[product.sku] || ''}
+                                                            onValueChange={(value) => setSelectedActions(prev => ({ ...prev, [product.sku]: value }))}
+                                                        >
+                                                            <SelectTrigger className="h-8 w-24 bg-white/5 border-white/10 rounded-xl text-[10px] font-black uppercase text-white/60 hover:border-primary/20 transition-all">
+                                                                <SelectValue placeholder="Protocol" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                                                {!isAuditor && <SelectItem value="edit" className="text-[10px] font-black uppercase">Refine</SelectItem>}
+                                                                <SelectItem value="view" className="text-[10px] font-black uppercase">Analyze</SelectItem>
+                                                                {!isAuditor && <SelectItem value="update" className="text-[10px] font-black uppercase">Calibrate</SelectItem>}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* High-Tech Pagination */}
+                        {pagination && (
+                            <div className="px-10 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+                                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
+                                    Showing <span className="text-white">{pagination.offset + 1}</span> - <span className="text-white">{Math.min(pagination.offset + externalProducts.length, pagination.total)}</span> of <span className="text-primary">{pagination.total}</span> Assets
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mr-4">
+                                        Cycle <span className="text-primary">{currentPage}</span> / {Math.ceil(pagination.total / pagination.limit)}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                            disabled={currentPage === 1}
+                                            className="h-10 w-10 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-10 transition-all active:scale-90"
+                                        >
+                                            <ChevronLeft className="h-5 w-5" />
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => setCurrentPage(prev => prev + 1)}
+                                            disabled={!pagination.hasMore}
+                                            className="h-10 w-10 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-10 transition-all active:scale-90"
+                                        >
+                                            <ChevronRight className="h-5 w-5" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Premium Summary Intelligence */}
+                    {!isLoading && externalProducts.length > 0 && (
+                        <div className="mt-8 grid grid-cols-3 gap-8">
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/10 transition-colors" />
+                                <div className="relative z-10">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Asset Quantification</div>
+                                    <div className="text-4xl font-black italic tracking-tighter text-white">{summaryTotals.itemCount.toLocaleString()}</div>
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                        <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Total Managed SKU</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-orange-500/10 transition-colors" />
+                                <div className="relative z-10">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Cumulative Exposure</div>
+                                    <div className="text-4xl font-black italic tracking-tighter text-orange-500">₱{summaryTotals.totalCosts.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                                        <span className="text-[9px] font-bold text-orange-500 uppercase tracking-widest">Aggregate Cost Basis</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-emerald-500/10 transition-colors" />
+                                <div className="relative z-10">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Projected Yield</div>
+                                    <div className="text-4xl font-black italic tracking-tighter text-emerald-500">₱{summaryTotals.totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Institutional Profit Margin</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 }

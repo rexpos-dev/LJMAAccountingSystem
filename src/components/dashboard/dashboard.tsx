@@ -9,7 +9,7 @@ import {
   Calendar as CalendarIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDialog } from "@/components/layout/dialog-provider";
+import { useDialog } from "@/components/layout/dialog-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {

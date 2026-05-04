@@ -17,6 +17,10 @@ export interface Branch {
     receivables?: string;
     depositAccount?: string;
     othersField?: string;
+    profit_center_id?: string;
+    allocationWeights?: {
+        weight: number;
+    };
     createdAt?: string;
     updatedAt?: string;
 }

@@ -1,31 +1,47 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useDialog } from '@/components/layout/dialog-provider';
-import { useToast } from '@/hooks/use-toast';
-import { Phone, Mail, Folder } from 'lucide-react';
-import { useSalesUsers } from '@/hooks/use-sales-users';
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useDialog } from "@/components/layout/dialog-context";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Phone, 
+  Mail, 
+  User, 
+  ShieldCheck, 
+  Save, 
+  X, 
+  Zap,
+  CreditCard,
+  MapPin,
+  Users,
+  Trophy,
+  ChevronRight,
+  PlusCircle,
+  Building2,
+  Contact2
+} from "lucide-react";
+import { useSalesUsers } from "@/hooks/use-sales-users";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface LoyaltySetting {
   id: string;
@@ -59,112 +75,94 @@ interface Customer {
   updatedAt: string;
 }
 
-interface AddCustomerDialogProps {
-  editCustomer?: Customer | null;
-}
-
 export function AddCustomerDialog() {
   const { openDialogs, closeDialog, getDialogData } = useDialog();
   const { toast } = useToast();
   const { data: salesUsers = [], isLoading: salesUsersLoading } = useSalesUsers();
 
-  const editCustomer = getDialogData('add-customer');
+  const editCustomer = getDialogData("add-customer");
   const isEditing = !!editCustomer;
 
-  // Generate customer code
   const generateCustomerCode = () => {
     return `CUST-${Math.floor(Math.random() * 1000000)}`;
   };
 
-  const [code, setCode] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [contactFirstName, setContactFirstName] = useState('');
-  const [address, setAddress] = useState('');
-  const [phonePrimary, setPhonePrimary] = useState('');
-  const [phoneAlternative, setPhoneAlternative] = useState('');
-  const [email, setEmail] = useState('');
+  const [code, setCode] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [contactFirstName, setContactFirstName] = useState("");
+  const [address, setAddress] = useState("");
+  const [phonePrimary, setPhonePrimary] = useState("");
+  const [phoneAlternative, setPhoneAlternative] = useState("");
+  const [email, setEmail] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const [creditLimit, setCreditLimit] = useState('');
+  const [creditLimit, setCreditLimit] = useState("");
   const [isTaxExempt, setIsTaxExempt] = useState(false);
-  const [paymentTerms, setPaymentTerms] = useState('days');
-  const [paymentTermsValue, setPaymentTermsValue] = useState('30');
-  const [salesperson, setSalesperson] = useState('');
-  const [customerGroup, setCustomerGroup] = useState('default');
+  const [paymentTerms, setPaymentTerms] = useState("days");
+  const [paymentTermsValue, setPaymentTermsValue] = useState("30");
+  const [salesperson, setSalesperson] = useState("");
+  const [customerGroup, setCustomerGroup] = useState("default");
   const [isEntitledToLoyaltyPoints, setIsEntitledToLoyaltyPoints] = useState(false);
-  const [pointSetting, setPointSetting] = useState('');
-  const [loyaltyCalculationMethod, setLoyaltyCalculationMethod] = useState('automatic');
-  const [loyaltyCardNumber, setLoyaltyCardNumber] = useState('');
+  const [pointSetting, setPointSetting] = useState("");
+  const [loyaltyCalculationMethod, setLoyaltyCalculationMethod] = useState("automatic");
+  const [loyaltyCardNumber, setLoyaltyCardNumber] = useState("");
 
-  // Loyalty settings state
   const [loyaltySettings, setLoyaltySettings] = useState<LoyaltySetting[]>([]);
   const [loyaltySettingsLoading, setLoyaltySettingsLoading] = useState(false);
-
-  // Save loading state
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch loyalty settings when dialog opens
   useEffect(() => {
-    if (openDialogs['add-customer']) {
+    if (openDialogs["add-customer"]) {
       if (isEditing && editCustomer) {
-        // Populate form with existing customer data
         setCode(editCustomer.code);
         setCustomerName(editCustomer.customerName);
-        setContactFirstName(editCustomer.contactFirstName || '');
-        setAddress(editCustomer.address || '');
-        setPhonePrimary(editCustomer.phonePrimary || '');
-        setPhoneAlternative(editCustomer.phoneAlternative || '');
-        setEmail(editCustomer.email || '');
+        setContactFirstName(editCustomer.contactFirstName || "");
+        setAddress(editCustomer.address || "");
+        setPhonePrimary(editCustomer.phonePrimary || "");
+        setPhoneAlternative(editCustomer.phoneAlternative || "");
+        setEmail(editCustomer.email || "");
         setIsActive(editCustomer.isActive);
-        setCreditLimit(editCustomer.creditLimit ? editCustomer.creditLimit.toString() : '');
+        setCreditLimit(editCustomer.creditLimit ? editCustomer.creditLimit.toString() : "");
         setIsTaxExempt(editCustomer.isTaxExempt);
-        setPaymentTerms(editCustomer.paymentTerms || 'days');
-        setPaymentTermsValue(editCustomer.paymentTermsValue || '30');
-        setSalesperson(editCustomer.salesperson || '');
-        setCustomerGroup(editCustomer.customerGroup || 'default');
+        setPaymentTerms(editCustomer.paymentTerms || "days");
+        setPaymentTermsValue(editCustomer.paymentTermsValue || "30");
+        setSalesperson(editCustomer.salesperson || "");
+        setCustomerGroup(editCustomer.customerGroup || "default");
         setIsEntitledToLoyaltyPoints(editCustomer.isEntitledToLoyaltyPoints);
-        setPointSetting(editCustomer.pointSetting || '');
-        setLoyaltyCalculationMethod(editCustomer.loyaltyCalculationMethod || 'automatic');
-        setLoyaltyCardNumber(editCustomer.loyaltyCardNumber || '');
+        setPointSetting(editCustomer.pointSetting || "");
+        setLoyaltyCalculationMethod(editCustomer.loyaltyCalculationMethod || "automatic");
+        setLoyaltyCardNumber(editCustomer.loyaltyCardNumber || "");
       } else {
-        // Reset form for new customer
         setCode(generateCustomerCode());
-        setCustomerName('');
-        setContactFirstName('');
-        setAddress('');
-        setPhonePrimary('');
-        setPhoneAlternative('');
-        setEmail('');
+        setCustomerName("");
+        setContactFirstName("");
+        setAddress("");
+        setPhonePrimary("");
+        setPhoneAlternative("");
+        setEmail("");
         setIsActive(true);
-        setCreditLimit('');
+        setCreditLimit("");
         setIsTaxExempt(false);
-        setPaymentTerms('days');
-        setPaymentTermsValue('30');
-        setSalesperson('');
-        setCustomerGroup('default');
+        setPaymentTerms("days");
+        setPaymentTermsValue("30");
+        setSalesperson("");
+        setCustomerGroup("default");
         setIsEntitledToLoyaltyPoints(false);
-        setPointSetting('');
-        setLoyaltyCalculationMethod('automatic');
-        setLoyaltyCardNumber('');
+        setPointSetting("");
+        setLoyaltyCalculationMethod("automatic");
+        setLoyaltyCardNumber("");
       }
-
-      // Fetch loyalty settings
       fetchLoyaltySettings();
     }
-  }, [openDialogs['add-customer'], isEditing, editCustomer]);
+  }, [openDialogs["add-customer"], isEditing, editCustomer]);
 
   const fetchLoyaltySettings = async () => {
     setLoyaltySettingsLoading(true);
     try {
-      const response = await fetch('/api/loyalty-point-settings');
-      if (!response.ok) throw new Error('Failed to fetch loyalty settings');
+      const response = await fetch("/api/loyalty-point-settings");
+      if (!response.ok) throw new Error("Failed to fetch loyalty settings");
       const data = await response.json();
       setLoyaltySettings(data);
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to load loyalty point settings',
-        variant: 'destructive',
-      });
       setLoyaltySettings([]);
     } finally {
       setLoyaltySettingsLoading(false);
@@ -172,407 +170,358 @@ export function AddCustomerDialog() {
   };
 
   const handleOk = async () => {
-    if (!customerName.trim()) {
-      toast({
-        title: 'Validation Error',
-        description: 'Customer name is required',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    if (!code.trim()) {
-      toast({
-        title: 'Validation Error',
-        description: 'Customer code is required',
-        variant: 'destructive',
-      });
+    if (!customerName.trim() || !code.trim()) {
+      toast({ title: "Validation Error", description: "Name and Code are required.", variant: "destructive" });
       return;
     }
 
     setIsSaving(true);
-
     try {
       const customerData = {
         ...(isEditing ? { id: editCustomer!.id } : {}),
-        code,
-        customerName,
-        contactFirstName,
-        address,
-        phonePrimary,
-        phoneAlternative,
-        email,
-        isActive,
-        creditLimit: creditLimit ? parseFloat(creditLimit) : 0,
-        isTaxExempt,
-        paymentTerms,
-        paymentTermsValue,
-        salesperson,
-        customerGroup,
-        isEntitledToLoyaltyPoints,
-        pointSetting,
-        loyaltyCalculationMethod,
-        loyaltyCardNumber,
+        code, customerName, contactFirstName, address, phonePrimary, phoneAlternative, email,
+        isActive, creditLimit: creditLimit ? parseFloat(creditLimit) : 0,
+        isTaxExempt, paymentTerms, paymentTermsValue, salesperson, customerGroup,
+        isEntitledToLoyaltyPoints, pointSetting, loyaltyCalculationMethod, loyaltyCardNumber,
       };
 
-      const url = isEditing ? `/api/customers?id=${editCustomer!.id}` : '/api/customers';
-      const method = isEditing ? 'PUT' : 'POST';
+      const url = isEditing ? `/api/customers?id=${editCustomer!.id}` : "/api/customers";
+      const method = isEditing ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(customerData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to ${isEditing ? 'update' : 'create'} customer`);
-      }
+      if (!response.ok) throw new Error("Failed to save customer");
 
-      const savedCustomer = await response.json();
-      console.log('Customer saved successfully:', savedCustomer);
-
-      toast({
-        title: 'Success',
-        description: `Customer ${isEditing ? 'updated' : 'created'} successfully`,
-      });
-
-      closeDialog('add-customer');
+      toast({ title: "Success", description: `Customer ${isEditing ? "updated" : "created"} successfully` });
+      closeDialog("add-customer");
     } catch (error: any) {
-      console.error(`Error ${isEditing ? 'updating' : 'creating'} customer:`, error);
-      toast({
-        title: 'Error',
-        description: error.message || `Failed to ${isEditing ? 'update' : 'save'} customer`,
-        variant: 'destructive',
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleCancel = () => {
-    closeDialog('add-customer');
-  };
-
-  const handleGenerateLoyaltyCard = () => {
-    // Generate a random 13-digit EAN-13 loyalty card number
-    const cardNumber = Array.from({ length: 13 }, () => Math.floor(Math.random() * 10)).join('');
-    setLoyaltyCardNumber(cardNumber);
-  };
-
   return (
-    <Dialog open={openDialogs['add-customer']} onOpenChange={() => closeDialog('add-customer')}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Customer' : 'Add New Customer'}</DialogTitle>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto pr-6 -mr-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
-            {/* Left Column - Customer Details */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="code">Code</Label>
-                <Input
-                  id="code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="border-primary"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="customer-name">Customer name</Label>
-                <Input
-                  id="customer-name"
-                  placeholder="Enter customer name"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contact-first-name">Contact first name</Label>
-                <Input
-                  id="contact-first-name"
-                  placeholder="Enter contact first name"
-                  value={contactFirstName}
-                  onChange={(e) => setContactFirstName(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Textarea
-                  id="address"
-                  placeholder="Enter address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone-primary">Phone (primary)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="phone-primary"
-                    placeholder="Enter primary phone"
-                    value={phonePrimary}
-                    onChange={(e) => setPhonePrimary(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button variant="outline" size="icon">
-                    <Phone className="h-4 w-4" />
-                    <span className="sr-only">Call</span>
-                  </Button>
-                  <Button variant="outline">Call</Button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone-alternative">Phone (alternative)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="phone-alternative"
-                    placeholder="Enter alternative phone"
-                    value={phoneAlternative}
-                    onChange={(e) => setPhoneAlternative(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button variant="outline" size="icon">
-                    <Phone className="h-4 w-4" />
-                    <span className="sr-only">Call</span>
-                  </Button>
-                  <Button variant="outline">Call</Button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button variant="outline" size="icon">
-                    <Mail className="h-4 w-4" />
-                    <span className="sr-only">Send</span>
-                  </Button>
-                  <Button variant="outline">Send</Button>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="is-active"
-                  checked={isActive}
-                  onCheckedChange={(checked) => setIsActive(checked as boolean)}
-                />
-                <Label htmlFor="is-active" className="font-normal cursor-pointer">
-                  This customer is active
-                </Label>
-              </div>
+    <Dialog open={openDialogs["add-customer"]} onOpenChange={(open) => !open && closeDialog("add-customer")}>
+      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
+        {/* Premium Header */}
+        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
+          
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20">
+              <User className="h-6 w-6" />
             </div>
-
-            {/* Right Column - Financial and Loyalty Settings */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="credit-limit">Credit Limit</Label>
-                <Input
-                  id="credit-limit"
-                  type="number"
-                  value={creditLimit}
-                  onChange={(e) => setCreditLimit(e.target.value)}
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="tax-exempt"
-                  checked={isTaxExempt}
-                  onCheckedChange={(checked) => setIsTaxExempt(checked as boolean)}
-                />
-                <Label htmlFor="tax-exempt" className="font-normal cursor-pointer">
-                  Set tax exempt for this customer
-                </Label>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Payment terms</Label>
-                <div className="flex gap-2">
-                  <Select
-                    value={paymentTerms}
-                    onValueChange={(value) => {
-                      setPaymentTerms(value);
-                      if (value === 'due') {
-                        const now = new Date();
-                        const year = now.getFullYear();
-                        const month = String(now.getMonth() + 1).padStart(2, '0');
-                        const day = String(now.getDate()).padStart(2, '0');
-                        setPaymentTermsValue(`${year}-${month}-${day}`);
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="days">Pay in Days</SelectItem>
-                      <SelectItem value="net">Net</SelectItem>
-                      <SelectItem value="due">Due on Receipt</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    value={paymentTermsValue}
-                    onChange={(e) => setPaymentTermsValue(e.target.value)}
-                    className="flex-1"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="salesperson">Salesperson</Label>
-                <Select
-                  value={salesperson}
-                  onValueChange={setSalesperson}
-                  disabled={salesUsersLoading}
-                >
-                  <SelectTrigger id="salesperson">
-                    <SelectValue
-                      placeholder={
-                        salesUsersLoading
-                          ? 'Loading sales users...'
-                          : 'Select salesperson'
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {salesUsers.map((user) => (
-                      <SelectItem
-                        key={user.id}
-                        value={user.complete_name || user.name}
-                      >
-                        {user.complete_name || user.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Customer group</Label>
-                <div className="flex gap-2">
-                  <Select value={customerGroup} onValueChange={setCustomerGroup}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="default">Default</SelectItem>
-                      <SelectItem value="vip">VIP</SelectItem>
-                      <SelectItem value="wholesale">Wholesale</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline" size="icon">
-                    <Folder className="h-4 w-4" />
-                    <span className="sr-only">Manage groups</span>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Loyalty Points Setting Section */}
-              <div className="border-t pt-4 space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="loyalty-points"
-                    checked={isEntitledToLoyaltyPoints}
-                    onCheckedChange={(checked) => setIsEntitledToLoyaltyPoints(checked as boolean)}
-                  />
-                  <Label htmlFor="loyalty-points" className="font-normal cursor-pointer">
-                    This customer is entitled to loyalty points
-                  </Label>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="point-setting">Point Setting</Label>
-                  <Select
-                    value={pointSetting}
-                    onValueChange={setPointSetting}
-                    disabled={!isEntitledToLoyaltyPoints || loyaltySettingsLoading}
-                  >
-                    <SelectTrigger id="point-setting">
-                      <SelectValue placeholder={loyaltySettingsLoading ? "Loading..." : "Select a setting"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {loyaltySettings.map((setting) => (
-                        <SelectItem key={setting.id || setting.description} value={setting.id || setting.description}>
-                          {setting.description}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <RadioGroup
-                  value={loyaltyCalculationMethod}
-                  onValueChange={setLoyaltyCalculationMethod}
-                  disabled={!isEntitledToLoyaltyPoints}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="automatic" id="automatic" />
-                    <Label htmlFor="automatic" className="font-normal cursor-pointer">
-                      Calculate loyalty points automatically
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="manual" id="manual" />
-                    <Label htmlFor="manual" className="font-normal cursor-pointer">
-                      Manually enter loyalty points on each invoice
-                    </Label>
-                  </div>
-                </RadioGroup>
-
-                <div className="space-y-2">
-                  <Label htmlFor="loyalty-card">Loyalty card number</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="loyalty-card"
-                      value={loyaltyCardNumber}
-                      onChange={(e) => setLoyaltyCardNumber(e.target.value)}
-                      disabled={!isEntitledToLoyaltyPoints}
-                      className="flex-1"
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={handleGenerateLoyaltyCard}
-                      disabled={!isEntitledToLoyaltyPoints}
-                    >
-                      Generate
-                    </Button>
-                  </div>
-                </div>
+            <div>
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">
+                {isEditing ? "Profile Modification" : "Customer Acquisition"}
+              </DialogTitle>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={cn(
+                  "px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border",
+                  isActive ? "bg-emerald-400/20 text-emerald-400 border-emerald-400/20" : "bg-red-400/20 text-red-400 border-red-400/20"
+                )}>
+                  {isActive ? "Active Account" : "Inactive Account"}
+                </span>
+                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{code}</span>
               </div>
             </div>
           </div>
+
+          <button 
+            onClick={() => closeDialog("add-customer")}
+            className="relative z-10 p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        <DialogFooter className="border-t pt-4">
-          <div className="flex gap-2 ml-auto">
-            <Button onClick={handleOk} disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'OK'}
-            </Button>
-            <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
+        <ScrollArea className="flex-1">
+          <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column: Identity & Contact */}
+            <div className="space-y-8">
+              {/* Section 1: Core Identity */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-primary rounded-full" />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Identity Matrix</h3>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Unique Identifier</Label>
+                      <Input value={code} readOnly className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-mono text-xs" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Classification</Label>
+                      <Select value={customerGroup} onValueChange={setCustomerGroup}>
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                          <SelectItem value="default">Standard Entity</SelectItem>
+                          <SelectItem value="vip">Tier-1 VIP</SelectItem>
+                          <SelectItem value="wholesale">B2B Wholesale</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Legal Entity Name</Label>
+                    <Input 
+                      value={customerName} 
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-bold uppercase italic tracking-tight" 
+                      placeholder="FULL CORPORATE OR INDIVIDUAL NAME"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Contact Person</Label>
+                    <div className="relative">
+                      <Input 
+                        value={contactFirstName} 
+                        onChange={(e) => setContactFirstName(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        placeholder="Primary Representative"
+                      />
+                      <Contact2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Communication Infrastructure */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-blue-400 rounded-full" />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Communication Mesh</h3>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Primary Email Gateway</Label>
+                    <div className="relative">
+                      <Input 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        placeholder="entity@network.com"
+                      />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Primary Comms</Label>
+                      <div className="relative">
+                        <Input 
+                          value={phonePrimary} 
+                          onChange={(e) => setPhonePrimary(e.target.value)}
+                          className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                          placeholder="+63 --- --- ---"
+                        />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Alternate Line</Label>
+                      <div className="relative">
+                        <Input 
+                          value={phoneAlternative} 
+                          onChange={(e) => setPhoneAlternative(e.target.value)}
+                          className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Geospatial Coordinates</Label>
+                    <div className="relative">
+                      <Textarea 
+                        value={address} 
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white rounded-xl min-h-[100px] pl-10 pt-3" 
+                        placeholder="Street, City, Province, ZIP"
+                      />
+                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-white/20" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Fiscal & Loyalty */}
+            <div className="space-y-8">
+              {/* Section 3: Fiscal Configuration */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-emerald-400 rounded-full" />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Fiscal Configuration</h3>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-6">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Exposure Limit</Label>
+                      <div className="relative">
+                        <Input 
+                          type="number" 
+                          value={creditLimit} 
+                          onChange={(e) => setCreditLimit(e.target.value)}
+                          className="bg-white/5 border-white/10 text-emerald-400 h-11 rounded-xl pl-10 font-black italic" 
+                        />
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      </div>
+                    </div>
+                    <div className="space-y-4 flex flex-col justify-end">
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                        <Checkbox id="tax-exempt" checked={isTaxExempt} onCheckedChange={(c) => setIsTaxExempt(c as boolean)} />
+                        <Label htmlFor="tax-exempt" className="text-[10px] font-black uppercase tracking-widest text-white/60 cursor-pointer">Tax Exempt Protocol</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Payment Terms</Label>
+                      <Select value={paymentTerms} onValueChange={setPaymentTerms}>
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                          <SelectItem value="days">Pay in Days</SelectItem>
+                          <SelectItem value="net">Net Protocol</SelectItem>
+                          <SelectItem value="due">Due on Receipt</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Terms Value</Label>
+                      <Input value={paymentTermsValue} onChange={(e) => setPaymentTermsValue(e.target.value)} className="bg-white/5 border-white/10 text-white h-11 rounded-xl" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Assigned Strategist</Label>
+                    <div className="relative">
+                      <Select value={salesperson} onValueChange={setSalesperson}>
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10">
+                          <SelectValue placeholder="Select Sales Personnel" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                          {salesUsers.map((u: any) => (
+                            <SelectItem key={u.id} value={u.complete_name || u.name}>{u.complete_name || u.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 z-10 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Loyalty Program */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-yellow-400 rounded-full" />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Reward Ecosystem</h3>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-6">
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-yellow-400/5 border border-yellow-400/10">
+                    <div className="flex items-center gap-3">
+                      <Checkbox id="loyalty" checked={isEntitledToLoyaltyPoints} onCheckedChange={(c) => setIsEntitledToLoyaltyPoints(c as boolean)} />
+                      <Label htmlFor="loyalty" className="text-xs font-black uppercase tracking-widest text-yellow-400 cursor-pointer italic">Activate Reward Protocol</Label>
+                    </div>
+                    <Trophy className={cn("h-5 w-5 transition-all", isEntitledToLoyaltyPoints ? "text-yellow-400 scale-110" : "text-white/10")} />
+                  </div>
+
+                  {isEntitledToLoyaltyPoints && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Point Generation Setting</Label>
+                        <Select value={pointSetting} onValueChange={setPointSetting}>
+                          <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                            <SelectValue placeholder="Select Configuration" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-900 border-white/10 text-white">
+                            {loyaltySettings.map((s) => (
+                              <SelectItem key={s.id} value={s.id || s.description}>{s.description}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <RadioGroup value={loyaltyCalculationMethod} onValueChange={setLoyaltyCalculationMethod} className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
+                          <RadioGroupItem value="automatic" id="auto" />
+                          <Label htmlFor="auto" className="text-[10px] font-black uppercase tracking-widest text-white/60 cursor-pointer">Automatic Engine</Label>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
+                          <RadioGroupItem value="manual" id="manual" />
+                          <Label htmlFor="manual" className="text-[10px] font-black uppercase tracking-widest text-white/60 cursor-pointer">Manual Override</Label>
+                        </div>
+                      </RadioGroup>
+
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Credential Identifier</Label>
+                        <div className="flex gap-2">
+                          <Input 
+                            value={loyaltyCardNumber} 
+                            onChange={(e) => setLoyaltyCardNumber(e.target.value)}
+                            className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-mono" 
+                            placeholder="CARD-0000000000000"
+                          />
+                          <Button 
+                            variant="outline" 
+                            className="h-11 rounded-xl border-yellow-400/20 text-yellow-400 hover:bg-yellow-400 hover:text-black font-black uppercase tracking-widest text-[10px]"
+                            onClick={() => setLoyaltyCardNumber(Array.from({ length: 13 }, () => Math.floor(Math.random() * 10)).join(""))}
+                          >
+                            Generate
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+
+        {/* Action Footer */}
+        <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 text-white/20">
+              <ShieldCheck className="h-4 w-4" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Compliance Verified</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => closeDialog("add-customer")}
+              className="px-6 h-12 rounded-xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-xs"
+            >
               Cancel
             </Button>
-            <Button variant="outline">Help</Button>
+            <Button 
+              onClick={handleOk}
+              disabled={isSaving}
+              className="px-8 h-12 rounded-xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all gap-2"
+            >
+              {isSaving ? (
+                <div className="h-4 w-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              {isSaving ? "Syncing..." : isEditing ? "Update Profile" : "Register Customer"}
+            </Button>
           </div>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

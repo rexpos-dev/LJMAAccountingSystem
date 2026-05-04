@@ -37,7 +37,7 @@ import { useAccounts } from '@/hooks/use-accounts';
 import type { Account } from '@/types/account';
 import { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 
 const formatCurrency = (amount?: number) => {

@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useUpdateSalesUser } from '@/hooks/use-sales-users';
 import { useToast } from '@/hooks/use-toast';
 import { SalesUser } from '@/types/sales-user';

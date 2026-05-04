@@ -9,7 +9,7 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useDeleteEmployee } from '@/hooks/use-employees';
 import { useToast } from '@/hooks/use-toast';
 import { Employee } from '@/types/employee';

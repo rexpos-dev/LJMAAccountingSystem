@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTransactions, createTransaction, getTransactionsByAccount, applyTransactionToAccountBalance, getRecentTransactions } from '@/lib/database';
+import { isProfitCenterEligible } from '@/lib/profit-center-rules';
 
 export async function GET(request: Request) {
   try {
@@ -62,7 +63,10 @@ export async function POST(request: Request) {
         dailyClosing,
         approval,
         ftToLedger,
-        ftToAccount
+        ftToAccount,
+        branchId,
+        profit_center_id,
+        cost_center_id
       } = transactionBody;
 
       const transactionData: any = {};
@@ -93,6 +97,16 @@ export async function POST(request: Request) {
       if (approval !== undefined) transactionData.approval = approval;
       if (ftToLedger !== undefined) transactionData.ftToLedger = ftToLedger;
       if (ftToAccount !== undefined) transactionData.ftToAccount = ftToAccount;
+      if (branchId !== undefined) transactionData.branchId = branchId;
+      if (cost_center_id !== undefined) transactionData.cost_center_id = cost_center_id;
+
+      // Only tag profit_center_id for eligible account types (Expense, Cost of Sales, Income)
+      if (profit_center_id !== undefined && accountNumber) {
+        const account = await prisma.account.findFirst({ where: { account_no: parseInt(accountNumber, 10) } });
+        if (account && isProfitCenterEligible(account.account_type)) {
+          transactionData.profit_center_id = profit_center_id;
+        }
+      }
 
       const transaction = await createTransaction(transactionData);
 
@@ -162,6 +176,19 @@ export async function PUT(request: Request) {
     if (updateData.approval !== undefined) transactionUpdateData.approval = updateData.approval;
     if (updateData.ftToLedger !== undefined) transactionUpdateData.ftToLedger = updateData.ftToLedger;
     if (updateData.ftToAccount !== undefined) transactionUpdateData.ftToAccount = updateData.ftToAccount;
+    if (updateData.branchId !== undefined) transactionUpdateData.branchId = updateData.branchId;
+    if (updateData.cost_center_id !== undefined) transactionUpdateData.cost_center_id = updateData.cost_center_id;
+
+    // Only tag profit_center_id for eligible account types
+    if (updateData.profit_center_id !== undefined) {
+      const accNo = updateData.accountNumber || (await prisma.transaction.findUnique({ where: { id } }))?.accountNumber;
+      if (accNo) {
+        const account = await prisma.account.findFirst({ where: { account_no: parseInt(accNo, 10) } });
+        if (account && isProfitCenterEligible(account.account_type)) {
+          transactionUpdateData.profit_center_id = updateData.profit_center_id;
+        }
+      }
+    }
 
     const transaction = await prisma.transaction.update({
       where: { id },

@@ -30,7 +30,7 @@ import {
     Save,
     ListVideo,
 } from 'lucide-react';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 
 export default function BudgetReport() {

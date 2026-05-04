@@ -48,7 +48,6 @@ export async function POST(request: Request) {
                             particulars: tx.particulars,
                             debit: tx.debit || 0,
                             credit: tx.credit || 0,
-                            type: tx.type || 'Payment',
                             ledger: tx.ledger || 'General',
                             user: tx.user || 'System'
                         }

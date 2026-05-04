@@ -588,6 +588,9 @@ export const deleteConversionFactor = async (id: string) => {
 export const getBranches = async () => {
   try {
     return await prisma.branch.findMany({
+      include: {
+        allocationWeights: true
+      },
       orderBy: { name: 'asc' }
     });
   } catch (error) {
@@ -639,6 +642,86 @@ export const updateBranch = async (id: string, data: {
 
 export const deleteBranch = async (id: string) => {
   return await prisma.branch.delete({
+    where: { id }
+  });
+}
+
+// Profit Center operations
+export const getProfitCenters = async () => {
+  try {
+    return await prisma.profitCenter.findMany({
+      orderBy: { id: 'asc' }
+    });
+  } catch (error) {
+    console.error('Error in getProfitCenters:', error);
+    return [];
+  }
+}
+
+export const createProfitCenter = async (data: {
+  id: string;
+  name: string;
+  description?: string;
+  isActive?: boolean;
+}) => {
+  return await prisma.profitCenter.create({
+    data
+  });
+}
+
+export const updateProfitCenter = async (id: string, data: {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+}) => {
+  return await prisma.profitCenter.update({
+    where: { id },
+    data
+  });
+}
+
+export const deleteProfitCenter = async (id: string) => {
+  return await prisma.profitCenter.delete({
+    where: { id }
+  });
+}
+
+// Cost Center operations
+export const getCostCenters = async () => {
+  try {
+    return await prisma.costCenter.findMany({
+      orderBy: { id: 'asc' }
+    });
+  } catch (error) {
+    console.error('Error in getCostCenters:', error);
+    return [];
+  }
+}
+
+export const createCostCenter = async (data: {
+  id: string;
+  name: string;
+  description?: string;
+  isActive?: boolean;
+}) => {
+  return await prisma.costCenter.create({
+    data
+  });
+}
+
+export const updateCostCenter = async (id: string, data: {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+}) => {
+  return await prisma.costCenter.update({
+    where: { id },
+    data
+  });
+}
+
+export const deleteCostCenter = async (id: string) => {
+  return await prisma.costCenter.delete({
     where: { id }
   });
 }

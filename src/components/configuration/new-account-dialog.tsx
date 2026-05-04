@@ -10,7 +10,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,6 +27,8 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useAccountTypes } from '@/hooks/use-account-types';
+import { useProfitCenters } from '@/hooks/use-profit-centers';
+import { useCostCenters } from '@/hooks/use-cost-centers';
 
 
 
@@ -37,6 +39,8 @@ export default function NewAccountDialog() {
   const { toast } = useToast();
   const { data: accounts, refetch: refetchAccounts } = useAccounts();
   const { accountTypes, refetch: refetchAccountTypes } = useAccountTypes();
+  const { profitCenters } = useProfitCenters();
+  const { costCenters } = useCostCenters();
 
   const uniqueAccountNames = Array.from(
     new Set((accounts || []).map((acc: any) => acc.account_name))
@@ -52,6 +56,8 @@ export default function NewAccountDialog() {
   const [openingBalance, setOpeningBalance] = useState('0.00');
   const [type, setType] = useState<string>('');
   const [dateCreated, setDateCreated] = useState(new Date().toISOString().split('T')[0]);
+  const [profitCenterId, setProfitCenterId] = useState<string | null>(null);
+  const [costCenterId, setCostCenterId] = useState<string | null>(null);
 
   // State for Create New Account Type dialog
   const [isCreatingNewType, setIsCreatingNewType] = useState(false);
@@ -77,10 +83,11 @@ export default function NewAccountDialog() {
         Liability: [2000, 2999],
         Equity: [3000, 3999],
         Income: [4000, 4999],
-        Expense: [5000, 5999],
+        'Cost of Sales': [5000, 5999],
+        Expense: [6000, 7999],
       };
 
-      const [min, max] = typeRanges[baseType];
+      const [min, max] = typeRanges[baseType] || [1000, 9999];
       const accountsOfType = accounts.filter((acc: any) => acc.account_type === baseType);
       const existingNumbers = accountsOfType
         .map((acc: any) => acc.account_no)
@@ -98,7 +105,7 @@ export default function NewAccountDialog() {
       return { account_no: nextNum, account_type_no: accountsOfType.length + 1 };
     } catch (error) {
       // Fallback to basic numbering
-      const baseNumbers: Record<string, number> = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, Expense: 5000 };
+      const baseNumbers: Record<string, number> = { Asset: 1000, Liability: 2000, Equity: 3000, Income: 4000, 'Cost of Sales': 5000, Expense: 6000 };
       return { account_no: baseNumbers[baseType] || 1000, account_type_no: 1 };
     }
   };
@@ -178,6 +185,8 @@ export default function NewAccountDialog() {
           account_status: accountStatus,
           fs_category: fsCategory || type,
           date_created: dateCreated ? new Date(dateCreated).toISOString() : new Date().toISOString(),
+          profit_center_id: profitCenterId,
+          cost_center_id: costCenterId,
         }),
       });
 
@@ -198,6 +207,8 @@ export default function NewAccountDialog() {
       setFsCategory('');
       setOpeningBalance('0.00');
       setDateCreated(new Date().toISOString().split('T')[0]);
+      setProfitCenterId(null);
+      setCostCenterId(null);
       if (accountTypes.length > 0) {
         handleTypeChange(accountTypes[0].name, (accountTypes[0] as any).baseType);
       } else {
@@ -372,6 +383,48 @@ export default function NewAccountDialog() {
                     onChange={(e) => setOpeningBalance(e.target.value)}
                     placeholder="0.00"
                   />
+                </div>
+
+                {/* Profit Center */}
+                <div className="space-y-2">
+                  <Label htmlFor="profit-center">Profit Center</Label>
+                  <Select
+                    value={profitCenterId || 'none'}
+                    onValueChange={(v) => setProfitCenterId(v === 'none' ? null : v)}
+                  >
+                    <SelectTrigger id="profit-center">
+                      <SelectValue placeholder="Assign Profit Center" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {profitCenters.map((pc) => (
+                        <SelectItem key={pc.id} value={pc.id}>
+                          {pc.id} - {pc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Cost Center */}
+                <div className="space-y-2">
+                  <Label htmlFor="cost-center">Cost Center</Label>
+                  <Select
+                    value={costCenterId || 'none'}
+                    onValueChange={(v) => setCostCenterId(v === 'none' ? null : v)}
+                  >
+                    <SelectTrigger id="cost-center">
+                      <SelectValue placeholder="Assign Cost Center" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {costCenters.map((cc) => (
+                        <SelectItem key={cc.id} value={cc.id}>
+                          {cc.id} - {cc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

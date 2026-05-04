@@ -26,20 +26,22 @@ export async function PATCH(
         });
 
         // Trigger Posting/Activation Logic for Bank Transactions
-        if (status && log.actionType?.toLowerCase().includes("bank") && log.transactionId) {
+        if (status && log.transactionId) {
             try {
                 if (log.actionType === 'Bank Registration') {
-                    if (status === "Done Audit") {
+                    if (status === "Done Audit" || status === "Audit History") {
                         await prisma.bankAccount.update({ where: { id: log.transactionId }, data: { audit_status: 'DONE' } });
                     } else if (status === "Ongoing Audit") {
                         await prisma.bankAccount.update({ where: { id: log.transactionId }, data: { audit_status: 'ONGOING' } });
                     } else if (status === "To Audit") {
                         await prisma.bankAccount.update({ where: { id: log.transactionId }, data: { audit_status: 'TO_AUDIT' } });
                     }
-                } else if (status === "Done Audit") {
-                    // Phase 2: Post Transaction to GL
-                    const { postBankTransactionToGL } = await import("@/lib/banking-service");
-                    await postBankTransactionToGL(log.transactionId, log.assignee || 'System');
+                } else if (log.actionType?.toLowerCase().includes("bank")) {
+                    if (status === "Done Audit" || status === "Audit History") {
+                        // Phase 2: Post Transaction to GL
+                        const { postBankTransactionToGL } = await import("@/lib/banking-service");
+                        await postBankTransactionToGL(log.transactionId, log.assignee || 'System');
+                    }
                 }
             } catch (postError) {
                 console.error("Failed to process bank audit approval action:", postError);

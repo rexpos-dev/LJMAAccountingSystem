@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-import { DialogId, DialogContext, useDialog } from './dialog-context';
-export { useDialog };
+import { DialogId, DialogContext, useDialog, DialogIdContext, useDialogId } from './dialog-context';
+export { useDialog, useDialogId };
 
 
 // Import all dialog components
@@ -133,6 +133,11 @@ import CustomerStatementDialog from '@/components/customer/customer-statement-di
 import CustomerLedgerDialog from '@/components/customer/customer-ledger-dialog';
 import { DisbursementDialog } from '@/components/transactions/disbursement-dialog';
 import HistoryLogsDialog from '@/components/configuration/history-logs-dialog';
+import ProfitCentersDialog from '@/components/configuration/profit-centers-dialog';
+import CostCentersDialog from '@/components/configuration/cost-centers-dialog';
+import { AccountingFlowchartDialog } from '@/components/flowchart/accounting-flowchart-dialog';
+import ReportsDialog from '@/components/reports/reports-dialog';
+import DatabaseManagementDialog from '@/components/configuration/database-management-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -262,15 +267,26 @@ const dialogComponents = {
   'customer-ledger': CustomerLedgerDialog,
   'disbursement-dialog': DisbursementDialog,
   'history-logs': HistoryLogsDialog,
+  'profit-centers': ProfitCentersDialog,
+  'cost-centers': CostCentersDialog,
+  'accounting-flowchart': AccountingFlowchartDialog,
+  'reports-dashboard': ReportsDialog,
+  'database-management': DatabaseManagementDialog,
 };
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {
   const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
+  const [dialogVariants, setDialogVariants] = useState<Record<string, 'default' | 'top-drawer'>>({});
   const [dialogData, setDialogDataState] = useState<Record<string, any>>({});
 
-  const openDialog = useCallback((id: DialogId) => {
-    console.log("openDialog called with:", id);
+  const openDialog = useCallback((id: DialogId, options?: { variant?: 'default' | 'top-drawer' }) => {
+    console.log("openDialog called with:", id, options);
     setOpenDialogs(prev => ({ ...prev, [id]: true }));
+    if (options?.variant) {
+      setDialogVariants(prev => ({ ...prev, [id]: options.variant! }));
+    } else {
+      setDialogVariants(prev => ({ ...prev, [id]: 'default' }));
+    }
   }, []);
 
   const closeDialog = useCallback((id: DialogId) => {
@@ -287,19 +303,20 @@ export function DialogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DialogContext.Provider
-      value={{ openDialogs, openDialog, closeDialog, getDialogData, setDialogData }}
+      value={{ openDialogs, dialogVariants, openDialog, closeDialog, getDialogData, setDialogData }}
     >
       {children}
       {Object.entries(dialogComponents).map(([id, Component]) => {
         const DialogComponent = Component as any;
         return (
-          <DialogComponent
-            key={id}
-            open={openDialogs[id] || false}
-            onOpenChange={(open: boolean) => {
-              if (!open) closeDialog(id as DialogId);
-            }}
-          />
+          <DialogIdContext.Provider key={id} value={id as DialogId}>
+            <DialogComponent
+              open={openDialogs[id] || false}
+              onOpenChange={(open: boolean) => {
+                if (!open) closeDialog(id as DialogId);
+              }}
+            />
+          </DialogIdContext.Provider>
         );
       })}
     </DialogContext.Provider>

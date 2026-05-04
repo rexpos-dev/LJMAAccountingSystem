@@ -5,7 +5,7 @@ import { useAccounts } from "@/hooks/use-accounts";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { useDialog } from "@/components/layout/dialog-provider";
+import { useDialog } from "@/components/layout/dialog-context";
 
 export function PendingInvoicesWidget() {
     const { data: accounts, isLoading } = useAccounts();

@@ -36,7 +36,7 @@ import {
     CreditCard,
     Loader2,
 } from 'lucide-react';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
 

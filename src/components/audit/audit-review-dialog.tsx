@@ -164,6 +164,11 @@ export function AuditReviewDialog({
 
     if (!item) return null;
 
+    const isHistory = item.status.toLowerCase().includes('history') ||
+        item.status.toLowerCase().includes('approve') ||
+        item.status.toLowerCase().includes('reject') ||
+        item.status.toLowerCase().includes('done');
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-3xl bg-background/95 backdrop-blur-lg border-primary/10 shadow-2xl overflow-hidden p-0 gap-0">
@@ -256,7 +261,7 @@ export function AuditReviewDialog({
                                     <User className="h-3 w-3" /> Assignee
                                 </Label>
                                 <div className="flex gap-2">
-                                    <Select value={assignee} onValueChange={setAssignee}>
+                                    <Select value={assignee} onValueChange={setAssignee} disabled={isHistory}>
                                         <SelectTrigger className="flex-1 bg-background text-xs h-9">
                                             <SelectValue placeholder="Select auditor..." />
                                         </SelectTrigger>
@@ -274,7 +279,7 @@ export function AuditReviewDialog({
                                         size="sm"
                                         className="h-9 px-3 shrink-0 text-xs font-semibold"
                                         onClick={() => handleAction('ASSIGN_ONLY')}
-                                        disabled={isSubmitting || isLoadingUsers || (!assignee || assignee === item?.assignee)}
+                                        disabled={isSubmitting || isLoadingUsers || (!assignee || assignee === item?.assignee) || isHistory}
                                     >
                                         Save
                                     </Button>
@@ -289,6 +294,7 @@ export function AuditReviewDialog({
                                 className="min-h-[150px] text-xs leading-relaxed resize-none focus-visible:ring-primary"
                                 value={remarks}
                                 onChange={(e) => setRemarks(e.target.value)}
+                                disabled={isHistory}
                             />
                         </div>
 
@@ -297,7 +303,7 @@ export function AuditReviewDialog({
                                 className="w-full bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 font-bold"
                                 size="lg"
                                 onClick={() => handleAction('APPROVE')}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isHistory}
                             >
                                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
                                 Approve & Post
@@ -308,7 +314,7 @@ export function AuditReviewDialog({
                                 className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold"
                                 size="lg"
                                 onClick={() => handleAction('REJECT')}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isHistory}
                             >
                                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
                                 Reject & Revise

@@ -7,7 +7,7 @@ export interface Account {
   account_name: string;
   account_description?: string;
   balance?: number;
-  account_type: 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense' | string;
+  account_type: 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense' | 'Cost of Sales' | string;
   header: 'Yes' | 'No';
   bank: 'Yes' | 'No';
   account_category?: string;
@@ -24,5 +24,7 @@ export interface Account {
   linked_gl_id?: string;
   opening_balance?: number;
   opening_date?: Date | string;
+  profit_center_id?: string;
+  cost_center_id?: string;
 }
 

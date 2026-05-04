@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useBranches } from '@/hooks/use-branches';
 import { useToast } from '@/hooks/use-toast';
 import { Image as ImageIcon, Upload, X, CreditCard } from 'lucide-react';

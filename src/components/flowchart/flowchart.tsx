@@ -5,7 +5,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { FlowchartNode } from "./flowchart-node";
 import { FlowchartArrow } from "./flowchart-arrow";
-import { useDialog } from "../layout/dialog-provider";
+import { useDialog } from "../layout/dialog-context";
 import { useAuth } from "../providers/auth-provider";
 
 export function Flowchart() {
@@ -13,16 +13,11 @@ export function Flowchart() {
   const router = useRouter();
   const { user } = useAuth();
 
-  // Permission check for "Non-Invoiced Cash Sale"
-  // Allowed if Administrator or if permissions JSON string contains the specific permission
   const canAccessCashSale = user?.accountType === 'Administrator' || (user?.permissions && user.permissions.includes('Non-Invoiced Cash Sale'));
-
-  // Check if user is Audit to restrict access
   const isAudit = user?.accountType === 'Audit';
 
   const handleNodeClick = (action?: string, type: 'dialog' | 'route' = 'dialog') => {
     if (!action) return;
-
     if (type === 'dialog') {
       openDialog(action as any);
     } else if (type === 'route') {
@@ -31,108 +26,209 @@ export function Flowchart() {
   };
 
   const nodes = [
-    // Customer Facing
+    // --- SALES & REVENUE ZONE ---
     {
       id: "non-invoiced-cash-sale",
-      content: "Non-Invoiced Cash Sale",
-      position: { top: 0, left: 50 },
-      color: canAccessCashSale && !isAudit ? "bg-gray-600" : "bg-gray-400",
-      size: { width: 200, height: 100 },
+      content: "Cash Sale",
+      description: "Direct walk-in sales",
+      icon: "CircleDollarSign",
+      accentColor: "#10b981",
+      position: { top: 60, left: 100 },
+      color: canAccessCashSale && !isAudit ? "bg-emerald-500/10" : "bg-gray-500/10",
+      size: { width: 180, height: 90 },
       onClick: canAccessCashSale && !isAudit ? () => handleNodeClick("enter-cash-sale") : undefined,
       disabled: !canAccessCashSale || isAudit
     },
     {
       id: "create-new-invoice",
-      content: "Create New Invoice",
-      position: { top: 150, left: 50 },
-      color: !isAudit ? "bg-gray-600" : "bg-gray-400",
-      size: { width: 200, height: 100 },
+      content: "New Invoice",
+      description: "Billing & credit sales",
+      icon: "FilePlus2",
+      accentColor: "#3b82f6",
+      position: { top: 185, left: 100 },
+      color: !isAudit ? "bg-blue-500/10" : "bg-gray-500/10",
+      size: { width: 180, height: 90 },
       onClick: !isAudit ? () => handleNodeClick("create-invoice") : undefined,
       disabled: isAudit
     },
-    { id: "invoices", content: "Invoices", position: { top: 300, left: 0 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("invoice-list") },
-    { id: "customers", content: "Customers", position: { top: 300, left: 175 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("customer-list") },
+    { 
+      id: "invoices", 
+      content: "Invoices", 
+      description: "Manage billed sales",
+      icon: "FileText",
+      accentColor: "#3b82f6",
+      position: { top: 310, left: 35 }, 
+      color: "bg-blue-600/20", 
+      size: { width: 150, height: 85 }, 
+      onClick: () => handleNodeClick("invoice-list") 
+    },
+    { 
+      id: "customers", 
+      content: "Customers", 
+      description: "Client directory",
+      icon: "Users",
+      accentColor: "#3b82f6",
+      position: { top: 310, left: 195 }, 
+      color: "bg-blue-600/20", 
+      size: { width: 150, height: 85 }, 
+      onClick: () => handleNodeClick("customer-list") 
+    },
     {
       id: "apply-customer-payment",
-      content: "Apply Customer's Payment",
-      position: { top: 430, left: 50 },
-      color: !isAudit ? "bg-gray-800" : "bg-gray-400",
-      size: { width: 200, height: 100 },
+      content: "Apply Payment",
+      description: "Receive collections",
+      icon: "HandCoins",
+      accentColor: "#3b82f6",
+      position: { top: 435, left: 100 },
+      color: !isAudit ? "bg-blue-700/20" : "bg-gray-500/10",
+      size: { width: 180, height: 90 },
       onClick: !isAudit ? () => handleNodeClick("customer-payment") : undefined,
       disabled: isAudit
     },
 
-    // Accounts Payable
+    // --- PURCHASES & PAYABLES ZONE ---
     {
       id: "immediate-payment",
-      content: "Immediate Payment Or Purchase",
-      position: { top: 0, left: 400 },
-      color: !isAudit ? "bg-gray-600" : "bg-gray-400",
-      size: { width: 200, height: 100 },
-      onClick: !isAudit ? () => handleNodeClick("enter-payments") : undefined,
+      content: "Cash Purchase",
+      description: "Direct expenses",
+      icon: "Receipt",
+      accentColor: "#f59e0b",
+      position: { top: 60, left: 470 },
+      color: !isAudit ? "bg-amber-500/10" : "bg-gray-500/10",
+      size: { width: 180, height: 90 },
+      onClick: () => handleNodeClick("enter-payments"),
       disabled: isAudit
     },
     {
       id: "enter-new-ap",
-      content: "Enter New Accounts Payable",
-      position: { top: 150, left: 400 },
-      color: !isAudit ? "bg-gray-600" : "bg-gray-400",
-      size: { width: 200, height: 100 },
-      onClick: !isAudit ? () => handleNodeClick("enter-ap") : undefined,
+      content: "Enter Bill",
+      description: "Record accounts payable",
+      icon: "ClipboardPen",
+      accentColor: "#f59e0b",
+      position: { top: 185, left: 470 },
+      color: !isAudit ? "bg-amber-500/10" : "bg-gray-500/10",
+      size: { width: 180, height: 90 },
+      onClick: () => handleNodeClick("enter-ap"),
       disabled: isAudit
     },
-    { id: "suppliers", content: "Suppliers", position: { top: 300, left: 350 }, color: "bg-gray-700", size: { width: 120, height: 80 }, onClick: () => handleNodeClick("supplier-list") },
-    { id: "accounts-payable", content: "Accounts Payable", position: { top: 300, left: 510 }, color: "bg-gray-700", size: { width: 120, height: 80 }, onClick: () => handleNodeClick("accounts-payable") },
+    { 
+      id: "suppliers", 
+      content: "Suppliers", 
+      description: "Vendor directory",
+      icon: "Truck",
+      accentColor: "#f59e0b",
+      position: { top: 310, left: 405 }, 
+      color: "bg-amber-600/20", 
+      size: { width: 150, height: 85 }, 
+      onClick: () => handleNodeClick("supplier-list") 
+    },
+    { 
+      id: "accounts-payable", 
+      content: "Payables", 
+      description: "Manage bills",
+      icon: "Library",
+      accentColor: "#f59e0b",
+      position: { top: 310, left: 565 }, 
+      color: "bg-amber-600/20", 
+      size: { width: 150, height: 85 }, 
+      onClick: () => handleNodeClick("accounts-payable") 
+    },
     {
       id: "pay-bill",
-      content: "Pay A Bill Previously Entered",
-      position: { top: 430, left: 400 },
-      color: !isAudit ? "bg-gray-800" : "bg-gray-400",
-      size: { width: 200, height: 100 },
-      onClick: !isAudit ? () => handleNodeClick("enter-payments-of-accounts-payable") : undefined,
+      content: "Pay Bill",
+      description: "Settle accounts payable",
+      icon: "WalletCards",
+      accentColor: "#f59e0b",
+      position: { top: 435, left: 470 },
+      color: !isAudit ? "bg-amber-700/20" : "bg-gray-500/10",
+      size: { width: 180, height: 90 },
+      onClick: () => handleNodeClick("enter-payments-of-accounts-payable"),
       disabled: isAudit
     },
 
-    // Reports
-    { id: "income-statement", content: "Income Statement", position: { top: 0, left: 700 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("income-statement") },
-    { id: "journal", content: "Journal", position: { top: 0, left: 870 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick('view-journal') },
-    { id: "general-ledger", content: "General Ledger", position: { top: 0, left: 1040 }, color: "bg-gray-700", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("general-ledger-dialog") },
-    { id: "balance-sheet", content: "Balance Sheet", position: { top: 150, left: 780 }, color: "bg-gray-800", size: { width: 200, height: 100 }, onClick: () => handleNodeClick("balance-sheet") },
+    // --- FINANCIAL REPORTS ZONE ---
+    { 
+      id: "income-statement", 
+      content: "P & L", 
+      icon: "TrendingUp",
+      accentColor: "#8b5cf6",
+      position: { top: 60, left: 810 }, 
+      color: "bg-violet-600/20", 
+      size: { width: 150, height: 80 }, 
+      onClick: () => handleNodeClick("income-statement") 
+    },
+    { 
+      id: "journal", 
+      content: "Journal", 
+      icon: "BookOpenText",
+      accentColor: "#8b5cf6",
+      position: { top: 60, left: 990 }, 
+      color: "bg-violet-600/20", 
+      size: { width: 150, height: 80 }, 
+      onClick: () => handleNodeClick('view-journal') 
+    },
+    { 
+      id: "general-ledger", 
+      content: "GL", 
+      icon: "BookKey",
+      accentColor: "#8b5cf6",
+      position: { top: 60, left: 1170 }, 
+      color: "bg-violet-600/20", 
+      size: { width: 150, height: 80 }, 
+      onClick: () => handleNodeClick("general-ledger-dialog") 
+    },
+    { 
+      id: "balance-sheet", 
+      content: "Balance Sheet", 
+      description: "Financial Position",
+      icon: "Scale",
+      accentColor: "#8b5cf6",
+      position: { top: 185, left: 935 }, 
+      color: "bg-violet-700/20", 
+      size: { width: 260, height: 100 }, 
+      onClick: () => handleNodeClick("balance-sheet") 
+    },
 
-    // Budgets & Chart of Accounts
-    { id: "manage-budgets", content: "Manage Budgets", position: { top: 300, left: 700 }, color: "bg-gray-700", size: { width: 150, height: 80 }, disabled: true },
-    { id: "chart-of-accounts", content: "Chart Of Accounts", position: { top: 300, left: 870 }, color: "bg-gray-600", size: { width: 150, height: 80 }, onClick: () => handleNodeClick("chart-of-accounts") },
-
-    // Reconciliation
+    // --- MAINTENANCE ZONE ---
+    { 
+      id: "chart-of-accounts", 
+      content: "Accounts", 
+      icon: "LayoutList",
+      accentColor: "#6366f1",
+      position: { top: 310, left: 990 }, 
+      color: "bg-indigo-600/20", 
+      size: { width: 150, height: 80 }, 
+      onClick: () => handleNodeClick("chart-of-accounts") 
+    },
     {
       id: "reconcile-accounts",
-      content: "Reconcile Accounts",
-      position: { top: 430, left: 700 },
-      color: !isAudit ? "bg-yellow-600" : "bg-gray-400",
-      size: { width: 150, height: 80 },
-      onClick: !isAudit ? () => handleNodeClick("reconcile-account") : undefined,
+      content: "Reconcile",
+      icon: "RotateCw",
+      accentColor: "#06b6d4",
+      position: { top: 435, left: 900 },
+      color: !isAudit ? "bg-cyan-600/20" : "bg-gray-500/10",
+      size: { width: 155, height: 80 },
+      onClick: () => handleNodeClick("reconcile-account"),
       disabled: isAudit
     },
     {
       id: "transfer-between-accounts",
-      content: "Transfer Between Accounts",
-      position: { top: 430, left: 870 },
-      color: !isAudit ? "bg-yellow-600" : "bg-gray-400",
-      size: { width: 150, height: 80 },
-      onClick: !isAudit ? () => handleNodeClick("account-transfer") : undefined,
+      content: "Transfer",
+      icon: "ArrowLeftRight",
+      accentColor: "#06b6d4",
+      position: { top: 435, left: 1085 },
+      color: !isAudit ? "bg-cyan-600/20" : "bg-gray-500/10",
+      size: { width: 155, height: 80 },
+      onClick: () => handleNodeClick("account-transfer"),
       disabled: isAudit
     },
-
   ];
 
   const arrows = [
-    // Customer Arrows
     { from: "create-new-invoice", to: "invoices", fromDirection: 'bottom', toDirection: 'top' },
     { from: "create-new-invoice", to: "customers", fromDirection: 'bottom', toDirection: 'top' },
     { from: "invoices", to: "apply-customer-payment", fromDirection: 'bottom', toDirection: 'top' },
     { from: "customers", to: "apply-customer-payment", fromDirection: 'bottom', toDirection: 'top' },
-
-    // AP Arrows
     { from: "enter-new-ap", to: "suppliers", fromDirection: 'bottom', toDirection: 'top' },
     { from: "enter-new-ap", to: "accounts-payable", fromDirection: 'bottom', toDirection: 'top' },
     { from: "suppliers", to: "pay-bill", fromDirection: 'bottom', toDirection: 'top' },
@@ -142,15 +238,38 @@ export function Flowchart() {
   const nodeMap = new Map(nodes.map(node => [node.id, node]));
 
   return (
-    <div className="relative min-h-[550px] w-full">
+    <div className="relative min-h-[650px] w-[1400px] bg-slate-950/20 rounded-3xl border border-white/5 p-4 overflow-hidden">
+      {/* Background Grid */}
+      <div className="absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_center,#ffffff_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+
+      {/* Zone Indicators */}
+      <div className="absolute top-6 left-10 flex flex-col gap-1 pointer-events-none">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/60 text-center w-[360px]">Sales & Revenue</span>
+      </div>
+      <div className="absolute top-6 left-[400px] flex flex-col gap-1 pointer-events-none">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500/60 text-center w-[360px]">Purchases & Payables</span>
+      </div>
+      <div className="absolute top-6 left-[790px] flex flex-col gap-1 pointer-events-none">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-500/60 text-center w-[570px]">Financial Reporting</span>
+      </div>
+      <div className="absolute top-[310px] left-[790px] flex flex-col gap-1 pointer-events-none">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500/60 text-center w-[570px]">Banking & Maintenance</span>
+      </div>
+
+      {/* Zones Glass Backgrounds */}
+      <div className="absolute top-12 left-10 w-[360px] h-[550px] bg-emerald-500/5 rounded-[2rem] border border-emerald-500/10 pointer-events-none" />
+      <div className="absolute top-12 left-[400px] w-[360px] h-[550px] bg-amber-500/5 rounded-[2rem] border border-amber-500/10 pointer-events-none" />
+      <div className="absolute top-12 left-[790px] w-[570px] h-[290px] bg-violet-500/5 rounded-[2rem] border border-violet-500/10 pointer-events-none" />
+      <div className="absolute top-[310px] left-[790px] w-[570px] h-[250px] bg-cyan-500/5 rounded-[2rem] border border-cyan-500/10 pointer-events-none" />
+
       {nodes.map((node) => (
-        <FlowchartNode key={node.id} {...node} />
+        <FlowchartNode key={node.id} {...node as any} />
       ))}
       {arrows.map((arrow, index) => {
         const fromNode = nodeMap.get(arrow.from);
         const toNode = nodeMap.get(arrow.to);
         if (!fromNode || !toNode) return null;
-        return <FlowchartArrow key={index} fromNode={fromNode} toNode={toNode} fromDirection={arrow.fromDirection as any} toDirection={arrow.toDirection as any} />;
+        return <FlowchartArrow key={index} fromNode={fromNode as any} toNode={toNode as any} fromDirection={arrow.fromDirection as any} toDirection={arrow.toDirection as any} />;
       })}
     </div>
   );

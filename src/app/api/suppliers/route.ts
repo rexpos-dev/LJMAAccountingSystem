@@ -7,10 +7,15 @@ export async function GET() {
       where: { isActive: true },
       orderBy: { name: 'asc' },
     });
+
     return NextResponse.json(suppliers);
   } catch (error: any) {
-    console.error('Error fetching suppliers:', error);
-    return NextResponse.json({ error: 'Failed to fetch suppliers' }, { status: 500 });
+    console.error('SERVER ERROR fetching suppliers:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
+    return NextResponse.json({ error: 'Failed to fetch suppliers', details: error.message }, { status: 500 });
   }
 }
 

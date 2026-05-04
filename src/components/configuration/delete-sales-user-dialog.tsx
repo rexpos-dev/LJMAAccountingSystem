@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useDeleteSalesUser } from '@/hooks/use-sales-users';
 import { useToast } from '@/hooks/use-toast';
 import { SalesUser } from '@/types/sales-user';

@@ -5,10 +5,8 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
-    DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,22 +25,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, BookOpen, Scale, FileText, CheckCircle2, AlertCircle, ArrowRightLeft, X, Save, RefreshCw, Activity, Terminal, ShieldCheck, Zap, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import format from '@/lib/date-format';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CardDescription } from '@/components/ui/card';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
-import type { Account } from '@/types/account';
 
 interface JournalEntryLine {
     id: string;
@@ -63,20 +59,27 @@ export default function JournalEntryDialog() {
     const [lines, setLines] = useState<JournalEntryLine[]>([]);
     const [isSaving, setIsSaving] = useState(false);
 
+    const totalDebits = useMemo(() => lines.filter(l => l.type === 'debit').reduce((sum, l) => sum + l.amount, 0), [lines]);
+    const totalCredits = useMemo(() => lines.filter(l => l.type === 'credit').reduce((sum, l) => sum + l.amount, 0), [lines]);
+    const isBalanced = Math.abs(totalDebits - totalCredits) < 0.01 && lines.length > 0;
+    const balanceDifference = Math.abs(totalDebits - totalCredits);
+
     const addLine = () => {
         const newLine: JournalEntryLine = {
             id: `line-${Date.now()}-${Math.random()}`,
             accountId: '',
             accountName: '',
             amount: 0,
-            type: 'debit',
+            type: lines.length % 2 === 0 ? 'debit' : 'credit',
         };
         setLines([...lines, newLine]);
     };
 
     const removeLine = (id: string) => {
         setLines(lines.filter(line => line.id !== id));
-    }; const fetchNextReference = async () => {
+    };
+
+    const fetchNextReference = async () => {
         try {
             const response = await fetch('/api/transactions/next-reference');
             if (response.ok) {
@@ -91,23 +94,17 @@ export default function JournalEntryDialog() {
     useEffect(() => {
         if (openDialogs['journal-entry']) {
             fetchNextReference();
-            if (!date) {
-                setDate(new Date());
-            }
+            if (!date) setDate(new Date());
         }
     }, [openDialogs['journal-entry']]);
-
 
     const updateLine = (id: string, updates: Partial<JournalEntryLine>) => {
         setLines(lines.map(line => {
             if (line.id === id) {
                 const updated = { ...line, ...updates };
-                // Update account name when account ID changes
                 if (updates.accountId && accounts) {
                     const account = accounts.find(acc => acc.id === updates.accountId);
-                    if (account) {
-                        updated.accountName = account.account_name;
-                    }
+                    if (account) updated.accountName = account.account_name;
                 }
                 return updated;
             }
@@ -116,52 +113,14 @@ export default function JournalEntryDialog() {
     };
 
     const handleRecord = async () => {
-        if (!date) {
-            toast({
-                title: 'Validation Error',
-                description: 'Please select a date',
-                variant: 'destructive',
-            });
-            return;
-        }
-
-        if (lines.length === 0) {
-            toast({
-                title: 'Validation Error',
-                description: 'Please add at least one account allocation',
-                variant: 'destructive',
-            });
-            return;
-        }
-
-        // Validate all lines have account and amount
-        const invalidLines = lines.filter(line => !line.accountId || line.amount <= 0);
-        if (invalidLines.length > 0) {
-            toast({
-                title: 'Validation Error',
-                description: 'Please ensure all lines have an account selected and amount greater than 0',
-                variant: 'destructive',
-            });
-            return;
-        }
-
-        // Check if debits equal credits
-        const totalDebits = lines.filter(l => l.type === 'debit').reduce((sum, l) => sum + l.amount, 0);
-        const totalCredits = lines.filter(l => l.type === 'credit').reduce((sum, l) => sum + l.amount, 0);
-
-        if (Math.abs(totalDebits - totalCredits) > 0.01) {
-            toast({
-                title: 'Validation Error',
-                description: `Total debits (₱${totalDebits.toFixed(2)}) must equal total credits (₱${totalCredits.toFixed(2)})`,
-                variant: 'destructive',
-            });
+        if (!date || lines.length === 0 || !isBalanced) {
+            toast({ title: 'Validation Error', description: !isBalanced ? 'Entry must be balanced (Debits = Credits)' : 'Check all fields', variant: 'destructive' });
             return;
         }
 
         setIsSaving(true);
         try {
-            // Create transaction entries for each line
-            const transactions = lines.map((line, index) => {
+            const transactions = lines.map((line) => {
                 const account = accounts?.find(acc => acc.id === line.accountId);
                 return {
                     ledger: journal === 'general' ? 'General Ledger' : journal.charAt(0).toUpperCase() + journal.slice(1) + ' Ledger',
@@ -173,44 +132,25 @@ export default function JournalEntryDialog() {
                     particulars: journalMemo,
                     debit: line.type === 'debit' ? line.amount : 0,
                     credit: line.type === 'credit' ? line.amount : 0,
-                    balance: 0, // Will be calculated by backend
+                    balance: 0,
                     accountName: account?.account_name || '',
-                    user: 'System', // TODO: Get from auth context
+                    user: 'System',
                 };
             });
 
             const response = await fetch('/api/transactions', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ transactions }),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to record journal entry');
-            }
+            if (!response.ok) throw new Error('Failed to record journal entry');
 
-            toast({
-                title: 'Success',
-                description: 'Journal entry recorded successfully',
-            });
-
-            // Refresh journal entries table
+            toast({ title: 'Success', description: 'Journal entry recorded successfully' });
             window.dispatchEvent(new CustomEvent('journal-refresh'));
-
-            setDate(new Date());
-            setJournal('general');
-            fetchNextReference();
-            setJournalMemo('Journal Entry');
-            setLines([]);
+            handleClose();
         } catch (error: any) {
-            toast({
-                title: 'Error',
-                description: error.message || 'Failed to record journal entry',
-                variant: 'destructive',
-            });
+            toast({ title: 'Error', description: error.message, variant: 'destructive' });
         } finally {
             setIsSaving(false);
         }
@@ -218,10 +158,6 @@ export default function JournalEntryDialog() {
 
     const handleClose = () => {
         if (!isSaving) {
-            setDate(new Date());
-            setJournal('general');
-            fetchNextReference();
-            setJournalMemo('Journal Entry');
             setLines([]);
             closeDialog('journal-entry');
         }
@@ -229,124 +165,317 @@ export default function JournalEntryDialog() {
 
     return (
         <Dialog open={openDialogs['journal-entry']} onOpenChange={(open) => !open && handleClose()}>
-            <DialogContent className="max-w-3xl flex flex-col h-[85vh]">
-                <DialogHeader>
-                    <DialogTitle>Journal Entry</DialogTitle>
-                    <CardDescription>
-                        For a manual journal entry enter the details of the transaction and then allocate the amount to accounts.
-                    </CardDescription>
-                </DialogHeader>
-                <ScrollArea className="flex-1 pr-6 -mr-6">
-                    <div className="space-y-4 py-4">
-                        <div className="grid grid-cols-3 items-center gap-4">
-                            <Label htmlFor="date" className="text-right">Date:</Label>
-                            <div className="col-span-2">
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant={'outline'}
-                                            id="date"
-                                            className={cn(
-                                                'w-full justify-start text-left font-normal',
-                                                !date && 'text-muted-foreground'
-                                            )}
-                                        >
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0">
-                                        <Calendar
-                                            mode="single"
-                                            selected={date}
-                                            onSelect={setDate}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+            <DialogContent className="max-w-[95vw] w-[1400px] h-[90vh] flex flex-col p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
+                {/* Premium Header */}
+                <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.2)]">
+                            <BookOpen className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">Ledger Protocol</DialogTitle>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">Manual Overwrite</span>
+                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Core Transaction Engine</span>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                            <Label htmlFor="journal" className="text-right">Journal:</Label>
-                            <Select value={journal} onValueChange={setJournal}>
-                                <SelectTrigger id="journal" className="col-span-2">
-                                    <SelectValue placeholder="General" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="general">General</SelectItem>
-                                    <SelectItem value="payments">Payments</SelectItem>
-                                    <SelectItem value="receipts">Receipts</SelectItem>
-                                    <SelectItem value="sales">Sales</SelectItem>
-                                    <SelectItem value="purchases">Purchases</SelectItem>
-                                    <SelectItem value="inventory">Inventory</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                            <Label htmlFor="reference" className="text-right">Reference:</Label>
-                            <Input
-                                id="reference"
-                                value={reference}
-                                onChange={(e) => setReference(e.target.value)}
-                                className="col-span-2"
-                            />
-                        </div>
-                        <div className="grid grid-cols-3 items-start gap-4">
-                            <Label htmlFor="journal-memo" className="text-right pt-2">Journal memo:</Label>
-                            <Textarea
-                                id="journal-memo"
-                                value={journalMemo}
-                                onChange={(e) => setJournalMemo(e.target.value)}
-                                className="col-span-2"
-                                rows={3}
-                            />
                         </div>
                     </div>
 
-                    <div className="space-y-2 pt-4">
+                    <div className="relative z-10 flex items-center gap-6">
+                        {/* Real-time Status Indicator */}
+                        <div className={cn(
+                            "px-6 py-3 rounded-2xl border transition-all duration-500 flex items-center gap-4",
+                            isBalanced ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.1)]" : "bg-amber-500/10 border-amber-500/20 text-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.1)]"
+                        )}>
+                            <div className="relative">
+                                {isBalanced ? <ShieldCheck className="h-5 w-5" /> : <Activity className="h-5 w-5 animate-pulse" />}
+                                {isBalanced && <div className="absolute inset-0 bg-emerald-500/40 blur-md rounded-full -z-10" />}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none mb-1">{isBalanced ? "State Validated" : "Awaiting Balance"}</span>
+                                <span className="text-sm font-mono font-bold tracking-tighter">
+                                    {isBalanced ? "Matrix Synchronized" : `Disparity: ₱${balanceDifference.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                                </span>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={handleClose}
+                            className="p-2 rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-all"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex-1 flex gap-8 p-8 overflow-hidden bg-black/20">
+                    {/* Left: General Info */}
+                    <div className="w-[450px] flex flex-col gap-6 overflow-y-auto pr-4 custom-scrollbar shrink-0">
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-4 bg-primary rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+                                <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Requisition Parameters</h3>
+                            </div>
+
+                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-6 backdrop-blur-sm shadow-xl">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Event Horizon</Label>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={'outline'}
+                                                    className={cn(
+                                                        'w-full h-12 justify-start text-left font-bold bg-white/5 border-white/10 rounded-2xl transition-all hover:bg-white/10 text-white uppercase text-xs',
+                                                        !date && 'text-muted-foreground'
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-3 h-4 w-4 text-primary" />
+                                                    {date ? format(date, 'MMM dd, yyyy') : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10">
+                                                <CalendarComponent
+                                                    mode="single"
+                                                    selected={date}
+                                                    onSelect={setDate}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Serial Node</Label>
+                                        <div className="relative group">
+                                            <Terminal className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/40 group-focus-within:text-primary transition-colors" />
+                                            <Input
+                                                value={reference}
+                                                onChange={(e) => setReference(e.target.value)}
+                                                className="h-12 bg-white/5 border-white/10 rounded-2xl pl-11 font-mono text-primary font-black uppercase tracking-tighter focus:bg-white/10 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Ledger Domain</Label>
+                                    <Select value={journal} onValueChange={setJournal}>
+                                        <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-2xl font-black uppercase text-xs text-white">
+                                            <SelectValue placeholder="General" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                            <SelectItem value="general" className="font-bold uppercase text-[10px]">General Ledger</SelectItem>
+                                            <SelectItem value="payments" className="font-bold uppercase text-[10px]">Payments Ledger</SelectItem>
+                                            <SelectItem value="receipts" className="font-bold uppercase text-[10px]">Receipts Ledger</SelectItem>
+                                            <SelectItem value="sales" className="font-bold uppercase text-[10px]">Sales Ledger</SelectItem>
+                                            <SelectItem value="purchases" className="font-bold uppercase text-[10px]">Purchases Ledger</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Intent Logic / Particulars</Label>
+                                    <Textarea
+                                        value={journalMemo}
+                                        onChange={(e) => setJournalMemo(e.target.value)}
+                                        className="bg-white/5 border-white/10 rounded-2xl min-h-[140px] p-5 text-sm font-bold leading-relaxed focus:bg-white/10 transition-all placeholder:text-white/5 text-white/80"
+                                        placeholder="Add mission-critical particulars..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Fiscal Status Matrix */}
+                        <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] relative overflow-hidden group shadow-2xl backdrop-blur-md">
+                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <Database className="h-12 w-12 text-primary" />
+                            </div>
+                            <div className="relative z-10 space-y-8">
+                                <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                                    <div className="flex items-center gap-3">
+                                        <Scale className="h-5 w-5 text-primary" />
+                                        <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">Matrix Summary</span>
+                                    </div>
+                                    <div className={cn(
+                                        "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
+                                        isBalanced ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+                                    )}>
+                                        {isBalanced ? "Synchronized" : "Discrepancy Detected"}
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Aggregate Debits</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xs font-bold text-white/20">₱</span>
+                                            <p className="text-2xl font-black text-white italic tracking-tighter leading-none">{totalDebits.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">Aggregate Credits</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xs font-bold text-white/20">₱</span>
+                                            <p className="text-2xl font-black text-white italic tracking-tighter leading-none">{totalCredits.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Button 
+                            onClick={handleRecord} 
+                            disabled={isSaving || !isBalanced}
+                            className="h-16 rounded-[2rem] bg-primary text-black font-black text-sm uppercase tracking-[0.2em] hover:bg-primary/90 disabled:opacity-30 transition-all active:scale-[0.98] shadow-2xl shadow-primary/20"
+                        >
+                            {isSaving ? <RefreshCw className="animate-spin mr-3 h-5 w-5" /> : <Save className="mr-3 h-6 w-6" />}
+                            Commit Protocol
+                        </Button>
+                    </div>
+
+                    {/* Right: Allocation Engine */}
+                    <div className="flex-1 flex flex-col gap-6 overflow-hidden">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-medium">Account Allocation</h3>
-                            <Button size="sm" onClick={addLine}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Line
+                            <div className="flex items-center gap-2">
+                                <div className="w-1 h-4 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
+                                <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Account Allocation Matrix</h3>
+                            </div>
+                            <Button onClick={addLine} className="h-10 rounded-2xl bg-blue-400/10 text-blue-400 border border-blue-400/20 hover:bg-blue-400 hover:text-black transition-all px-6 font-black uppercase text-[10px] tracking-widest gap-2">
+                                <Plus className="h-4 w-4 stroke-[3]" /> Push Allocation Node
                             </Button>
                         </div>
-                        <div className="border rounded-md">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow><TableHead>Account</TableHead><TableHead className="w-[150px] text-right">Amount</TableHead><TableHead className="w-[100px] text-right">CR/DR</TableHead><TableHead className="w-[50px]"></TableHead></TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {lines.length === 0 ? (
-                                        <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">Click "Add Line" to allocate amounts to accounts.</TableCell></TableRow>
-                                    ) : (
-                                        lines.map((line) => (
-                                            <TableRow key={line.id}><TableCell><Select value={line.accountId} onValueChange={(value) => updateLine(line.id, { accountId: value })}><SelectTrigger className="w-full"><SelectValue placeholder="Select account" /></SelectTrigger><SelectContent>{accountsLoading ? (<SelectItem value="loading" disabled>Loading accounts...</SelectItem>) : (accounts?.map((account) => (<SelectItem key={account.id} value={account.id || ''}>{account.account_no} - {account.account_name}</SelectItem>)))}</SelectContent></Select></TableCell><TableCell><Input type="number" step="0.01" min="0" value={line.amount || ''} onChange={(e) => updateLine(line.id, { amount: parseFloat(e.target.value) || 0 })} className="text-right" /></TableCell><TableCell><Select value={line.type} onValueChange={(value: 'debit' | 'credit') => updateLine(line.id, { type: value })}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="debit">DR</SelectItem><SelectItem value="credit">CR</SelectItem></SelectContent></Select></TableCell><TableCell><Button variant="ghost" size="icon" onClick={() => removeLine(line.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></TableCell></TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                        {lines.length > 0 && (
-                            <div className="flex justify-end gap-4 pt-2 text-sm">
-                                <span>
-                                    Total Debits: <strong>₱{lines.filter(l => l.type === 'debit').reduce((sum, l) => sum + l.amount, 0).toFixed(2)}</strong>
-                                </span>
-                                <span>
-                                    Total Credits: <strong>₱{lines.filter(l => l.type === 'credit').reduce((sum, l) => sum + l.amount, 0).toFixed(2)}</strong>
-                                </span>
-                            </div>
-                        )}
-                    </div>
 
-                </ScrollArea>
-                <DialogFooter className="mt-4">
-                    <div className="flex-grow" />
-                    <Button onClick={handleRecord} disabled={isSaving}>
-                        {isSaving ? 'Recording...' : 'Record'}
-                    </Button>
-                    <Button variant="outline" onClick={handleClose} disabled={isSaving}>Cancel</Button>
-                </DialogFooter>
+                        <div className="flex-1 overflow-hidden flex flex-col bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-xl shadow-2xl relative">
+                            <ScrollArea className="flex-1">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="border-b-white/10 hover:bg-transparent">
+                                            <TableHead className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] h-14 pl-8">Ledger Entity</TableHead>
+                                            <TableHead className="w-[140px] text-[10px] font-black text-white/40 uppercase tracking-[0.2em] text-center h-14">Type Node</TableHead>
+                                            <TableHead className="w-[220px] text-[10px] font-black text-white/40 uppercase tracking-[0.2em] text-right h-14 pr-8">Allocation Value</TableHead>
+                                            <TableHead className="w-[100px] text-right h-14 pr-8"></TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {lines.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={4} className="h-[400px] text-center">
+                                                    <div className="flex flex-col items-center gap-6 opacity-10">
+                                                        <Database className="h-20 w-20" />
+                                                        <div className="space-y-2">
+                                                            <p className="text-sm font-black tracking-[0.4em] uppercase italic">Awaiting Line Input</p>
+                                                            <p className="text-[10px] font-bold uppercase text-white/40">Push a node to begin allocation engine</p>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            lines.map((line, index) => (
+                                                <TableRow key={line.id} className="group border-b-white/5 hover:bg-white/[0.02] transition-colors">
+                                                    <TableCell className="pl-8 py-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="text-[10px] font-mono text-white/20 w-6">{(index + 1).toString().padStart(2, '0')}</span>
+                                                            <Select value={line.accountId} onValueChange={(value) => updateLine(line.id, { accountId: value })}>
+                                                                <SelectTrigger className="w-full bg-white/5 border-white/5 rounded-2xl h-12 font-bold group-hover:bg-white/10 transition-all text-white uppercase text-xs">
+                                                                    <SelectValue placeholder="Identify Target Ledger..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent className="bg-slate-900 border-white/10 text-white max-h-[400px] w-[400px]">
+                                                                    {accountsLoading ? (
+                                                                        <SelectItem value="loading" disabled>Syncing Ledger Nodes...</SelectItem>
+                                                                    ) : (
+                                                                        accounts?.map((account) => (
+                                                                            <SelectItem key={account.id} value={account.id || ''} className="rounded-xl py-3 px-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                                                                                <div className="flex items-center gap-4">
+                                                                                    <span className="font-mono text-primary font-black bg-primary/10 px-2 py-1 rounded text-[10px]">[{account.account_no}]</span>
+                                                                                    <span className="font-black uppercase tracking-tight text-xs">{account.account_name}</span>
+                                                                                </div>
+                                                                            </SelectItem>
+                                                                        ))
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-6">
+                                                        <div className="flex items-center justify-center">
+                                                            <button 
+                                                                onClick={() => updateLine(line.id, { type: line.type === 'debit' ? 'credit' : 'debit' })}
+                                                                className={cn(
+                                                                    "w-20 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95",
+                                                                    line.type === 'debit' 
+                                                                        ? "bg-primary text-black shadow-primary/20" 
+                                                                        : "bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10"
+                                                                )}
+                                                            >
+                                                                {line.type === 'debit' ? "Debit" : "Credit"}
+                                                            </button>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-6 pr-8">
+                                                        <div className="relative group">
+                                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 font-black text-sm group-focus-within:text-primary transition-colors">₱</span>
+                                                            <Input 
+                                                                type="number" 
+                                                                step="0.01" 
+                                                                value={line.amount || ''} 
+                                                                onChange={(e) => updateLine(line.id, { amount: parseFloat(e.target.value) || 0 })} 
+                                                                className="text-right h-12 bg-white/5 border-white/10 rounded-2xl font-black italic text-lg tracking-tighter pl-10 focus:bg-white/10 transition-all text-white"
+                                                                placeholder="0.00"
+                                                            />
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-6 pr-8 text-right">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => removeLine(line.id)}
+                                                            className="h-10 w-10 rounded-xl text-white/10 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                                                        >
+                                                            <Trash2 className="h-5 w-5" />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </ScrollArea>
+
+                            {/* Matrix Health Indicator */}
+                            <div className="p-8 border-t border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-between rounded-b-[2rem]">
+                                <div className="flex items-center gap-10">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Validation Node 01</span>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-xs font-bold text-primary/40 uppercase tracking-tighter">Debit Vol</span>
+                                            <span className="text-2xl font-black text-primary italic tracking-tighter">₱{totalDebits.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                        </div>
+                                    </div>
+                                    <div className="h-10 w-[1px] bg-white/10" />
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Validation Node 02</span>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-xs font-bold text-white/20 uppercase tracking-tighter">Credit Vol</span>
+                                            <span className="text-2xl font-black text-white italic tracking-tighter">₱{totalCredits.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {!isBalanced && lines.length > 0 && (
+                                    <div className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 animate-pulse shadow-lg shadow-amber-500/10">
+                                        <AlertCircle className="h-5 w-5" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest italic">
+                                            Matrix Disparity: ₱{balanceDifference.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
     );

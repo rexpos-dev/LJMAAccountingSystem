@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { UserPermission } from '@/types/user-permission';
 

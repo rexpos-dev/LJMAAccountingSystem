@@ -23,7 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import format from '@/lib/date-format';
 import { useAuth } from '@/components/providers/auth-provider';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 
 interface Request {
     id: string;

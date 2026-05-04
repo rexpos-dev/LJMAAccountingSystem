@@ -4,74 +4,74 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 6%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 90% 60%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 15%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 170 80% 45%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 1rem;
     --chart-1: 221.2 83.2% 53.3%;
     --chart-2: 170 80% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 221.2 83.2% 53.3%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96.1%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 221.2 83.2% 53.3%;
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 90% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 212.7 26.8% 83.9%;
   }
 
   .dark {
-    --background: 220 20% 15%;
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: 220 20% 20%;
+    --card: 222.2 84% 8%;
     --card-foreground: 210 40% 98%;
-    --popover: 220 20% 12%;
+    --popover: 222.2 84% 6%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 90% 60%;
-    --primary-foreground: 220 20% 10%;
-    --secondary: 220 15% 30%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 220 15% 25%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 217.2 32.6% 15%;
+    --muted-foreground: 215 20.2% 65.1%;
     --accent: 170 80% 45%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 220 15% 25%;
-    --input: 220 15% 25%;
-    --ring: 210 90% 65%;
-    --chart-1: 210 90% 60%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 221.2 83.2% 53.3%;
     --chart-2: 170 80% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 220 20% 12%;
+    --sidebar-background: 222.2 84% 4.9%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 90% 60%;
-    --sidebar-primary-foreground: 220 20% 10%;
-    --sidebar-accent: 220 20% 20%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 20% 25%;
-    --sidebar-ring: 210 90% 65%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -81,7 +81,55 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-white;
+  }
+
+  /* --- Advanced Custom Scrollbar --- */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--primary));
+  }
+}
+
+@layer components {
+  /* --- Premium Design Utilities --- */
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+  }
+
+  .glass-card {
+    @apply bg-slate-900/40 backdrop-blur-md border border-white/5 shadow-xl rounded-2xl transition-all duration-300 hover:border-white/10;
+  }
+
+  .premium-gradient {
+    @apply bg-gradient-to-br from-white/10 via-transparent to-black/20;
+  }
+
+  .text-glow-blue {
+    text-shadow: 0 0 15px hsl(var(--primary) / 0.5);
+  }
+
+  .premium-border-b {
+    @apply border-b border-white/5 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-white/10 after:to-transparent;
   }
 }
 
@@ -91,35 +139,15 @@
 }
 
 @media print {
-
-  /* Hide all buttons, inputs, textareas, and selects */
-  button,
-  input,
-  textarea,
-  select {
+  button, input, textarea, select {
     display: none !important;
   }
-
-  /* Ensure all content is visible and scrollable areas are expanded */
-  body,
-  html {
+  body, html {
     height: auto !important;
     overflow: visible !important;
     background-color: white !important;
     color: black !important;
   }
-
-  /* Override Radix UI dialog lock on body */
-  body[style] {
-    overflow: visible !important;
-  }
-
-  /* Ensure elements with overflow are visible for printing */
-  * {
-    overflow: visible !important;
-  }
-
-  /* Make Dialogs print nicely */
   [role="dialog"] {
     position: static !important;
     transform: none !important;
@@ -130,26 +158,14 @@
     border: none !important;
     box-shadow: none !important;
   }
+}
 
-  /* Hide overlays */
-  div[data-state="open"][class*="fixed inset-0"] {
-    display: none !important;
-  }
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
 
-  /* Force tables to print properly */
-  table {
-    width: 100% !important;
-    page-break-inside: auto !important;
-  }
-
-  tr {
-    page-break-inside: avoid !important;
-    page-break-after: auto !important;
-  }
-
-  /* Keep basic layout purely text and tables */
-  .no-print,
-  .print\:hidden {
-    display: none !important;
-  }
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }

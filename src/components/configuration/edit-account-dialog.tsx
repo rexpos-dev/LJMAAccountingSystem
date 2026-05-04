@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +26,8 @@ import type { Account } from '@/types/account';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
 import { useAccountTypes } from '@/hooks/use-account-types';
+import { useProfitCenters } from '@/hooks/use-profit-centers';
+import { useCostCenters } from '@/hooks/use-cost-centers';
 
 
 
@@ -34,6 +36,8 @@ export default function EditAccountDialog() {
   const { data: accounts, refetch } = useAccounts();
   const { toast } = useToast();
   const { accountTypes } = useAccountTypes();
+  const { profitCenters } = useProfitCenters();
+  const { costCenters } = useCostCenters();
 
   const account = getDialogData('edit-account');
 
@@ -108,6 +112,8 @@ export default function EditAccountDialog() {
           linked_gl_id: formData.linked_gl_id,
           opening_balance: formData.opening_balance,
           opening_date: formData.opening_date,
+          profit_center_id: formData.profit_center_id,
+          cost_center_id: formData.cost_center_id,
         }),
       });
 
@@ -207,6 +213,46 @@ export default function EditAccountDialog() {
                     <SelectContent>
                       <SelectItem value="Active">Active</SelectItem>
                       <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="profit-center">Profit Center</Label>
+                  <Select
+                    value={formData.profit_center_id || 'none'}
+                    onValueChange={(v) => handleInputChange('profit_center_id', v === 'none' ? null : v)}
+                  >
+                    <SelectTrigger id="profit-center">
+                      <SelectValue placeholder="Assign Profit Center" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {profitCenters.map((pc) => (
+                        <SelectItem key={pc.id} value={pc.id}>
+                          {pc.id} - {pc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cost-center">Cost Center</Label>
+                  <Select
+                    value={formData.cost_center_id || 'none'}
+                    onValueChange={(v) => handleInputChange('cost_center_id', v === 'none' ? null : v)}
+                  >
+                    <SelectTrigger id="cost-center">
+                      <SelectValue placeholder="Assign Cost Center" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {costCenters.map((cc) => (
+                        <SelectItem key={cc.id} value={cc.id}>
+                          {cc.id} - {cc.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

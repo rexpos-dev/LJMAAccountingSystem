@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -198,19 +198,22 @@ export default function BankSettingsDialog() {
                                     <tr className="hover:bg-transparent border-b">
                                         <th className="w-[120px] h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Code</th>
                                         <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Bank Name</th>
+                                        <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Name</th>
                                         <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account No</th>
-                                        <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">GL Account</th>
+                                        <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Type</th>
+                                        <th className="h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Linked GL Account</th>
+                                        <th className="w-[120px] h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Opening Date</th>
                                         <th className="w-[150px] h-10 px-4 text-right align-middle font-medium text-muted-foreground border-b">Balance</th>
-                                        <th className="w-[120px] h-10 px-4 text-center align-middle font-medium text-muted-foreground border-b">Status</th>
-                                        <th className="w-[120px] h-10 px-4 text-center align-middle font-medium text-muted-foreground border-b">Audit</th>
-                                        <th className="w-[100px] h-10 px-4 text-center align-middle font-medium text-muted-foreground border-b">Action</th>
+                                        <th className="w-[100px] h-10 px-4 text-center align-middle font-medium text-muted-foreground border-b">Status</th>
+                                        <th className="w-[100px] h-10 px-4 text-center align-middle font-medium text-muted-foreground border-b">Audit</th>
+                                        <th className="w-[80px] h-10 px-4 text-center align-middle font-medium text-muted-foreground border-b">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y [&_tr:last-child]:border-0">
                                     {isLoading ? (
-                                        <tr><td colSpan={8} className="text-center py-10"><RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />Loading bank accounts...</td></tr>
+                                        <tr><td colSpan={11} className="text-center py-10"><RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />Loading bank accounts...</td></tr>
                                     ) : filteredAccounts.length === 0 ? (
-                                        <tr><td colSpan={8} className="text-center py-10 text-muted-foreground">No bank accounts found.</td></tr>
+                                        <tr><td colSpan={11} className="text-center py-10 text-muted-foreground">No bank accounts found.</td></tr>
                                     ) : (
                                         paginatedList.map((account: any) => (
                                             <tr
@@ -224,12 +227,21 @@ export default function BankSettingsDialog() {
                                             >
                                                 <td className="p-4 align-middle font-mono">{account.bank_code || '-'}</td>
                                                 <td className="p-4 align-middle">{account.bank_name || '-'}</td>
+                                                <td className="p-4 align-middle font-medium">{account.account_name || '-'}</td>
                                                 <td className="p-4 align-middle font-mono">{account.account_number || '-'}</td>
+                                                <td className="p-4 align-middle">
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-secondary-foreground/10 text-secondary-foreground font-medium">
+                                                        {account.account_type || 'BANK'}
+                                                    </span>
+                                                </td>
                                                 <td className="p-4 align-middle whitespace-nowrap">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-xs">{account.gl_account?.account_no}</span>
                                                         <span className="text-[10px] text-muted-foreground">{account.gl_account?.account_name}</span>
                                                     </div>
+                                                </td>
+                                                <td className="p-4 align-middle text-xs text-muted-foreground">
+                                                    {account.opening_date ? new Date(account.opening_date).toLocaleDateString() : '-'}
                                                 </td>
                                                 <td className="p-4 align-middle text-right font-mono font-medium">{formatCurrency(account.opening_balance)}</td>
                                                 <td className="p-4 align-middle text-center">

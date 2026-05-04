@@ -25,6 +25,12 @@ model Account {
   account_type_id     String?
   accountTypeRel      AccountType? @relation(fields: [account_type_id], references: [id])
   
+  // Profit & Cost Center relations
+  profit_center_id    String?      @db.VarChar(2)
+  cost_center_id      String?      @db.VarChar(2)
+  profitCenter        ProfitCenter? @relation(fields: [profit_center_id], references: [id])
+  costCenter          CostCenter?   @relation(fields: [cost_center_id], references: [id])
+
   // GL Mapping fields
   linked_gl_id        String?
   opening_balance     Float?       @default(0)
@@ -107,6 +113,15 @@ model Transaction {
   ssma_timestamp     DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  // Profit & Cost Center relations
+  profit_center_id   String?   @db.VarChar(2)
+  cost_center_id     String?   @db.VarChar(2)
+  profitCenter       ProfitCenter? @relation(fields: [profit_center_id], references: [id])
+  costCenter         CostCenter?   @relation(fields: [cost_center_id], references: [id])
+  
+  branchId           String?
+  branch             Branch?   @relation(fields: [branchId], references: [id])
 
   @@index([accountNumber, date])
   @@index([code, date])
@@ -763,7 +778,24 @@ model Branch {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  profit_center_id String? @db.VarChar(2)
+  profitCenter     ProfitCenter? @relation(name: "BranchToProfitCenter", fields: [profit_center_id], references: [id])
+  
+  allocationWeights BranchAllocationWeight?
+  transactions      Transaction[]
+
   @@map("branches")
+}
+
+model BranchAllocationWeight {
+  id        String   @id @default(cuid())
+  branchId  String   @unique
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  weight    Float    @default(0) // Weight for weighted split (e.g., 20.0 for 20%)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("branch_allocation_weights")
 }
 
 model Employee {
@@ -844,3 +876,32 @@ model ChatAttachment {
 
   @@map("chat_attachments")
 }
+model ProfitCenter {
+  id          String   @id @db.VarChar(2)
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  accounts     Account[]
+  transactions Transaction[]
+  branches     Branch[]      @relation(name: "BranchToProfitCenter")
+
+  @@map("profit_centers")
+}
+
+model CostCenter {
+  id          String   @id @db.VarChar(2)
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  accounts     Account[]
+  transactions Transaction[]
+
+  @@map("cost_centers")
+}
+

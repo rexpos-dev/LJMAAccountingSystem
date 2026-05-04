@@ -38,7 +38,7 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import format from '@/lib/date-format';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function EnterPaymentPage() {

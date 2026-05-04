@@ -20,6 +20,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuBadge,
   SidebarRail,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useNotifications } from "@/hooks/use-notifications";
@@ -32,7 +35,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronsUpDown, Bell, PanelsTopLeft } from "lucide-react";
+import { ChevronUp, Bell, PanelsTopLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserNav } from "./user-nav";
 import { NotificationBell } from "./notification-bell";
@@ -245,7 +248,7 @@ function SidebarNav() {
         <Collapsible key={item.title} defaultOpen={isActive} className="w-full">
           <SidebarMenuItem className="w-full">
             <CollapsibleTrigger asChild>
-              <div className="relative flex w-full items-center">
+              <div className="relative flex w-full items-center group">
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
@@ -261,7 +264,7 @@ function SidebarNav() {
                         </SidebarMenuBadge>
                       )}
                     </div>
-                    <ChevronsUpDown className="h-4 w-4" />
+                    <ChevronUp className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                   </div>
                 </SidebarMenuButton>
               </div>
@@ -324,7 +327,40 @@ function SidebarNav() {
     );
   };
 
-  return <SidebarMenu>{navItems.map((item) => renderNavItem(item))}</SidebarMenu>;
+  // Group nav items by their `group` field
+  const groupOrder = ["Overview", "Operations", "Sales & Purchases", "Finance", "Management"];
+  const grouped = groupOrder.reduce<Record<string, typeof navItems>>((acc, g) => {
+    acc[g] = navItems.filter(item => item.group === g);
+    return acc;
+  }, {});
+
+  return (
+    <div className="flex flex-col gap-0">
+      {groupOrder.map((groupName, idx) => {
+        const items = grouped[groupName];
+        const visibleItems = items.filter(item => {
+          if (!isMounted) return false;
+          if (!hasAccess(item)) return false;
+          const visibleSubs = item.subItems?.filter(hasAccess);
+          if (item.subItems && (!visibleSubs || visibleSubs.length === 0) && item.href === '#') return false;
+          return true;
+        });
+        if (visibleItems.length === 0) return null;
+        return (
+          <SidebarGroup key={groupName}>
+            <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/50 px-2 mb-1">
+              {groupName}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleItems.map((item) => renderNavItem(item))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        );
+      })}
+    </div>
+  );
 }
 
 function SidebarHeaderContent({ profile, isLoading }: { profile: any, isLoading: boolean }) {
@@ -333,27 +369,44 @@ function SidebarHeaderContent({ profile, isLoading }: { profile: any, isLoading:
 
   return (
     <div className={cn(
-      "flex items-center gap-2 p-2 transition-all duration-200",
+      "flex items-center gap-3 p-2 transition-all duration-200",
       isCollapsed ? "justify-center p-0 h-10" : "pr-4"
     )}>
-      <PanelsTopLeft className={cn(
-        "text-primary shrink-0 transition-all duration-200",
-        isCollapsed ? "w-6 h-6" : "w-8 h-8"
-      )} />
+      <div className={cn(
+        "flex items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0 transition-all duration-200",
+        isCollapsed ? "w-8 h-8" : "w-9 h-9"
+      )}>
+        <PanelsTopLeft className={cn(
+          "transition-all duration-200",
+          isCollapsed ? "w-4 h-4" : "w-5 h-5"
+        )} />
+      </div>
       {!isCollapsed && (
-        <div className="flex flex-col truncate">
+        <div className="flex flex-col truncate leading-tight">
           {isLoading ? (
-            <Skeleton className="h-7 w-40" />
+            <>
+              <Skeleton className="h-5 w-36 mb-1" />
+              <Skeleton className="h-3 w-24" />
+            </>
           ) : (
-            <h1 className="text-xl font-bold font-headline truncate max-w-[200px]" title={profile?.businessName || "LJMA FinancePro"}>
-              {profile?.businessName || "LJMA FinancePro"}
-            </h1>
+            <>
+              <h1
+                className="text-base font-bold font-headline truncate max-w-[180px] leading-tight"
+                title={profile?.businessName || "LJMA FinancePro"}
+              >
+                {profile?.businessName || "LJMA FinancePro"}
+              </h1>
+              <span className="text-[11px] text-sidebar-foreground/50 font-medium tracking-wide">
+                Accounting System
+              </span>
+            </>
           )}
         </div>
       )}
     </div>
   );
 }
+
 
 
 export function AppShell({ children }: { children: React.ReactNode }) {

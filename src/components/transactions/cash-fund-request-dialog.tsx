@@ -1,441 +1,418 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { useDialog } from '@/components/layout/dialog-provider';
-import { useUserPermissions } from '@/hooks/use-user-permissions';
-import { useEmployees } from '@/hooks/use-employees';
-import Image from 'next/image';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useDialog } from "@/components/layout/dialog-context";
+import { useUserPermissions } from "@/hooks/use-user-permissions";
+import { useEmployees } from "@/hooks/use-employees";
+import {
+  FileText,
+  User,
+  Briefcase,
+  Target,
+  DollarSign,
+  PenTool,
+  CheckCircle2,
+  ShieldCheck,
+  Send,
+  Printer,
+  Calendar as CalendarIcon,
+  X,
+  CreditCard,
+  Hash,
+  Activity,
+  Calculator,
+  Building2,
+  Zap
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function CashFundRequestDialog() {
-    const { openDialogs, closeDialog } = useDialog();
-    const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
-    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
-    const [formData, setFormData] = useState({
-        controlNo: '',
-        date: new Date().toISOString().split('T')[0],
-        requestor: '',
-        position: '',
-        temporaryChargeTo: '',
-        tempAccountNo: '',
-        finalChargeTo: '',
-        finalAccountNo: '',
-        purpose: '',
-        amount: '',
-        requestedBy: '',
-        verifiedBy: '',
-        approvedBy: '',
-        processedBy: '',
-        releasedReceivedBy: '',
-    });
+  const { openDialogs, closeDialog } = useDialog();
+  const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
+  const { data: employees = [], isLoading: employeesLoading } = useEmployees();
+  const [formData, setFormData] = useState({
+    controlNo: "",
+    date: new Date().toISOString().split("T")[0],
+    requestor: "",
+    position: "",
+    temporaryChargeTo: "",
+    tempAccountNo: "",
+    finalChargeTo: "",
+    finalAccountNo: "",
+    purpose: "",
+    amount: "",
+    requestedBy: "",
+    verifiedBy: "",
+    approvedBy: "",
+    processedBy: "",
+    releasedReceivedBy: "",
+  });
 
-    const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-    const handleInputChange = (field: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-    };
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-    const handleClose = () => {
-        if (isSaving) return;
-        closeDialog('cash-fund-request');
-    };
+  const handleClose = () => {
+    if (isSaving) return;
+    closeDialog("cash-fund-request");
+  };
 
-    const handleSave = async () => {
-        if (!formData.requestor || !formData.purpose || !formData.amount) {
-            alert('Please fill in the required fields: Requestor, Purpose, and Amount.');
-            return;
-        }
+  const handleSave = async () => {
+    if (!formData.requestor || !formData.purpose || !formData.amount) {
+      alert("Required: Requestor, Purpose, and Amount.");
+      return;
+    }
 
-        setIsSaving(true);
-        try {
-            const response = await fetch('/api/requests', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    requesterName: formData.requestor,
-                    position: formData.position,
-                    businessUnit: formData.temporaryChargeTo, // Using this for business unit if appropriate
-                    chargeTo: formData.finalChargeTo,
-                    accountNo: formData.finalAccountNo,
-                    purpose: formData.purpose,
-                    amount: parseFloat(formData.amount) || 0,
-                    verifiedBy: formData.verifiedBy,
-                    approvedBy: formData.approvedBy,
-                    processedBy: formData.processedBy,
-                    items: [] // Basic form as per image doesn't have multiple items line by line
-                }),
-            });
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requesterName: formData.requestor,
+          position: formData.position,
+          businessUnit: formData.temporaryChargeTo,
+          chargeTo: formData.finalChargeTo,
+          accountNo: formData.finalAccountNo,
+          purpose: formData.purpose,
+          amount: parseFloat(formData.amount) || 0,
+          verifiedBy: formData.verifiedBy,
+          approvedBy: formData.approvedBy,
+          processedBy: formData.processedBy,
+          items: [],
+          formName: "CASH FUND REQUEST"
+        }),
+      });
 
-            if (!response.ok) {
-                throw new Error('Failed to save request');
-            }
+      if (!response.ok) throw new Error("Failed to save request");
+      handleClose();
+    } catch (error) {
+      console.error("Error saving request:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-            alert('Request saved successfully!');
-            handleClose();
-        } catch (error) {
-            console.error('Error saving request:', error);
-            alert('Error saving request. Please try again.');
-        } finally {
-            setIsSaving(false);
-        }
-    };
+  return (
+    <Dialog open={openDialogs["cash-fund-request"]} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[85vh]">
+        {/* Premium Header */}
+        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-amber-400/10 via-transparent to-transparent pointer-events-none" />
+          
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-amber-400/20 text-amber-400 border border-amber-400/20 shadow-[0_0_20px_rgba(251,191,36,0.1)]">
+              <DollarSign className="h-6 w-6" />
+            </div>
+            <div>
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white leading-none">Liquidity Requisition</DialogTitle>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-400 border border-amber-400/20">Operational Cash</span>
+                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Protocol CR-v2.0</span>
+              </div>
+            </div>
+          </div>
 
-    return (
-        <Dialog open={openDialogs['cash-fund-request']} onOpenChange={handleClose}>
-            <DialogContent className="max-w-4xl p-8 bg-white text-black font-sans shadow-2xl border-none overflow-hidden">
-                <style jsx global>{`
-          .request-form-container {
-            border: 2px solid #000;
-            padding: 20px;
-            position: relative;
-          }
-          .form-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 0px;
-          }
-          .form-table td, .form-table th {
-            border: 1px solid #000;
-            padding: 4px 8px;
-            vertical-align: middle;
-          }
-          .label-cell {
-            font-weight: bold;
-            font-size: 14px;
-            width: 150px;
-            background-color: transparent;
-          }
-          .input-cell {
-            padding: 0 !important;
-          }
-          .input-cell input {
-            border: none;
-            width: 100%;
-            height: 100%;
-            padding: 4px 8px;
-            font-size: 14px;
-            background: transparent;
-            outline: none;
-          }
-          .purpose-header {
-             border: 1px solid #000;
-             border-bottom: none;
-             text-align: center;
-             font-weight: bold;
-             padding: 4px;
-             font-size: 16px;
-          }
-           .amount-header {
-             border: 1px solid #000;
-             border-left: none;
-             border-bottom: none;
-             text-align: center;
-             font-weight: bold;
-             padding: 4px;
-             font-size: 16px;
-             width: 200px;
-          }
-          .purpose-cell {
-            border: 1px solid #000;
-            height: 200px;
-            vertical-align: top;
-            padding: 0 !important;
-          }
-          .purpose-cell textarea {
-            border: none;
-            width: 100%;
-            height: 100%;
-            padding: 8px;
-            font-size: 14px;
-            resize: none;
-            background: transparent;
-            outline: none;
-          }
-          .amount-cell {
-            border: 1px solid #000;
-            border-left: none;
-            width: 200px;
-            vertical-align: top;
-            padding: 0 !important;
-          }
-          .amount-cell input {
-             border: none;
-             width: 100%;
-             height: 100%;
-             padding: 8px;
-             font-size: 18px;
-             font-weight: bold;
-             text-align: right;
-             background: transparent;
-             outline: none;
-          }
-          .signature-row {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-top: 30px;
-          }
-          .signature-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-          .signature-line {
-            border-bottom: 1px solid #000;
-            width: 100%;
-            margin-bottom: 4px;
-            height: 30px;
-          }
-          .signature-label {
-            font-size: 11px;
-            text-align: center;
-            color: #333;
-          }
-          .signature-role {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            align-self: flex-start;
-          }
-        `}</style>
+          <div className="relative z-10 flex items-center gap-6">
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black text-white/20 uppercase tracking-widest text-right">Reference Serial</span>
+              <span className="text-sm font-bold text-white font-mono uppercase tracking-tighter">
+                {formData.controlNo || "UNASSIGNED-NODE"}
+              </span>
+            </div>
+            <button 
+              onClick={handleClose}
+              className="p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
 
-                <div className="flex justify-between items-start mb-6">
-                    <div className="flex flex-col items-start">
-                        <div className="text-4xl font-serif font-bold text-[#1e3a8a] leading-none mb-1">
-                            R
-                        </div>
-                        <div className="text-[10px] font-bold text-[#1e3a8a] text-left uppercase leading-tight">
-                            ROSLINDA<br />GROUP OF COMPANIES
-                        </div>
-                    </div>
+        <ScrollArea className="flex-1">
+          <div className="p-8 space-y-8">
+            {/* Top Insight Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-amber-400">
+                  <Calculator className="h-10 w-10" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Requested Liquidity</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xs font-bold text-amber-400/60 uppercase">PHP</span>
+                  <span className="text-3xl font-black italic tracking-tighter text-amber-400">
+                    {Number(formData.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
 
-                    <div className="flex-1 text-center pt-2">
-                        <h1 className="text-2xl font-bold uppercase tracking-wider">CASH / FUND REQUEST FORM</h1>
-                    </div>
+              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-blue-400">
+                  <User className="h-10 w-10" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Initiating Entity</p>
+                <span className="text-2xl font-black italic tracking-tighter text-blue-400 uppercase truncate block">
+                  {formData.requestor || "IDENTIFY REQUESTOR"}
+                </span>
+              </div>
 
-                    <div className="w-[250px] space-y-2 pt-2">
-                        <div className="flex items-center gap-2">
-                            <Label className="font-bold text-sm whitespace-nowrap">Control No.:</Label>
-                            <Input
-                                className="border-0 border-b border-black rounded-none p-0 h-6 focus-visible:ring-0 bg-transparent text-sm"
-                                value={formData.controlNo}
-                                onChange={(e) => handleInputChange('controlNo', e.target.value)}
-                            />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Label className="font-bold text-sm whitespace-nowrap">Date:</Label>
-                            <Input
-                                type="date"
-                                className="border-0 border-b border-black rounded-none p-0 h-6 focus-visible:ring-0 bg-transparent text-sm"
-                                value={formData.date}
-                                onChange={(e) => handleInputChange('date', e.target.value)}
-                            />
-                        </div>
-                    </div>
+              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-emerald-400">
+                  <Activity className="h-10 w-10" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Compliance Status</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className={cn(
+                    "w-2 h-2 rounded-full",
+                    formData.requestor && formData.amount ? "bg-emerald-400 animate-pulse" : "bg-white/10"
+                  )} />
+                  <span className={cn(
+                    "text-lg font-black italic tracking-tighter uppercase",
+                    formData.requestor && formData.amount ? "text-emerald-400" : "text-white/20"
+                  )}>
+                    {formData.requestor && formData.amount ? "Node Validated" : "Awaiting Data"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left Column: Requisition Parameters */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-amber-400 rounded-full" />
+                  <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Requisition Parameters</h3>
                 </div>
 
-                <table className="form-table">
-                    <tbody>
-                        <tr>
-                            <td className="label-cell">Requestor</td>
-                            <td className="input-cell" style={{ padding: 0 }}>
-                                <Select value={formData.requestor} onValueChange={(val) => {
-                                    handleInputChange('requestor', val);
-                                    const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
-                                    if (emp) {
-                                        if (emp.designation) handleInputChange('position', emp.designation);
-                                        if (emp.employeeId) handleInputChange('tempAccountNo', emp.employeeId);
-                                    }
-                                }} disabled={employeesLoading}>
-                                    <SelectTrigger className="w-full h-full min-h-[30px] border-0 rounded-none focus:ring-0 shadow-none px-2 text-sm bg-transparent">
-                                        <SelectValue placeholder="Select name" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {employees.map((emp: any) => (
-                                            <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
-                                                {emp.firstName} {emp.lastName}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </td>
-                            <td className="label-cell">Position</td>
-                            <td className="input-cell">
-                                <input
-                                    value={formData.position}
-                                    onChange={(e) => handleInputChange('position', e.target.value)}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="label-cell">Temporary Charge To:</td>
-                            <td className="input-cell">
-                                <input
-                                    value={formData.temporaryChargeTo}
-                                    onChange={(e) => handleInputChange('temporaryChargeTo', e.target.value)}
-                                />
-                            </td>
-                            <td className="label-cell">Account No.:</td>
-                            <td className="input-cell">
-                                <input
-                                    value={formData.tempAccountNo}
-                                    onChange={(e) => handleInputChange('tempAccountNo', e.target.value)}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="label-cell">Final Charge To:</td>
-                            <td className="input-cell">
-                                <input
-                                    value={formData.finalChargeTo}
-                                    onChange={(e) => handleInputChange('finalChargeTo', e.target.value)}
-                                />
-                            </td>
-                            <td className="label-cell">Account No.:</td>
-                            <td className="input-cell">
-                                <input
-                                    value={formData.finalAccountNo}
-                                    onChange={(e) => handleInputChange('finalAccountNo', e.target.value)}
-                                />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div className="flex">
-                    <div className="flex-1 purpose-header">Purpose</div>
-                    <div className="amount-header">Amount</div>
-                </div>
-                <div className="flex">
-                    <div className="flex-1 purpose-cell">
-                        <textarea
-                            value={formData.purpose}
-                            onChange={(e) => handleInputChange('purpose', e.target.value)}
+                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-6">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Event Horizon</Label>
+                      <div className="relative group">
+                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-400 transition-transform group-focus-within:scale-110" />
+                        <Input 
+                          type="date"
+                          className="pl-10 h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs font-bold uppercase transition-all focus:bg-white/10"
+                          value={formData.date}
+                          onChange={(e) => handleInputChange("date", e.target.value)}
                         />
+                      </div>
                     </div>
-                    <div className="amount-cell">
-                        <input
-                            type="text"
-                            placeholder="0.00"
-                            value={formData.amount}
-                            onChange={(e) => handleInputChange('amount', e.target.value)}
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Serial Node</Label>
+                      <Input 
+                        className="h-11 bg-white/5 border-white/10 text-white rounded-xl font-mono text-xs placeholder:text-white/10"
+                        placeholder="AUTO-GEN"
+                        value={formData.controlNo}
+                        onChange={(e) => handleInputChange("controlNo", e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Initiating Identity</Label>
+                    <Select value={formData.requestor} onValueChange={(val) => {
+                      handleInputChange('requestor', val);
+                      const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                      if (emp) {
+                        if (emp.designation) handleInputChange('position', emp.designation);
+                        if (emp.employeeId) handleInputChange('tempAccountNo', emp.employeeId);
+                      }
+                    }}>
+                      <SelectTrigger className="h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs font-bold uppercase">
+                        <SelectValue placeholder="Identify Personnel" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        {employees.map((emp: any) => (
+                          <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`} className="text-xs font-bold uppercase">
+                            {emp.firstName} {emp.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Designation Context</Label>
+                    <div className="relative group">
+                      <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400 group-focus-within:animate-pulse" />
+                      <Input 
+                        className="pl-10 h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs font-bold uppercase"
+                        value={formData.position}
+                        onChange={(e) => handleInputChange("position", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Allocation & Purpose */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-emerald-400 rounded-full" />
+                  <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Fiscal Target Matrix</h3>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-6">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Activity className="h-3 w-3 text-amber-400/60" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Temporal Node</span>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Business Unit</Label>
+                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg text-xs uppercase" value={formData.temporaryChargeTo} onChange={(e) => handleInputChange("temporaryChargeTo", e.target.value)} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Account Ref</Label>
+                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg font-mono text-[10px]" value={formData.tempAccountNo} onChange={(e) => handleInputChange("tempAccountNo", e.target.value)} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target className="h-3 w-3 text-emerald-400/60" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Final Allocation</span>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Ledger Target</Label>
+                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg text-xs uppercase" value={formData.finalChargeTo} onChange={(e) => handleInputChange("finalChargeTo", e.target.value)} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Account Node</Label>
+                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg font-mono text-[10px]" value={formData.finalAccountNo} onChange={(e) => handleInputChange("finalAccountNo", e.target.value)} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div className="md:col-span-8 space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Intent Logic / Purpose</Label>
+                      <Textarea 
+                        className="min-h-[100px] bg-white/5 border-white/10 text-white/80 rounded-2xl text-xs font-bold leading-relaxed resize-none p-4 placeholder:text-white/5"
+                        placeholder="Add mission-critical particulars..."
+                        value={formData.purpose}
+                        onChange={(e) => handleInputChange("purpose", e.target.value)}
+                      />
+                    </div>
+                    <div className="md:col-span-4 space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Value Capture</Label>
+                      <div className="relative group h-[100px]">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-amber-400 italic group-focus-within:scale-110 transition-transform">₱</span>
+                        <Input 
+                          className="pl-10 h-full bg-amber-400/5 border-amber-400/10 focus:border-amber-400/30 text-amber-400 text-3xl font-black italic tracking-tighter text-right rounded-2xl pr-4 transition-all"
+                          value={formData.amount}
+                          onChange={(e) => handleInputChange("amount", e.target.value)}
+                          placeholder="0.00"
                         />
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="signature-row">
-                    <div className="signature-block">
-                        <div className="signature-role">Requested by:</div>
-                        <Select value={formData.requestedBy} onValueChange={(value) => handleInputChange('requestedBy', value)}>
-                            <SelectTrigger className="h-8 text-xs border-0 border-b border-black rounded-none focus:ring-0">
-                                <SelectValue placeholder="Select user" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {userPermissions.filter(u => u.isActive).map((user) => (
-                                    <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
-                                        {user.firstName} {user.lastName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <div className="signature-label mt-1">Name / Signature / Date</div>
-                    </div>
-                    <div className="signature-block">
-                        <div className="signature-role">Verified by:</div>
-                        <Select value={formData.verifiedBy} onValueChange={(value) => handleInputChange('verifiedBy', value)}>
-                            <SelectTrigger className="h-8 text-xs border-0 border-b border-black rounded-none focus:ring-0">
-                                <SelectValue placeholder="Select user" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {userPermissions.filter(u => u.isActive && (u.accountType === 'Manager' || u.accountType === 'Admin')).map((user) => (
-                                    <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
-                                        {user.firstName} {user.lastName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <div className="signature-label mt-1">Name / Signature / Date</div>
-                    </div>
-                    <div className="signature-block">
-                        <div className="signature-role">Approved by:</div>
-                        <Select value={formData.approvedBy} onValueChange={(value) => handleInputChange('approvedBy', value)}>
-                            <SelectTrigger className="h-8 text-xs border-0 border-b border-black rounded-none focus:ring-0">
-                                <SelectValue placeholder="Select user" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {userPermissions.filter(u => u.isActive && u.accountType === 'Admin').map((user) => (
-                                    <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
-                                        {user.firstName} {user.lastName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <div className="signature-label mt-1">Name / Signature / Date</div>
-                    </div>
-                    <div className="signature-block">
-                        <div className="signature-role">Processed by:</div>
-                        <Select value={formData.processedBy} onValueChange={(value) => handleInputChange('processedBy', value)}>
-                            <SelectTrigger className="h-8 text-xs border-0 border-b border-black rounded-none focus:ring-0">
-                                <SelectValue placeholder="Select user" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin')).map((user) => (
-                                    <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
-                                        {user.firstName} {user.lastName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <div className="signature-label mt-1">Name / Signature / Date</div>
-                    </div>
-                    <div className="signature-block">
-                        <div className="signature-role">Released and Received by:</div>
-                        <Select value={formData.releasedReceivedBy} onValueChange={(value) => handleInputChange('releasedReceivedBy', value)}>
-                            <SelectTrigger className="h-8 text-xs border-0 border-b border-black rounded-none focus:ring-0">
-                                <SelectValue placeholder="Select user" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {userPermissions.filter(u => u.isActive).map((user) => (
-                                    <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
-                                        {user.firstName} {user.lastName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <div className="signature-label mt-1">Name / Signature / Date</div>
-                    </div>
-                </div>
+            {/* Authorization Grid */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-4 bg-emerald-400 rounded-full" />
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Authorization Hierarchy</h3>
+              </div>
 
-                <div className="flex justify-end gap-2 mt-8 no-print">
-                    <Button variant="outline" onClick={handleClose} disabled={isSaving}>Cancel</Button>
-                    <Button
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={handleSave}
-                        disabled={isSaving}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {[
+                  { label: "Originator", field: "requestedBy", icon: User },
+                  { label: "Verifying Node", field: "verifiedBy", icon: ShieldCheck },
+                  { label: "Approving Authority", field: "approvedBy", icon: Zap },
+                  { label: "Processing Unit", field: "processedBy", icon: Activity },
+                  { label: "Release Receptor", field: "releasedReceivedBy", icon: CheckCircle2 }
+                ].map((auth, idx) => (
+                  <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-3 group hover:bg-white/[0.08] transition-all">
+                    <div className="flex items-center gap-2">
+                      <auth.icon className="h-3 w-3 text-white/20 group-hover:text-amber-400 transition-colors" />
+                      <Label className="text-[9px] font-black uppercase tracking-widest text-white/40">{auth.label}</Label>
+                    </div>
+                    <Select 
+                      value={(formData as any)[auth.field]} 
+                      onValueChange={(value) => handleInputChange(auth.field, value)}
                     >
-                        {isSaving ? 'Saving...' : 'Save Request'}
-                    </Button>
-                    <Button variant="secondary" onClick={() => window.print()} disabled={isSaving}>Print Form</Button>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
+                      <SelectTrigger className="h-9 bg-transparent border-white/10 text-white rounded-lg text-[10px] font-black uppercase tracking-tight italic">
+                        <SelectValue placeholder="Identify..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        {userPermissions.filter(u => u.isActive).map((user) => (
+                          <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`} className="text-[10px] font-black uppercase">
+                            {user.firstName} {user.lastName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div className="h-px bg-white/5 mt-2" />
+                    <span className="text-[8px] font-black uppercase text-white/10 text-center block tracking-[0.3em]">Signatory</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+
+        {/* Action Footer */}
+        <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => window.print()}
+              className="h-12 rounded-2xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-6 gap-2"
+            >
+              <Printer className="h-4 w-4" />
+              Hardcopy Stream
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleClose}
+              className="h-12 rounded-2xl text-white/20 hover:text-white hover:bg-white/5 transition-all font-black uppercase tracking-widest text-[10px] px-6"
+            >
+              Abort Requisition
+            </Button>
+            <Button 
+              onClick={handleSave}
+              disabled={isSaving || !formData.amount || !formData.requestor}
+              className="h-12 rounded-2xl bg-amber-400 hover:bg-amber-400/90 text-black font-black uppercase tracking-widest text-[10px] px-10 shadow-lg shadow-amber-400/20 transition-all gap-2"
+            >
+              {isSaving ? <Activity className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Commit Requisition
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }

@@ -15,9 +15,10 @@
     ],
     "claudeCodeChat.permissions.yoloMode": true,
     "snyk.advanced.autoSelectOrganization": true,
-    "workbench.colorTheme": "Default Dark+",
-    "workbench.preferredDarkColorTheme": "Default Dark+",
+    "workbench.colorTheme": "Dark+",
+    "workbench.preferredDarkColorTheme": "Dark+",
     "workbench.preferredHighContrastColorTheme": "Visual Studio Dark",
     "workbench.preferredHighContrastLightColorTheme": "Visual Studio Light",
-    "workbench.preferredLightColorTheme": "Default Light+"
+    "workbench.preferredLightColorTheme": "Light+",
+    "snyk.advanced.organization": "c3ddeffa-3ca5-40af-8da9-f84516a4ea92"
 }

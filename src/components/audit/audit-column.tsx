@@ -7,7 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, InboxIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 export interface AuditItem {
     id: string;
@@ -28,30 +29,37 @@ export interface AuditItem {
 }
 
 interface AuditColumnProps {
-    id: "to-audit" | "ongoing" | "done" | "history" | string;
+    id: string;
     title: string;
     items: AuditItem[];
-    color?: string; // Tailwind color class for header maybe
-    auditors: { id: string, username: string, name: string }[];
+    color?: string;
+    borderColor?: string;
+    glowColor?: string;
+    auditors: { id: string; username: string; name: string }[];
     onViewHistory: (account: AuditItem) => void;
     onAssign: (auditId: string, assignee: string) => void;
 }
 
-export function AuditColumn({ id, title, items, color, auditors, onViewHistory, onAssign }: AuditColumnProps) {
-    const { setNodeRef } = useDroppable({
-        id: id,
-    });
+const ITEMS_PER_PAGE = 5;
+
+export function AuditColumn({
+    id,
+    title,
+    items,
+    color,
+    borderColor,
+    glowColor,
+    auditors,
+    onViewHistory,
+    onAssign,
+}: AuditColumnProps) {
+    const { setNodeRef, isOver } = useDroppable({ id });
 
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 5;
-
     const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE) || 1;
 
-    // Ensure current page is valid when items change
     useEffect(() => {
-        if (currentPage > totalPages) {
-            setCurrentPage(totalPages);
-        }
+        if (currentPage > totalPages) setCurrentPage(totalPages);
     }, [items.length, totalPages, currentPage]);
 
     const paginatedItems = useMemo(() => {
@@ -60,14 +68,42 @@ export function AuditColumn({ id, title, items, color, auditors, onViewHistory, 
     }, [items, currentPage]);
 
     return (
-        <div className="flex flex-col h-full bg-muted/40 rounded-lg border border-border/50">
-            <div className={cn("p-4 font-semibold text-sm border-b uppercase tracking-wider rounded-t-lg", color)}>
-                {title} <span className="ml-2 text-xs font-medium bg-background/90 text-foreground px-2 py-0.5 rounded-full shadow-sm">{items.length}</span>
+        <div
+            className={cn(
+                "flex flex-col h-full rounded-xl border transition-all duration-200",
+                "bg-card/60 backdrop-blur-sm",
+                isOver
+                    ? cn("border-2", borderColor ?? "border-primary", "shadow-lg")
+                    : "border-border/50",
+            )}
+            style={isOver && glowColor ? { boxShadow: `0 0 24px ${glowColor}` } : undefined}
+        >
+            {/* ── Column Header ──────────────────────────────────────── */}
+            <div
+                className={cn(
+                    "flex items-center justify-between px-4 py-3 rounded-t-xl",
+                    color ?? "bg-muted text-foreground"
+                )}
+            >
+                <span className="text-xs font-black uppercase tracking-widest truncate">
+                    {title}
+                </span>
+                <span
+                    className="ml-2 shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full"
+                    style={{ background: "rgba(0,0,0,0.2)" }}
+                >
+                    {items.length}
+                </span>
             </div>
-            <ScrollArea className="flex-1 p-3">
-                <div ref={setNodeRef} className="min-h-[150px] space-y-3">
-                    <SortableContext items={paginatedItems.map((item) => item.id)} strategy={verticalListSortingStrategy}>
-                        {paginatedItems.map((item) => (
+
+            {/* ── Card List ──────────────────────────────────────────── */}
+            <ScrollArea className="flex-1 px-2.5 py-2.5">
+                <div ref={setNodeRef} className="min-h-[120px] space-y-2.5">
+                    <SortableContext
+                        items={paginatedItems.map((item) => item.id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {paginatedItems.map((item, index) => (
                             <AuditCard
                                 key={item.id}
                                 id={item.id}
@@ -76,45 +112,61 @@ export function AuditColumn({ id, title, items, color, auditors, onViewHistory, 
                                 bankName={item.bankName}
                                 amount={item.amount}
                                 initiatedBy={item.initiatedBy}
+                                assignee={item.assignee}
                                 date={item.date}
                                 status={item.status}
+                                index={index}
                                 onViewHistory={() => onViewHistory(item)}
                             />
                         ))}
+
                         {items.length === 0 && (
-                            <div className="h-24 flex items-center justify-center text-xs text-muted-foreground border-2 border-dashed rounded-md">
-                                Drop here
+                            <div className="h-28 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border/40 rounded-xl text-muted-foreground/60">
+                                <InboxIcon className="h-5 w-5" />
+                                <span className="text-[11px] font-medium">Drop here</span>
                             </div>
                         )}
                     </SortableContext>
                 </div>
             </ScrollArea>
 
-            {/* Pagination Controls */}
+            {/* ── Pagination ─────────────────────────────────────────── */}
             {items.length > ITEMS_PER_PAGE && (
-                <div className="p-3 border-t bg-muted/20 flex items-center justify-between gap-2">
+                <div className="px-3 py-2.5 border-t border-border/40 flex items-center justify-between gap-2 bg-muted/20 rounded-b-xl">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7"
+                        className="h-7 w-7 rounded-lg"
                         disabled={currentPage === 1}
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className="h-3.5 w-3.5" />
                     </Button>
 
-                    <span className="text-[10px] font-medium text-muted-foreground uppercase">
-                        Page {currentPage} of {totalPages}
-                    </span>
+                    {/* Dot indicators */}
+                    <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={cn(
+                                    "rounded-full transition-all duration-200",
+                                    i + 1 === currentPage
+                                        ? "w-4 h-1.5 bg-primary"
+                                        : "w-1.5 h-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60"
+                                )}
+                            />
+                        ))}
+                    </div>
 
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7"
+                        className="h-7 w-7 rounded-lg"
                         disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     >
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             )}

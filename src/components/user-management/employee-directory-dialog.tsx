@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useEmployees } from '@/hooks/use-employees';
 import { Employee } from '@/types/employee';
 

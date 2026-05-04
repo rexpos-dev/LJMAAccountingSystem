@@ -43,7 +43,7 @@ import {
     ChevronsRight,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 import { useSalesTransactions } from '@/hooks/use-sales';
 import { useState } from 'react';

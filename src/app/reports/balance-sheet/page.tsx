@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -30,7 +30,8 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import format from '@/lib/date-format';
 
-export default function BalanceSheetPage({ onViewReport = () => { } }: { onViewReport?: (date: Date) => void }) {
+export default function BalanceSheetPage(props: any) {
+  const { onViewReport = () => { } } = props;
   const { openDialogs, closeDialog } = useDialog();
   const [date, setDate] = useState<Date | undefined>(undefined);
 

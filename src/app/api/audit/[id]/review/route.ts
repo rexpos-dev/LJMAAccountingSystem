@@ -36,22 +36,29 @@ export async function POST(
             });
 
             // 3. Handle the source transaction logic (Skip if ASSIGN_ONLY)
-            if (decision !== 'ASSIGN_ONLY' && log.transactionId && log.actionType?.toLowerCase().includes("bank")) {
-                if (decision === 'APPROVE') {
-                    // Update bank transaction to APPROVED first
-                    await tx.bankTransaction.updateMany({
+            if (decision !== 'ASSIGN_ONLY' && log.transactionId) {
+                if (log.actionType === 'Bank Registration') {
+                    await tx.bankAccount.update({
                         where: { id: log.transactionId },
-                        data: { status: 'APPROVED' }
+                        data: { audit_status: decision === 'APPROVE' ? 'DONE' : 'TO_AUDIT' }
                     });
+                } else if (log.actionType?.toLowerCase().includes("bank")) {
+                    if (decision === 'APPROVE') {
+                        // Update bank transaction to APPROVED first
+                        await tx.bankTransaction.updateMany({
+                            where: { id: log.transactionId },
+                            data: { status: 'APPROVED' }
+                        });
 
-                    // postBankTransactionToGL will update it to POSTED
-                    // Note: We use the imported function but it might need a tx-safe version if we want it in this transaction
-                } else {
-                    // Reject: Return to DRAFT
-                    await tx.bankTransaction.updateMany({
-                        where: { id: log.transactionId },
-                        data: { status: 'DRAFT' }
-                    });
+                        // postBankTransactionToGL will update it to POSTED
+                        // Note: We use the imported function but it might need a tx-safe version if we want it in this transaction
+                    } else {
+                        // Reject: Return to DRAFT
+                        await tx.bankTransaction.updateMany({
+                            where: { id: log.transactionId },
+                            data: { status: 'DRAFT' }
+                        });
+                    }
                 }
             }
 
@@ -74,7 +81,7 @@ export async function POST(
         // If it was an approval and we are outside the atomic block for the posting (postBankTransactionToGL does its own tx)
         if (decision === 'APPROVE') {
             const log = await prisma.auditLog.findUnique({ where: { id } });
-            if (log?.transactionId && log.actionType?.toLowerCase().includes("bank")) {
+            if (log?.transactionId && log.actionType?.toLowerCase().includes("bank") && log.actionType !== 'Bank Registration') {
                 await postBankTransactionToGL(log.transactionId, 'Auditor');
             }
         }

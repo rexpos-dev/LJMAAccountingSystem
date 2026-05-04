@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -33,12 +34,23 @@ import {
     ChevronsLeft,
     ChevronsRight,
     RefreshCw,
-    Banknote // Using Banknote as valid import if available, or fallback to file-text logic
+    Banknote,
+    Search,
+    Filter,
+    Calendar as CalendarIcon,
+    ArrowUpRight,
+    Activity,
+    ShieldCheck,
+    MoreHorizontal,
+    Download,
+    Eye,
+    Trash2
 } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Payable {
     id: string;
@@ -87,7 +99,7 @@ export default function AccountsPayableListDialog() {
             const params = new URLSearchParams({
                 limit: pageSize.toString(),
                 offset: ((page - 1) * pageSize).toString(),
-                status: 'all', // Can be refined if needed
+                status: 'all',
                 supplierId: supplierFilter === 'all' ? '' : supplierFilter,
                 startDate: period === 'all' ? '' : startDate,
                 endDate: period === 'all' ? '' : endDate,
@@ -99,7 +111,6 @@ export default function AccountsPayableListDialog() {
                 const data = result.data || [];
                 setTotalCount(result.totalCount || 0);
 
-                // Map POs to Payable format
                 const mappedData: Payable[] = data.map((po: any) => ({
                     id: po.id,
                     date: po.date,
@@ -137,44 +148,15 @@ export default function AccountsPayableListDialog() {
     const handleRefresh = () => {
         fetchPayables();
         fetchSuppliers();
-        toast({ title: "Refreshed", description: "Data refreshed" });
+        toast({ title: "Refreshed", description: "Data matrix updated" });
     };
 
-    // Toolbar Component
-    const ToolbarButton = ({
-        icon: Icon,
-        label,
-        onClick,
-        disabled = false,
-        className
-    }: {
-        icon: any,
-        label: string,
-        onClick?: () => void,
-        disabled?: boolean,
-        className?: string
-    }) => (
-        <Button
-            variant="ghost"
-            className={cn(
-                "flex flex-col items-center h-auto py-2 px-3 gap-1 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md disabled:opacity-50",
-                className
-            )}
-            onClick={onClick}
-            disabled={disabled}
-        >
-            <Icon className="h-5 w-5" />
-            <span className="text-[10px] font-medium">{label}</span>
-        </Button>
-    );
-
     const handleNew = () => {
-        // Open Enter New Accounts Payable
-        openDialog('enter-new-ap' as any);
+        openDialog('enter-ap' as any);
     };
 
     const handleDelete = () => {
-        toast({ title: "Delete", description: "Not implemented yet" });
+        toast({ title: "Command Locked", description: "Deletion protocol restricted." });
     };
 
     const handleEdit = () => {
@@ -191,186 +173,320 @@ export default function AccountsPayableListDialog() {
                 setDialogData('enter-payments-of-accounts-payable', {
                     supplierId: selectedPayable.supplierId,
                     billId: selectedId,
-                    amount: selectedPayable.dueAmount // Optional: could pre-fill amount
+                    amount: selectedPayable.dueAmount
                 });
             }
         }
         openDialog('enter-payments-of-accounts-payable');
     };
 
-    const handleSuite = () => {
-        toast({ title: "Suite", description: "Suite functionality not implemented" });
-    };
-
     const totalAmount = payables.reduce((sum, p) => sum + p.amount, 0);
+    const totalDue = payables.reduce((sum, p) => sum + p.dueAmount, 0);
 
     return (
         <Dialog open={openDialogs['accounts-payable']} onOpenChange={() => closeDialog('accounts-payable')}>
-            <DialogContent className="max-w-[1000px] h-[80vh] flex flex-col p-0 gap-0 sm:rounded-lg overflow-hidden">
-                <DialogHeader className="px-4 py-2 border-b bg-background z-10">
-                    <DialogTitle className="flex items-center gap-2">
-                        Accounts Payable
-                    </DialogTitle>
-                </DialogHeader>
+            <DialogContent className="max-w-[1200px] p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
+                {/* Premium Header */}
+                <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-blue-400/20 text-blue-400 border border-blue-400/20">
+                            <Activity className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">Accounts Payable Matrix</DialogTitle>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-400/20 text-blue-400 border border-blue-400/20">Supply Chain Finance</span>
+                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Real-time Obligation Tracking</span>
+                            </div>
+                        </div>
+                    </div>
 
-                {/* Toolbar */}
-                <div className="flex items-center px-2 py-1 border-b gap-1 bg-background overflow-x-auto">
-                    <ToolbarButton icon={Plus} label="New" onClick={handleNew} />
-                    <ToolbarButton icon={X} label="Delete" onClick={handleDelete} disabled={!selectedId} />
-                    <ToolbarButton icon={Pencil} label="Edit" onClick={handleEdit} disabled={!selectedId} />
-                    <div className="w-px h-8 bg-border mx-1" />
-                    <ToolbarButton icon={Banknote} label="Payment" onClick={handlePayment} disabled={!selectedId} />
-
-                    <ToolbarButton icon={RefreshCw} label="Refresh" onClick={handleRefresh} />
-
-
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Total Outstanding</span>
+                            <span className="text-xl font-black italic tracking-tighter text-red-400">
+                                ₱{totalDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </span>
+                        </div>
+                        <button 
+                            onClick={() => closeDialog('accounts-payable')}
+                            className="p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-2 bg-muted/20 border-b">
+                {/* Advanced Toolbar */}
+                <div className="px-8 py-4 border-b border-white/5 bg-white/[0.02] flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">Period:</span>
+                        <Button 
+                            onClick={handleNew}
+                            className="bg-blue-400 hover:bg-blue-400/90 text-black font-black uppercase tracking-widest text-[10px] px-4 h-9 rounded-xl transition-all gap-2"
+                        >
+                            <Plus className="h-3.5 w-3.5" />
+                            Record Obligation
+                        </Button>
+                        <div className="w-px h-6 bg-white/10 mx-2" />
+                        <Button 
+                            variant="ghost" 
+                            disabled={!selectedId}
+                            onClick={handlePayment}
+                            className="text-white/60 hover:text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] px-4 h-9 rounded-xl transition-all gap-2"
+                        >
+                            <Banknote className="h-3.5 w-3.5" />
+                            Settle Selected
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            disabled={!selectedId}
+                            onClick={handleEdit}
+                            className="text-white/60 hover:text-white hover:bg-white/10 font-black uppercase tracking-widest text-[10px] px-4 h-9 rounded-xl transition-all gap-2"
+                        >
+                            <Pencil className="h-3.5 w-3.5" />
+                            Modify
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            disabled={!selectedId}
+                            onClick={handleDelete}
+                            className="text-red-400/60 hover:text-red-400 hover:bg-red-400/10 font-black uppercase tracking-widest text-[10px] px-4 h-9 rounded-xl transition-all gap-2"
+                        >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Purge
+                        </Button>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <div className="relative group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20 group-focus-within:text-blue-400 transition-colors" />
+                            <Input 
+                                placeholder="Search Reference..." 
+                                className="pl-9 h-9 w-64 bg-white/5 border-white/10 rounded-xl text-xs font-bold text-white placeholder:text-white/20 focus:ring-blue-400/20 transition-all"
+                            />
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            onClick={handleRefresh}
+                            className="h-9 w-9 p-0 border-white/10 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white rounded-xl transition-all"
+                        >
+                            <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Intelligence Filters */}
+                <div className="px-8 py-3 border-b border-white/5 bg-white/[0.01] grid grid-cols-4 gap-6 shrink-0">
+                    <div className="space-y-1.5">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-white/20 ml-1">Temporal Scope</Label>
                         <Select value={period} onValueChange={setPeriod}>
-                            <SelectTrigger className="h-8 w-[120px]">
-                                <SelectValue placeholder="All" />
+                            <SelectTrigger className="h-9 bg-white/5 border-white/10 rounded-xl text-xs font-bold">
+                                <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All</SelectItem>
-                                <SelectItem value="today">Today</SelectItem>
-                                <SelectItem value="week">This Week</SelectItem>
-                                <SelectItem value="month">This Month</SelectItem>
+                            <SelectContent className="bg-slate-900 border-white/10">
+                                <SelectItem value="all">Full History</SelectItem>
+                                <SelectItem value="today">Today's Cycles</SelectItem>
+                                <SelectItem value="week">Current Week</SelectItem>
+                                <SelectItem value="month">Current Month</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">Start:</span>
-                        <Input type="date" className="h-8 w-[130px]" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">End:</span>
-                        <Input type="date" className="h-8 w-[130px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium whitespace-nowrap">Supplier:</span>
+                    <div className="space-y-1.5">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-white/20 ml-1">Provider Node</Label>
                         <Select value={supplierFilter} onValueChange={setSupplierFilter}>
-                            <SelectTrigger className="h-8 w-[150px]">
-                                <SelectValue placeholder="All" />
+                            <SelectTrigger className="h-9 bg-white/5 border-white/10 rounded-xl text-xs font-bold">
+                                <SelectValue placeholder="All Providers" />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All</SelectItem>
+                            <SelectContent className="bg-slate-900 border-white/10">
+                                <SelectItem value="all">Global Inventory</SelectItem>
                                 {suppliers.map(s => (
                                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-white/20 ml-1">Date Start</Label>
+                        <div className="relative">
+                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
+                            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="pl-9 h-9 bg-white/5 border-white/10 rounded-xl text-xs font-bold" />
+                        </div>
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-white/20 ml-1">Date End</Label>
+                        <div className="relative">
+                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
+                            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="pl-9 h-9 bg-white/5 border-white/10 rounded-xl text-xs font-bold" />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Table */}
-                <div className="flex-1 overflow-auto bg-background">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Date</TableHead>
-                                <TableHead className="w-[100px]">Due Date</TableHead>
-                                <TableHead className="w-[100px]">Reference</TableHead>
-                                <TableHead className="w-[120px]">PO Reference</TableHead>
-                                <TableHead className="w-[100px]">Payable</TableHead>
-                                <TableHead>Supplier</TableHead>
-                                <TableHead className="w-[100px] text-right">Amount</TableHead>
-                                <TableHead className="w-[100px] text-right">Due</TableHead>
-                                <TableHead className="w-[100px] text-center">Status</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {payables.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">No accounts payable found.</TableCell>
+                {/* Analytical Table */}
+                <div className="flex-1 overflow-hidden relative">
+                    <ScrollArea className="h-full">
+                        <Table>
+                            <TableHeader className="bg-white/[0.02] sticky top-0 z-20 backdrop-blur-md">
+                                <TableRow className="border-white/5 hover:bg-transparent">
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12 pl-8">Issue Date</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12">Maturity</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12">Reference ID</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12">Provider</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12 text-right">Obligation</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12 text-right">Residual</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12 text-center">Status</TableHead>
+                                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-12 pr-8 text-right">Action</TableHead>
                                 </TableRow>
-                            ) : (
-                                payables.map((payable) => (
-                                    <TableRow
-                                        key={payable.id}
-                                        className={cn(
-                                            "cursor-default",
-                                            selectedId === payable.id && "bg-muted/50"
-                                        )}
-                                        onClick={() => setSelectedId(payable.id)}
-                                    >
-                                        <TableCell>{format(new Date(payable.date), 'yyyy-MM-dd')}</TableCell>
-                                        <TableCell>{format(new Date(payable.dueDate), 'yyyy-MM-dd')}</TableCell>
-                                        <TableCell>{payable.reference}</TableCell>
-                                        <TableCell>{payable.poReference}</TableCell>
-                                        <TableCell>{payable.payableNo}</TableCell>
-                                        <TableCell>{payable.supplierName}</TableCell>
-                                        <TableCell className="text-right">₱{payable.amount.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">₱{payable.dueAmount.toFixed(2)}</TableCell>
-                                        <TableCell className="text-center">{payable.status}</TableCell>
+                            </TableHeader>
+                            <TableBody>
+                                {payables.length === 0 && !loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={8} className="h-64 text-center">
+                                            <div className="flex flex-col items-center justify-center text-white/10 gap-3">
+                                                <ShieldCheck className="h-16 w-16 opacity-20" />
+                                                <div>
+                                                    <p className="text-sm font-black uppercase tracking-widest">No Active Obligations</p>
+                                                    <p className="text-[10px] font-bold text-white/5 uppercase mt-1">Matrix Clear</p>
+                                                </div>
+                                            </div>
+                                        </TableCell>
                                     </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                                ) : (
+                                    payables.map((payable) => (
+                                        <TableRow
+                                            key={payable.id}
+                                            className={cn(
+                                                "border-white/5 hover:bg-white/[0.02] group transition-all cursor-pointer relative",
+                                                selectedId === payable.id && "bg-blue-400/5"
+                                            )}
+                                            onClick={() => setSelectedId(payable.id)}
+                                        >
+                                            <TableCell className="pl-8 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={cn(
+                                                        "w-1 h-8 rounded-full transition-all",
+                                                        selectedId === payable.id ? "bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]" : "bg-white/5"
+                                                    )} />
+                                                    <span className="text-xs font-bold text-white/60">{format(new Date(payable.date), 'MMM dd, yyyy')}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
+                                                    {format(new Date(payable.dueDate), 'MMM dd')}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-mono font-bold text-blue-400/80">#{payable.reference}</span>
+                                                    <span className="text-[10px] font-black text-white/20 uppercase">{payable.payableNo}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <span className="text-xs font-black uppercase tracking-tight text-white/80">{payable.supplierName}</span>
+                                            </TableCell>
+                                            <TableCell className="py-4 text-right">
+                                                <span className="text-xs font-bold text-white/60">₱{payable.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                            </TableCell>
+                                            <TableCell className="py-4 text-right">
+                                                <span className={cn(
+                                                    "text-xs font-black italic",
+                                                    payable.dueAmount > 0 ? "text-red-400" : "text-emerald-400"
+                                                )}>
+                                                    ₱{payable.dueAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="py-4 text-center">
+                                                <span className={cn(
+                                                    "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border",
+                                                    payable.status === 'Paid' 
+                                                        ? "bg-emerald-400/10 text-emerald-400 border-emerald-400/20" 
+                                                        : "bg-amber-400/10 text-amber-400 border-amber-400/20"
+                                                )}>
+                                                    {payable.status}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="py-4 pr-8 text-right">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/10 text-white/20 hover:text-white transition-all">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </ScrollArea>
                 </div>
 
-                {/* Footer */}
-                <div className="bg-background p-2 border-t flex flex-col sm:flex-row items-center justify-between text-sm px-4 gap-2">
-                    <div className="flex items-center gap-4">
-                        <span className="font-medium">{totalCount} Bills. Total ₱{totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
+                {/* Intelligence Footer */}
+                <div className="px-8 py-4 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-10">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Total Asset Outflow</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-black italic text-white/80">
+                                    ₱{totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                                <span className="text-[10px] font-bold text-white/20">({totalCount} Items)</span>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-6">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Page Depth</span>
+                                <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(parseInt(v)); setPage(1); }}>
+                                    <SelectTrigger className="h-7 w-20 bg-white/5 border-white/10 rounded-lg text-[10px] font-bold">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-900 border-white/10">
+                                        {[20, 50, 100].map(size => (
+                                            <SelectItem key={size} value={size.toString()}>{size} Rows</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1 mr-4">
-                            <span className="text-muted-foreground whitespace-nowrap text-[11px]">Rows per page:</span>
-                            <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(parseInt(v)); setPage(1); }}>
-                                <SelectTrigger className="h-7 w-[70px] text-[11px]">
-                                    <SelectValue placeholder={pageSize.toString()} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {[10, 20, 50, 100].map(size => (
-                                        <SelectItem key={size} value={size.toString()}>{size}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 rounded-lg hover:bg-white/10 text-white/40"
                                 onClick={() => setPage(1)}
                                 disabled={page === 1}
                             >
                                 <ChevronsLeft className="h-4 w-4" />
                             </Button>
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 rounded-lg hover:bg-white/10 text-white/40"
                                 onClick={() => setPage(prev => Math.max(1, prev - 1))}
                                 disabled={page === 1}
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
 
-                            <div className="flex items-center px-4 h-8 border rounded-md bg-muted/20 min-w-[80px] justify-center text-[12px] font-medium">
-                                Page {page} of {Math.max(1, Math.ceil(totalCount / pageSize))}
+                            <div className="flex items-center px-4 text-[10px] font-black uppercase tracking-widest text-blue-400 border-x border-white/5 min-w-[120px] justify-center">
+                                Fragment {page} / {Math.max(1, Math.ceil(totalCount / pageSize))}
                             </div>
 
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 rounded-lg hover:bg-white/10 text-white/40"
                                 onClick={() => setPage(prev => Math.min(Math.ceil(totalCount / pageSize), prev + 1))}
                                 disabled={page >= Math.ceil(totalCount / pageSize)}
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 rounded-lg hover:bg-white/10 text-white/40"
                                 onClick={() => setPage(Math.ceil(totalCount / pageSize))}
                                 disabled={page >= Math.ceil(totalCount / pageSize)}
                             >

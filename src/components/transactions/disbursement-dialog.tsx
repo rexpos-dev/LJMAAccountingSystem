@@ -5,7 +5,7 @@ import {
     DialogContent,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { useDialog } from "@/components/layout/dialog-provider";
+import { useDialog } from "@/components/layout/dialog-context";
 import { DisbursementSlipForm } from "@/components/forms/disbursement-slip-form";
 
 export function DisbursementDialog({
@@ -20,7 +20,7 @@ export function DisbursementDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-6xl h-[95vh] flex flex-col p-6 overflow-y-auto">
+            <DialogContent className="max-w-6xl h-[95vh] flex flex-col p-6 overflow-y-auto bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
                 <DialogTitle className="sr-only">Disbursement Slip</DialogTitle>
                 {open && (
                     <DisbursementSlipForm

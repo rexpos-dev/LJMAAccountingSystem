@@ -31,7 +31,7 @@ import {
     ListVideo,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 
 export default function IncomeStatementReport() {

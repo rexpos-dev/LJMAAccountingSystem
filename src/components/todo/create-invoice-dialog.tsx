@@ -48,7 +48,7 @@ import { useCustomers } from '@/hooks/use-customers';
 import { useSalesUsers } from '@/hooks/use-sales-users';
 import format from '@/lib/date-format';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
@@ -278,9 +278,9 @@ export default function CreateInvoiceDialog() {
                                         <CollapsibleTrigger asChild>
                                             <Button variant="ghost" size="sm" className="w-9 p-0">
                                                 {isHeaderOpen ? (
-                                                    <ChevronUp className="h-4 w-4" />
-                                                ) : (
                                                     <ChevronDown className="h-4 w-4" />
+                                                ) : (
+                                                    <ChevronUp className="h-4 w-4" />
                                                 )}
                                                 <span className="sr-only">Toggle</span>
                                             </Button>
