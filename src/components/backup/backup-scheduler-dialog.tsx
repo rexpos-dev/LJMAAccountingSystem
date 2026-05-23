@@ -1,6 +1,6 @@
 "use client";
 
-import { useDialog } from "@/components/layout/dialog-provider";
+import { useDialog } from "@/components/layout/dialog-context";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -239,13 +239,7 @@ export default function BackupSchedulerDialog() {
                                                     <Label className="text-sm font-medium text-muted-foreground">Start Date</Label>
                                                     <Popover>
                                                         <PopoverTrigger asChild>
-                                                            <Button
-                                                                variant={"outline"}
-                                                                className={cn(
-                                                                    "w-full justify-start text-left font-normal",
-                                                                    !date && "text-muted-foreground"
-                                                                )}
-                                                            >
+                                                            <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !date && "text-muted-foreground" )} >
                                                                 <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                                 {date ? format(date, "PPP") : <span>Pick a date</span>}
                                                             </Button>
@@ -264,12 +258,7 @@ export default function BackupSchedulerDialog() {
                                                     <Label className="text-sm font-medium text-muted-foreground">Run Time</Label>
                                                     <div className="relative">
                                                         <Clock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground/50" />
-                                                        <Input
-                                                            id="time"
-                                                            type="time"
-                                                            className="pl-9"
-                                                            value={time}
-                                                            onChange={(e) => setTime(e.target.value)}
+                                                        <Input id="time" type="time" className="pl-9" value={time} onChange={(e) => setTime(e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
@@ -279,11 +268,7 @@ export default function BackupSchedulerDialog() {
                                 )}
                             </Card>
 
-                            <Button
-                                className="w-full h-11"
-                                onClick={handleRunNow}
-                                disabled={isLoading || isRunning}
-                            >
+                            <Button className="w-full" onClick={handleRunNow} disabled={isLoading || isRunning} >
                                 <div className="flex items-center justify-center gap-2">
                                     {(isLoading || isRunning) ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                                     {isRunning ? "Backup Running..." : "Run Immediate Backup"}
@@ -329,7 +314,7 @@ export default function BackupSchedulerDialog() {
                                                     </div>
                                                 </div>
                                                 {job.status === 'COMPLETED' && (
-                                                    <Button variant="ghost" size="icon" className="w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDownload(job.id, job.fileName!)}>
+                                                    <Button variant="ghost" size="icon" className="w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDownload(job.id, job.fileName!)}>
                                                         <Download className="w-4 h-4 text-muted-foreground hover:text-primary" />
                                                     </Button>
                                                 )}

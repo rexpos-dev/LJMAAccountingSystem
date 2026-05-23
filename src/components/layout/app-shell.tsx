@@ -18,7 +18,15 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarMenuBadge,
+  SidebarRail,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { useNotifications } from "@/hooks/use-notifications";
+import { useDialog } from "./dialog-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { navItems, type NavItem } from "@/lib/navigation";
@@ -27,13 +35,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronsUpDown, Bell, PanelsTopLeft } from "lucide-react";
+import { ChevronUp, Bell, PanelsTopLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UserNav } from "./user-nav";
 import { NotificationBell } from "./notification-bell";
 import { EmailButton } from "./email-button";
 import { Breadcrumbs } from "./breadcrumbs";
 import { ThemeToggle } from "./theme-toggle";
+import { ChatBox } from "../chat/chat-box";
 
 // ... (keep surrounding imports if range allows, but aiming for cleaner replacement)
 // Actually, I can't modify imports easily with a single chunk if they are far apart.
@@ -45,9 +54,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useDialog } from "./dialog-provider";
 import dynamic from 'next/dynamic';
 import NewAccountDialog from "../configuration/new-account-dialog";
 import EditTransactionDialog from "../transactions/edit-transaction-dialog";
@@ -86,7 +96,40 @@ function SidebarNav() {
   const pathname = usePathname();
   const { openDialog } = useDialog();
   const { user } = useAuth();
+  const { state } = useSidebar();
+  const { notifications } = useNotifications();
   const [isMounted, setIsMounted] = React.useState(false);
+
+  const getUnreadCount = (item: NavItem | { title: string, href: string }) => {
+    if (!notifications) return 0;
+
+    return notifications.filter(n => {
+      // Map notification types to nav items
+      if (item.href === '/requests' || item.title === 'Requests') {
+        return n.type === 'REQUEST_VERIFICATION';
+      }
+      if (item.href === '/audit' || item.title === 'Audit') {
+        return n.type === 'AuditAssignment' || n.type === 'AuditComment';
+      }
+      if (item.href === '/configuration/user-permissions' || item.title === 'User Permissions') {
+        return n.type === 'ACCESS_REQUEST';
+      }
+      if (item.href === '/dashboard' || item.title === 'Dashboard') {
+        return n.type?.startsWith('reminder_');
+      }
+      return false;
+    }).length;
+  };
+
+  const getItemCount = (navItem: NavItem) => {
+    let count = getUnreadCount(navItem);
+    if (navItem.subItems) {
+      navItem.subItems.forEach(sub => {
+        count += getUnreadCount(sub);
+      });
+    }
+    return count;
+  };
 
   React.useEffect(() => {
     setIsMounted(true);
@@ -156,12 +199,56 @@ function SidebarNav() {
       ? item.subItems.some((sub) => pathname.startsWith(sub.href))
       : pathname.startsWith(item.href);
 
+    const isCollapsed = state === "collapsed";
+
     if (item.subItems && visibleSubItems && visibleSubItems.length > 0) {
+      if (isCollapsed) {
+        return (
+          <DropdownMenu key={item.title}>
+            <SidebarMenuItem className="w-full">
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  isActive={isActive}
+                  className="w-full justify-start"
+                  tooltip={item.title}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span className="sr-only">{item.title}</span>
+                  {getItemCount(item) > 0 && (
+                    <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-destructive border-2 border-sidebar" />
+                  )}
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+            </SidebarMenuItem>
+            <DropdownMenuContent side="right" align="start" className="min-w-56">
+              <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {visibleSubItems.map((subItem) => (
+                <DropdownMenuItem key={subItem.title} asChild>
+                  <Link
+                    href={subItem.href}
+                    className={cn(
+                      "cursor-pointer w-full",
+                      pathname === subItem.href && "bg-accent text-accent-foreground"
+                    )}
+                    onClick={(e: any) =>
+                      handleNavClick(e, subItem.href, subItem.dialogId as any)
+                    }
+                  >
+                    {subItem.title}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      }
+
       return (
         <Collapsible key={item.title} defaultOpen={isActive} className="w-full">
           <SidebarMenuItem className="w-full">
             <CollapsibleTrigger asChild>
-              <div className="relative flex w-full items-center">
+              <div className="relative flex w-full items-center group">
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
@@ -171,8 +258,13 @@ function SidebarNav() {
                     <div className="flex items-center gap-2">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
+                      {getItemCount(item) > 0 && (
+                        <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
+                          {getItemCount(item)}
+                        </SidebarMenuBadge>
+                      )}
                     </div>
-                    <ChevronsUpDown className="h-4 w-4" />
+                    <ChevronUp className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                   </div>
                 </SidebarMenuButton>
               </div>
@@ -189,7 +281,14 @@ function SidebarNav() {
                       handleNavClick(e, subItem.href, subItem.dialogId as any)
                     }
                   >
-                    <Link href={subItem.href}>{subItem.title}</Link>
+                    <Link href={subItem.href}>
+                      <span>{subItem.title}</span>
+                      {getUnreadCount(subItem) > 0 && (
+                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+                          {getUnreadCount(subItem)}
+                        </span>
+                      )}
+                    </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
               ))}
@@ -212,6 +311,11 @@ function SidebarNav() {
           >
             <item.icon className="h-4 w-4" />
             <span>{item.title}</span>
+            {getItemCount(item) > 0 && (
+              <SidebarMenuBadge className="bg-destructive text-destructive-foreground">
+                {getItemCount(item)}
+              </SidebarMenuBadge>
+            )}
             {item.label && (
               <span className="ml-auto bg-accent text-accent-foreground text-xs px-2 py-0.5 rounded-full">
                 {item.label}
@@ -223,8 +327,86 @@ function SidebarNav() {
     );
   };
 
-  return <SidebarMenu>{navItems.map((item) => renderNavItem(item))}</SidebarMenu>;
+  // Group nav items by their `group` field
+  const groupOrder = ["Overview", "Operations", "Sales & Purchases", "Finance", "Management"];
+  const grouped = groupOrder.reduce<Record<string, typeof navItems>>((acc, g) => {
+    acc[g] = navItems.filter(item => item.group === g);
+    return acc;
+  }, {});
+
+  return (
+    <div className="flex flex-col gap-0">
+      {groupOrder.map((groupName, idx) => {
+        const items = grouped[groupName];
+        const visibleItems = items.filter(item => {
+          if (!isMounted) return false;
+          if (!hasAccess(item)) return false;
+          const visibleSubs = item.subItems?.filter(hasAccess);
+          if (item.subItems && (!visibleSubs || visibleSubs.length === 0) && item.href === '#') return false;
+          return true;
+        });
+        if (visibleItems.length === 0) return null;
+        return (
+          <SidebarGroup key={groupName}>
+            <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/50 px-2 mb-1">
+              {groupName}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {visibleItems.map((item) => renderNavItem(item))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        );
+      })}
+    </div>
+  );
 }
+
+function SidebarHeaderContent({ profile, isLoading }: { profile: any, isLoading: boolean }) {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  return (
+    <div className={cn(
+      "flex items-center gap-3 p-2 transition-all duration-200",
+      isCollapsed ? "justify-center p-0 h-10" : "pr-4"
+    )}>
+      <div className={cn(
+        "flex items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0 transition-all duration-200",
+        isCollapsed ? "w-8 h-8" : "w-9 h-9"
+      )}>
+        <PanelsTopLeft className={cn(
+          "transition-all duration-200",
+          isCollapsed ? "w-4 h-4" : "w-5 h-5"
+        )} />
+      </div>
+      {!isCollapsed && (
+        <div className="flex flex-col truncate leading-tight">
+          {isLoading ? (
+            <>
+              <Skeleton className="h-5 w-36 mb-1" />
+              <Skeleton className="h-3 w-24" />
+            </>
+          ) : (
+            <>
+              <h1
+                className="text-base font-bold font-headline truncate max-w-[180px] leading-tight"
+                title={profile?.businessName || "LJMA FinancePro"}
+              >
+                {profile?.businessName || "LJMA FinancePro"}
+              </h1>
+              <span className="text-[11px] text-sidebar-foreground/50 font-medium tracking-wide">
+                Accounting System
+              </span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -260,27 +442,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <SidebarProvider>
-        <Sidebar>
+        <Sidebar collapsible="icon">
           <SidebarHeader>
-            <div className="flex items-center gap-2 p-2 pr-4">
-              <PanelsTopLeft className="w-8 h-8 text-primary" />
-              {isLoading ? (
-                <Skeleton className="h-7 w-40" />
-              ) : (
-                <h1 className="text-xl font-bold font-headline truncate max-w-[200px]" title={profile?.businessName || "LJMA FinancePro"}>
-                  {profile?.businessName || "LJMA FinancePro"}
-                </h1>
-              )}
-            </div>
+            <SidebarHeaderContent profile={profile} isLoading={isLoading} />
           </SidebarHeader>
           <SidebarContent>
             <SidebarNav />
           </SidebarContent>
           <SidebarFooter>{/* Footer content if any */}</SidebarFooter>
+          <SidebarRail />
         </Sidebar >
         <SidebarInset className="flex flex-col">
-          <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <SidebarTrigger className="md:hidden" />
+          <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-card border-border shadow-sm px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <SidebarTrigger className="-ml-1" />
             <Breadcrumbs />
             <div className="flex items-center gap-2 ml-auto">
               <ThemeToggle />
@@ -289,7 +463,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <UserNav />
             </div>
           </header>
-          <main>
+          <main className="flex-1 bg-background">
             {React.Children.map(children, (child, index) => {
               if (React.isValidElement(child)) {
                 let additionalProps = {};
@@ -310,6 +484,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </main>
         </SidebarInset>
       </SidebarProvider >
+      <ChatBox />
     </>
   );
 }

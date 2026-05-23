@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -104,11 +104,7 @@ export default function AddLoyaltyPointsDialog() {
 
                     <div className="space-y-2">
                         <Label htmlFor="amount">Amount of Points</Label>
-                        <Input
-                            id="amount"
-                            type="number"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
+                        <Input id="amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)}
                             placeholder="0.00"
                         />
                     </div>

@@ -42,6 +42,16 @@ export async function POST(req: Request) {
                 ]
             }, tx);
 
+            // Create Audit Log for POS Batch Closed Note: individual sales synced via webhook are treated as batches here or individual transactions
+            await tx.auditLog.create({
+                data: {
+                    actionType: 'POS Batch Closed',
+                    transactionId: posSale.receiptId,
+                    amount: posSale.amount,
+                    details: `POS Sale Receipt: ${posSale.receiptId}`,
+                },
+            });
+
             return posSale;
         });
 

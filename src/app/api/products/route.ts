@@ -148,6 +148,25 @@ export async function POST(request: Request) {
             status: 'Completed',
           },
         });
+
+        const amount = initialStockVal * (product.costPrice || 0);
+        if (amount > 0) {
+          try {
+            const { postJournalEntry } = await import('@/lib/journal-helper');
+            await postJournalEntry({
+              date: new Date(),
+              referenceId: `INV-INIT-${product.id}`,
+              particulars: `Initial Stock for ${product.name}`,
+              user: 'System',
+              lines: [
+                { accountNo: 1310, debit: amount }, // Inventory
+                { accountNo: 5000, credit: amount } // COGS / Equity
+              ]
+            }, tx);
+          } catch (err) {
+            console.error("Failed to post initial stock journal entry:", err);
+          }
+        }
       }
 
       // Handle conversion factors if any
@@ -274,6 +293,40 @@ export async function PUT(request: Request) {
             status: 'Completed',
           },
         });
+
+        const amount = Math.abs(diff) * (updatedProduct.costPrice || 0);
+        if (amount > 0) {
+          try {
+            const { postJournalEntry } = await import('@/lib/journal-helper');
+            if (diff > 0) {
+              // IN: Debit Inventory, Credit COGS
+              await postJournalEntry({
+                date: new Date(),
+                referenceId: `INV-ADJ-${id}`,
+                particulars: `Inventory Adjustment IN for ${updatedProduct.name}`,
+                user: 'System',
+                lines: [
+                  { accountNo: 1310, debit: amount },
+                  { accountNo: 5000, credit: amount }
+                ]
+              }, tx);
+            } else {
+              // OUT: Debit COGS, Credit Inventory
+              await postJournalEntry({
+                date: new Date(),
+                referenceId: `INV-ADJ-${id}`,
+                particulars: `Inventory Adjustment OUT for ${updatedProduct.name}`,
+                user: 'System',
+                lines: [
+                  { accountNo: 5000, debit: amount },
+                  { accountNo: 1310, credit: amount }
+                ]
+              }, tx);
+            }
+          } catch (err) {
+            console.error("Failed to post inventory adjustment journal entry:", err);
+          }
+        }
       }
 
       return updatedProduct;

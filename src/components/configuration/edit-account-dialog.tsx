@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +26,8 @@ import type { Account } from '@/types/account';
 import { useAccounts } from '@/hooks/use-accounts';
 import { useToast } from '@/hooks/use-toast';
 import { useAccountTypes } from '@/hooks/use-account-types';
+import { useProfitCenters } from '@/hooks/use-profit-centers';
+import { useCostCenters } from '@/hooks/use-cost-centers';
 
 
 
@@ -34,6 +36,8 @@ export default function EditAccountDialog() {
   const { data: accounts, refetch } = useAccounts();
   const { toast } = useToast();
   const { accountTypes } = useAccountTypes();
+  const { profitCenters } = useProfitCenters();
+  const { costCenters } = useCostCenters();
 
   const account = getDialogData('edit-account');
 
@@ -100,6 +104,16 @@ export default function EditAccountDialog() {
           account_description: formData.account_description,
           account_status: formData.account_status || 'Active',
           fs_category: formData.fs_category || formData.account_category || formData.account_type,
+          bank_code: formData.bank_code,
+          bank_name: formData.bank_name,
+          bank_account_no: formData.bank_account_no,
+          currency: formData.currency,
+          branch: formData.branch,
+          linked_gl_id: formData.linked_gl_id,
+          opening_balance: formData.opening_balance,
+          opening_date: formData.opening_date,
+          profit_center_id: formData.profit_center_id,
+          cost_center_id: formData.cost_center_id,
         }),
       });
 
@@ -150,23 +164,14 @@ export default function EditAccountDialog() {
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="number">Account No.</Label>
-                  <Input
-                    id="number"
-                    value={formData.account_no || ''}
-                    readOnly
-                    className="bg-muted"
-                  />
+                  <Input id="number" value={formData.account_no || ''} readOnly className="bg-muted" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="account-name">
                     Account Name<span className="text-destructive">*</span>
                   </Label>
-                  <Input
-                    id="account-name"
-                    placeholder="Enter account name"
-                    value={formData.account_name || ''}
-                    onChange={(e) => handleInputChange('account_name', e.target.value)}
+                  <Input id="account-name" placeholder="Enter account name" value={formData.account_name || ''} onChange={(e) => handleInputChange('account_name', e.target.value)}
                     list="edit-existing-account-names"
                   />
                   <datalist id="edit-existing-account-names">
@@ -178,12 +183,7 @@ export default function EditAccountDialog() {
 
                 <div className="space-y-2">
                   <Label htmlFor="opening-balance">Opening Balance</Label>
-                  <Input
-                    id="opening-balance"
-                    type="number"
-                    placeholder="0.00"
-                    value={formData.balance ?? 0}
-                    onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)}
+                  <Input id="opening-balance" type="number" placeholder="0.00" value={formData.balance ?? 0} onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)}
                   />
                 </div>
 
@@ -202,15 +202,51 @@ export default function EditAccountDialog() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="profit-center">Profit Center</Label>
+                  <Select
+                    value={formData.profit_center_id || 'none'}
+                    onValueChange={(v) => handleInputChange('profit_center_id', v === 'none' ? null : v)}
+                  >
+                    <SelectTrigger id="profit-center">
+                      <SelectValue placeholder="Assign Profit Center" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {profitCenters.map((pc) => (
+                        <SelectItem key={pc.id} value={pc.id}>
+                          {pc.id} - {pc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cost-center">Cost Center</Label>
+                  <Select
+                    value={formData.cost_center_id || 'none'}
+                    onValueChange={(v) => handleInputChange('cost_center_id', v === 'none' ? null : v)}
+                  >
+                    <SelectTrigger id="cost-center">
+                      <SelectValue placeholder="Assign Cost Center" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {costCenters.map((cc) => (
+                        <SelectItem key={cc.id} value={cc.id}>
+                          {cc.id} - {cc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  placeholder="Optional description"
-                  value={formData.account_description || ''}
-                  onChange={(e) => handleInputChange('account_description', e.target.value)}
+                <Input id="description" placeholder="Optional description" value={formData.account_description || ''} onChange={(e) => handleInputChange('account_description', e.target.value)}
                 />
               </div>
 
@@ -236,6 +272,83 @@ export default function EditAccountDialog() {
                     </Select>
                   </div>
                 </div>
+
+                {formData.bank === 'Yes' && (
+                  <>
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 pt-4 border-t">
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-code">Bank Code</Label>
+                        <Input id="bank-code" value={formData.bank_code || ''} onChange={(e) => handleInputChange('bank_code', e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-name">Bank Name</Label>
+                        <Input id="bank-name" value={formData.bank_name || ''} onChange={(e) => handleInputChange('bank_name', e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-account-no">Bank Account No.</Label>
+                        <Input id="bank-account-no" value={formData.bank_account_no || ''} onChange={(e) => handleInputChange('bank_account_no', e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="currency">Currency</Label>
+                        <Select
+                          value={formData.currency || 'PHP'}
+                          onValueChange={(v) => handleInputChange('currency', v)}
+                        >
+                          <SelectTrigger id="currency">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="PHP">PHP</SelectItem>
+                            <SelectItem value="USD">USD</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="branch">Branch</Label>
+                        <Input id="branch" value={formData.branch || ''} onChange={(e) => handleInputChange('branch', e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t pt-6 mt-6">
+                      <h3 className="text-lg font-medium mb-4">General Ledger Mapping</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="linked-gl">Linked GL Account <span className="text-destructive">*</span></Label>
+                          <Select
+                            value={formData.linked_gl_id || ''}
+                            onValueChange={(v) => handleInputChange('linked_gl_id', v)}
+                          >
+                            <SelectTrigger id="linked-gl">
+                              <SelectValue placeholder="Select GL account" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {accounts?.filter((acc: any) => acc.bank === 'No').map((acc: any) => (
+                                <SelectItem key={acc.id} value={acc.id}>
+                                  {acc.account_no} - {acc.account_name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="opening-balance-mig">Opening Balance (Migration)</Label>
+                          <Input id="opening-balance-mig" type="number" value={formData.opening_balance ?? 0} onChange={(e) => handleInputChange('opening_balance', parseFloat(e.target.value) || 0)}
+                            placeholder="0.00"
+                          />
+                        </div>
+                        <div className="space-y-2 col-span-2">
+                          <Label htmlFor="opening-date">Opening Date</Label>
+                          <Input id="opening-date" type="date" value={formData.opening_date ? new Date(formData.opening_date).toISOString().split('T')[0] : ''} onChange={(e) => handleInputChange('opening_date', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

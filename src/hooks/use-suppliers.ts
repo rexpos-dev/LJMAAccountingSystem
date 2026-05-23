@@ -27,14 +27,22 @@ export function useSuppliers() {
             const response = await fetch('/api/suppliers');
 
             if (!response.ok) {
-                throw new Error('Failed to fetch suppliers');
+                let errorMessage = 'Failed to fetch suppliers';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorData.details || errorMessage;
+                } catch (e) {
+                    errorMessage = `${errorMessage} (${response.status} ${response.statusText})`;
+                }
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();
             setSuppliers(data);
-        } catch (err) {
-            setError(err as Error);
-            console.error('Error fetching suppliers:', err);
+        } catch (err: any) {
+            const finalError = err instanceof Error ? err : new Error(err.message || 'Failed to fetch suppliers');
+            setError(finalError);
+            console.error('Failed to fetch suppliers:', err);
         } finally {
             setIsLoading(false);
         }

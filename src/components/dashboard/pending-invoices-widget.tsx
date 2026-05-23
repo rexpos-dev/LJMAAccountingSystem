@@ -4,64 +4,49 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { useDialog } from "@/components/layout/dialog-provider";
+import { FileText, ChevronRight } from "lucide-react";
+import { useDialog } from "@/components/layout/dialog-context";
 
 export function PendingInvoicesWidget() {
     const { data: accounts, isLoading } = useAccounts();
     const { openDialog } = useDialog();
 
     const data = useMemo(() => {
-        if (!accounts) return { count: 0, total: 0 };
-
-        // Sum of all Receivable accounts
-        const receivables = accounts
+        if (!accounts) return { total: 0 };
+        const total = accounts
             .filter(acc =>
                 (acc.account_type === 'Asset' && acc.account_name.toLowerCase().includes('receivable')) ||
                 acc.account_name.toLowerCase() === 'accounts receivable'
-            );
-
-        const total = receivables.reduce((sum, acc) => sum + (acc.balance || 0), 0);
-
-        // We don't have a reliable "count" of invoices from just the account balance.
-        // We can either show "-" or maybe hidden. 
-        // However, to match the design we need a number. 
-        // If we can't get it, we could query transactions, but for now let's just show the Balance clearly.
-        // I'll leave count as N/A or remove it to avoid misinformation. 
-
-        return { count: null, total };
+            )
+            .reduce((sum, acc) => sum + (acc.balance || 0), 0);
+        return { total };
     }, [accounts]);
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-PH', {
-            style: 'currency',
-            currency: 'PHP',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount);
-    };
+    const formatCurrency = (amount: number) =>
+        new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
 
-    if (isLoading) {
-        return <Skeleton className="h-[120px] w-full" />;
-    }
+    if (isLoading) return <Skeleton className="h-[140px] w-full rounded-xl" />;
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Invoices</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {/* If we had a count, we would show it here. For now, focus on Value. */}
-                <div className="text-2xl font-bold font-headline">{formatCurrency(data.total)}</div>
-                <div className="text-xs text-muted-foreground mt-1 text-right font-medium">
-                    Total Receivables
+        <Card className="overflow-hidden border border-blue-500/20 bg-gradient-to-b from-blue-500/10 to-blue-500/0 backdrop-blur-sm shadow-sm hover:scale-[1.02] transition-all">
+            <div className="h-0.5 w-full bg-blue-500 opacity-60" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-3 px-4">
+                <CardTitle className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Receivables
+                </CardTitle>
+                <div className="p-1.5 rounded-lg bg-blue-500/10">
+                    <FileText className="h-3.5 w-3.5 text-blue-500" />
                 </div>
-                <div
-                    className="text-xs text-blue-500 mt-2 cursor-pointer hover:underline text-right"
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+                <div className="text-xl font-bold font-headline text-blue-400">{formatCurrency(data.total)}</div>
+                <p className="text-[10px] text-muted-foreground mt-1">Total Pending</p>
+                <button
+                    className="flex items-center gap-0.5 text-[10px] text-blue-400 mt-2 hover:opacity-80 font-semibold transition-opacity"
                     onClick={() => openDialog('invoice-list')}
                 >
-                    View All
-                </div>
+                    View All <ChevronRight className="h-3 w-3" />
+                </button>
             </CardContent>
         </Card>
     );

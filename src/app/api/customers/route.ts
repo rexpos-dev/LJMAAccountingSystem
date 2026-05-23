@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { fetchWithCache } from '@/lib/api-cache';
 
 /**
  * Generate a unique EAN-13 loyalty card code
@@ -53,7 +54,7 @@ export async function GET(request: Request) {
     const page = Math.floor(offset / limit) + 1;
 
     // Fetch from external API
-    const externalUrl = new URL('http://192.168.1.163:3001/api/customers');
+    const externalUrl = new URL('http://192.168.1.163:3000/api/customers');
     externalUrl.searchParams.append('limit', limitParam);
     externalUrl.searchParams.append('page', page.toString());
     const search = searchParams.get('search');
@@ -61,15 +62,18 @@ export async function GET(request: Request) {
       externalUrl.searchParams.append('search', search);
     }
 
-    const response = await fetch(externalUrl.toString(), {
-      next: { revalidate: 0 } // Disable caching to get fresh data
-    });
+    const result = await fetchWithCache<any>(
+      externalUrl.toString(),
+      { headers: { 'Cache-Control': 'no-cache' } },
+      15
+    );
 
-    if (!response.ok) {
-      throw new Error(`External API returned ${response.status}`);
+    if (!result.success || !result.data) {
+      console.warn(`External API returned ${result.status || result.error}. Gracefully returning empty array.`);
+      return NextResponse.json([]);
     }
 
-    const externalData = await response.json();
+    const externalData = result.data;
 
     let rawData = [];
     if (Array.isArray(externalData)) {
@@ -142,17 +146,9 @@ export async function GET(request: Request) {
     console.log('Successfully processed external customers with calculated balances');
     return NextResponse.json(mappedCustomers);
   } catch (error: any) {
-    console.error('❌ [API/Customers] Error fetching external customers:', error);
-    if (error.code) console.error('Error Code:', error.code);
-    if (error.meta) console.error('Error Meta:', JSON.stringify(error.meta));
+    console.warn('❌ [API/Customers] Silent Fallback: Error fetching external customers:', error.message);
 
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch external customers',
-        details: error.message || error.toString(),
-      },
-      { status: 500 }
-    );
+    return NextResponse.json([]);
   }
 }
 

@@ -20,7 +20,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from "@/lib/utils";
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,8 +40,24 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, Check, ChevronsUpDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { 
+    Trash2, 
+    Check, 
+    ChevronsUpDown, 
+    X, 
+    ShoppingCart, 
+    CreditCard, 
+    Building2, 
+    User, 
+    ShieldCheck, 
+    Plus, 
+    Activity, 
+    Calculator,
+    ArrowUpRight,
+    Save,
+    ChevronDown
+} from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useExternalProducts } from '@/hooks/use-products';
 import { useBankAccounts } from '@/hooks/use-accounts';
@@ -74,39 +90,31 @@ function ItemCombobox({ value, products, onChange }: ItemComboboxProps) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between h-8 px-2 font-normal"
-                >
+                <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between px-3 bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10 transition-all rounded-xl text-xs font-bold uppercase" >
                     {value
                         ? products.find((product) => product.sku === value)?.sku || value
-                        : <span className="text-muted-foreground opacity-50">Select item...</span>}
+                        : <span className="text-foreground/20">Select Item Code...</span>}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0" align="start">
-                <div className="flex flex-col">
-                    <div className="flex items-center border-b px-3">
-                        <Input
-                            placeholder="Search items..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 border-0 focus-visible:ring-0 px-0"
+            <PopoverContent className="w-[300px] p-0 bg-card border-foreground/10 shadow-2xl backdrop-blur-xl" align="start">
+                <div className="flex flex-col p-2">
+                    <div className="flex items-center px-3 mb-2">
+                        <Input placeholder="Filter node identification..." value={search} onChange={(e) => setSearch(e.target.value)}
+                            className="h-10 bg-foreground/5 border-foreground/10 text-foreground text-xs placeholder:text-foreground/20 focus-visible:ring-0"
                         />
                     </div>
                     <ScrollArea className="h-72">
-                        <div className="p-1">
+                        <div className="space-y-1 pr-4">
                             {filteredProducts.length === 0 ? (
-                                <div className="py-6 text-center text-sm">No item found.</div>
+                                <div className="py-6 text-center text-[10px] font-black uppercase tracking-widest text-foreground/20">No matching nodes</div>
                             ) : (
                                 filteredProducts.map((product) => (
                                     <div
                                         key={product.sku}
                                         className={cn(
-                                            "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                                            value === product.sku ? "bg-accent" : ""
+                                            "relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-xs outline-none hover:bg-emerald-400 hover:text-black transition-all group",
+                                            value === product.sku ? "bg-emerald-400/20 text-emerald-400" : "text-foreground/60"
                                         )}
                                         onClick={() => {
                                             onChange(product.sku);
@@ -114,16 +122,14 @@ function ItemCombobox({ value, products, onChange }: ItemComboboxProps) {
                                             setSearch("");
                                         }}
                                     >
-                                        <Check
-                                            className={cn(
-                                                "mr-2 h-4 w-4",
-                                                value === product.sku ? "opacity-100" : "opacity-0"
-                                            )}
-                                        />
                                         <div className="flex flex-col">
-                                            <span className="font-medium">{product.sku}</span>
-                                            <span className="text-xs text-muted-foreground text-nowrap truncate max-w-[200px]">{product.name}</span>
+                                            <span className="font-black uppercase tracking-widest">{product.sku}</span>
+                                            <span className={cn(
+                                                "text-[10px] font-bold opacity-60 truncate max-w-[220px]",
+                                                value === product.sku ? "text-emerald-400" : "text-foreground/40"
+                                            )}>{product.name}</span>
                                         </div>
+                                        {value === product.sku && <Check className="ml-auto h-4 w-4" />}
                                     </div>
                                 ))
                             )}
@@ -143,13 +149,9 @@ export default function EnterCashSaleDialog() {
     const [privateComments, setPrivateComments] = useState<string>('');
     const [items, setItems] = useState<SalesItemRow[]>([]);
 
-    // Fetch products (using first page, reasonably large size to get a list)
     const { externalProducts } = useExternalProducts(1, 100, '', '', '');
-
-    // Fetch bank accounts for deposit
     const { accounts: bankAccounts } = useBankAccounts();
 
-    // Initialize with one empty row if empty
     useEffect(() => {
         if (items.length === 0 && openDialogs['enter-cash-sale']) {
             addItemRow();
@@ -174,7 +176,6 @@ export default function EnterCashSaleDialog() {
 
     const removeItemRow = (id: string) => {
         if (items.length === 1) {
-            // If it's the last item, just clear it instead of removing
             setItems(prev => prev.map(item => {
                 if (item.id === id) {
                     return {
@@ -228,186 +229,246 @@ export default function EnterCashSaleDialog() {
         );
     };
 
-    // Calculate Totals
-    const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-    const total = subtotal; // Add tax logic if needed
+    const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.total, 0), [items]);
+    const total = subtotal;
 
     return (
-        <Dialog open={openDialogs['enter-cash-sale']} onOpenChange={() => closeDialog('enter-cash-sale')}>
-            <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0">
-                <DialogHeader className="px-6 py-4 border-b">
-                    <DialogTitle>Non-Invoiced Cash Sale</DialogTitle>
-                </DialogHeader>
+        <Dialog open={openDialogs['enter-cash-sale']} onOpenChange={(open) => !open && closeDialog('enter-cash-sale')}>
+            <DialogContent className="max-w-6xl p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
+                {/* Premium Header */}
+                <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-emerald-400/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-emerald-400/20 text-emerald-400 border border-emerald-400/20 shadow-[0_0_20px_rgba(52,211,153,0.1)]">
+                            <ShoppingCart className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground leading-none">Point of Sale Protocol</DialogTitle>
+                            <div className="flex items-center gap-2 mt-1.5">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-400/20 text-emerald-400 border border-emerald-400/20">Instant Settlement</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Transaction Module v2.4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                </div>
 
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Items Grid */}
-                    <div className="flex-1 overflow-auto m-4 border rounded-md shadow-sm">
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="bg-muted/50">
-                                    <TableHead className="w-16">Qty</TableHead>
-                                    <TableHead className="min-w-[200px]">Item</TableHead>
-                                    <TableHead className="min-w-[200px]">Description</TableHead>
-                                    <TableHead className="w-24 text-right">Unit Price</TableHead>
-                                    <TableHead className="w-24 text-center">Tax</TableHead>
-                                    <TableHead className="w-24 text-right">Total</TableHead>
-                                    <TableHead className="w-10"></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {items.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>
-                                            <Input
-                                                type="number"
-                                                className="w-16 h-8"
-                                                value={item.qty}
-                                                onChange={(e) => handleQtyChange(item.id, Number(e.target.value))}
-                                                min={1}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <ItemCombobox
-                                                value={item.itemId}
-                                                products={externalProducts}
-                                                onChange={(val) => handleItemChange(item.id, val)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="h-8 flex items-center px-3 border rounded-md bg-muted/20 truncate text-sm">
-                                                {item.description || <span className="text-muted-foreground opacity-50">Select an item...</span>}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            {item.unitPrice.toFixed(2)}
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                            {item.tax}
-                                        </TableCell>
-                                        <TableCell className="text-right font-medium">
-                                            {item.total.toFixed(2)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-6 w-6 text-muted-foreground hover:text-red-500"
-                                                onClick={() => removeItemRow(item.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                    <ScrollArea className="flex-1">
+                        <div className="p-8 space-y-8">
+                            {/* Summary Matrix */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-emerald-400">
+                                        <Calculator className="h-10 w-10" />
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-1">Settlement Total</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xs font-bold text-emerald-400/60 uppercase">PHP</span>
+                                        <span className="text-3xl font-black italic tracking-tighter text-emerald-400">{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                    </div>
+                                </div>
 
-                    {/* Middle Action Bar */}
-                    <div className="px-4 pb-2 flex gap-2">
-                        <Button variant="secondary" size="sm" onClick={addItemRow} className="h-8 shadow-sm border">Add Item</Button>
-                        <Button variant="secondary" size="sm" disabled className="h-8 shadow-sm border">Add Discount...</Button>
-                    </div>
+                                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-blue-400">
+                                        <Activity className="h-10 w-10" />
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-1">Active Nodes</p>
+                                    <span className="text-3xl font-black italic tracking-tighter text-blue-400">{items.filter(i => i.itemId).length} / {items.length}</span>
+                                </div>
 
-                    {/* Bottom Form Section */}
-                    <div className="p-4 grid grid-cols-12 gap-6 border-t">
-                        {/* Left Side Controls */}
-                        <div className="col-span-12 md:col-span-7 space-y-4">
-                            <div className="grid grid-cols-12 gap-2 items-center">
-                                <Label className="col-span-3 text-right pr-2">Deposit Account:</Label>
-                                <div className="col-span-9">
-                                    <Select value={depositToAccount} onValueChange={setDepositToAccount}>
-                                        <SelectTrigger className="h-8">
-                                            <SelectValue placeholder="Select Account" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {bankAccounts.map(account => (
-                                                <SelectItem key={account.id} value={account.account_name}>
-                                                    {account.account_name}
-                                                </SelectItem>
+                                <div className="md:col-span-2 bg-foreground/5 border border-foreground/10 p-6 rounded-2xl backdrop-blur-sm flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Sales Intelligence</p>
+                                        <p className="text-xs font-bold text-foreground uppercase italic tracking-tight opacity-60">Revenue capture from direct retail channels.</p>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-foreground/5 border border-foreground/10">
+                                        <ShieldCheck className="h-6 w-6 text-emerald-400" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Main Matrix Table */}
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-4 bg-emerald-400 rounded-full" />
+                                        <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Item Allocation Matrix</h3>
+                                    </div>
+                                    <Button onClick={addItemRow} variant="outline" className="rounded-xl bg-emerald-400/10 border-emerald-400/20 text-emerald-400 hover:bg-emerald-400 hover:text-black transition-all gap-2" >
+                                        <Plus className="h-4 w-4" />
+                                        <span className="font-black uppercase tracking-widest text-[10px]">Initialize Node</span>
+                                    </Button>
+                                </div>
+
+                                <div className="bg-foreground/5 border border-foreground/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+                                    <Table>
+                                        <TableHeader className="bg-foreground/5">
+                                            <TableRow className="border-foreground/5 hover:bg-transparent">
+                                                <TableHead className="w-24 text-[10px] font-black uppercase tracking-widest text-foreground/40 h-12">QTY</TableHead>
+                                                <TableHead className="w-64 text-[10px] font-black uppercase tracking-widest text-foreground/40 h-12">Item Code</TableHead>
+                                                <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-12">Description Particulars</TableHead>
+                                                <TableHead className="w-32 text-[10px] font-black uppercase tracking-widest text-foreground/40 h-12 text-right">Unit Value</TableHead>
+                                                <TableHead className="w-40 text-[10px] font-black uppercase tracking-widest text-foreground/40 h-12 text-right">Node Total</TableHead>
+                                                <TableHead className="w-16"></TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {items.map((item) => (
+                                                <TableRow key={item.id} className="border-foreground/5 hover:bg-foreground/[0.02] group transition-colors">
+                                                    <TableCell className="">
+                                                        <Input type="number" className="bg-transparent border-0 shadow-none text-foreground font-black italic focus:ring-0 text-sm" value={item.qty} onChange={(e) => handleQtyChange(item.id, Number(e.target.value))}
+                                                            min={1}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="">
+                                                        <ItemCombobox
+                                                            value={item.itemId}
+                                                            products={externalProducts}
+                                                            onChange={(val) => handleItemChange(item.id, val)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="">
+                                                        <div className="h-8 flex items-center px-3 border-0 bg-transparent text-foreground/60 text-xs font-bold uppercase italic tracking-tight truncate">
+                                                            {item.description || "Awaiting Identification..."}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <span className="font-mono text-xs text-foreground/40">₱{item.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <span className="font-black text-sm text-emerald-400 italic">₱{item.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                    </TableCell>
+                                                    <TableCell className="text-center pr-6">
+                                                        <button
+                                                            className="p-2 text-foreground/10 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                                                            onClick={() => removeItemRow(item.id)}
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </TableCell>
+                                                </TableRow>
                                             ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-12 gap-2 items-center">
-                                <Label className="col-span-3 text-right pr-2">Salesperson:</Label>
-                                <div className="col-span-9">
-                                    <Select value={salesperson} onValueChange={setSalesperson}>
-                                        <SelectTrigger className="h-8">
-                                            <SelectValue placeholder="" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="employee-1">Employee 1</SelectItem>
-                                            <SelectItem value="employee-2">Employee 2</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        </TableBody>
+                                    </Table>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <Label>Comments</Label>
-                                    <Textarea
-                                        placeholder="[Enter receipt notes]"
-                                        className="resize-none h-20 text-xs"
-                                        value={comments}
-                                        onChange={(e) => setComments(e.target.value)}
-                                    />
+                            {/* Secondary Information */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-4 bg-blue-400 rounded-full" />
+                                        <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Capture Parameters</h3>
+                                    </div>
+                                    <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Deposit Channel</Label>
+                                            <Select value={depositToAccount} onValueChange={setDepositToAccount}>
+                                                <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs font-bold uppercase">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                    {bankAccounts.map(account => (
+                                                        <SelectItem key={account.id} value={account.account_name} className="text-xs font-bold uppercase">
+                                                            {account.account_name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Assigned Agent</Label>
+                                            <Select value={salesperson} onValueChange={setSalesperson}>
+                                                <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs font-bold uppercase">
+                                                    <SelectValue placeholder="Identify Operative" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                    <SelectItem value="employee-1" className="text-xs font-bold uppercase">Operative 1</SelectItem>
+                                                    <SelectItem value="employee-2" className="text-xs font-bold uppercase">Operative 2</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <Label>Private Comments</Label>
-                                    <Textarea
-                                        placeholder="[Enter internal notes]"
-                                        className="resize-none h-20 text-xs"
-                                        value={privateComments}
-                                        onChange={(e) => setPrivateComments(e.target.value)}
-                                    />
+
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-4 bg-amber-400 rounded-full" />
+                                        <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Journal Commentary</h3>
+                                    </div>
+                                    <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Public Particulars</Label>
+                                            <Textarea placeholder="[Internal receipt notes...]" className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl min-h-[68px] resize-none text-xs placeholder:text-foreground/10" value={comments} onChange={(e) => setComments(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Audit Intelligence (Private)</Label>
+                                            <Textarea placeholder="[Internal risk assessment notes...]" className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl min-h-[68px] resize-none text-xs placeholder:text-foreground/10" value={privateComments} onChange={(e) => setPrivateComments(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </ScrollArea>
 
-                        {/* Right Side Summary */}
-                        <div className="col-span-12 md:col-span-5 border shadow-sm rounded-md p-4 h-full flex flex-col justify-end">
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground">Subtotal:</span>
-                                    <span className="font-medium">₱{subtotal.toFixed(2)}</span>
+                    {/* Action Footer */}
+                    <div className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-10">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">Protocol Validation</span>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className={cn(
+                                        "w-2 h-2 rounded-full",
+                                        total > 0 ? "bg-emerald-400 animate-pulse" : "bg-foreground/10"
+                                    )} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
+                                        {total > 0 ? "Matrix Verified" : "Awaiting Nodes"}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between items-center text-lg font-bold border-t pt-2 mt-2">
-                                    <span>Total:</span>
-                                    <span>₱{total.toFixed(2)}</span>
-                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">Aggregate Value</span>
+                                <span className="text-2xl font-black italic tracking-tighter text-emerald-400">
+                                    ₱{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <Button variant="outline" onClick={() => closeDialog('enter-cash-sale')}
+                                className="px-6 h-12 rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-[10px]"
+                            >
+                                Abort Sale
+                            </Button>
+                            
+                            <div className="flex rounded-xl overflow-hidden shadow-lg shadow-emerald-400/20">
+                                <Button className="px-8 rounded-none bg-emerald-400 hover:bg-emerald-400/90 text-black font-black uppercase tracking-widest text-[10px] transition-all gap-2" >
+                                    <Save className="h-4 w-4" />
+                                    Record Protocol
+                                </Button>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" size="icon" className="w-10 rounded-none border-0 bg-emerald-500 hover:bg-emerald-600 text-black border-l border-black/10">
+                                            <ChevronDown className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="bg-card border-foreground/10 text-foreground">
+                                        <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest focus:bg-emerald-400 focus:text-black">Record Credit</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest focus:bg-emerald-400 focus:text-black">Record Invoice</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest focus:bg-emerald-400 focus:text-black">Record Check</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <DialogFooter className="px-6 py-4 border-t bg-muted/20">
-                    <div className="flex gap-2 w-full justify-end">
-                        <div className="flex rounded-md shadow-sm">
-                            <Button className="rounded-r-none">Record Cash</Button>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="icon" className="rounded-l-none border-l-0 w-8 px-0">
-                                        <span className="sr-only">Open options</span>
-                                        <svg width="10" height="10" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><path d="M4.93179 5.43179C4.75605 5.60753 4.75605 5.89245 4.93179 6.06819C5.10753 6.24392 5.39245 6.24392 5.56819 6.06819L7.49999 4.13638L9.43179 6.06819C9.60753 6.24392 9.89245 6.24392 10.0682 6.06819C10.2439 5.89245 10.2439 5.60753 10.0682 5.43179L7.81819 3.18179C7.73379 3.0974 7.61933 3.04999 7.49999 3.04999C7.38064 3.04999 7.26618 3.0974 7.18179 3.18179L4.93179 5.43179ZM10.0682 9.56819C10.2439 9.39245 10.2439 9.10753 10.0682 8.93179C9.89245 8.75606 9.60753 8.75606 9.43179 8.93179L7.49999 10.8636L5.56819 8.93179C5.39245 8.75606 5.10753 8.75606 4.93179 8.93179C4.75605 9.10753 4.75605 9.39245 4.93179 9.56819L7.18179 11.8182C7.26618 11.9026 7.38064 11.95 7.49999 11.95C7.61933 11.95 7.73379 11.9026 7.81819 11.8182L10.0682 9.56819Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem disabled>Record Credit</DropdownMenuItem>
-                                    <DropdownMenuItem disabled>Record Invoice</DropdownMenuItem>
-                                    <DropdownMenuItem disabled>Record Check</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-                        <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <Button variant="secondary">Help</Button>
-                    </div>
-                </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 }

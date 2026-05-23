@@ -29,8 +29,10 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface LoyaltySetting {
     id: string;
@@ -44,6 +46,7 @@ interface LoyaltySetting {
 export default function LoyaltySettingsDialog() {
     const { openDialogs, closeDialog, openDialog } = useDialog();
     const { toast } = useToast();
+    const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
     const [settings, setSettings] = useState<LoyaltySetting[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -109,9 +112,8 @@ export default function LoyaltySettingsDialog() {
     const handleDelete = async () => {
         if (!selectedSetting) return;
 
-        if (!confirm(`Are you sure you want to delete "${selectedSetting.description}"?`)) {
-            return;
-        }
+        const ok = await confirm({ description: `Are you sure you want to delete "${selectedSetting.description}"?`, title: 'Delete Setting', variant: 'destructive' });
+        if (!ok) return;
 
         try {
             const response = await fetch(`/api/loyalty-point-settings?id=${selectedSetting.id}`, {
@@ -158,6 +160,13 @@ export default function LoyaltySettingsDialog() {
     };
 
     return (
+        <>
+        <ConfirmDialog
+            open={confirmOpen}
+            {...confirmOptions}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
         <Dialog open={openDialogs['loyalty-settings']} onOpenChange={(open) => !open && closeDialog('loyalty-settings')}>
             <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
                 <DialogHeader>
@@ -170,11 +179,7 @@ export default function LoyaltySettingsDialog() {
                             <Plus className="mr-2 h-4 w-4" />
                             Add Setting
                         </Button>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={!selectedSetting}
-                            onClick={() => {
+                        <Button size="sm" variant="outline" disabled={!selectedSetting} onClick={() => {
                                 if (selectedSetting) {
                                     toast({
                                         title: 'Edit',
@@ -186,22 +191,14 @@ export default function LoyaltySettingsDialog() {
                             <Pencil className="mr-2 h-4 w-4" />
                             Edit
                         </Button>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={!selectedSetting}
-                            onClick={handleDelete}
-                        >
+                        <Button size="sm" variant="outline" disabled={!selectedSetting} onClick={handleDelete} >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Remove
                         </Button>
                     </div>
                     <div className="relative w-64">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search..."
-                            value={searchQuery}
-                            onChange={(e) => {
+                        <Input placeholder="Search..." value={searchQuery} onChange={(e) => {
                                 setSearchQuery(e.target.value);
                                 const timeoutId = setTimeout(() => {
                                     fetchSettings();
@@ -225,13 +222,13 @@ export default function LoyaltySettingsDialog() {
                         <TableBody>
                             {isLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center py-8">
+                                    <TableCell colSpan={3} className="text-center">
                                         Loading...
                                     </TableCell>
                                 </TableRow>
                             ) : paginatedSettings.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center py-8">
+                                    <TableCell colSpan={3} className="text-center">
                                         No loyalty settings found.
                                     </TableCell>
                                 </TableRow>
@@ -259,29 +256,13 @@ export default function LoyaltySettingsDialog() {
                 <DialogFooter className="border-t pt-4">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handlePreviousPage}
-                                disabled={currentPage === 1}
-                                className="h-8"
-                            >
+                            <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1} className="" >
                                 Prev
                             </Button>
-                            <Button
-                                variant={currentPage === 1 ? 'default' : 'outline'}
-                                size="sm"
-                                className="min-w-[40px] h-8"
-                            >
+                            <Button variant={currentPage === 1 ? 'default' : 'outline'} size="sm" className="min-w-[40px]" >
                                 {currentPage}
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleNextPage}
-                                disabled={currentPage === totalPages || totalPages === 0}
-                                className="h-8"
-                            >
+                            <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} className="" >
                                 Next
                             </Button>
                         </div>
@@ -301,16 +282,8 @@ export default function LoyaltySettingsDialog() {
                         </div>
                         <div className="flex items-center gap-2">
                             <Label htmlFor="page-input" className="text-sm">Page</Label>
-                            <Input
-                                id="page-input"
-                                type="number"
-                                min="1"
-                                max={totalPages || 1}
-                                value={currentPage}
-                                onChange={handlePageInputChange}
-                                className="w-16 h-8"
-                            />
-                            <Button variant="ghost" size="icon" onClick={handleRefresh} className="h-8 w-8">
+                            <Input id="page-input" type="number" min="1" max={totalPages || 1} value={currentPage} onChange={handlePageInputChange} className="w-16" />
+                            <Button variant="ghost" size="icon" onClick={handleRefresh} className="w-8">
                                 <RefreshCw className="h-4 w-4" />
                             </Button>
                             <Button variant="outline" size="sm" onClick={() => closeDialog('loyalty-settings')} className="h-8">Close</Button>
@@ -319,5 +292,6 @@ export default function LoyaltySettingsDialog() {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+        </>
     );
 }

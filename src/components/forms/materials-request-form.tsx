@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useAuth } from '@/components/providers/auth-provider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 const itemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -60,9 +61,9 @@ const formSchema = z.object({
     items: z.array(itemSchema).min(1, 'At least one item is required'),
     requestedBy: z.string().optional(),
     checkedBy: z.string().optional(),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -79,18 +80,24 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Filter users by role
-    const staff = userPermissions.filter(u => u.isActive);
+    const staff = userPermissions.filter(u => u.isActive && isAdminStaff(u));
     const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
         try {
             const perms = JSON.parse(u.permissions);
-            return u.isActive && (u.formPermissions === 'Verifier' || u.accountType === 'Admin') && perms.includes(formName);
+            return u.formPermissions === 'Verifier' && perms.includes(formName);
         } catch { return false; }
     });
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
 
     const currentUserName = `${user?.firstName} ${user?.lastName}`;
 
@@ -119,6 +126,34 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
             processedBy: initialData?.processedBy || '',
         },
     });
+
+    // Re-populate the form whenever initialData loads (async fetch from dialog)
+    useEffect(() => {
+        if (!initialData) return;
+        form.reset({
+            date: initialData.date ? new Date(initialData.date) : new Date(),
+            requestor: initialData.requesterName || initialData.requestor || '',
+            position: initialData.position || '',
+            businessUnit: initialData.businessUnit || '',
+            purpose: initialData.purpose || '',
+            chargeTo: initialData.chargeTo || '',
+            accountNo: initialData.accountNo || '',
+            depositAccount: initialData.depositAccount || '',
+            items: initialData.items?.length > 0
+                ? initialData.items.map((it: any) => ({
+                    description: it.description || '',
+                    quantity: Number(it.quantity) || 1,
+                    amount: Number(it.unitPrice ?? it.amount) || 0,
+                }))
+                : [{ description: '', quantity: 1, amount: 0 }],
+            requestedBy: initialData.requestedBy || currentUserName,
+            checkedBy: initialData.checkedBy || '',
+            verifiedBy: initialData.verifiedBy || '',
+            approvedBy: initialData.approvedBy || '',
+            processedBy: initialData.processedBy || '',
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialData]);
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -171,7 +206,7 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
                         <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase">Control No.</span>
-                                <Input className="w-32 h-9 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
+                                <Input className="w-32 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
                             </div>
                             <FormField
                                 control={form.control}
@@ -182,14 +217,7 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        disabled={isReadOnly}
-                                                        className={cn(
-                                                            "w-full h-9 justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
+                                                    <Button variant={"outline"} disabled={isReadOnly} className={cn( "w-full justify-start text-left font-normal", !field.value && "text-muted-foreground" )} >
                                                         <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                         {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                     </Button>
@@ -219,9 +247,26 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Requestor</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="Name" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" />
-                                    </FormControl>
+                                    <Select value={field.value} onValueChange={(val) => {
+                                        field.onChange(val);
+                                        const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                        if (emp && emp.designation) {
+                                            form.setValue('position', emp.designation, { shouldValidate: true });
+                                        }
+                                    }} disabled={isReadOnly || employeesLoading}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                                <SelectValue placeholder="Select name" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {employees.map((emp: any) => (
+                                                <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                    {emp.firstName} {emp.lastName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -342,7 +387,7 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((field, index) => (
-                                        <TableRow key={field.id} className="hover:bg-muted/10 transition-colors"><TableCell className="text-center font-mono text-xs">{index + 1}</TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<Input {...field} placeholder="Enter material description" className="h-8 border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<Input {...field} type="number" className="h-8 border-none bg-transparent text-center focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.amount`} render={({ field }) => (<Input {...field} type="number" className="h-8 border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="text-right font-medium text-sm pr-4">{((watchedItems[index]?.quantity || 0) * (watchedItems[index]?.amount || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</TableCell>{!isReadOnly && (<TableCell className="p-0 text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-3.5 w-3.5" /></Button>)}</TableCell>)}</TableRow>
+                                        <TableRow key={field.id} className="hover:bg-muted/10 transition-colors"><TableCell className="text-center font-mono text-xs">{index + 1}</TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<Input {...field} placeholder="Enter material description" className="border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<Input {...field} type="number" className="border-none bg-transparent text-center focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.amount`} render={({ field }) => (<Input {...field} type="number" className="border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="text-right font-medium text-sm pr-4">{((watchedItems[index]?.quantity || 0) * (watchedItems[index]?.amount || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</TableCell>{!isReadOnly && (<TableCell className="text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="w-7 text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-3.5 w-3.5" /></Button>)}</TableCell>)}</TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -372,7 +417,7 @@ export function MaterialsRequestForm({ formName = 'MATERIALS REQUEST FORM', init
                                         <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{sig.label}</FormLabel>
                                         <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                             <FormControl>
-                                                <SelectTrigger className="h-9 bg-muted/20 border-dashed border-muted-foreground/30 hover:border-muted-foreground/60 transition-colors">
+                                                <SelectTrigger className=" bg-muted/20 border-dashed border-muted-foreground/30 hover:border-muted-foreground/60 transition-colors">
                                                     <SelectValue placeholder="Staff..." />
                                                 </SelectTrigger>
                                             </FormControl>

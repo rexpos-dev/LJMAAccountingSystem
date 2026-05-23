@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, History, Search, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -172,11 +172,7 @@ export default function CustomerLoyaltyPointsDialog() {
 
                         <div className="relative w-full md:w-64">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search Customer Name/Code"
-                                className="pl-9 h-8"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                            <Input placeholder="Search Customer Name/Code" className="pl-9" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                     </div>
@@ -198,13 +194,13 @@ export default function CustomerLoyaltyPointsDialog() {
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center py-8">
+                                    <TableCell colSpan={7} className="text-center">
                                         Loading...
                                     </TableCell>
                                 </TableRow>
                             ) : !loyaltyPoints || loyaltyPoints.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center py-8">
+                                    <TableCell colSpan={7} className="text-center">
                                         No customers with loyalty points found.
                                     </TableCell>
                                 </TableRow>
@@ -241,20 +237,14 @@ export default function CustomerLoyaltyPointsDialog() {
 
                 <div className="flex items-center justify-between mt-4 border-t pt-2 h-10">
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage(Math.max(1, page - 1))}
+                        <Button variant="outline" size="sm" onClick={() => setPage(Math.max(1, page - 1))}
                             disabled={page === 1}
                             className="h-8"
                         >
                             Prev
                         </Button>
                         <div className="px-3 py-1 bg-muted text-sm rounded h-8 flex items-center">{page}</div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage(page + 1)}
+                        <Button variant="outline" size="sm" onClick={() => setPage(page + 1)}
                             disabled={page >= Math.ceil(total / limit)}
                             className="h-8"
                         >

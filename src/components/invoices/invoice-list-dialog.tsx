@@ -39,19 +39,18 @@ import {
     Mail,
     Save,
     Briefcase,
-    HelpCircle,
     Eye,
     MoreVertical,
     FileText,
-    Banknote,
-    Phone,
     Copy,
     LogOut,
     RefreshCw
 } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { format } from 'date-fns';
 
 interface Invoice {
@@ -73,6 +72,7 @@ export default function InvoiceListDialog() {
     const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
+    const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
 
     // Filters
     const [period, setPeriod] = useState('all');
@@ -147,15 +147,7 @@ export default function InvoiceListDialog() {
         disabled?: boolean,
         className?: string
     }) => (
-        <Button
-            variant="ghost"
-            className={cn(
-                "flex flex-col items-center h-auto py-2 px-3 gap-1 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md disabled:opacity-50",
-                className
-            )}
-            onClick={onClick}
-            disabled={disabled}
-        >
+        <Button variant="ghost" className={cn( "flex flex-col items-center h-auto px-3 gap-1 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md disabled:opacity-50", className )} onClick={onClick} disabled={disabled} >
             <Icon className="h-5 w-5" />
             <span className="text-[10px] font-medium">{label}</span>
         </Button>
@@ -191,7 +183,8 @@ export default function InvoiceListDialog() {
 
     const handleDelete = async () => {
         if (!selectedInvoiceId) return;
-        if (!confirm('Are you sure you want to delete this invoice?')) return;
+        const ok = await confirm({ description: 'Are you sure you want to delete this invoice?', title: 'Delete Invoice', variant: 'destructive' });
+        if (!ok) return;
 
         try {
             // Check if DELETE endpoint exists first. Assuming it does or will be added.
@@ -231,6 +224,13 @@ export default function InvoiceListDialog() {
     });
 
     return (
+        <>
+        <ConfirmDialog
+            open={confirmOpen}
+            {...confirmOptions}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
         <Dialog open={openDialogs['invoice-list']} onOpenChange={() => closeDialog('invoice-list')}>
             <DialogContent className="max-w-[1200px] h-[80vh] flex flex-col p-0 gap-0 sm:rounded-lg overflow-hidden">
                 <DialogHeader className="px-4 py-2 border-b bg-background z-10 flex flex-row items-center justify-between space-y-0">
@@ -239,9 +239,7 @@ export default function InvoiceListDialog() {
                         Invoices
                     </DialogTitle>
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => closeDialog('invoice-list')} className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full">
-                            <X className="h-4 w-4" />
-                        </Button>
+                        
                     </div>
                 </DialogHeader>
 
@@ -255,16 +253,10 @@ export default function InvoiceListDialog() {
                     <ToolbarButton icon={Search} label="Preview" onClick={() => handleView()} disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Printer} label="Print" disabled={!selectedInvoiceId} />
                     <ToolbarButton icon={Mail} label="Email" disabled={!selectedInvoiceId} />
-                    <ToolbarButton icon={Phone} label="Fax" disabled={!selectedInvoiceId} />
                     <div className="w-px h-8 bg-border mx-1" />
                     <ToolbarButton icon={Save} label="Save" />
-                    <ToolbarButton icon={Banknote} label="Export to EDI" />
 
                     <ToolbarButton icon={RefreshCw} label="Refresh" onClick={handleRefresh} />
-
-                    <div className="ml-auto flex items-center">
-                        <ToolbarButton icon={HelpCircle} label="Help" />
-                    </div>
                 </div>
 
                 {/* Filters */}
@@ -285,15 +277,15 @@ export default function InvoiceListDialog() {
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Start:</span>
-                        <Input type="date" className="h-8 w-[130px]" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        <Input type="date" className="w-[130px]" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">End:</span>
-                        <Input type="date" className="h-8 w-[130px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                        <Input type="date" className="w-[130px]" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Keyword:</span>
-                        <Input className="h-8 w-[150px]" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+                        <Input className="w-[150px]" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium whitespace-nowrap">Display Invoices:</span>
@@ -364,5 +356,6 @@ export default function InvoiceListDialog() {
                 </div>
             </DialogContent>
         </Dialog>
+        </>
     );
 }

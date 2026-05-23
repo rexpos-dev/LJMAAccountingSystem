@@ -7,6 +7,11 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -34,7 +39,7 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { CalendarIcon, UserPlus, Pencil, Search, Trash } from 'lucide-react';
+import { CalendarIcon, UserPlus, Pencil, Search, Trash, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 import { useExternalProducts } from '@/hooks/use-products';
@@ -43,7 +48,7 @@ import { useCustomers } from '@/hooks/use-customers';
 import { useSalesUsers } from '@/hooks/use-sales-users';
 import format from '@/lib/date-format';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
@@ -72,6 +77,7 @@ export default function CreateInvoiceDialog() {
     const [salesperson, setSalesperson] = useState<string>('');
     const [invoiceNumber, setInvoiceNumber] = useState<string>('');
     const [terms, setTerms] = useState<string>('pay-in-days');
+    const [isHeaderOpen, setIsHeaderOpen] = useState(true);
 
     const [billingAddress, setBillingAddress] = useState<string>('');
     const [shippingAddress, setShippingAddress] = useState<string>('');
@@ -259,228 +265,245 @@ export default function CreateInvoiceDialog() {
                     </DialogHeader>
                     <ScrollArea className="flex-1 pr-6 -mr-6">
                         <div className="space-y-4">
-                            <Card>
-                                <CardContent className="p-6">
-                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                                        <div className="lg:col-span-4">
-                                            <Tabs defaultValue="billing">
-                                                <TabsList>
-                                                    <TabsTrigger value="billing">Billing</TabsTrigger>
-                                                    <TabsTrigger value="shipping">Shipping</TabsTrigger>
-                                                </TabsList>
-                                                <TabsContent value="billing" className="pt-4">
-                                                    <div className="space-y-4">
-                                                        <div className="grid gap-2">
-                                                            <label>Customer</label>
+                            <Collapsible
+                                open={isHeaderOpen}
+                                onOpenChange={setIsHeaderOpen}
+                                className="w-full"
+                            >
+                                <Card>
+                                    <CardHeader className="py-3 px-6 border-b flex flex-row items-center justify-between">
+                                        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                                            Customer & Invoice Details
+                                        </CardTitle>
+                                        <CollapsibleTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="w-9">
+                                                {isHeaderOpen ? (
+                                                    <ChevronDown className="h-4 w-4" />
+                                                ) : (
+                                                    <ChevronUp className="h-4 w-4" />
+                                                )}
+                                                <span className="sr-only">Toggle</span>
+                                            </Button>
+                                        </CollapsibleTrigger>
+                                    </CardHeader>
+                                    <CollapsibleContent>
+                                        <CardContent className="p-6">
+                                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                                <div className="lg:col-span-4">
+                                                    <Tabs defaultValue="billing">
+                                                        <TabsList>
+                                                            <TabsTrigger value="billing">Billing</TabsTrigger>
+                                                            <TabsTrigger value="shipping">Shipping</TabsTrigger>
+                                                        </TabsList>
+                                                        <TabsContent value="billing" className="pt-4">
+                                                            <div className="space-y-4">
+                                                                <div className="grid gap-2">
+                                                                    <label>Customer</label>
+                                                                    <div className="flex gap-2">
+                                                                        <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                                                                            <SelectTrigger>
+                                                                                <SelectValue placeholder="Select a customer" />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                {customers.map(customer => (
+                                                                                    <SelectItem key={customer.id} value={customer.id}>
+                                                                                        {customer.customerName}
+                                                                                    </SelectItem>
+                                                                                ))}
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                        <Button variant="outline" size="icon" onClick={() => openDialog('add-customer')}>
+                                                                            <UserPlus className="h-4 w-4" />
+                                                                        </Button>
+                                                                        <Button variant="outline" size="icon">
+                                                                            <Pencil className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="grid gap-2">
+                                                                    <label>Bill To</label>
+                                                                    <Textarea placeholder="Enter billing address" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} />
+                                                                </div>
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <div className="grid gap-2">
+                                                                        <label>Customer PO No.</label>
+                                                                        <Input value={customerPONumber} readOnly className="bg-muted" />
+                                                                    </div>
+                                                                    <div className="grid gap-2">
+                                                                        <label>Customer Tax</label>
+                                                                        <Select value={customerTax} onValueChange={setCustomerTax}>
+                                                                            <SelectTrigger>
+                                                                                <SelectValue />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                <SelectItem value="default">Default</SelectItem>
+                                                                                <SelectItem value="exempt">Exempt</SelectItem>
+                                                                            </SelectContent>
+                                                                        </Select>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </TabsContent>
+                                                        <TabsContent value="shipping" className="pt-4">
+                                                            <div className="space-y-4">
+                                                                <div className="grid gap-2">
+                                                                    <Label htmlFor="shipping-address">Ship To</Label>
+                                                                    <Textarea id="shipping-address" placeholder="Enter shipping address" value={shippingAddress} onChange={(e) => setShippingAddress(e.target.value)} />
+                                                                </div>
+                                                                <div className="flex items-center space-x-2">
+                                                                    <Checkbox id="same-as-billing" />
+                                                                    <Label htmlFor="same-as-billing" className="font-normal">Same as billing</Label>
+                                                                </div>
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <div className="grid gap-2">
+                                                                        <Label htmlFor="ship-by">Ship By</Label>
+                                                                        <Input id="ship-by" />
+                                                                    </div>
+                                                                    <div className="grid gap-2">
+                                                                        <Label htmlFor="tracking-ref">Tracking Ref No.</Label>
+                                                                        <Input id="tracking-ref" />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="grid gap-2">
+                                                                    <Label>Shipping Costs/Tax</Label>
+                                                                    <div className="flex gap-2">
+                                                                        <Input type="number" placeholder="0.00" />
+                                                                        <Select defaultValue="none">
+                                                                            <SelectTrigger>
+                                                                                <SelectValue />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                <SelectItem value="none">
+                                                                                    None
+                                                                                </SelectItem>
+                                                                                <SelectItem value="exempt">
+                                                                                    Exempt
+                                                                                </SelectItem>
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </TabsContent>
+                                                    </Tabs>
+                                                </div>
+
+                                                <Card className="bg-muted/30 lg:col-span-8">
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg font-headline">Invoice</CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="grid grid-cols-2 items-center gap-4">
+                                                            <Label>Create From</Label>
+                                                            <Select defaultValue="new-invoice">
+                                                                <SelectTrigger>
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="new-invoice">
+                                                                        [New Invoice]
+                                                                    </SelectItem>
+                                                                    <SelectItem value="existing-invoice">
+                                                                        Existing Invoice
+                                                                    </SelectItem>
+                                                                    <SelectItem value="quote">
+                                                                        Quote
+                                                                    </SelectItem>
+                                                                    <SelectItem value="order">
+                                                                        Order
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 items-center gap-4">
+                                                            <Label>Date</Label>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !date && "text-muted-foreground" )} >
+                                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0">
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={date}
+                                                                        onSelect={setDate}
+                                                                        initialFocus
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 items-center gap-4">
+                                                            <Label>Terms</Label>
                                                             <div className="flex gap-2">
-                                                                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select a customer" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        {customers.map(customer => (
-                                                                            <SelectItem key={customer.id} value={customer.id}>
-                                                                                {customer.customerName}
-                                                                            </SelectItem>
-                                                                        ))}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                <Button variant="outline" size="icon" onClick={() => openDialog('add-customer')}>
-                                                                    <UserPlus className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button variant="outline" size="icon">
-                                                                    <Pencil className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                        <div className="grid gap-2">
-                                                            <label>Bill To</label>
-                                                            <Textarea placeholder="Enter billing address" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} />
-                                                        </div>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div className="grid gap-2">
-                                                                <label>Customer PO No.</label>
-                                                                <Input value={customerPONumber} readOnly className="bg-muted" />
-                                                            </div>
-                                                            <div className="grid gap-2">
-                                                                <label>Customer Tax</label>
-                                                                <Select value={customerTax} onValueChange={setCustomerTax}>
+                                                                <Select value={terms} onValueChange={setTerms}>
                                                                     <SelectTrigger>
                                                                         <SelectValue />
                                                                     </SelectTrigger>
                                                                     <SelectContent>
-                                                                        <SelectItem value="default">Default</SelectItem>
-                                                                        <SelectItem value="exempt">Exempt</SelectItem>
+                                                                        <SelectItem value="pay-in-days">
+                                                                            Pay in Days
+                                                                        </SelectItem>
+                                                                        <SelectItem value="COD">
+                                                                            COD
+                                                                        </SelectItem>
+
                                                                     </SelectContent>
                                                                 </Select>
-
+                                                                <Input type="number" defaultValue="30" className="w-20" />
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </TabsContent>
-                                                <TabsContent value="shipping" className="pt-4">
-                                                    <div className="space-y-4">
-                                                        <div className="grid gap-2">
-                                                            <Label htmlFor="shipping-address">Ship To</Label>
-                                                            <Textarea id="shipping-address" placeholder="Enter shipping address" value={shippingAddress} onChange={(e) => setShippingAddress(e.target.value)} />
-                                                        </div>
-                                                        <div className="flex items-center space-x-2">
-                                                            <Checkbox id="same-as-billing" />
-                                                            <Label htmlFor="same-as-billing" className="font-normal">Same as billing</Label>
-                                                        </div>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div className="grid gap-2">
-                                                                <Label htmlFor="ship-by">Ship By</Label>
-                                                                <Input id="ship-by" />
-                                                            </div>
-                                                            <div className="grid gap-2">
-                                                                <Label htmlFor="tracking-ref">Tracking Ref No.</Label>
-                                                                <Input id="tracking-ref" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="grid gap-2">
-                                                            <Label>Shipping Costs/Tax</Label>
-                                                            <div className="flex gap-2">
-                                                                <Input type="number" placeholder="0.00" />
-                                                                <Select defaultValue="none">
-                                                                    <SelectTrigger>
-                                                                        <SelectValue />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        <SelectItem value="none">
-                                                                            None
-                                                                        </SelectItem>
-                                                                        <SelectItem value="exempt">
-                                                                            Exempt
-                                                                        </SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </TabsContent>
-                                            </Tabs>
-                                        </div>
-
-                                        <Card className="bg-muted/30 lg:col-span-8">
-                                            <CardHeader>
-                                                <CardTitle className="text-lg font-headline">Invoice</CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="grid grid-cols-2 items-center gap-4">
-                                                    <Label>Create From</Label>
-                                                    <Select defaultValue="new-invoice">
-                                                        <SelectTrigger>
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="new-invoice">
-                                                                [New Invoice]
-                                                            </SelectItem>
-                                                            <SelectItem value="existing-invoice">
-                                                                Existing Invoice
-                                                            </SelectItem>
-                                                            <SelectItem value="quote">
-                                                                Quote
-                                                            </SelectItem>
-                                                            <SelectItem value="order">
-                                                                Order
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="grid grid-cols-2 items-center gap-4">
-                                                    <Label>Date</Label>
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <Button
-                                                                variant={"outline"}
-                                                                className={cn(
-                                                                    "w-full justify-start text-left font-normal",
-                                                                    !date && "text-muted-foreground"
-                                                                )}
-                                                            >
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                                            </Button>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-auto p-0">
-                                                            <Calendar
-                                                                mode="single"
-                                                                selected={date}
-                                                                onSelect={setDate}
-                                                                initialFocus
-                                                            />
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                </div>
-                                                <div className="grid grid-cols-2 items-center gap-4">
-                                                    <Label>Terms</Label>
-                                                    <div className="flex gap-2">
-                                                        <Select value={terms} onValueChange={setTerms}>
-                                                            <SelectTrigger>
-                                                                <SelectValue />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="pay-in-days">
-                                                                    Pay in Days
-                                                                </SelectItem>
-                                                                <SelectItem value="COD">
-                                                                    COD
-                                                                </SelectItem>
-
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <Input type="number" defaultValue="30" className="w-20" />
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-2 items-center gap-4">
-                                                    <Label>Salesperson</Label>
-                                                    <Select value={salesperson} onValueChange={setSalesperson}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder={salesUsersLoading ? "Loading..." : "Select salesperson"} />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {salesUsers.map((user: any) => (
-                                                                <SelectItem key={user.id} value={user.complete_name || user.name}>
-                                                                    {user.complete_name || user.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="grid grid-cols-2 items-center gap-4">
-                                                    <Label>Invoice Number</Label>
-                                                    <Input value={invoiceNumber} readOnly className="bg-muted" />
-                                                </div>
-                                                <div className="grid grid-cols-2 items-center gap-4">
-                                                    <Label>Deposit Account</Label>
-                                                    <Select value={selectedDepositAccount} onValueChange={setSelectedDepositAccount}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="-- Select account --" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {accountsLoading ? (
-                                                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
-                                                            ) : accounts.length === 0 ? (
-                                                                <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
-                                                            ) : (
-                                                                <>
-                                                                    {accounts.filter(acc => acc.bank === 'Yes' || acc.account_type === 'Asset').map(account => (
-                                                                        <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
-                                                                            {account.account_name}
+                                                        <div className="grid grid-cols-2 items-center gap-4">
+                                                            <Label>Salesperson</Label>
+                                                            <Select value={salesperson} onValueChange={setSalesperson}>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder={salesUsersLoading ? "Loading..." : "Select salesperson"} />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {salesUsers.map((user: any) => (
+                                                                        <SelectItem key={user.id} value={user.complete_name || user.name}>
+                                                                            {user.complete_name || user.name}
                                                                         </SelectItem>
                                                                     ))}
-                                                                </>
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 items-center gap-4">
+                                                            <Label>Invoice Number</Label>
+                                                            <Input value={invoiceNumber} readOnly className="bg-muted" />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 items-center gap-4">
+                                                            <Label>Deposit Account</Label>
+                                                            <Select value={selectedDepositAccount} onValueChange={setSelectedDepositAccount}>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="-- Select account --" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {accountsLoading ? (
+                                                                        <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                                    ) : accounts.length === 0 ? (
+                                                                        <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
+                                                                    ) : (
+                                                                        <>
+                                                                            {accounts.filter(acc => acc.bank === 'Yes' || acc.account_type === 'Asset').map(account => (
+                                                                                <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
+                                                                                    {account.account_name}
+                                                                                </SelectItem>
+                                                                            ))}
+                                                                        </>
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        </CardContent>
+                                    </CollapsibleContent>
+                                </Card>
+                            </Collapsible>
 
                             <Card>
                                 <CardHeader>
@@ -490,10 +513,7 @@ export default function CreateInvoiceDialog() {
                                     <div className="mb-4">
                                         <label className="sr-only">Search products</label>
                                         <div className="relative">
-                                            <Input
-                                                placeholder="Search products"
-                                                value={productQuery}
-                                                onChange={(e) => setProductQuery(e.target.value)}
+                                            <Input placeholder="Search products" value={productQuery} onChange={(e) => setProductQuery(e.target.value)}
                                             />
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                                 <Search className="h-4 w-4" />
@@ -547,7 +567,7 @@ export default function CreateInvoiceDialog() {
                                             <TableBody>
                                                 {items.length === 0 ? (
                                                     <TableRow>
-                                                        <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                                                        <TableCell colSpan={7} className="text-center text-muted-foreground">
                                                             Click here to add items to this invoice.
                                                         </TableCell>
                                                     </TableRow>
@@ -555,10 +575,7 @@ export default function CreateInvoiceDialog() {
                                                     items.map(item => (
                                                         <TableRow key={item.lineId ?? item.id}>
                                                             <TableCell className="w-[80px]">
-                                                                <Input
-                                                                    type="number"
-                                                                    value={String(item.qty)}
-                                                                    onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
+                                                                <Input type="number" value={String(item.qty)} onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
                                                                     className="w-20"
                                                                 />
                                                             </TableCell>

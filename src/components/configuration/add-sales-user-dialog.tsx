@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useCreateSalesUser } from '@/hooks/use-sales-users';
 import { useToast } from '@/hooks/use-toast';
 
@@ -98,31 +98,19 @@ export default function AddSalesUserDialog() {
         <div className="space-y-4 py-2">
           <div className="space-y-2">
             <Label htmlFor="sp-id">SP ID {isLoadingId && <span className="text-xs text-muted-foreground">(Generating...)</span>}</Label>
-            <Input
-              id="sp-id"
-              value={spId}
-              readOnly
-              disabled
-              className="bg-muted font-mono"
-            />
+            <Input id="sp-id" value={spId} readOnly disabled className="bg-muted font-mono" />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+            <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="complete-name">Complete Name</Label>
-            <Input
-              id="complete-name"
-              value={completeName}
-              onChange={(e) => setCompleteName(e.target.value)}
+            <Input id="complete-name" value={completeName} onChange={(e) => setCompleteName(e.target.value)}
               placeholder="Enter complete name"
             />
           </div>

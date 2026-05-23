@@ -3,7 +3,6 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker as DayPickerType } from "react-day-picker"
-import params from 'react-day-picker';
 import dynamic from 'next/dynamic';
 
 const DayPicker = dynamic(() => import("react-day-picker").then(m => m.DayPicker), { ssr: false });

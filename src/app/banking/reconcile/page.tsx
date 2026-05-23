@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -62,7 +62,7 @@ export default function ReconcileAccountPage() {
         <ScrollArea className="flex-1 pr-6 -mr-6">
           <div className="space-y-6">
             <div className="border p-4 rounded-md space-y-4">
-              <h3 className='font-semibold text-white'>Local Ledger Transactions</h3>
+              <h3 className='font-semibold text-foreground'>Local Ledger Transactions</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 items-center gap-4">
@@ -88,14 +88,7 @@ export default function ReconcileAccountPage() {
                     <Label htmlFor="bank-statement-date">Bank Statement Date:</Label>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
-                          variant={'outline'}
-                          id="bank-statement-date"
-                          className={cn(
-                            'w-full justify-start text-left font-normal col-span-2',
-                            !date && 'text-muted-foreground'
-                          )}
-                        >
+                        <Button variant={'outline'} id="bank-statement-date" className={cn( 'w-full justify-start text-left font-normal col-span-2', !date && 'text-muted-foreground' )} >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
                         </Button>
@@ -141,7 +134,7 @@ export default function ReconcileAccountPage() {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground py-4">
+                      <TableCell colSpan={6} className="text-center text-muted-foreground">
                         All account entries have been reconciled
                       </TableCell>
                     </TableRow>
@@ -155,7 +148,7 @@ export default function ReconcileAccountPage() {
             </div>
 
             <div className="border p-4 rounded-md space-y-4">
-              <h3 className='font-semibold text-white'>Bank Statement's Transactions</h3>
+              <h3 className='font-semibold text-foreground'>Bank Statement's Transactions</h3>
               <div className="flex justify-between text-sm">
                 <span>Number of Transactions: None</span>
                 <span>Number of Matched Transactions: None</span>

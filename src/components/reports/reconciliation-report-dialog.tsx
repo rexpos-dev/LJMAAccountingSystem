@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
@@ -32,13 +32,7 @@ export default function ReconciliationReportDialog() {
                         <Label>As of Date</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full justify-start text-left font-normal",
-                                        !reportDate && "text-muted-foreground"
-                                    )}
-                                >
+                                <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !reportDate && "text-muted-foreground" )} >
                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                     {reportDate ? format(reportDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                 </Button>
@@ -55,15 +49,11 @@ export default function ReconciliationReportDialog() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('reconciliation-report-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('reconciliation-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

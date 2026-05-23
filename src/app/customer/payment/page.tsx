@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { useCustomerPayments, CustomerPayment } from '@/hooks/use-customer-payments';
 import { Plus, Search, RefreshCw } from 'lucide-react';
@@ -131,20 +131,20 @@ export default function CustomerPaymentPage() {
           <table className="w-full table-fixed">
             <thead>
               <tr className="text-sm text-muted-foreground border-b">
-                <th className="p-2 text-left">Customer Name</th>
-                <th className="p-2 text-left">Amount Paid</th>
-                <th className="p-2 text-left">Allocated</th>
-                <th className="p-2 text-left">Left to allocate</th>
-                <th className="p-2 text-left">Payment Type</th>
-                <th className="p-2 text-left">Date of Payment</th>
-                <th className="p-2 text-left">Reference</th>
-                <th className="p-2 text-left">Note</th>
+                <th className="text-left">Customer Name</th>
+                <th className="text-left">Amount Paid</th>
+                <th className="text-left">Allocated</th>
+                <th className="text-left">Left to allocate</th>
+                <th className="text-left">Payment Type</th>
+                <th className="text-left">Date of Payment</th>
+                <th className="text-left">Reference</th>
+                <th className="text-left">Note</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-8">
+                  <td colSpan={8} className="text-center">
                     <div className="flex flex-col items-center gap-2">
                       <RefreshCw className="h-6 w-6 animate-spin text-primary" />
                       <span className="text-sm text-muted-foreground font-medium">Loading payment information...</span>
@@ -153,7 +153,7 @@ export default function CustomerPaymentPage() {
                 </tr>
               ) : apiError ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-10 bg-red-50/30">
+                  <td colSpan={8} className="text-center bg-red-50/30">
                     <div className="text-red-500 font-semibold mb-1">Failed to Load Payments</div>
                     <div className="text-xs text-red-400 max-w-md mx-auto">{apiError.message}</div>
                     <Button variant="link" size="sm" onClick={() => refreshPayments()} className="mt-2 text-red-600">Try Again</Button>
@@ -161,21 +161,21 @@ export default function CustomerPaymentPage() {
                 </tr>
               ) : filteredPayments.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-muted-foreground italic border-dashed border-2 rounded-lg">
+                  <td colSpan={8} className="text-center text-muted-foreground italic border-dashed border-2 rounded-lg">
                     No payment information to display{searchQuery ? ` matching "${searchQuery}"` : ''}.
                   </td>
                 </tr>
               ) : (
                 filteredPayments.map((payment: CustomerPayment) => (
                   <tr key={payment.id} className="border-b text-sm hover:bg-muted/50 transition-colors">
-                    <td className="p-2 font-medium">{payment.customer_name || 'N/A'}</td>
-                    <td className="p-2 text-green-600 font-semibold">
+                    <td className="font-medium">{payment.customer_name || 'N/A'}</td>
+                    <td className="text-green-600 font-semibold">
                       {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(Number(payment.amount || 0))}
                     </td>
-                    <td className="p-2 text-muted-foreground">-</td>
-                    <td className="p-2 text-muted-foreground">-</td>
-                    <td className="p-2">{payment.payment_type || 'N/A'}</td>
-                    <td className="p-2">
+                    <td className="text-muted-foreground">-</td>
+                    <td className="text-muted-foreground">-</td>
+                    <td className="">{payment.payment_type || 'N/A'}</td>
+                    <td className="">
                       {(() => {
                         try {
                           return payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'N/A';
@@ -184,8 +184,8 @@ export default function CustomerPaymentPage() {
                         }
                       })()}
                     </td>
-                    <td className="p-2 text-xs text-muted-foreground truncate max-w-[120px]" title={payment.reference}>{payment.reference || '-'}</td>
-                    <td className="p-2 text-xs text-muted-foreground truncate max-w-[150px]" title={payment.note}>{payment.note || '-'}</td>
+                    <td className="text-xs text-muted-foreground truncate max-w-[120px]" title={payment.reference}>{payment.reference || '-'}</td>
+                    <td className="text-xs text-muted-foreground truncate max-w-[150px]" title={payment.note}>{payment.note || '-'}</td>
                   </tr>
                 ))
               )}

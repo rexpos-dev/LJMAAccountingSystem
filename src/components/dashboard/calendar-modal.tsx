@@ -102,10 +102,10 @@ export default function CalendarModal({ open, onOpenChange }: CalendarModalProps
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[900px] w-full p-0 overflow-hidden h-[600px] flex flex-col md:flex-row">
-
-                {/* Left Column: Calendar */}
-                <div className="p-6 md:w-1/2 flex flex-col border-r">
+            <DialogContent className="max-w-[900px] w-full p-0 overflow-hidden h-[600px]">
+                <div className="absolute inset-0 flex flex-col md:flex-row z-10">
+                    {/* Left Column: Calendar */}
+                    <div className="p-6 md:w-1/2 flex flex-col border-r">
                     <DialogHeader className="mb-4">
                         <DialogTitle className="flex items-center gap-2">
                             <Bell className="h-5 w-5 text-primary" />
@@ -185,11 +185,7 @@ export default function CalendarModal({ open, onOpenChange }: CalendarModalProps
                                                         </div>
                                                         {rem.memo && <p className="text-xs text-muted-foreground line-clamp-2">{rem.memo}</p>}
                                                     </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        onClick={() => deleteReminder(rem.id)}
+                                                    <Button variant="ghost" size="icon" className="w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteReminder(rem.id)}
                                                     >
                                                         <Trash2 className="h-3 w-3" />
                                                     </Button>
@@ -208,27 +204,20 @@ export default function CalendarModal({ open, onOpenChange }: CalendarModalProps
                                 <form onSubmit={handleSubmit} className="space-y-3">
                                     <div className="grid grid-cols-[1fr_100px] gap-2">
                                         <div className="space-y-1">
-                                            <Input
-                                                value={title}
-                                                onChange={(e) => setTitle(e.target.value)}
+                                            <Input value={title} onChange={(e) => setTitle(e.target.value)}
                                                 placeholder="Event Title"
                                                 required
                                                 className="bg-background"
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <Input
-                                                type="time"
-                                                value={time}
-                                                onChange={(e) => setTime(e.target.value)}
+                                            <Input type="time" value={time} onChange={(e) => setTime(e.target.value)}
                                                 required
                                                 className="bg-background"
                                             />
                                         </div>
                                     </div>
-                                    <Textarea
-                                        value={memo}
-                                        onChange={(e) => setMemo(e.target.value)}
+                                    <Textarea value={memo} onChange={(e) => setMemo(e.target.value)}
                                         placeholder="Notes (optional)"
                                         className="bg-background resize-none h-16"
                                     />
@@ -251,6 +240,7 @@ export default function CalendarModal({ open, onOpenChange }: CalendarModalProps
                         </div>
                     )}
                 </div>
+              </div>
             </DialogContent>
         </Dialog>
     );

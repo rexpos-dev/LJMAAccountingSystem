@@ -1,0 +1,31 @@
+﻿
+> nextn@0.1.0 typecheck
+> tsc --noEmit
+
+.next/types/app/api/categories/[categoryId]/subcategories/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { categoryId: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ categoryId: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/purchase-orders/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/requests/[id]/route.ts(49,7): error TS2344: Type '{ __tag__: "GET"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/requests/[id]/route.ts(244,7): error TS2344: Type '{ __tag__: "DELETE"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/api/requests/[id]/route.ts(283,7): error TS2344: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/configuration/chart-of-accounts/page.ts(34,13): error TS2344: Type 'OmitWithTag<{ onAccountSelect: (account: Account | null) => void; selectedAccount: Account | null; }, keyof PageProps, "default">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'selectedAccount' is incompatible with index signature.
+    Type 'Account | null' is not assignable to type 'never'.
+      Type 'null' is not assignable to type 'never'.
+.next/types/app/configuration/chart-of-accounts/page.ts(34,29): error TS2559: Type '{ onAccountSelect: (account: Account | null) => void; selectedAccount: Account | null; }' has no properties in common with type 'PageProps'.
+.next/types/app/reports/balance-sheet/page.ts(34,13): error TS2344: Type 'OmitWithTag<{ onViewReport: (date: Date) => void; }, keyof PageProps, "default">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'onViewReport' is incompatible with index signature.
+    Type '(date: Date) => void' is not assignable to type 'never'.
+.next/types/app/reports/balance-sheet/page.ts(34,29): error TS2559: Type '{ onViewReport: (date: Date) => void; }' has no properties in common with type 'PageProps'.
+check-db.ts(1,59): error TS2451: Cannot redeclare block-scoped variable 'prisma'.
+src/components/configuration/bank-settings-dialog.tsx(213,60): error TS7006: Parameter 'account' implicitly has an 'any' type.
+test-prisma.ts(2,9): error TS2451: Cannot redeclare block-scoped variable 'prisma'.

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
@@ -34,13 +34,7 @@ export default function SalesInvoicePaymentReportDialog() {
                             <Label>From Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !fromDate && "text-muted-foreground"
-                                        )}
-                                    >
+                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !fromDate && "text-muted-foreground" )} >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                         {fromDate ? format(fromDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                     </Button>
@@ -59,13 +53,7 @@ export default function SalesInvoicePaymentReportDialog() {
                             <Label>To Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !toDate && "text-muted-foreground"
-                                        )}
-                                    >
+                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !toDate && "text-muted-foreground" )} >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                         {toDate ? format(toDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                     </Button>
@@ -83,15 +71,11 @@ export default function SalesInvoicePaymentReportDialog() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('sales-invoice-payment-report-dialog')}
+                        <Button variant="outline" onClick={() => closeDialog('sales-invoice-payment-report-dialog')}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

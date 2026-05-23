@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function BudgetReportDialog() {
@@ -39,15 +39,11 @@ export default function BudgetReportDialog() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('budget-report-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('budget-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchWithCache } from '@/lib/api-cache';
 
 export interface SalesTransaction {
     id: string;
@@ -72,22 +73,23 @@ export async function GET(request: NextRequest) {
     if (toDate) externalParams.append('toDate', toDate);
 
     try {
-        const response = await fetch(
-            `http://192.168.1.163:3001/api/sales/transactions?${externalParams.toString()}`,
+        const result = await fetchWithCache<SalesTransactionResponse>(
+            `http://192.168.1.163:3000/api/sales/transactions?${externalParams.toString()}`,
             {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
                 },
-            }
+            },
+            15
         );
 
-        if (!response.ok) {
-            const text = await response.text().catch(() => '');
+        if (!result.success || !result.data) {
             console.error(
-                'External sales transactions API responded with non-OK status',
-                response.status,
-                text
+                'External sales transactions API responded with failure',
+                result.status,
+                result.error
             );
 
             const failureResponse: SalesTransactionResponse = {
@@ -104,8 +106,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(failureResponse);
         }
 
-        const data: SalesTransactionResponse = await response.json();
-        return NextResponse.json(data);
+        return NextResponse.json(result.data);
     } catch (error) {
         console.error('Error fetching external sales transactions:', error);
 

@@ -36,7 +36,13 @@ export function FlowchartArrow({ fromNode, toNode, fromDirection, toDirection }:
 
   const midY = (start.y + end.y) / 2;
 
-  const pathD = `M ${start.x} ${start.y} L ${start.x} ${midY} L ${end.x} ${midY} L ${end.x} ${end.y}`;
+  // Use a cubic bezier curve for a smoother look
+  const pathD = `M ${start.x} ${start.y} 
+                 C ${start.x} ${midY}, 
+                   ${end.x} ${midY}, 
+                   ${end.x} ${end.y}`;
+
+  const gradientId = `grad-${fromNode.id}-${toNode.id}`;
 
   return (
     <svg
@@ -44,24 +50,37 @@ export function FlowchartArrow({ fromNode, toNode, fromDirection, toDirection }:
       style={{ pointerEvents: 'none' }}
     >
       <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="0"
-          refY="3.5"
-          orient="auto"
-        >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#fff" />
-        </marker>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0.2)" />
+        </linearGradient>
       </defs>
+      
+      {/* Background/Glow Path */}
       <path
         d={pathD}
-        stroke="#fff"
+        stroke="rgba(255,255,255,0.1)"
+        strokeWidth="4"
+        fill="none"
+        className="blur-[4px]"
+      />
+
+      {/* Main Path */}
+      <path
+        d={pathD}
+        stroke={`url(#${gradientId})`}
         strokeWidth="2"
         fill="none"
-        markerEnd="url(#arrowhead)"
+        strokeDasharray="6 6"
+        className="animate-[flow_30s_linear_infinite]"
       />
+
+      <style jsx global>{`
+        @keyframes flow {
+          from { stroke-dashoffset: 200; }
+          to { stroke-dashoffset: 0; }
+        }
+      `}</style>
     </svg>
   );
 }

@@ -42,6 +42,8 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
+import { useBranches } from '@/hooks/use-branches';
 
 const itemSchema = z.object({
     description: z.string().min(1, 'Description is required'),
@@ -58,9 +60,9 @@ const formSchema = z.object({
     location: z.string().optional(),
     depositAccount: z.string().optional(),
     items: z.array(itemSchema).min(1, 'At least one item is required'),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -77,19 +79,26 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
+    const { data: branches = [] } = useBranches();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Filter users by role and specific form access
     const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
         try {
             const perms = JSON.parse(u.permissions);
-            return u.isActive && u.formPermissions === 'Verifier' && perms.includes(formName);
+            return u.formPermissions === 'Verifier' && perms.includes(formName);
         } catch { return false; }
     });
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => u.isActive && isAdminStaff(u));
 
     const currentVerifierName = verifiers.find(v => v.username === user?.username) ? `${user?.firstName} ${user?.lastName}` : '';
 
@@ -168,7 +177,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                         <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase">Control No.</span>
-                                <Input className="w-32 h-9 bg-muted/20 border-dashed" placeholder="Auto-generated" readOnly />
+                                <Input className="w-32 bg-muted/20 border-dashed" placeholder="Auto-generated" readOnly />
                             </div>
                             <FormField
                                 control={form.control}
@@ -179,14 +188,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        disabled={isReadOnly}
-                                                        className={cn(
-                                                            "w-full h-9 justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
+                                                    <Button variant={"outline"} disabled={isReadOnly} className={cn( "w-full justify-start text-left font-normal", !field.value && "text-muted-foreground" )} >
                                                         <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                         {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                     </Button>
@@ -215,9 +217,37 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Requested By</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="Name" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" />
-                                    </FormControl>
+                                    <Select value={field.value} onValueChange={(val) => {
+                                        field.onChange(val);
+                                        const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                        if (emp) {
+                                            if (emp.branchesAssigned) {
+                                                const assignedBranch = String(emp.branchesAssigned);
+                                                form.setValue('department', assignedBranch, { shouldValidate: true });
+                                                // Find matching branch to get the address for the location field
+                                                const matchedBranch = branches.find((b: any) =>
+                                                    b.name.toLowerCase() === assignedBranch.toLowerCase() ||
+                                                    (b.code && b.code.toLowerCase() === assignedBranch.toLowerCase())
+                                                );
+                                                if (matchedBranch && matchedBranch.address) {
+                                                    form.setValue('location', matchedBranch.address, { shouldValidate: true });
+                                                }
+                                            }
+                                        }
+                                    }} disabled={isReadOnly || employeesLoading}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
+                                                <SelectValue placeholder="Select name" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {employees.map((emp: any) => (
+                                                <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                    {emp.firstName} {emp.lastName}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -287,7 +317,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                                 <FormItem className="md:col-span-2 lg:col-span-2">
                                     <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Nature of Work</FormLabel>
                                     <FormControl>
-                                        <Textarea {...field} placeholder="Describe the work involved..." disabled={isReadOnly} className="min-h-[80px] bg-muted/30 focus-visible:bg-transparent resize-none h-20" />
+                                        <Textarea {...field} placeholder="Describe the work involved..." disabled={isReadOnly} className="min-h-[80px] bg-muted/30 focus-visible:bg-transparent resize-none" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -312,7 +342,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((field, index) => (
-                                        <TableRow key={field.id} className="hover:bg-muted/10 transition-colors"><TableCell className="text-center font-mono text-xs">{index + 1}</TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<Input {...field} placeholder="Material description" className="h-8 border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<Input {...field} type="number" className="h-8 border-none bg-transparent text-center focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.unit`} render={({ field }) => (<Input {...field} placeholder="pcs/sets..." className="h-8 border-none bg-transparent text-center focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.unitPrice`} render={({ field }) => (<Input {...field} type="number" step="0.01" className="h-8 border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="text-right font-medium text-sm pr-4">{((watchedItems[index]?.quantity || 0) * (watchedItems[index]?.unitPrice || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</TableCell>{!isReadOnly && (<TableCell className="p-0 text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-3.5 w-3.5" /></Button>)}</TableCell>)}</TableRow>
+                                        <TableRow key={field.id} className="hover:bg-muted/10 transition-colors"><TableCell className="text-center font-mono text-xs">{index + 1}</TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<Input {...field} placeholder="Material description" className="border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<Input {...field} type="number" className="border-none bg-transparent text-center focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.unit`} render={({ field }) => (<Input {...field} placeholder="pcs/sets..." className="border-none bg-transparent text-center focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.unitPrice`} render={({ field }) => (<Input {...field} type="number" step="0.01" className="border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="text-right font-medium text-sm pr-4">{((watchedItems[index]?.quantity || 0) * (watchedItems[index]?.unitPrice || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</TableCell>{!isReadOnly && (<TableCell className="text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="w-7 text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-3.5 w-3.5" /></Button>)}</TableCell>)}</TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -340,7 +370,7 @@ export function JobOrderRequestForm({ formName = 'JOB ORDER REQUEST FORM', initi
                                         <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">{sig.label}</FormLabel>
                                         <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                             <FormControl>
-                                                <SelectTrigger className="h-9 bg-transparent border-t-0 border-x-0 border-b border-muted-foreground/30 rounded-none shadow-none px-0 hover:border-primary transition-colors focus:ring-0">
+                                                <SelectTrigger className=" bg-transparent border-t-0 border-x-0 border-b border-muted-foreground/30 rounded-none shadow-none px-0 hover:border-primary transition-colors focus:ring-0">
                                                     <SelectValue placeholder="Select signatory..." />
                                                 </SelectTrigger>
                                             </FormControl>

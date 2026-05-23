@@ -28,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, X } from 'lucide-react';
 
@@ -272,17 +272,13 @@ export function AddProductDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="productName">Product Name</Label>
-              <Input
-                id="productName"
-                placeholder="e.g., Cola-Cola"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
+              <Input id="productName" placeholder="e.g., Cola-Cola" value={productName} onChange={(e) => setProductName(e.target.value)}
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="brand">Brand</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedBrandId || ''} onValueChange={(v) => setSelectedBrandId(v || null)}>
                 <SelectTrigger>
@@ -301,20 +297,12 @@ export function AddProductDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="sku">SKU</Label>
-              <Input
-                id="sku"
-                placeholder="e.g., PRO-P8WC1N"
-                value={sku}
-                onChange={(e) => setSku(e.target.value)}
+              <Input id="sku" placeholder="e.g., PRO-P8WC1N" value={sku} onChange={(e) => setSku(e.target.value)}
               />
             </div>
             <div>
               <Label htmlFor="barcode">Barcode (UPC)</Label>
-              <Input
-                id="barcode"
-                placeholder="e.g., 123456789012"
-                value={barcode}
-                onChange={(e) => setBarcode(e.target.value)}
+              <Input id="barcode" placeholder="e.g., 123456789012" value={barcode} onChange={(e) => setBarcode(e.target.value)}
               />
             </div>
           </div>
@@ -322,11 +310,7 @@ export function AddProductDialog() {
           {/* Description */}
           <div>
             <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="A short description of the product."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <Textarea id="description" placeholder="A short description of the product." value={description} onChange={(e) => setDescription(e.target.value)}
               rows={2}
             />
           </div>
@@ -334,11 +318,7 @@ export function AddProductDialog() {
           {/* Additional Description */}
           <div>
             <Label htmlFor="additionalDescription">Additional Description (Optional)</Label>
-            <Textarea
-              id="additionalDescription"
-              placeholder="Provide additional details like specifications or special notes."
-              value={additionalDescription}
-              onChange={(e) => setAdditionalDescription(e.target.value)}
+            <Textarea id="additionalDescription" placeholder="Provide additional details like specifications or special notes." value={additionalDescription} onChange={(e) => setAdditionalDescription(e.target.value)}
               rows={2}
             />
           </div>
@@ -348,7 +328,7 @@ export function AddProductDialog() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="category">Category</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedCategoryId || ''} onValueChange={(v) => setSelectedCategoryId(v || null)}>
                 <SelectTrigger>
@@ -364,7 +344,7 @@ export function AddProductDialog() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="subcategory">Subcategory (Optional)</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedSubcategoryId || ''} onValueChange={(v) => setSelectedSubcategoryId(v || null)} disabled={!selectedCategoryId}>
                 <SelectTrigger>
@@ -384,7 +364,7 @@ export function AddProductDialog() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="supplier">Supplier (Optional)</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedSupplierId || ''} onValueChange={(v) => setSelectedSupplierId(v || null)}>
                 <SelectTrigger>
@@ -400,7 +380,7 @@ export function AddProductDialog() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="uom">Unit of Measure</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedUomId || ''} onValueChange={(v) => setSelectedUomId(v || null)}>
                 <SelectTrigger>
@@ -419,22 +399,12 @@ export function AddProductDialog() {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <Label htmlFor="initialStock">Initial Stock</Label>
-              <Input
-                id="initialStock"
-                type="number"
-                placeholder="0"
-                value={initialStock}
-                onChange={(e) => setInitialStock(e.target.value)}
+              <Input id="initialStock" type="number" placeholder="0" value={initialStock} onChange={(e) => setInitialStock(e.target.value)}
               />
             </div>
             <div>
               <Label htmlFor="reorderPoint">Reorder Point</Label>
-              <Input
-                id="reorderPoint"
-                type="number"
-                placeholder="0"
-                value={reorderPoint}
-                onChange={(e) => setReorderPoint(e.target.value)}
+              <Input id="reorderPoint" type="number" placeholder="0" value={reorderPoint} onChange={(e) => setReorderPoint(e.target.value)}
               />
             </div>
             <div></div>
@@ -444,22 +414,12 @@ export function AddProductDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="costPrice">Cost (₱)</Label>
-              <Input
-                id="costPrice"
-                type="number"
-                placeholder="e.g., 50.00"
-                value={costPrice}
-                onChange={(e) => setCostPrice(e.target.value)}
+              <Input id="costPrice" type="number" placeholder="e.g., 50.00" value={costPrice} onChange={(e) => setCostPrice(e.target.value)}
               />
             </div>
             <div>
               <Label htmlFor="unitPrice">Price (₱)</Label>
-              <Input
-                id="unitPrice"
-                type="number"
-                placeholder="0"
-                value={unitPrice}
-                onChange={(e) => setUnitPrice(e.target.value)}
+              <Input id="unitPrice" type="number" placeholder="0" value={unitPrice} onChange={(e) => setUnitPrice(e.target.value)}
               />
             </div>
           </div>
@@ -469,7 +429,7 @@ export function AddProductDialog() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="incomeAccount">Income Account (Optional)</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedIncomeAccountId || ''} onValueChange={(v) => setSelectedIncomeAccountId(v || null)}>
                 <SelectTrigger>
@@ -485,7 +445,7 @@ export function AddProductDialog() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="expenseAccount">Expense Account (Optional)</Label>
-                <Button variant="link" size="sm" className="p-0 h-auto">Manage</Button>
+                <Button variant="link" size="sm" className="h-auto">Manage</Button>
               </div>
               <Select value={selectedExpenseAccountId || ''} onValueChange={(v) => setSelectedExpenseAccountId(v || null)}>
                 <SelectTrigger>
@@ -527,10 +487,7 @@ export function AddProductDialog() {
                       <TableCell>{cf.unitName}</TableCell>
                       <TableCell>{cf.factor}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeConversionFactor(index)}
+                        <Button variant="ghost" size="sm" onClick={() => removeConversionFactor(index)}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -546,16 +503,9 @@ export function AddProductDialog() {
             )}
 
             <div className="grid grid-cols-3 gap-3">
-              <Input
-                placeholder="Unit Name"
-                value={newConversionUnitName}
-                onChange={(e) => setNewConversionUnitName(e.target.value)}
+              <Input placeholder="Unit Name" value={newConversionUnitName} onChange={(e) => setNewConversionUnitName(e.target.value)}
               />
-              <Input
-                placeholder="Factor"
-                type="number"
-                value={newConversionFactor}
-                onChange={(e) => setNewConversionFactor(e.target.value)}
+              <Input placeholder="Factor" type="number" value={newConversionFactor} onChange={(e) => setNewConversionFactor(e.target.value)}
               />
               <Button onClick={addConversionFactor} variant="secondary">Add</Button>
             </div>

@@ -24,8 +24,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { FileDown, FileText, Download, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { FileDown, FileText, Download, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ShieldCheck, X, History, Activity, Calculator } from 'lucide-react';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
@@ -46,6 +46,7 @@ interface PurchaseHistoryItem {
     pieces: number | null;
     costPricePerCase: number | null;
     costPricePerPiece: number | null;
+    cost?: number | null;
     discount1: number | null;
     discount2: number | null;
     discount3: number | null;
@@ -154,7 +155,7 @@ export default function PurchaseHistoryDialog() {
                 item.offtake || '',
                 item.orderQty || '',
                 item.pieces || '',
-                item.costPricePerCase || '',
+                item.costPricePerCase || item.cost || '',
                 item.costPricePerPiece || '',
                 item.discount1 || '',
                 item.discount2 || '',
@@ -247,7 +248,7 @@ export default function PurchaseHistoryDialog() {
                                 <td>${item.offtake || '-'}</td>
                                 <td>${item.orderQty || '-'}</td>
                                 <td>${item.pieces || '-'}</td>
-                                <td>${item.costPricePerCase || '-'}</td>
+                                <td>${item.costPricePerCase || item.cost || '-'}</td>
                                 <td>${item.costPricePerPiece || '-'}</td>
                                 <td>${item.discount1 || '-'}</td>
                                 <td>${item.discount2 || '-'}</td>
@@ -355,37 +356,37 @@ export default function PurchaseHistoryDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col p-0 gap-0 sm:rounded-lg overflow-hidden">
-                <DialogHeader className="px-6 py-4 border-b bg-background">
-                    <DialogTitle className="flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                            <FileText className="h-5 w-5" />
-                            Purchase History
-                            {order && <span className="text-sm font-normal text-muted-foreground">- {order.supplier.name}</span>}
-                        </span>
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={exportToCSV}
-                                disabled={!order || loading}
-                                className="gap-2"
-                            >
-                                <Download className="h-4 w-4" />
-                                Export CSV
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={exportToPDF}
-                                disabled={!order || loading}
-                                className="gap-2"
-                            >
-                                <FileDown className="h-4 w-4" />
-                                Export PDF
-                            </Button>
+            <DialogContent className="max-w-[95vw] w-[1400px] h-[90vh] flex flex-col p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
+                <DialogHeader className="px-8 py-4 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.2)]">
+                            <History className="h-6 w-6" />
                         </div>
-                    </DialogTitle>
+                        <div>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase leading-none text-foreground">
+                                Historical Audit
+                            </DialogTitle>
+                            <div className="flex items-center gap-2 mt-2">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">Archive Retrieval</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">{order?.supplier.name || "System Node"}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 relative z-10">
+                        <Button variant="outline" size="sm" onClick={exportToCSV} disabled={!order || loading} className="rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-[10px] gap-2" >
+                            <Download className="h-3 w-3" />
+                            Export CSV
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={exportToPDF} disabled={!order || loading} className="rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-[10px] gap-2" >
+                            <FileDown className="h-3 w-3" />
+                            Export PDF
+                        </Button>
+                        <div className="w-px h-8 bg-foreground/10 mx-2" />
+                        
+                    </div>
                 </DialogHeader>
 
                 <div className="flex-1 overflow-auto p-6">
@@ -398,44 +399,44 @@ export default function PurchaseHistoryDialog() {
                             <p className="text-red-500 font-medium">{error}</p>
                         </div>
                     ) : order ? (
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-8">
+                            <div className="grid grid-cols-2 gap-8">
                                 {/* Left Column - Order Information */}
-                                <div className="flex flex-col gap-4 p-4 bg-muted/50 rounded-lg">
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">Order Date</p>
-                                        <p className="font-medium">{format(new Date(order.date), 'MMMM dd, yyyy')}</p>
+                                <div className="grid grid-cols-3 gap-6 p-8 bg-foreground/5 border border-foreground/10 rounded-3xl backdrop-blur-md relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-4 opacity-5">
+                                        <FileText className="h-20 w-20 text-foreground" />
                                     </div>
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">Supplier</p>
-                                        <p className="font-medium">{order.supplier.name}</p>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-1">Execution Date</p>
+                                        <p className="text-xl font-black italic tracking-tighter text-foreground">{format(new Date(order.date), 'MMMM dd, yyyy')}</p>
                                     </div>
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">Total Items</p>
-                                        <p className="font-medium">{order.items.length}</p>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-1">Primary Entity</p>
+                                        <p className="text-xl font-black italic tracking-tighter text-foreground">{order.supplier.name}</p>
+                                    </div>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-1">Payload Units</p>
+                                        <p className="text-xl font-black italic tracking-tighter text-primary">{order.items.length}</p>
                                     </div>
                                 </div>
 
                                 {/* Right Column - Filter Controls */}
-                                <div className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border">
+                                <div className="p-8 bg-foreground/5 border border-foreground/10 rounded-3xl backdrop-blur-md space-y-6">
                                     <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search by description, SKU, barcode, or category..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="pl-9"
+                                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground/20" />
+                                        <Input placeholder="SCAN DATA STREAM (SKU, BARCODE, DESC)..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="pl-12 h-14 bg-foreground/5 border-foreground/10 text-foreground rounded-2xl font-black uppercase tracking-wider text-xs placeholder:text-foreground/10"
                                         />
                                     </div>
-                                    <div className="flex flex-col gap-3">
+                                    <div className="grid grid-cols-2 gap-4">
                                         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Filter by Category" />
+                                            <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-black uppercase tracking-widest text-[10px]">
+                                                <SelectValue placeholder="Category Node" />
                                             </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">All Categories</SelectItem>
+                                            <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                <SelectItem value="all" className="font-black uppercase tracking-widest text-[10px]">Global Domain</SelectItem>
                                                 {uniqueCategories.map((category) => (
-                                                    <SelectItem key={category} value={category}>
+                                                    <SelectItem key={category} value={category} className="font-black uppercase tracking-widest text-[10px]">
                                                         {category}
                                                     </SelectItem>
                                                 ))}
@@ -443,14 +444,8 @@ export default function PurchaseHistoryDialog() {
                                         </Select>
                                         <Popover>
                                             <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    className={cn(
-                                                        "justify-start text-left font-normal",
-                                                        !dateFrom && !dateTo && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                <Button variant="outline" className={cn( " justify-start text-left bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-black uppercase tracking-widest text-[10px]", !dateFrom && !dateTo && "text-foreground/20" )} >
+                                                    <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
                                                     {dateFrom ? (
                                                         dateTo ? (
                                                             <>
@@ -460,99 +455,91 @@ export default function PurchaseHistoryDialog() {
                                                             format(dateFrom, "LLL dd, y")
                                                         )
                                                     ) : (
-                                                        <span>Pick date range</span>
+                                                        <span>Time Horizon Range</span>
                                                     )}
                                                 </Button>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
+                                            <PopoverContent className="w-auto p-0 bg-card border-foreground/10" align="start">
                                                 <div className="flex">
-                                                    <div className="border-r">
-                                                        <div className="p-3 text-sm font-medium border-b">From Date</div>
+                                                    <div className="border-r border-foreground/5">
+                                                        <div className="p-3 text-[10px] font-black uppercase tracking-widest border-b border-foreground/5 text-foreground/40">Horizon Start</div>
                                                         <Calendar
                                                             mode="single"
                                                             selected={dateFrom}
                                                             onSelect={setDateFrom}
                                                             initialFocus
+                                                            className="rounded-none border-0"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <div className="p-3 text-sm font-medium border-b">To Date</div>
+                                                        <div className="p-3 text-[10px] font-black uppercase tracking-widest border-b border-foreground/5 text-foreground/40">Horizon End</div>
                                                         <Calendar
                                                             mode="single"
                                                             selected={dateTo}
                                                             onSelect={setDateTo}
                                                             initialFocus
+                                                            className="rounded-none border-0"
                                                         />
                                                     </div>
                                                 </div>
                                             </PopoverContent>
                                         </Popover>
                                     </div>
-                                    {(searchQuery || categoryFilter !== 'all' || dateFrom || dateTo) && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                setSearchQuery('');
-                                                setCategoryFilter('all');
-                                                setDateFrom(undefined);
-                                                setDateTo(undefined);
-                                            }}
-                                            className="w-fit"
-                                        >
-                                            Clear Filters
-                                        </Button>
-                                    )}
                                 </div>
                             </div>
 
-                            <div className="border rounded-lg overflow-hidden">
+                            <div className="bg-foreground/5 border border-foreground/10 rounded-3xl overflow-hidden backdrop-blur-sm">
                                 <div className="relative overflow-auto max-h-[400px]">
-                                    <table className="w-full caption-bottom text-sm">
-                                        <thead className="sticky top-0 z-[1] bg-muted [&_tr]:border-b">
-                                            <tr className="border-b transition-colors">
-                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">Category</th>
-                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">SKU</th>
-                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">Barcode</th>
-                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">Description</th>
-                                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground bg-muted">UOM</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">QTY/Case</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Offtake</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Order QTY</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Pieces</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Cost/Case</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Cost/Piece</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Disc 1</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Disc 2</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Disc 3</th>
-                                                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground bg-muted">Net Amount</th>
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="sticky top-0 z-[1] bg-foreground/5 border-b border-foreground/10">
+                                            <tr>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40">Category</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40">SKU</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40">Barcode</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40">Description</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40">UOM</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">QTY/Case</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Offtake</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Order QTY</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Pieces</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Cost/Case</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Cost/Piece</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Disc 1</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Disc 2</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Disc 3</th>
+                                                <th className="h-12 px-4 text-[10px] font-black uppercase tracking-widest text-foreground/40 text-right">Net Amount</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="[&_tr:last-child]:border-0">
+                                        <tbody className="divide-y divide-white/5">
                                             {paginatedItems.length > 0 ? (
                                                 paginatedItems.map((item) => (
-                                                    <tr key={item.id} className="border-b transition-colors hover:bg-muted/50">
-                                                        <td className="p-4 align-middle">{item.category || '-'}</td>
-                                                        <td className="p-4 align-middle">{item.sku || '-'}</td>
-                                                        <td className="p-4 align-middle">{item.barcode || '-'}</td>
-                                                        <td className="p-4 align-middle max-w-[200px]">{item.itemDescription}</td>
-                                                        <td className="p-4 align-middle">{item.buyingUom || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.qtyPerCase || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.offtake || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.orderQty || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.pieces || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.costPricePerCase ? `₱${formatCurrency(item.costPricePerCase)}` : '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.costPricePerPiece ? `₱${formatCurrency(item.costPricePerPiece)}` : '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.discount1 || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.discount2 || '-'}</td>
-                                                        <td className="p-4 align-middle text-right">{item.discount3 || '-'}</td>
-                                                        <td className="p-4 align-middle text-right font-medium">{item.netCostAmount ? `₱${formatCurrency(item.netCostAmount)}` : '-'}</td>
+                                                    <tr key={item.id} className="hover:bg-foreground/[0.02] transition-colors group">
+                                                        <td className="text-[10px] font-black uppercase text-foreground/40">{item.category || '-'}</td>
+                                                        <td className="font-mono text-[10px] text-foreground/60">{item.sku || '-'}</td>
+                                                        <td className="font-mono text-[10px] text-foreground/60">{item.barcode || '-'}</td>
+                                                        <td className="text-[11px] font-bold text-foreground uppercase tracking-tight">{item.itemDescription}</td>
+                                                        <td className="text-[10px] font-black uppercase text-foreground/40">{item.buyingUom || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.qtyPerCase || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.offtake || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.orderQty || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.pieces || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{(item.costPricePerCase || item.cost) ? `₱${formatCurrency(item.costPricePerCase || (item.cost ?? 0))}` : '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.costPricePerPiece ? `₱${formatCurrency(item.costPricePerPiece)}` : '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.discount1 || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.discount2 || '-'}</td>
+                                                        <td className="text-right text-xs text-foreground/60">{item.discount3 || '-'}</td>
+                                                        <td className="text-right text-sm font-black italic text-primary">
+                                                            {item.netCostAmount ? `₱${formatCurrency(item.netCostAmount)}` : '-'}
+                                                        </td>
                                                     </tr>
                                                 ))
                                             ) : (
-                                                <tr className="border-b transition-colors">
-                                                    <td colSpan={15} className="p-4 align-middle text-center py-8 text-muted-foreground">
-                                                        No items match your filters. Try adjusting your search or filter criteria.
+                                                <tr>
+                                                    <td colSpan={15} className="text-center">
+                                                        <div className="flex flex-col items-center justify-center text-foreground/10 gap-2">
+                                                            <Activity className="h-12 w-12 opacity-10" />
+                                                            <p className="text-[10px] font-black uppercase tracking-widest">No matching telemetry found</p>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             )}
@@ -560,9 +547,9 @@ export default function PurchaseHistoryDialog() {
                                     </table>
                                 </div>
                                 {totalPages > 0 && (
-                                    <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-t">
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <span>Show</span>
+                                    <div className="flex items-center justify-between px-8 py-4 bg-foreground/5 border-t border-foreground/10">
+                                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                                            <span>Telemetry Display</span>
                                             <Select
                                                 value={itemsPerPage.toString()}
                                                 onValueChange={(value) => {
@@ -570,60 +557,43 @@ export default function PurchaseHistoryDialog() {
                                                     setCurrentPage(1);
                                                 }}
                                             >
-                                                <SelectTrigger className="h-8 w-[70px]">
+                                                <SelectTrigger className="h-8 w-[70px] bg-foreground/5 border-foreground/10 text-foreground rounded-lg">
                                                     <SelectValue placeholder={itemsPerPage} />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent className="bg-card border-foreground/10 text-foreground">
                                                     {[10, 25, 50, 100].map((size) => (
-                                                        <SelectItem key={size} value={size.toString()}>
+                                                        <SelectItem key={size} value={size.toString()} className="text-[10px] font-black uppercase">
                                                             {size}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <span>entries</span>
-                                            <span className="mx-2">|</span>
+                                            <span className="text-foreground/20">|</span>
                                             <span>
-                                                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredItems.length)} to {Math.min(currentPage * itemsPerPage, filteredItems.length)} of {filteredItems.length} entries
+                                                Node {Math.min((currentPage - 1) * itemsPerPage + 1, filteredItems.length)} to {Math.min(currentPage * itemsPerPage, filteredItems.length)} of {filteredItems.length}
                                             </span>
                                         </div>
 
                                         <div className="flex items-center gap-1">
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                onClick={() => setCurrentPage(1)}
+                                            <Button variant="outline" size="icon" className="w-8 rounded-lg border-foreground/10 hover:bg-foreground/5 text-foreground/40" onClick={() => setCurrentPage(1)}
                                                 disabled={currentPage === 1}
                                             >
                                                 <ChevronsLeft className="h-4 w-4" />
                                             </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                            <Button variant="outline" size="icon" className="w-8 rounded-lg border-foreground/10 hover:bg-foreground/5 text-foreground/40" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                                 disabled={currentPage === 1}
                                             >
                                                 <ChevronLeft className="h-4 w-4" />
                                             </Button>
-                                            <div className="flex items-center px-3 h-8 text-sm font-medium">
-                                                Page {currentPage} of {totalPages}
+                                            <div className="flex items-center px-4 h-8 text-[10px] font-black uppercase text-foreground tracking-widest">
+                                                Page {currentPage} / {totalPages}
                                             </div>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                            <Button variant="outline" size="icon" className="w-8 rounded-lg border-foreground/10 hover:bg-foreground/5 text-foreground/40" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                                 disabled={currentPage === totalPages}
                                             >
                                                 <ChevronRight className="h-4 w-4" />
                                             </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                onClick={() => setCurrentPage(totalPages)}
+                                            <Button variant="outline" size="icon" className="w-8 rounded-lg border-foreground/10 hover:bg-foreground/5 text-foreground/40" onClick={() => setCurrentPage(totalPages)}
                                                 disabled={currentPage === totalPages}
                                             >
                                                 <ChevronsRight className="h-4 w-4" />
@@ -633,10 +603,13 @@ export default function PurchaseHistoryDialog() {
                                 )}
                             </div>
 
-                            <div className="flex justify-end p-4 bg-muted/50 rounded-lg">
-                                <div className="text-right">
-                                    <p className="text-sm text-muted-foreground">Total Amount</p>
-                                    <p className="text-2xl font-bold">₱{formatCurrency(order.total)}</p>
+                            <div className="flex justify-end p-8 bg-foreground/5 border border-foreground/10 rounded-3xl backdrop-blur-md relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Calculator className="h-16 w-16 text-primary" />
+                                </div>
+                                <div className="text-right relative z-10">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mb-1">Total Fiscal Impact</p>
+                                    <p className="text-4xl font-black italic tracking-tighter text-primary">₱{formatCurrency(order.total)}</p>
                                 </div>
                             </div>
                         </div>

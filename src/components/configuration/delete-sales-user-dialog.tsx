@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useDeleteSalesUser } from '@/hooks/use-sales-users';
 import { useToast } from '@/hooks/use-toast';
 import { SalesUser } from '@/types/sales-user';
@@ -61,11 +61,7 @@ export default function DeleteSalesUserDialog() {
           <Button variant="outline" onClick={handleClose} disabled={deleteSalesUser.isPending}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleteSalesUser.isPending}
-          >
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteSalesUser.isPending} >
             {deleteSalesUser.isPending ? 'Deleting...' : 'Delete User'}
           </Button>
         </DialogFooter>

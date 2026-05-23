@@ -1,6 +1,6 @@
 'use client';
 
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useSalesUsers } from '@/hooks/use-sales-users';

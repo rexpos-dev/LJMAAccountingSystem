@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -30,7 +30,8 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import format from '@/lib/date-format';
 
-export default function BalanceSheetPage({ onViewReport }: { onViewReport: (date: Date) => void }) {
+export default function BalanceSheetPage(props: any) {
+  const { onViewReport = () => { } } = props;
   const { openDialogs, closeDialog } = useDialog();
   const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -77,14 +78,7 @@ export default function BalanceSheetPage({ onViewReport }: { onViewReport: (date
             <div className='col-span-2'>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    id="date"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !date && 'text-muted-foreground'
-                    )}
-                  >
+                  <Button variant={'outline'} id="date" className={cn( 'w-full justify-start text-left font-normal', !date && 'text-muted-foreground' )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
                   </Button>
@@ -106,7 +100,6 @@ export default function BalanceSheetPage({ onViewReport }: { onViewReport: (date
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button variant="secondary">Help</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

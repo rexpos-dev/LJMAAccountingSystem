@@ -60,6 +60,18 @@ export async function POST(request: NextRequest) {
                         ]
                     }, tx);
                 }
+
+                // Add to Audit Trail regardless of Account Number
+                await prisma.auditLog.create({
+                    data: {
+                        date: entry.date,
+                        actionType: 'Payables Ledger Posted',
+                        transactionId: entry.reference || 'N/A', // fallback to reference
+                        amount: Math.max(entry.debitAmount, entry.creditAmount),
+                        details: entry.accountDescription || `Payable Entry to ${entry.ledger || 'Supplier'}`,
+                        status: 'To Audit'
+                    }
+                });
             }
 
             return createdEntries;

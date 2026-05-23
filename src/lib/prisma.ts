@@ -1,24 +1,27 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 
-// Replace mysql:// with mariadb:// for the mariadb driver
-const connectionString = (process.env.DATABASE_URL || '').replace(/^mysql:\/\//, 'mariadb://')
-
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 let prismaInstance = globalForPrisma.prisma
 
-// Aggressive refresh in dev mode if salesUser is missing
-if (process.env.NODE_ENV !== 'production' && prismaInstance && !(prismaInstance as any).salesUser) {
-  console.log('🔄 [Prisma] SalesUser model missing from cached instance. FORCING REFRESH...');
-  console.log('🔄 [Prisma] Notifications enabled.'); // Trigger reload
-  prismaInstance = undefined
-}
-
 if (!prismaInstance) {
-  const adapter = new PrismaMariaDb(connectionString)
+  let dbUrl = process.env.DATABASE_URL || 'mysql://root:123700@localhost:3306/ljma_accounting';
+  
+  // Force IPv4 to prevent Node 17+ from attempting to connect to ::1, which causes the connection to hang and timeout.
+  // Also increase the pool connection limit to prevent exhaustion during concurrent API requests.
+  const urlObj = new URL(dbUrl);
+  if (urlObj.hostname === 'localhost') {
+    urlObj.hostname = '127.0.0.1';
+  }
+  urlObj.searchParams.set('connectionLimit', '50');
+  dbUrl = urlObj.toString();
+
+  console.log(`🔌 [Prisma] Initializing with URL: ${dbUrl.replace(/:[^:@]+@/, ':****@')}`);
+  
+  const adapter = new PrismaMariaDb(dbUrl)
 
   prismaInstance = new PrismaClient({
     adapter,
@@ -28,20 +31,10 @@ if (!prismaInstance) {
       { level: 'warn', emit: 'stdout' },
     ],
   });
-
-  (prismaInstance as any).$on('query', (e: any) => {
-    console.log(`\x1b[36m[Prisma Query]\x1b[0m ${e.query}`);
-    console.log(`\x1b[33m[Params]\x1b[0m ${e.params}`);
-  });
 }
 
 if (typeof window === 'undefined') {
-  const models = Object.keys(prismaInstance).filter(k => k[0] === k[0].toLowerCase() && !k.startsWith('_'));
-  if (!(prismaInstance as any).salesUser) {
-    console.error('❌ [Prisma] ERROR: salesUser model is missing from the client!');
-  } else {
-    console.log('✅ [Prisma] salesUser model found.');
-  }
+  console.log('✅ [Prisma] Client initialized.');
 }
 
 if (process.env.NODE_ENV !== 'production') {

@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useCreateUserPermission } from '@/hooks/use-user-permissions';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -190,6 +190,18 @@ export default function AddUserPermissionDialog() {
     'Add/Edit Price Type'
   ];
 
+  const TREASURER_PERMISSIONS = [
+    'Dashboard',
+    'Cashier Admin',
+    'DISBURSEMENT',
+    'CASH FUND REQUEST FORM',
+    'CASH ADVANCE REQUEST FOR CONTRACTOR',
+    'REQUEST AND AUTHORIZATION OF CASH ADVANCES',
+    'Reports',
+    'Income Statement',
+    'Balance Sheet'
+  ];
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
       const updates: any = { [field]: value };
@@ -203,6 +215,8 @@ export default function AddUserPermissionDialog() {
           updates.permissions = ALL_PERMISSIONS;
         } else if (value === 'Purchaser') {
           updates.permissions = PURCHASER_PERMISSIONS;
+        } else if (value === 'Treasurer') {
+          updates.permissions = TREASURER_PERMISSIONS;
         }
       }
 
@@ -232,20 +246,14 @@ export default function AddUserPermissionDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username <span className="text-red-500">*</span></Label>
-                <Input
-                  id="username"
-                  value={formData.username}
-                  onChange={(e) => handleInputChange('username', e.target.value)}
+                <Input id="username" value={formData.username} onChange={(e) => handleInputChange('username', e.target.value)}
                   placeholder="Enter username"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="contactNo">Contact No</Label>
-                <Input
-                  id="contactNo"
-                  value={formData.contactNo}
-                  onChange={(e) => handleInputChange('contactNo', e.target.value)}
+                <Input id="contactNo" value={formData.contactNo} onChange={(e) => handleInputChange('contactNo', e.target.value)}
                   placeholder="Enter contact number"
                 />
               </div>
@@ -255,11 +263,7 @@ export default function AddUserPermissionDialog() {
               <div className="space-y-2">
                 <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
                 <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
+                  <Input id="password" type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => handleInputChange('password', e.target.value)}
                     placeholder="Enter password"
                   />
                   <button
@@ -274,11 +278,7 @@ export default function AddUserPermissionDialog() {
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
                 <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} value={formData.confirmPassword} onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     placeholder="Confirm password"
                     className={formData.confirmPassword && formData.password !== formData.confirmPassword ? "border-red-500 focus-visible:ring-red-500 pr-10" : "pr-10"}
                   />
@@ -299,19 +299,13 @@ export default function AddUserPermissionDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                <Input
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                <Input id="firstName" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e.target.value)}
                   placeholder="First name"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                <Input id="lastName" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e.target.value)}
                   placeholder="Last name"
                 />
               </div>
@@ -330,6 +324,9 @@ export default function AddUserPermissionDialog() {
                     <SelectItem value="AdminStaff">Admin Staff</SelectItem>
                     <SelectItem value="Auditor">Auditor</SelectItem>
                     <SelectItem value="Purchaser">Purchaser</SelectItem>
+                    <SelectItem value="Treasurer">Treasurer</SelectItem>
+                    <SelectItem value="Finance Manager">Finance Manager</SelectItem>
+                    <SelectItem value="Employee">Employee</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

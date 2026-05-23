@@ -5,7 +5,20 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '@/components/providers/auth-provider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { CalendarIcon, Loader2, DollarSign, Printer } from 'lucide-react';
+import { 
+    CalendarIcon, 
+    Loader2, 
+    Printer, 
+    Wallet,
+    User,
+    ShieldCheck,
+    Zap,
+    CheckCircle2,
+    Activity,
+    FileText,
+    Building2,
+    ArrowRight
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -34,6 +47,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Schema Definition
 const formSchema = z.object({
@@ -49,9 +64,9 @@ const formSchema = z.object({
     amount: z.coerce.number().min(0, 'Amount must be positive'),
     depositAccount: z.string().optional(),
     // Signatures
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
     releasedReceivedBy: z.string().optional(),
 });
 
@@ -68,19 +83,25 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [], isLoading: usersLoading } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
 
     const { user } = useAuth();
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Filter users by role and specific form access
     const verifiers = userPermissions.filter(u => {
+        if (!u.isActive) return false;
+        if (isAdmin(u)) return true;
         try {
             const perms = JSON.parse(u.permissions);
-            return u.isActive && u.formPermissions === 'Verifier' && perms.includes("CASH / FUND REQUEST FORM");
+            return u.formPermissions === 'Verifier' && perms.includes("CASH / FUND REQUEST FORM");
         } catch { return false; }
     });
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'AdminStaff' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => u.isActive && isAdminStaff(u));
 
     const currentVerifierName = verifiers.find(v => v.username === user?.username) ? `${user?.firstName} ${user?.lastName}` : '';
 
@@ -93,7 +114,7 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
             position: initialData?.position || '',
             tempChargeTo: initialData?.chargeTo || '',
             tempAccountNo: initialData?.accountNo || '',
-            finalChargeTo: '', // Not in DB yet?
+            finalChargeTo: '',
             finalAccountNo: '',
             purpose: initialData?.purpose || '',
             amount: initialData?.amount || 0,
@@ -135,213 +156,258 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
         }
     }
 
+    const watchedAmount = form.watch('amount');
+
     return (
-        <div className="w-full">
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4 mb-4">
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold tracking-tight text-primary uppercase">Cash / Fund Request Form</h2>
-                            <p className="text-sm text-muted-foreground">Request for petty cash, travel funds, or other immediate disbursements.</p>
+        <div className="w-full flex flex-col bg-background/50 rounded-3xl border border-foreground/10 overflow-hidden backdrop-blur-xl">
+            {/* Header Area */}
+            <div className="px-8 py-6 border-b border-foreground/10 bg-foreground/5 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.1)]">
+                        <Wallet className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black italic tracking-tighter uppercase text-foreground leading-none">Cash / Fund Request</h2>
+                        <div className="flex items-center gap-2 mt-1.5">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">Liquidity Protocol</span>
+                            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Module CFR-v3.5</span>
                         </div>
-                        <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase">Control No.</span>
-                                <Input className="w-32 h-9 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
-                            </div>
-                            <FormField
-                                control={form.control}
-                                name="date"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col min-w-[200px]">
-                                        <FormLabel className="text-[10px] font-bold text-muted-foreground uppercase">Date</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
+                    </div>
+                </div>
+                <div className="flex items-center gap-6">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">Control Reference</span>
+                        <span className="text-sm font-bold text-foreground font-mono uppercase tracking-tighter">
+                            {initialData?.requestNumber || "NEW-CFR-ENTRY"}
+                        </span>
+                    </div>
+                    <div className="h-10 w-px bg-foreground/10" />
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">Request Value</span>
+                        <span className="text-xl font-black italic tracking-tighter text-primary leading-none">
+                            ₱{Number(watchedAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <ScrollArea className="flex-1">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="p-8 space-y-8">
+                        {/* Upper Section: Personnel and Allocation Context */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div className="lg:col-span-5 space-y-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1 h-4 bg-primary rounded-full" />
+                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Personnel Node Identification</h3>
+                                </div>
+                                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl space-y-4">
+                                    <FormField control={form.control} name="requesterName" render={({ field }) => (
+                                        <FormItem className="space-y-1.5">
+                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Requesting Entity</FormLabel>
+                                            <Select value={field.value} onValueChange={(val) => {
+                                                field.onChange(val);
+                                                const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                                if (emp) {
+                                                    if (emp.designation) form.setValue('position', emp.designation, { shouldValidate: true });
+                                                    if (emp.employeeId) form.setValue('tempAccountNo', emp.employeeId, { shouldValidate: true });
+                                                }
+                                            }} disabled={isReadOnly || employeesLoading}>
                                                 <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        disabled={isReadOnly}
-                                                        className={cn(
-                                                            "w-full h-9 justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                                                        {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="end">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    initialFocus
-                                                    disabled={isReadOnly}
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <FormField control={form.control} name="requesterName" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Requestor</FormLabel>
-                                <FormControl><Input {...field} placeholder="Enter name" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="position" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Position</FormLabel>
-                                <FormControl><Input {...field} placeholder="Enter position" disabled={isReadOnly} className="bg-muted/30 focus-visible:bg-transparent" /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:col-span-1">
-                            <FormField control={form.control} name="tempChargeTo" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Charge To</FormLabel>
-                                    <FormControl><Input {...field} placeholder="..." disabled={isReadOnly} className="bg-muted/30" /></FormControl>
-                                </FormItem>
-                            )} />
-                            <FormField control={form.control} name="tempAccountNo" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Account No.</FormLabel>
-                                    <FormControl><Input {...field} placeholder="..." disabled={isReadOnly} className="bg-muted/30" /></FormControl>
-                                </FormItem>
-                            )} />
-                        </div>
-                        <FormField control={form.control} name="depositAccount" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Deposit Account</FormLabel>
-                                <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
-                                    <FormControl>
-                                        <SelectTrigger className="bg-muted/30 focus-visible:bg-transparent">
-                                            <SelectValue placeholder="-- Select account --" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {accountsLoading ? (
-                                            <div className="p-2 text-sm text-muted-foreground">Loading...</div>
-                                        ) : (!accounts || accounts.length === 0) ? (
-                                            <div className="p-2 text-sm text-muted-foreground">No accounts found</div>
-                                        ) : (
-                                            <>
-                                                {accounts.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
-                                                    <SelectItem key={account.id || account.account_name} value={account.id || account.account_name}>
-                                                        {account.account_name}
-                                                    </SelectItem>
-                                                ))}
-                                            </>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                            </FormItem>
-                        )} />
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        <FormField control={form.control} name="purpose" render={({ field }) => (
-                            <FormItem className="lg:col-span-3">
-                                <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Purpose of Fund Request</FormLabel>
-                                <FormControl>
-                                    <Textarea {...field} placeholder="Provide detailed explanation for this request..." className="min-h-[120px] bg-muted/30 focus-visible:bg-transparent" disabled={isReadOnly} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-
-                        <div className="flex flex-col gap-4">
-                            <FormField control={form.control} name="amount" render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Amount Requested</FormLabel>
-                                    <div className="relative">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                                            <span className="text-lg font-bold">₱</span>
-                                        </div>
-                                        <FormControl>
-                                            <Input {...field} type="number" className="h-24 text-3xl font-bold pl-10 bg-primary/5 border-primary/20 text-primary text-center" disabled={isReadOnly} />
-                                        </FormControl>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                            <div className="p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-md">
-                                <p className="text-[9px] text-red-600 dark:text-red-400 font-bold italic leading-tight uppercase">
-                                    Required: Official Receipts or invoices for liquidation.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 pt-10 border-t border-dashed">
-                        {[
-                            { name: 'requesterName', label: 'Requested By:', readOnly: true },
-                            { name: 'verifiedBy', label: 'Verified By:', options: verifiers },
-                            { name: 'approvedBy', label: 'Approved By:', options: approvers },
-                            { name: 'processedBy', label: 'Processed By:', options: processors },
-                            { name: 'releasedReceivedBy', label: 'Released By:', options: processors },
-                        ].map((sig) => (
-                            <FormField
-                                key={sig.name}
-                                control={form.control}
-                                name={sig.name as any}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">{sig.label}</FormLabel>
-                                        {sig.options ? (
-                                            <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
-                                                <FormControl>
-                                                    <SelectTrigger className="h-9 bg-muted/20 border-dashed hover:border-primary transition-colors">
-                                                        <SelectValue placeholder="Staff..." />
+                                                    <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-xs">
+                                                        <SelectValue placeholder="Identify Personnel" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent>
-                                                    {sig.options.map((u) => (
-                                                        <SelectItem key={u.id} value={`${u.firstName} ${u.lastName}`}>
-                                                            {u.firstName} {u.lastName}
+                                                <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                    {employees.map((emp: any) => (
+                                                        <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`} className="uppercase text-[10px] font-black">
+                                                            {emp.firstName} {emp.lastName}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                        ) : (
-                                            <div className="h-9 flex items-center px-3 border-b border-muted-foreground/30 font-medium text-xs">
-                                                {field.value}
-                                            </div>
-                                        )}
-                                        <p className="text-[9px] text-center text-muted-foreground mt-1 font-mono uppercase italic border-t pt-1">Signature / Date</p>
-                                    </FormItem>
-                                )}
-                            />
-                        ))}
-                    </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )} />
+                                    <FormField control={form.control} name="position" render={({ field }) => (
+                                        <FormItem className="space-y-1.5">
+                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Personnel Designation</FormLabel>
+                                            <FormControl><Input {...field} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs uppercase" disabled={isReadOnly} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )} />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormField control={form.control} name="tempChargeTo" render={({ field }) => (
+                                            <FormItem className="space-y-1.5">
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Charge Allocation</FormLabel>
+                                                <FormControl><Input {...field} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs uppercase" disabled={isReadOnly} placeholder="..." /></FormControl>
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="tempAccountNo" render={({ field }) => (
+                                            <FormItem className="space-y-1.5">
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Account Node</FormLabel>
+                                                <FormControl><Input {...field} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-mono text-xs uppercase" disabled={isReadOnly} placeholder="..." /></FormControl>
+                                            </FormItem>
+                                        )} />
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div className="flex justify-end gap-3 pt-6 border-t no-print">
-                        <Button type="button" variant="outline" onClick={onCancel}>
-                            {isReadOnly ? 'Close' : 'Cancel'}
+                            <div className="lg:col-span-7 space-y-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1 h-4 bg-primary rounded-full" />
+                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Financial Matrix Configuration</h3>
+                                </div>
+                                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <FormField control={form.control} name="date" render={({ field }) => (
+                                            <FormItem className="space-y-1.5">
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Protocol Date</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button variant="outline" className="w-full bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase tracking-tighter text-xs justify-start px-3">
+                                                            <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
+                                                            {field.value ? format(field.value, "PPP") : "Select Date"}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0 bg-card border-foreground/10">
+                                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus disabled={isReadOnly} />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="depositAccount" render={({ field }) => (
+                                            <FormItem className="space-y-1.5">
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Funding Channel</FormLabel>
+                                                <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                                    <FormControl>
+                                                        <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-xs">
+                                                            <SelectValue placeholder="Identify Channel" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                        {accountsLoading ? (
+                                                            <div className="p-2 text-xs font-black uppercase text-foreground/20">Scanning...</div>
+                                                        ) : (
+                                                            accounts?.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
+                                                                <SelectItem key={account.id} value={account.id || account.account_name} className="uppercase text-[10px] font-black">
+                                                                    {account.account_name}
+                                                                </SelectItem>
+                                                            ))
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormItem>
+                                        )} />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                        <FormField control={form.control} name="purpose" render={({ field }) => (
+                                            <FormItem className="md:col-span-3 space-y-1.5">
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Operational Justification</FormLabel>
+                                                <FormControl>
+                                                    <Textarea {...field} placeholder="State the strategic purpose for this liquidity request..." className="min-h-[100px] bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs uppercase resize-none focus-visible:ring-primary/20" disabled={isReadOnly} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="amount" render={({ field }) => (
+                                            <FormItem className="space-y-1.5">
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Requested Value</FormLabel>
+                                                <div className="relative h-[100px]">
+                                                    <div className="absolute left-3 top-3 text-primary/40 font-black text-lg">₱</div>
+                                                    <FormControl>
+                                                        <Input {...field} type="number" className="h-full bg-primary/5 border-primary/20 text-primary text-2xl font-black text-center rounded-xl focus-visible:ring-primary/30" disabled={isReadOnly} />
+                                                    </FormControl>
+                                                </div>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                    </div>
+                                    <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-destructive/20 text-destructive">
+                                            <Activity className="h-4 w-4" />
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-destructive italic leading-tight">
+                                            Compliance Protocol: Validated official receipts or invoices are mandatory for post-disbursement liquidation.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Bottom Section: Authorization Protocols */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 pt-8 border-t border-foreground/10 border-dashed">
+                            {[
+                                { name: 'requesterName', label: 'Requested By Node', icon: User, readOnly: true },
+                                { name: 'verifiedBy', label: 'Verification Node', icon: ShieldCheck, options: verifiers },
+                                { name: 'approvedBy', label: 'Approval Node', icon: Zap, options: approvers },
+                                { name: 'processedBy', label: 'Processing Node', icon: CheckCircle2, options: processors },
+                                { name: 'releasedReceivedBy', label: 'Recipient Node', icon: ArrowRight, options: processors },
+                            ].map((sig) => (
+                                <FormField
+                                    key={sig.name}
+                                    control={form.control}
+                                    name={sig.name as any}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <sig.icon className="h-3 w-3 text-primary/60" />
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40">{sig.label}</FormLabel>
+                                            </div>
+                                            {sig.options ? (
+                                                <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
+                                                    <FormControl>
+                                                        <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-[10px] hover:bg-foreground/10 transition-all">
+                                                            <SelectValue placeholder="Identify Staff" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                        {sig.options.map((u: any) => (
+                                                            <SelectItem key={u.id} value={`${u.firstName} ${u.lastName}`} className="uppercase text-[10px] font-black">
+                                                                {u.firstName} {u.lastName}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            ) : (
+                                                <div className="h-10 flex items-center px-3 bg-foreground/5 border border-foreground/10 rounded-xl font-bold text-[10px] text-foreground/60 uppercase truncate">
+                                                    {field.value || "---"}
+                                                </div>
+                                            )}
+                                            <div className="h-px bg-foreground/5 my-2" />
+                                            <p className="text-[9px] text-center text-foreground/20 font-black uppercase tracking-widest italic">Digital Signatory Timestamp</p>
+                                        </FormItem>
+                                    )}
+                                />
+                            ))}
+                        </div>
+                    </form>
+                </Form>
+            </ScrollArea>
+
+            {/* Footer Control Bar */}
+            <div className="px-8 py-6 border-t border-foreground/10 bg-foreground/5 flex items-center justify-between shrink-0 no-print">
+                <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Protocol Ready for Transmission
+                </div>
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" onClick={onCancel} className="px-6 rounded-2xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-[10px]" >
+                        {isReadOnly ? 'Close Protocol' : 'Abort Entry'}
+                    </Button>
+                    {!isReadOnly && (
+                        <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting} className="px-10 rounded-2xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all gap-2" >
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                            {mode === 'edit' ? 'Update Protocol' : 'Commit Request'}
                         </Button>
-                        {!isReadOnly && (
-                            <Button type="submit" disabled={isSubmitting} className="min-w-[140px]">
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Submitting...
-                                    </>
-                                ) : mode === 'edit' ? 'Update Request' : 'Submit Request'}
-                            </Button>
-                        )}
-                        <Button type="button" variant="secondary" onClick={() => window.print()} className="gap-2">
-                            <Printer className="h-4 w-4" /> Print
-                        </Button>
-                    </div>
-                </form>
-            </Form>
+                    )}
+                    <Button type="button" variant="secondary" onClick={() => window.print()} 
+                        className="h-12 px-6 rounded-2xl bg-foreground/5 border border-foreground/10 text-foreground hover:bg-foreground/10 transition-all font-black uppercase tracking-widest text-[10px] gap-2"
+                    >
+                        <Printer className="h-4 w-4 text-primary" /> Print Matrix
+                    </Button>
+                </div>
+            </div>
         </div>
     );
 }

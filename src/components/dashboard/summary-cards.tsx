@@ -64,7 +64,7 @@ export function SummaryCards() {
             {item.value === null ? (
               <Skeleton className="h-8 w-3/4" />
             ) : (
-              <div className="text-2xl font-bold font-headline text-white">
+              <div className="text-2xl font-bold font-headline text-foreground">
                 {item.value}
               </div>
             )}

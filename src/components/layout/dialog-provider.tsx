@@ -1,18 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { useState, useCallback } from 'react';
+import { DialogId, DialogContext, useDialog, DialogIdContext, useDialogId } from './dialog-context';
+export { useDialog, useDialogId };
+
 
 // Import all dialog components
 import CustomerListDialog from '@/components/customer/customer-list-dialog';
 import { AddCustomerDialog } from '@/components/customer/add-customer-dialog';
-
 import CustomerPaymentDialog from '@/components/customer/customer-payment-dialog';
 import AddCustomerPaymentDialog from '@/components/customer/add-customer-payment-dialog';
 import CustomerLoyaltyPointsDialog from '@/components/customer/customer-loyalty-points-dialog';
@@ -56,8 +51,8 @@ import IncomeStatementAnalysisReport from '@/components/reports/income-statement
 import IncomeStatementReport from '@/components/reports/income-statement-report';
 import InvoicesReportDialog from '@/components/reports/invoices-report-dialog';
 import InvoicesReport from '@/components/reports/invoices-report';
-import QuotesReportDialog from '@/components/reports/quotes-report-dialog';
-import QuotesReport from '@/components/reports/quotes-report';
+import CashAdvanceReportDialog from '@/components/reports/cash-advance-report-dialog';
+import CashAdvanceReport from '@/components/reports/cash-advance-report';
 import SalesInvoicePaymentReportDialog from '@/components/reports/sales-invoice-payment-report-dialog';
 import SalesInvoicePaymentReport from '@/components/reports/sales-invoice-payment-report';
 import InventoryReportDialog from '@/components/reports/inventory-report-dialog';
@@ -97,18 +92,18 @@ import CustomReport from '@/components/reports/custom-report';
 import PosSalesDetailDialog from '@/components/reports/pos-sales-detail-dialog';
 import GeneralLedgerDialog from '@/components/reports/general-ledger-dialog';
 import GeneralLedgerReport from '@/components/reports/general-ledger-report';
-
+import { ToAuditReportDialog } from '@/components/reports/to-audit-report-dialog';
+import ConsignmentOutrightReportDialog from '@/components/reports/consignment-outright-report-dialog';
+import ConsignmentOutrightReport from '@/components/reports/consignment-outright-report';
 import EnterCashSaleDialog from '@/components/transactions/enter-cash-sale-dialog';
 import { EnterDirectPaymentsDialog } from '@/components/transactions/enter-direct-payments-dialog';
 import { EnterPaymentsOfAccountsPayableDialog } from '@/components/transactions/enter-payments-of-accounts-payable-dialog';
 import CreatePurchaseOrderDialog from '@/components/purchases/create-purchase-order-dialog';
 import SupplierListDialog from '@/components/purchases/supplier-list-dialog';
 import AddSupplierDialog from '@/components/purchases/add-supplier-dialog';
-
 import PurchaseOrderListDialog from '@/components/purchases/purchase-order-list-dialog';
 import ViewPurchaseOrderDialog from '@/components/purchases/view-purchase-order-dialog';
 import InvoiceListDialog from '@/components/invoices/invoice-list-dialog';
-
 import AccountsPayableListDialog from '@/components/purchases/accounts-payable-list-dialog';
 import { EnterAccountsPayableDialog } from '@/components/purchases/enter-accounts-payable-dialog';
 import CalendarModal from '@/components/dashboard/calendar-modal';
@@ -123,9 +118,26 @@ import ReceiptsDepositsDialog from '@/app/banking/receipts-deposits/page';
 import CustomerBalanceDialog from '@/app/customer/balance/page';
 import BackupSchedulerDialog from '@/components/backup/backup-scheduler-dialog';
 import BalanceSheetReportDialog from '@/components/reports/balance-sheet-report';
-
-
-/* ... */
+import BankSettingsDialog from '@/components/configuration/bank-settings-dialog';
+import AddBankAccountDialog from '@/components/configuration/add-bank-account-dialog';
+import EditBankAccountDialog from '@/components/configuration/edit-bank-account-dialog';
+import BankHistoryDialog from '@/components/banking/bank-history-dialog';
+import AddBankTransactionDialog from '@/components/banking/add-bank-transaction-dialog';
+import BranchListDialog from '@/components/configuration/branch-list-dialog';
+import AddBranchDialog from '@/components/configuration/add-branch-dialog';
+import EmployeeDirectoryDialog from '@/components/user-management/employee-directory-dialog';
+import AddEmployeeDialog from '@/components/user-management/add-employee-dialog';
+import EditEmployeeDialog from '@/components/user-management/edit-employee-dialog';
+import DeleteEmployeeDialog from '@/components/user-management/delete-employee-dialog';
+import CustomerStatementDialog from '@/components/customer/customer-statement-dialog';
+import CustomerLedgerDialog from '@/components/customer/customer-ledger-dialog';
+import { DisbursementDialog } from '@/components/transactions/disbursement-dialog';
+import HistoryLogsDialog from '@/components/configuration/history-logs-dialog';
+import ProfitCentersDialog from '@/components/configuration/profit-centers-dialog';
+import CostCentersDialog from '@/components/configuration/cost-centers-dialog';
+import { AccountingFlowchartDialog } from '@/components/flowchart/accounting-flowchart-dialog';
+import ReportsDialog from '@/components/reports/reports-dialog';
+import DatabaseManagementDialog from '@/components/configuration/database-management-dialog';
 
 const dialogComponents = {
   'customer-list': CustomerListDialog,
@@ -147,6 +159,7 @@ const dialogComponents = {
   'delete-account': DeleteAccountDialog,
   'reconcile-account': ReconcileAccountDialog,
   'account-transfer': AccountTransferDialog,
+  'add-bank-transaction': AddBankTransactionDialog,
   'create-invoice': CreateInvoiceDialog,
   'enter-cash-sale': EnterCashSaleDialog,
   'add-sales-user': AddSalesUserDialog,
@@ -196,8 +209,8 @@ const dialogComponents = {
   'income-statement-report': IncomeStatementReport,
   'invoices-report-dialog': InvoicesReportDialog,
   'invoices-report': InvoicesReport,
-  'quotes-report-dialog': QuotesReportDialog,
-  'quotes-report': QuotesReport,
+  'cash-advance-report-dialog': CashAdvanceReportDialog,
+  'cash-advance-report': CashAdvanceReport,
   'orders-report-dialog': OrdersReportDialog,
   'orders-report': OrdersReport,
   'sales-invoice-payment-report-dialog': SalesInvoicePaymentReportDialog,
@@ -237,28 +250,43 @@ const dialogComponents = {
   'pos-sales-detail': PosSalesDetailDialog,
   'general-ledger-dialog': GeneralLedgerDialog,
   'general-ledger-report': GeneralLedgerReport,
+  'to-audit-report': ToAuditReportDialog,
+  'consignment-outright-report-dialog': ConsignmentOutrightReportDialog,
+  'consignment-outright-report': ConsignmentOutrightReport,
+  'bank-settings': BankSettingsDialog,
+  'add-bank-account': AddBankAccountDialog,
+  'edit-bank-account': EditBankAccountDialog,
+  'bank-history': BankHistoryDialog,
+  'branch-list': BranchListDialog,
+  'add-branch': AddBranchDialog,
+  'employee-directory': EmployeeDirectoryDialog,
+  'add-employee': AddEmployeeDialog,
+  'edit-employee': EditEmployeeDialog,
+  'delete-employee': DeleteEmployeeDialog,
+  'customer-statement': CustomerStatementDialog,
+  'customer-ledger': CustomerLedgerDialog,
+  'disbursement-dialog': DisbursementDialog,
+  'history-logs': HistoryLogsDialog,
+  'profit-centers': ProfitCentersDialog,
+  'cost-centers': CostCentersDialog,
+  'accounting-flowchart': AccountingFlowchartDialog,
+  'reports-dashboard': ReportsDialog,
+  'database-management': DatabaseManagementDialog,
 };
-
-type DialogId = keyof typeof dialogComponents;
-
-
-interface DialogContextType {
-  openDialogs: Record<string, boolean>;
-  openDialog: (id: DialogId) => void;
-  closeDialog: (id: DialogId) => void;
-  getDialogData: (id: DialogId) => any;
-  setDialogData: (id: DialogId, data: any) => void;
-}
-
-const DialogContext = createContext<DialogContextType | undefined>(undefined);
 
 export function DialogProvider({ children }: { children: React.ReactNode }) {
   const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
+  const [dialogVariants, setDialogVariants] = useState<Record<string, 'default' | 'top-drawer'>>({});
   const [dialogData, setDialogDataState] = useState<Record<string, any>>({});
 
-  const openDialog = useCallback((id: DialogId) => {
-    console.log("openDialog called with:", id);
+  const openDialog = useCallback((id: DialogId, options?: { variant?: 'default' | 'top-drawer' }) => {
+    console.log("openDialog called with:", id, options);
     setOpenDialogs(prev => ({ ...prev, [id]: true }));
+    if (options?.variant) {
+      setDialogVariants(prev => ({ ...prev, [id]: options.variant! }));
+    } else {
+      setDialogVariants(prev => ({ ...prev, [id]: 'default' }));
+    }
   }, []);
 
   const closeDialog = useCallback((id: DialogId) => {
@@ -275,29 +303,22 @@ export function DialogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DialogContext.Provider
-      value={{ openDialogs, openDialog, closeDialog, getDialogData, setDialogData }}
+      value={{ openDialogs, dialogVariants, openDialog, closeDialog, getDialogData, setDialogData }}
     >
       {children}
       {Object.entries(dialogComponents).map(([id, Component]) => {
         const DialogComponent = Component as any;
         return (
-          <DialogComponent
-            key={id}
-            open={openDialogs[id] || false}
-            onOpenChange={(open: boolean) => {
-              if (!open) closeDialog(id as DialogId);
-            }}
-          />
+          <DialogIdContext.Provider key={id} value={id as DialogId}>
+            <DialogComponent
+              open={openDialogs[id] || false}
+              onOpenChange={(open: boolean) => {
+                if (!open) closeDialog(id as DialogId);
+              }}
+            />
+          </DialogIdContext.Provider>
         );
       })}
     </DialogContext.Provider>
   );
-}
-
-export function useDialog() {
-  const context = useContext(DialogContext);
-  if (context === undefined) {
-    throw new Error('useDialog must be used within a DialogProvider');
-  }
-  return context;
 }

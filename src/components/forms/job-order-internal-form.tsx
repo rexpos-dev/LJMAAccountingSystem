@@ -51,6 +51,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 const formSchema = z.object({
     requesterName: z.string().min(1, 'Requestor is required'),
@@ -63,7 +64,7 @@ const formSchema = z.object({
     description: z.string().min(1, 'Description is required'),
     amount: z.coerce.number().min(0, 'Project Cost is required'),
     requestedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
+    approvedBy: z.string().min(1, 'Approved by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -79,11 +80,13 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "JOB ORDER REQUEST FORM INTERNAL";
 
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -166,21 +169,40 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                 <FormField control={form.control} name="requesterName" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Requestor</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <Select value={field.value} onValueChange={(val) => {
+                                            field.onChange(val);
+                                            const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                            if (emp && emp.designation) {
+                                                form.setValue('position', emp.designation, { shouldValidate: true });
+                                            }
+                                        }} disabled={isReadOnly || employeesLoading}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 bg-background">
+                                                    <SelectValue placeholder="Select name" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {employees.map((emp: any) => (
+                                                    <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                        {emp.firstName} {emp.lastName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="position" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Position</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="purpose" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Purpose</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -217,14 +239,14 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                 <FormField control={form.control} name="chargeTo" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Charge To</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="accountNo" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Account No.</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -297,7 +319,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                             <FormControl>
                                                 <div className="space-y-2">
                                                     <span className="text-[10px] uppercase font-bold text-muted-foreground">Total Budget</span>
-                                                    <Input {...field} type="number" step="0.01" className="h-12 text-center text-xl font-black text-primary bg-background border-primary/20" disabled={isReadOnly} />
+                                                    <Input {...field} type="number" step="0.01" className="text-center text-xl font-black text-primary bg-background border-primary/20" disabled={isReadOnly} />
                                                     <div className="text-[9px] text-muted-foreground italic">Approximate cost for job order implementation.</div>
                                                 </div>
                                             </FormControl>
@@ -314,7 +336,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                         <FormField control={form.control} name="requestedBy" render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Requested by</FormLabel>
-                                <FormControl><Input {...field} className="h-9 text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" placeholder="NAME / SIGNATURE" disabled={isReadOnly} /></FormControl>
+                                <FormControl><Input {...field} className="text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" placeholder="NAME / SIGNATURE" disabled={isReadOnly} /></FormControl>
                                 <div className="text-[8px] text-center pt-1.5 italic text-muted-foreground uppercase">Signature Over Printed Name / Date</div>
                             </FormItem>
                         )} />
@@ -323,7 +345,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                 <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Approved by</FormLabel>
                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                     <FormControl>
-                                        <SelectTrigger className="h-9 text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary">
+                                        <SelectTrigger className=" text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary">
                                             <SelectValue placeholder="SELECT APPROVER" />
                                         </SelectTrigger>
                                     </FormControl>

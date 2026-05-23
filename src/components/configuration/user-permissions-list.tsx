@@ -17,10 +17,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { UserPermission } from '@/types/user-permission';
 
@@ -29,7 +28,7 @@ export default function UserPermissionsList() {
   const { data: userPermissions = [], isLoading, error, refetch } = useUserPermissions();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedUser, setSelectedUser] = useState<UserPermission | null>(null);
 
   const filteredUsers = userPermissions.filter((user) =>
@@ -79,30 +78,17 @@ export default function UserPermissionsList() {
           <Plus className="mr-2 h-4 w-4" />
           Add
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={!selectedUser}
-          onClick={handleEdit}
-        >
+        <Button variant="outline" size="sm" disabled={!selectedUser} onClick={handleEdit} >
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={!selectedUser}
-          onClick={handleDelete}
-        >
+        <Button variant="outline" size="sm" disabled={!selectedUser} onClick={handleDelete} >
           <Trash2 className="mr-2 h-4 w-4" />
           Delete
         </Button>
         <div className="relative flex-1 ml-auto">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => {
+          <Input placeholder="Search..." value={searchQuery} onChange={(e) => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
@@ -111,9 +97,9 @@ export default function UserPermissionsList() {
         </div>
       </div>
 
-      <ScrollArea className="flex-1 min-h-[300px] max-h-[400px]">
+      <div className="rounded-md border overflow-y-auto" style={{ maxHeight: '520px' }}>
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-background shadow-sm">
             <TableRow className="bg-gradient-to-b from-gray-100 to-gray-200">
               <TableHead className="w-24">Username</TableHead>
               <TableHead>Name</TableHead>
@@ -125,19 +111,19 @@ export default function UserPermissionsList() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-sm">
+                <TableCell colSpan={5} className="text-center text-sm">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : error ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-sm text-destructive">
+                <TableCell colSpan={5} className="text-center text-sm text-destructive">
                   Failed to load
                 </TableCell>
               </TableRow>
             ) : paginatedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-sm text-muted-foreground">
+                <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
                   {searchQuery ? 'No matches' : 'No user permissions'}
                 </TableCell>
               </TableRow>
@@ -154,8 +140,8 @@ export default function UserPermissionsList() {
                   <TableCell className="text-sm">{user.accountType}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-0.5 rounded text-xs ${user.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
                       }`}>
                       {user.isActive ? 'Active' : 'Inactive'}
                     </span>
@@ -165,35 +151,45 @@ export default function UserPermissionsList() {
             )}
           </TableBody>
         </Table>
-      </ScrollArea>
+      </div>
 
       <div className="border-t pt-3 flex items-center justify-between mt-4">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-          >
-            Prev
-          </Button>
-          <span className="text-sm text-muted-foreground px-2">
-            Page {currentPage} of {totalPages || 1}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages || totalPages === 0}
-          >
-            Next
-          </Button>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground whitespace-nowrap">Rows per page:</span>
+            <select
+              className="h-8 w-16 rounded-md border border-input bg-transparent px-2 text-xs"
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={filteredUsers.length || 100}>All</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1} >
+              Prev
+            </Button>
+            <span className="text-sm text-muted-foreground px-2 whitespace-nowrap">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+            <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} >
+              Next
+            </Button>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
             {filteredUsers.length} total
           </span>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleRefresh}>
+          <Button variant="ghost" size="icon" className="w-8" onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>

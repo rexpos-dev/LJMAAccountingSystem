@@ -1,13 +1,6 @@
 'use client';
 
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -16,7 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -24,45 +16,28 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
-import {
-    FileText,
-    Printer,
-    Save,
-    ListVideo,
-} from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { format } from 'date-fns';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
+import { ReportToolbar } from './report-toolbar';
 
 export default function ReconciliationReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
     const dialogData = getDialogData('reconciliation-report' as any);
     const reportDate = dialogData?.reportDate || new Date();
+    const contentRef = useRef<HTMLDivElement>(null);
 
     return (
         <Dialog open={openDialogs['reconciliation-report'] || false} onOpenChange={() => closeDialog('reconciliation-report' as any)}>
             <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('reconciliation-report' as any)}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Reconciliation Report"
+                        subtitle={`As of: ${format(reportDate, 'MM/dd/yyyy')}`}
+                        closeKey="reconciliation-report"
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left">
@@ -71,7 +46,7 @@ export default function ReconciliationReport() {
                             <FileText className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">Reconciliation Report</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">Reconciliation Report</DialogTitle>
                             <DialogDescription className="text-left">
                                 As of: {format(reportDate, 'MM/dd/yyyy')}
                             </DialogDescription>
@@ -80,6 +55,7 @@ export default function ReconciliationReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/30">
@@ -100,6 +76,7 @@ export default function ReconciliationReport() {
                             </TableRow>
                         </TableBody>
                     </Table>
+                    </div>
                 </ScrollArea>
             </DialogContent>
         </Dialog>

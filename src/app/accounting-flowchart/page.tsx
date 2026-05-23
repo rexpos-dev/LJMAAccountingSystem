@@ -5,18 +5,28 @@ const Flowchart = dynamic(() => import("@/components/flowchart/flowchart").then(
 
 export default function AccountingFlowchartPage() {
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight font-headline text-white">
-          Accounting Flowchart
+    <div className="flex-1 space-y-8 p-4 md:p-10 pt-8 bg-black/40">
+      <div className="relative flex flex-col gap-2">
+        {/* Decorative Element */}
+        <div className="absolute -top-4 -left-4 w-20 h-20 bg-primary/20 blur-3xl rounded-full" />
+        
+        <h2 className="text-4xl font-black tracking-tight font-headline text-foreground uppercase italic">
+          Operational <span className="text-primary not-italic">Flowchart</span>
         </h2>
+        <p className="text-sm text-muted-foreground/80 max-w-2xl font-medium tracking-wide">
+          Navigate through LJMA FinancePro's core accounting cycles. 
+          Each node represents a critical business process—click to initiate the corresponding workflow.
+        </p>
       </div>
-      <p className="text-muted-foreground">
-        This flowchart outlines the main accounting processes in LJMA FinancePro. Click on a process to begin.
-      </p>
-      <div className="min-h-[600px] p-6">
-        <div className="w-full overflow-x-auto">
-          <Flowchart />
+
+      <div className="relative group">
+        {/* Container Glow */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 blur-2xl opacity-50 group-hover:opacity-75 transition-opacity" />
+        
+        <div className="relative w-full overflow-x-auto rounded-[2.5rem] border border-foreground/5 bg-card/40 backdrop-blur-sm shadow-2xl">
+          <div className="min-w-[1400px] p-8">
+            <Flowchart />
+          </div>
         </div>
       </div>
     </div>

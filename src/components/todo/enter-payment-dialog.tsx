@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 
 export default function EnterPaymentDialog() {
     const { openDialogs, closeDialog } = useDialog();

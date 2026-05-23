@@ -1,14 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useState, useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -25,14 +17,10 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
-import {
-    FileText,
-    Printer,
-    Save,
-    ListVideo,
-} from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { ReportToolbar } from './report-toolbar';
 import { format } from 'date-fns';
-import { useDialog } from '../layout/dialog-provider';
+import { useDialog } from '../layout/dialog-context';
 import { useExternalProducts } from '@/hooks/use-products';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -40,6 +28,7 @@ export default function InventoryReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
     const dialogData = getDialogData('inventory-report' as any);
     const reportDate = dialogData?.reportDate || new Date();
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -59,26 +48,12 @@ export default function InventoryReport() {
         <Dialog open={openDialogs['inventory-report'] || false} onOpenChange={() => closeDialog('inventory-report' as any)}>
             <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('inventory-report' as any)}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Inventory Report"
+                        subtitle={`As of: ${format(reportDate, 'MM/dd/yyyy')}`}
+                        closeKey="inventory-report"
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left">
@@ -87,7 +62,7 @@ export default function InventoryReport() {
                             <FileText className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">Inventory Report</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">Inventory Report</DialogTitle>
                             <DialogDescription className="text-left">
                                 As of: {format(reportDate, 'MM/dd/yyyy')}
                             </DialogDescription>
@@ -96,6 +71,7 @@ export default function InventoryReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     <Table>
                         <TableHeader className="sticky top-0 z-10 bg-card shadow-sm">
                             <TableRow className="bg-muted/30">
@@ -163,24 +139,18 @@ export default function InventoryReport() {
                     {!isLoading && pagination && (
                         <div className="flex items-center justify-between py-4 border-t mt-4">
                             <div className="text-sm text-muted-foreground">
-                                Showing <span className="font-medium text-white">{((currentPage - 1) * pageSize) + 1}</span> to <span className="font-medium text-white">{Math.min(currentPage * pageSize, pagination.total)}</span> of <span className="font-medium text-white">{pagination.total}</span> products
+                                Showing <span className="font-medium text-foreground">{((currentPage - 1) * pageSize) + 1}</span> to <span className="font-medium text-foreground">{Math.min(currentPage * pageSize, pagination.total)}</span> of <span className="font-medium text-foreground">{pagination.total}</span> products
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                     disabled={currentPage === 1}
                                 >
                                     Previous
                                 </Button>
                                 <div className="flex items-center gap-1 mx-2 text-sm">
-                                    Page <span className="font-medium text-white">{currentPage}</span> of <span className="font-medium text-white">{Math.ceil(pagination.total / pageSize)}</span>
+                                    Page <span className="font-medium text-foreground">{currentPage}</span> of <span className="font-medium text-foreground">{Math.ceil(pagination.total / pageSize)}</span>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(prev => prev + 1)}
+                                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => prev + 1)}
                                     disabled={!pagination.hasMore}
                                 >
                                     Next
@@ -188,6 +158,7 @@ export default function InventoryReport() {
                             </div>
                         </div>
                     )}
+                    </div>
                 </ScrollArea>
             </DialogContent>
         </Dialog>

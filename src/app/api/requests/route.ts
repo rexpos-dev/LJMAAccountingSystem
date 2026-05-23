@@ -21,6 +21,7 @@ export async function GET() {
         const isVerifier = user.formPermissions === 'Verifier';
         const isSuperAdmin = user.accountType === 'Super Admin';
         const isAdmin = ['Administrator', 'Admin'].includes(user.accountType);
+        const isTreasurer = user.accountType === 'Treasurer';
 
         if (isSuperAdmin && !isVerifier) {
             // Only Super Admins who are NOT specifically verifiers see everything
@@ -28,8 +29,8 @@ export async function GET() {
             return NextResponse.json(requests);
         }
 
-        if (isAdmin && !isVerifier) {
-            // Other Admins who are NOT verifiers currently also see everything 
+        if ((isAdmin || isTreasurer) && !isVerifier) {
+            // Other Admins and Treasurers who are NOT verifiers currently also see everything 
             // but the user wants them to be restricted if they are verifiers.
             // Let's keep this as seeing everything UNLESS they are a verifier.
             const requests = await prisma.$queryRaw`SELECT * FROM request ORDER BY createdAt DESC`;
@@ -72,12 +73,21 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        // Manual count
-        const countResult: any = await prisma.$queryRaw`SELECT COUNT(*) as count FROM request`;
-        // Handle BigInt return from count
-        const count = Number(countResult[0]?.count || 0);
+        // Find highest existing requestNumber
+        const latestRequest = await prisma.request.findFirst({
+            orderBy: { requestNumber: 'desc' },
+            select: { requestNumber: true }
+        });
 
-        const requestNumber = `REQ-${(count + 1).toString().padStart(5, '0')}`;
+        let nextNum = 1;
+        if (latestRequest?.requestNumber) {
+            const match = latestRequest.requestNumber.match(/\d+$/);
+            if (match) {
+                nextNum = parseInt(match[0], 10) + 1;
+            }
+        }
+
+        const requestNumber = `REQ-${nextNum.toString().padStart(5, '0')}`;
 
         const id = crypto.randomUUID();
         const now = new Date();
@@ -88,9 +98,9 @@ export async function POST(req: Request) {
                 accountNo, depositAccount, purpose, amount, verifiedBy, approvedBy, processedBy, 
                 formName, status, createdAt, updatedAt, date
             ) VALUES (
-                ${id}, ${requestNumber}, ${body.requesterName || 'Unknown'}, ${body.position}, ${body.businessUnit}, ${body.chargeTo},
-                ${body.accountNo}, ${body.depositAccount}, ${body.purpose}, ${body.amount || 0}, ${body.verifiedBy}, ${body.approvedBy}, ${body.processedBy},
-                ${body.formName}, 'To Verify', ${now}, ${now}, ${now}
+                ${id}, ${requestNumber}, ${body.requesterName ?? 'Unknown'}, ${body.position ?? null}, ${body.businessUnit ?? null}, ${body.chargeTo ?? null},
+                ${body.accountNo ?? body.employeeId ?? null}, ${body.depositAccount ?? null}, ${body.purpose ?? null}, ${body.amount ?? 0}, ${body.verifiedBy ?? null}, ${body.approvedBy ?? null}, ${body.processedBy ?? null},
+                ${body.formName ?? null}, 'To Verify', ${now}, ${now}, ${now}
             )
         `;
 
@@ -98,12 +108,14 @@ export async function POST(req: Request) {
         if (body.items && body.items.length > 0) {
             for (const item of body.items) {
                 const itemId = crypto.randomUUID();
-                const total = (item.quantity || 0) * (item.unitPrice || 0);
+                const qty = item.quantity ?? 0;
+                const price = item.unitPrice ?? 0;
+                const total = qty * price;
                 await prisma.$executeRaw`
                     INSERT INTO request_item (
                         id, requestId, description, quantity, unit, unitPrice, total, createdAt, updatedAt
                     ) VALUES (
-                        ${itemId}, ${id}, ${item.description}, ${item.quantity}, ${null}, ${item.unitPrice}, ${total}, ${now}, ${now}
+                        ${itemId}, ${id}, ${item.description ?? ''}, ${qty}, ${null}, ${price}, ${total}, ${now}, ${now}
                     )
                 `;
             }
@@ -111,23 +123,38 @@ export async function POST(req: Request) {
 
         // Create Notifications for Verifiers
         const formName = body.formName || 'General Request';
-        const allVerifiers: any[] = await prisma.$queryRaw`
-            SELECT id, permissions FROM user_permission 
-            WHERE isActive = 1 AND formPermissions = 'Verifier'
+        let notifiedVerifiers: any[] = [];
+
+        // Find all active users and their full names
+        const allUsers: any[] = await prisma.$queryRaw`
+            SELECT id, firstName, lastName, permissions, accountType, formPermissions 
+            FROM user_permission 
+            WHERE isActive = true
         `;
 
-        const notifiedVerifiers = allVerifiers.filter(v => {
-            try {
-                const perms = JSON.parse(v.permissions || '[]');
-                return perms.includes(formName);
-            } catch { return false; }
-        });
+        if (body.verifiedBy) {
+            // If a specific verifier was assigned in the frontend
+            const matchedUser = allUsers.find(u => `${u.firstName} ${u.lastName}` === body.verifiedBy);
+            if (matchedUser) {
+                notifiedVerifiers.push(matchedUser);
+            }
+        } else {
+            // Fallback: Notify all eligible verifiers for this form
+            notifiedVerifiers = allUsers.filter(u => {
+                const isAdmin = ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+                if (isAdmin) return true; // Admins can verify anything
+                try {
+                    const perms = JSON.parse(u.permissions || '[]');
+                    return u.formPermissions === 'Verifier' && perms.includes(formName);
+                } catch { return false; }
+            });
+        }
 
         for (const verifier of notifiedVerifiers) {
             const notifId = crypto.randomUUID();
             await prisma.$executeRaw`
                 INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
-                VALUES (${notifId}, 'REQUEST_VERIFICATION', 'New Request to Verify', ${`A new ${formName} (${requestNumber}) requires your verification.`}, ${id}, ${verifier.id}, 0, ${now})
+                VALUES (${notifId}, 'REQUEST_VERIFICATION', 'New Request to Verify', ${`A new ${formName} (${requestNumber}) requires your verification.`}, ${id}, ${verifier.id}, false, ${now})
             `;
         }
 

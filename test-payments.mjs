@@ -1,0 +1,1 @@
+async function main() { console.log('Testing offline fallback...'); try { const res = await fetch('http://localhost:3000/api/customer-payments'); console.log('Status', res.status); const data = await res.json(); console.dir(data, {depth: null}); } catch (e) { console.error('Error:', e); } } main();

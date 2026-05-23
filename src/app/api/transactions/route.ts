@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getTransactions, createTransaction, getTransactionsByAccount, applyTransactionToAccountBalance, getRecentTransactions } from '@/lib/database';
+import { isProfitCenterEligible } from '@/lib/profit-center-rules';
 
 export async function GET(request: Request) {
   try {
@@ -62,7 +63,10 @@ export async function POST(request: Request) {
         dailyClosing,
         approval,
         ftToLedger,
-        ftToAccount
+        ftToAccount,
+        branchId,
+        profit_center_id,
+        cost_center_id
       } = transactionBody;
 
       const transactionData: any = {};
@@ -93,6 +97,16 @@ export async function POST(request: Request) {
       if (approval !== undefined) transactionData.approval = approval;
       if (ftToLedger !== undefined) transactionData.ftToLedger = ftToLedger;
       if (ftToAccount !== undefined) transactionData.ftToAccount = ftToAccount;
+      if (branchId !== undefined) transactionData.branchId = branchId;
+      if (cost_center_id !== undefined) transactionData.cost_center_id = cost_center_id;
+
+      // Only tag profit_center_id for eligible account types (Expense, Cost of Sales, Income)
+      if (profit_center_id !== undefined && accountNumber) {
+        const account = await prisma.account.findFirst({ where: { account_no: parseInt(accountNumber, 10) } });
+        if (account && isProfitCenterEligible(account.account_type)) {
+          transactionData.profit_center_id = profit_center_id;
+        }
+      }
 
       const transaction = await createTransaction(transactionData);
 
@@ -102,6 +116,19 @@ export async function POST(request: Request) {
       }
 
       createdTransactions.push(transaction);
+
+      // --- Audit Log Logic ---
+      const amount = Math.max(transaction.debit || 0, transaction.credit || 0);
+      await prisma.auditLog.create({
+        data: {
+          actionType: transaction.code === 'GJ' ? 'Journal Entry Posted' : 'Transaction Posted',
+          transactionId: transaction.transNo || transaction.id,
+          amount: amount,
+          details: `${transaction.code === 'GJ' ? 'Manual Journal Entry' : 'Transaction'}: ${transaction.particulars}`,
+          status: 'To Audit'
+        }
+      });
+      // --- End Audit Log Logic ---
     }
 
     // Return single transaction if only one was created, otherwise return array
@@ -149,6 +176,19 @@ export async function PUT(request: Request) {
     if (updateData.approval !== undefined) transactionUpdateData.approval = updateData.approval;
     if (updateData.ftToLedger !== undefined) transactionUpdateData.ftToLedger = updateData.ftToLedger;
     if (updateData.ftToAccount !== undefined) transactionUpdateData.ftToAccount = updateData.ftToAccount;
+    if (updateData.branchId !== undefined) transactionUpdateData.branchId = updateData.branchId;
+    if (updateData.cost_center_id !== undefined) transactionUpdateData.cost_center_id = updateData.cost_center_id;
+
+    // Only tag profit_center_id for eligible account types
+    if (updateData.profit_center_id !== undefined) {
+      const accNo = updateData.accountNumber || (await prisma.transaction.findUnique({ where: { id } }))?.accountNumber;
+      if (accNo) {
+        const account = await prisma.account.findFirst({ where: { account_no: parseInt(accNo, 10) } });
+        if (account && isProfitCenterEligible(account.account_type)) {
+          transactionUpdateData.profit_center_id = updateData.profit_center_id;
+        }
+      }
+    }
 
     const transaction = await prisma.transaction.update({
       where: { id },
@@ -173,6 +213,50 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 });
     }
+
+    // Fetch the transaction first so we can check its transNo
+    const transaction = await prisma.transaction.findUnique({
+      where: { id },
+      select: { id: true, transNo: true, particulars: true, date: true },
+    });
+
+    if (!transaction) {
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+    }
+
+    // --- Audit History Guard ---
+    // If this transaction has a transNo, check whether any AuditLog record
+    // references it. AuditLog.transactionId stores the transNo string.
+    if (transaction.transNo) {
+      const auditCount = await prisma.auditLog.count({
+        where: { transactionId: transaction.transNo },
+      });
+
+      if (auditCount > 0) {
+        // Fetch the most recent audit record for the error payload
+        const latest = await prisma.auditLog.findFirst({
+          where: { transactionId: transaction.transNo },
+          orderBy: { createdAt: 'desc' },
+          select: { createdAt: true, status: true, actionType: true },
+        });
+
+        return NextResponse.json(
+          {
+            error: 'TRANSACTION_HAS_HISTORY',
+            message:
+              `Transaction "${transaction.transNo}" cannot be deleted because it has ${auditCount} audit history record(s). ` +
+              `Transactions with audit trails are protected to maintain data integrity.`,
+            transactionRef: transaction.transNo,
+            count: auditCount,
+            latestAction: latest?.actionType ?? null,
+            latestStatus: latest?.status ?? null,
+            latestAt: latest?.createdAt ?? null,
+          },
+          { status: 409 }
+        );
+      }
+    }
+    // --- End Audit History Guard ---
 
     await prisma.transaction.delete({
       where: { id },

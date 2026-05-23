@@ -29,22 +29,30 @@ export async function GET(request: NextRequest) {
             };
         }
 
-        const purchaseOrders = await prisma.purchaseOrder.findMany({
-            where,
-            include: {
-                supplier: true,
-                items: {
-                    include: {
-                        product: true
-                    }
+        const [purchaseOrders, totalCount] = await Promise.all([
+            prisma.purchaseOrder.findMany({
+                where,
+                include: {
+                    supplier: true,
+                    items: {
+                        include: {
+                            product: true
+                        }
+                    },
                 },
-            },
-            orderBy: { date: 'desc' },
-            take: limit,
-            skip: offset,
-        });
+                orderBy: { date: 'desc' },
+                take: limit,
+                skip: offset,
+            }),
+            prisma.purchaseOrder.count({ where })
+        ]);
 
-        return NextResponse.json(purchaseOrders);
+        return NextResponse.json({
+            data: purchaseOrders,
+            totalCount,
+            page: Math.floor(offset / limit) + 1,
+            pageSize: limit
+        });
     } catch (error: any) {
         console.error('Error fetching purchase orders:', error);
         return NextResponse.json({ error: 'Failed to fetch purchase orders' }, { status: 500 });

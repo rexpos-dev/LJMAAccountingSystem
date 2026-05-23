@@ -94,6 +94,18 @@ export async function postJournalEntry(request: JournalEntryRequest, tx?: any) {
             );
         }
 
+        // Add to Audit Trail
+        await db.auditLog.create({
+            data: {
+                date: transactionData.date,
+                actionType: 'Transaction Posted',
+                transactionId: transaction.id,
+                amount: Math.max(debit, credit),
+                details: `System generated transaction via ${referenceId}: ${particulars}`,
+                status: 'To Audit'
+            }
+        });
+
         createdTransactions.push(transaction);
     }
 

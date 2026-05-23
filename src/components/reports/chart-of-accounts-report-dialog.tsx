@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 
 export default function ChartOfAccountsReportDialog() {
     const { openDialogs, closeDialog, openDialog } = useDialog();
@@ -24,15 +24,11 @@ export default function ChartOfAccountsReportDialog() {
                     </p>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('chart-of-accounts-report-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('chart-of-accounts-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

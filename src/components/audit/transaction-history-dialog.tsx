@@ -2,15 +2,25 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Printer } from "lucide-react";
-// import { DateRangePicker } from "@/components/ui/date-range-picker"; // Assuming this exists or using simple inputs for now
+import { Download, Printer, Save, MessageSquare } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+
+import { AuditItem } from "./audit-column";
 
 interface TransactionHistoryDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    account: { id: string; name: string; accountNumber: string } | null;
+    account: AuditItem | null;
 }
 
 export function TransactionHistoryDialog({
@@ -18,12 +28,80 @@ export function TransactionHistoryDialog({
     onOpenChange,
     account,
 }: TransactionHistoryDialogProps) {
-    // Mock transactions for now
-    const [transactions] = useState([
-        { id: "1", date: "2024-01-15", description: "Opening Balance", debit: 0, credit: 0, balance: 5000 },
-        { id: "2", date: "2024-01-20", description: "Payment Received", debit: 0, credit: 1500, balance: 6500 },
-        { id: "3", date: "2024-02-05", description: "Office Supplies", debit: 200, credit: 0, balance: 6300 },
-    ]);
+    const { toast } = useToast();
+    const [remarks, setRemarks] = useState(account?.remarks || "");
+    const [notifyUserId, setNotifyUserId] = useState<string>("none");
+    const [users, setUsers] = useState<{ id: string, name: string }[]>([]);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Sync state when dialog opens with a new account
+    useEffect(() => {
+        if (open && account) {
+            setRemarks(account.remarks || "");
+            setNotifyUserId("none");
+        }
+    }, [open, account]);
+
+    // Fetch users for notification dropdown
+    useEffect(() => {
+        if (open) {
+            fetch('/api/user-permissions')
+                .then(res => res.json())
+                .then(data => {
+                    const mapped = data.filter((u: any) => u.isActive).map((u: any) => ({
+                        id: u.id,
+                        username: u.username,
+                        name: `${u.firstName} ${u.lastName} (${u.accountType})`
+                    }));
+                    setUsers(mapped);
+
+                    // If we have an assignee and the dropdown is currently 'none', map it
+                    if (account?.assignee && notifyUserId === 'none') {
+                        const matched = mapped.find((u: any) => u.username === account.assignee);
+                        if (matched) setNotifyUserId(matched.id);
+                    }
+                })
+                .catch(console.error);
+        }
+    }, [open, account]);
+
+    const handleSaveRemarks = async () => {
+        if (!account) return;
+        setIsSaving(true);
+        try {
+            // Include notifyUserId if someone is selected
+            const payload: any = { remarks };
+            if (notifyUserId !== "none") {
+                payload.notifyUserId = notifyUserId;
+            }
+
+            const res = await fetch(`/api/audit/${account.id}`, {
+                method: "PATCH",
+                body: JSON.stringify(payload),
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!res.ok) throw new Error("Failed to save remarks");
+
+            // Update local object so it feels responsive instantly
+            account.remarks = remarks;
+
+            toast({
+                title: "Remarks Saved",
+                description: notifyUserId !== "none" ? "Remarks saved and user notified." : "Remarks tracked successfully.",
+            });
+            onOpenChange(false);
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Error",
+                description: "Could not save remarks. Please try again.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     if (!account) return null;
 
@@ -31,9 +109,9 @@ export function TransactionHistoryDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>Transaction History - {account.name}</DialogTitle>
+                    <DialogTitle>Audit Log Details</DialogTitle>
                     <DialogDescription>
-                        Account No: {account.accountNumber}
+                        Reference: {account.transactionId || 'None'} - {account.actionType}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -52,29 +130,64 @@ export function TransactionHistoryDialog({
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-auto border rounded-md">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead className="text-right">Debit</TableHead>
-                                <TableHead className="text-right">Credit</TableHead>
-                                <TableHead className="text-right">Balance</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {transactions.map((tx) => (
-                                <TableRow key={tx.id}>
-                                    <TableCell>{tx.date}</TableCell>
-                                    <TableCell>{tx.description}</TableCell>
-                                    <TableCell className="text-right">{tx.debit > 0 ? `₱${tx.debit.toFixed(2)}` : '-'}</TableCell>
-                                    <TableCell className="text-right">{tx.credit > 0 ? `₱${tx.credit.toFixed(2)}` : '-'}</TableCell>
-                                    <TableCell className="text-right">₱{tx.balance.toFixed(2)}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                <div className="flex-1 overflow-auto border rounded-md p-6">
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <h3 className="text-sm font-medium text-muted-foreground">Action Type</h3>
+                                <p className="text-lg font-semibold">{account.actionType}</p>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
+                                <p className="text-lg font-semibold">{account.status}</p>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-medium text-muted-foreground">Transaction Amount</h3>
+                                <p className="text-lg font-semibold cursor-default">
+                                    {account.amount !== null && account.amount !== undefined
+                                        ? `₱${account.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                                        : 'N/A'}
+                                </p>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-medium text-muted-foreground">Logged On</h3>
+                                <p className="text-lg font-semibold">
+                                    {account.date ? new Date(account.date).toLocaleString() : 'Unknown'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 border-t pt-4">
+                            <h3 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4" />
+                                Auditor Remarks & Comments
+                            </h3>
+                            <Textarea placeholder="Add comments, findings, or questions regarding this audit item..." value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                                className="min-h-[100px] mb-4"
+                            />
+
+                            <div className="flex items-end justify-between gap-4">
+                                <div className="space-y-1 w-[300px]">
+                                    <label className="text-xs font-medium text-muted-foreground">Notify User (Optional)</label>
+                                    <Select value={notifyUserId} onValueChange={setNotifyUserId}>
+                                        <SelectTrigger className="">
+                                            <SelectValue placeholder="Select user to notify" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none" className="italic">Nobody</SelectItem>
+                                            {users.map(u => (
+                                                <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Button onClick={handleSaveRemarks} disabled={isSaving}>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {isSaving ? "Saving..." : "Save Comments"}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

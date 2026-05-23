@@ -8,11 +8,11 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, HelpCircle, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, RefreshCw, Undo, Upload, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import {
     Menubar,
     MenubarContent,
@@ -147,181 +147,258 @@ export default function ChartOfAccountsDialog() {
 
     return (
         <Dialog open={openDialogs['chart-of-accounts']} onOpenChange={() => closeDialog('chart-of-accounts')}>
-            <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
-                <DialogHeader className="flex-shrink-0">
-                    <DialogTitle className="font-headline">Chart of Accounts</DialogTitle>
-                </DialogHeader>
+            <DialogContent className="max-w-[95vw] w-[1450px] h-[92vh] flex flex-col p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+                {/* Premium Operational Header */}
+                <div className="px-10 py-8 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
+                    
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className="p-4 rounded-[2rem] bg-primary/20 text-primary border border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.2)]">
+                            <Plus className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase leading-none text-foreground">Fiscal Architecture</DialogTitle>
+                            <div className="flex items-center gap-3 mt-3">
+                                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-black">Core Ledger</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.3em]">Institutional Account Matrix</span>
+                            </div>
+                        </div>
+                    </div>
 
-                <div className="flex-shrink-0 border-b">
-                    <Menubar className="rounded-none border-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Account</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem onClick={() => openDialog('new-account' as any)}>Add Account <MenubarShortcut>Ctrl+N</MenubarShortcut></MenubarItem>
-                                <MenubarItem onClick={handleEditClick} disabled={!selectedAccount}>Edit Account <MenubarShortcut>Enter</MenubarShortcut></MenubarItem>
-                                <MenubarItem onClick={handleDeleteClick} disabled={!selectedAccount}>Delete Account(s) <MenubarShortcut>Delete</MenubarShortcut></MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('chart-of-accounts')}>Close <MenubarShortcut>Esc</MenubarShortcut></MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Help Contents</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-4 p-2 bg-muted/10">
-                        <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => openDialog('new-account' as any)}>
-                                <Plus className="h-5 w-5" />
-                                <span className="text-[10px]">New</span>
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="flex-col h-auto"
-                                onClick={handleEditClick}
-                                disabled={!selectedAccount}
-                            >
-                                <Pencil className="h-5 w-5" />
-                                <span className="text-[10px]">Edit</span>
-                            </Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={handleDeleteClick} disabled={!selectedAccount}>
-                                <Trash2 className="h-5 w-5 text-destructive" />
-                                <span className="text-[10px]">Delete</span>
-                            </Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" disabled={!selectedAccount}>
-                                <Undo className="h-5 w-5" />
-                                <span className="text-[10px]">Restore</span>
-                            </Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => openDialog('bulk-upload-accounts' as any)}>
-                                <Upload className="h-5 w-5" />
-                                <span className="text-[10px]">Bulk Upload</span>
-                            </Button>
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-foreground/5 border border-foreground/10">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/80">Real-time Sync</span>
                         </div>
-                        <div className="h-8 border-l mx-2" />
-                        <div className="flex gap-4 flex-1">
-                            <div className="relative flex-1 max-w-xs">
-                                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search Number..."
-                                    value={searchNumber}
-                                    onChange={(e) => setSearchNumber(e.target.value)}
-                                    className="pl-7 h-8"
-                                />
-                            </div>
-                            <div className="relative flex-1 max-w-sm">
-                                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search Name..."
-                                    value={searchName}
-                                    onChange={(e) => setSearchName(e.target.value)}
-                                    className="pl-7 h-8"
-                                />
-                            </div>
-                        </div>
-                        <div className="ml-auto flex items-center gap-2">
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => refetch()} disabled={isLoading}>
-                                <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
-                                <span className="text-[10px]">Refresh</span>
-                            </Button>
-                        </div>
+                        
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-0 py-4 flex flex-col">
-                    <div className="flex items-center justify-between p-2 border-b bg-muted/5">
-                        <div className="flex items-center gap-2">
-                            <Label htmlFor="account-digits" className="text-xs font-normal">Number of digits in account number:</Label>
-                            <Input id="account-digits" type="number" defaultValue="4" className="w-16 h-7 text-xs" />
+                {/* Advanced Control Interface */}
+                <div className="flex-shrink-0 px-10 py-4 bg-foreground/[0.02] border-b border-foreground/5 flex items-center gap-6">
+                    <div className="flex items-center gap-3">
+                        <Button onClick={() => openDialog('new-account' as any)}
+                            className="bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl px-8 shadow-xl shadow-primary/20 transition-all active:scale-95"
+                        >
+                            <Plus className="h-5 w-5 mr-2 stroke-[3]" />
+                            Initialize Account
+                        </Button>
+                        <div className="w-px h-8 bg-foreground/10 mx-2" />
+                        <Button variant="outline" disabled={!selectedAccount} onClick={handleEditClick} className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 gap-2 disabled:opacity-20 transition-all" >
+                            <Pencil className="h-4 w-4" />
+                            Refine
+                        </Button>
+                        <Button variant="outline" disabled={!selectedAccount} onClick={handleDeleteClick} className="border-foreground/10 bg-foreground/5 text-red-400/60 hover:bg-red-400/10 hover:text-red-400 font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 gap-2 disabled:opacity-20 transition-all" >
+                            <Trash2 className="h-4 w-4" />
+                            Purge
+                        </Button>
+                        <Button variant="outline" onClick={() => openDialog('bulk-upload-accounts' as any)}
+                            className="border-foreground/10 bg-foreground/5 text-blue-400/60 hover:bg-blue-400/10 hover:text-blue-400 font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl px-6 gap-2 transition-all"
+                        >
+                            <Upload className="h-4 w-4" />
+                            Matrix Ingest
+                        </Button>
+                    </div>
+
+                    <div className="flex-1 flex gap-4 max-w-2xl ml-auto">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
+                            <Input placeholder="Filter by Node ID..." value={searchNumber} onChange={(e) => setSearchNumber(e.target.value)}
+                                className="pl-12 h-12 bg-foreground/5 border-foreground/10 text-foreground rounded-2xl font-mono text-xs focus:ring-primary/20 placeholder:text-foreground/10"
+                            />
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="show-deleted" checked={showDeleted} onCheckedChange={(c) => setShowDeleted(!!c)} />
-                            <Label htmlFor="show-deleted" className="text-xs font-normal">Also show recently deleted accounts</Label>
+                        <div className="relative flex-[1.5]">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
+                            <Input placeholder="Filter by Account Identity..." value={searchName} onChange={(e) => setSearchName(e.target.value)}
+                                className="pl-12 h-12 bg-foreground/5 border-foreground/10 text-foreground rounded-2xl font-bold uppercase tracking-wider text-xs focus:ring-primary/20 placeholder:text-foreground/10"
+                            />
                         </div>
                     </div>
 
-                    <div className="border rounded-md flex-1 overflow-hidden flex flex-col bg-card mt-2 relative min-h-0">
-                        <div className="flex-1 overflow-auto">
-                            <table className="w-full border-separate border-spacing-0 text-sm">
-                                <thead className="sticky top-0 bg-secondary z-30 shadow-sm transition-colors">
-                                    <tr className="hover:bg-transparent border-b"><th className="w-[100px] bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account No.</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Name</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Description</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Date Created</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Status</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Type</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">Account Category</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-left align-middle font-medium text-muted-foreground border-b">FS Category</th><th className="bg-secondary sticky top-0 z-30 h-10 px-4 text-right align-middle font-medium text-muted-foreground border-b">Balance</th></tr>
+                    <button 
+                        onClick={() => refetch()}
+                        className="p-3 rounded-2xl bg-foreground/5 border border-foreground/10 text-foreground/40 hover:text-foreground transition-all shadow-xl active:scale-95"
+                    >
+                        <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
+                    </button>
+                </div>
+
+                <div className="flex-1 min-h-0 flex flex-col p-10 bg-black/20">
+                    {/* View Parameters */}
+                    <div className="flex items-center justify-between mb-6 px-4">
+                        <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-3">
+                                <Label htmlFor="account-digits" className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Node Precision:</Label>
+                                <Input id="account-digits" type="number" defaultValue="4" className="w-20 bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-center font-black" />
+                            </div>
+                            <div className="w-px h-4 bg-foreground/10" />
+                            <div className="flex items-center space-x-3">
+                                <Checkbox 
+                                    id="show-deleted" 
+                                    checked={showDeleted} 
+                                    onCheckedChange={(c) => setShowDeleted(!!c)} 
+                                    className="border-foreground/20 data-[state=checked]:bg-primary data-[state=checked]:text-black"
+                                />
+                                <Label htmlFor="show-deleted" className="text-[10px] font-black uppercase tracking-widest text-foreground/40 cursor-pointer">Archive Visibility Enabled</Label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Matrix Viewport */}
+                    <div className="flex-1 flex flex-col min-h-0 bg-foreground/5 border border-foreground/10 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+                        <div className="flex-1 overflow-auto custom-scrollbar">
+                            <table className="w-full border-separate border-spacing-0">
+                                <thead className="sticky top-0 z-30">
+                                    <tr className="bg-card/90 backdrop-blur-md">
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Serial</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Identity</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Logic Def</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Origin</th>
+                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5 text-center">Protocol</th>
+                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5 pr-10">Valuation</th>
+                                    </tr>
                                 </thead>
-                                <tbody className="divide-y [&_tr:last-child]:border-0">
+                                <tbody className="divide-y divide-white/5">
                                     {isLoading ? (
-                                        <tr><td colSpan={9} className="text-center py-10"><RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />Loading accounts...</td></tr>
+                                        <tr>
+                                            <td colSpan={6} className="h-96 text-center">
+                                                <div className="flex flex-col items-center gap-4 opacity-20">
+                                                    <RefreshCw className="h-12 w-12 animate-spin text-primary" />
+                                                    <span className="text-xs font-black uppercase tracking-[0.3em]">Synchronizing Matrix...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     ) : flattenedList.length === 0 ? (
-                                        <tr><td colSpan={9} className="text-center py-10 text-muted-foreground">No accounts found.</td></tr>
+                                        <tr>
+                                            <td colSpan={6} className="h-96 text-center">
+                                                <div className="flex flex-col items-center gap-4 opacity-10">
+                                                    <Search className="h-20 w-20" />
+                                                    <span className="text-sm font-black uppercase tracking-[0.4em]">Zero Results Identified</span>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     ) : (
                                         paginatedList.map((item) => (
                                             item.isHeader ? (
-                                                <tr key={item.id} className="bg-muted/40 hover:bg-muted/40 border-b"><td className="p-4 align-middle"></td><td className="p-4 align-middle font-bold text-foreground">{item.category}</td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle"></td><td className="p-4 align-middle text-right font-bold text-foreground">{formatCurrency(item.totalBalance)}</td></tr>
+                                                <tr key={item.id} className="bg-foreground/5 hover:bg-foreground/10 transition-colors border-b border-foreground/5">
+                                                    <td className="px-8"></td>
+                                                    <td className="px-8">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+                                                            <span className="text-sm font-black uppercase tracking-[0.2em] text-foreground">{item.category}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-8" colSpan={3}></td>
+                                                    <td className="px-8 text-right pr-10">
+                                                        <span className="text-sm font-black italic tracking-tighter text-foreground">{formatCurrency(item.totalBalance)}</span>
+                                                    </td>
+                                                </tr>
                                             ) : (
-                                                <tr key={item.id} className={cn("cursor-pointer border-b transition-colors hover:bg-muted/50", selectedAccount?.id === item.id && "bg-primary/20 hover:bg-primary/30", item.header === 'Yes' && "bg-muted/20 font-bold hover:bg-muted/30")} onClick={() => handleRowClick(item)} onDoubleClick={() => handleRowDoubleClick(item)}><td className="p-4 align-middle font-mono">{item.account_no}</td><td className={cn("p-4 align-middle", item.header === 'Yes' ? "font-bold text-primary pl-8" : "pl-8")}>{item.account_name}</td><td className="p-4 align-middle text-muted-foreground text-sm">{item.account_description || '-'}</td><td className="p-4 align-middle text-sm">{item.date_created ? new Date(item.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td><td className="p-4 align-middle"><span className={cn("inline-flex items-center px-2 py-1 rounded-full text-xs font-medium", item.account_status === 'Active' ? "bg-green-100 text-green-800" : item.account_status === 'Inactive' ? "bg-gray-100 text-gray-800" : "bg-yellow-100 text-yellow-800")}>{item.account_status || 'Active'}</span></td><td className="p-4 align-middle">{item.account_type || '-'}</td><td className="p-4 align-middle">{item.account_category || '-'}</td><td className="p-4 align-middle">{item.fs_category || '-'}</td><td className="p-4 align-middle text-right">{formatCurrency(item.balance)}</td></tr>
+                                                <tr 
+                                                    key={item.id} 
+                                                    onClick={() => handleRowClick(item)} 
+                                                    onDoubleClick={() => handleRowDoubleClick(item)}
+                                                    className={cn(
+                                                        "cursor-pointer transition-all duration-300 group relative",
+                                                        selectedAccount?.id === item.id ? "bg-primary/10" : "hover:bg-foreground/[0.02]",
+                                                        item.header === 'Yes' && "bg-foreground/[0.01]"
+                                                    )}
+                                                >
+                                                    <td className="px-8">
+                                                        <span className="font-mono text-xs font-black tracking-tighter text-foreground/40 group-hover:text-primary transition-colors">
+                                                            {item.account_no}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-8">
+                                                        <div className="flex flex-col">
+                                                            <span className={cn(
+                                                                "text-sm font-black uppercase italic tracking-tight transition-all group-hover:translate-x-1",
+                                                                item.header === 'Yes' ? "text-primary" : "text-foreground"
+                                                            )}>
+                                                                {item.account_name}
+                                                            </span>
+                                                            <span className="text-[9px] font-bold text-foreground/20 uppercase tracking-[0.2em]">
+                                                                {item.account_type || "Generic Node"}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-8">
+                                                        <span className="text-[10px] font-medium text-foreground/30 uppercase tracking-wider line-clamp-1 max-w-[200px]">
+                                                            {item.account_description || "NULL DEF"}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-8">
+                                                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">
+                                                            {item.date_created ? new Date(item.date_created).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : 'EST. PHASE'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-8">
+                                                        <div className="flex justify-center">
+                                                            <span className={cn(
+                                                                "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border",
+                                                                item.account_status === 'Active' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+                                                            )}>
+                                                                {item.account_status || 'Active'}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-8 text-right pr-10">
+                                                        <span className="text-sm font-black italic tracking-tighter text-foreground group-hover:scale-110 transition-transform inline-block">
+                                                            {formatCurrency(item.balance)}
+                                                        </span>
+                                                    </td>
+                                                </tr>
                                             )
                                         ))
                                     )}
                                 </tbody>
                             </table>
                         </div>
-                        {totalPages > 0 && (
-                            <div className="flex items-center justify-between px-4 py-2 border-t bg-muted/5 flex-shrink-0 mt-auto">
-                                <div className="text-xs text-muted-foreground">
-                                    Showing {flattenedList.length === 0 ? 0 : startIndex + 1} to {Math.min(startIndex + itemsPerPage, flattenedList.length)} of {flattenedList.length} rows
+
+                        {/* High-Tech Pagination */}
+                        <div className="px-10 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-6">
+                                <div className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em]">
+                                    Showing <span className="text-foreground">{startIndex + 1}</span> - <span className="text-foreground">{Math.min(startIndex + itemsPerPage, flattenedList.length)}</span> of <span className="text-primary">{flattenedList.length}</span> Matrix Nodes
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">Rows per page</span>
-                                        <Select value={itemsPerPage.toString()} onValueChange={(val: string) => { setItemsPerPage(Number(val)); setCurrentPage(1); }}>
-                                            <SelectTrigger className="h-7 w-[60px] text-xs">
-                                                <SelectValue placeholder={itemsPerPage} />
-                                            </SelectTrigger>
-                                            <SelectContent side="top">
-                                                {[10, 20, 50, 100].map((size) => (
-                                                    <SelectItem key={size} value={size.toString()} className="text-xs">
-                                                        {size}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs font-medium">
-                                        Page {currentPage} of {totalPages}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-7 px-2 text-xs"
-                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                            disabled={currentPage === 1}
-                                        >
-                                            <ChevronLeft className="h-3 w-3 mr-1" />
-                                            Prev
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-7 px-2 text-xs"
-                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                            disabled={currentPage >= totalPages}
-                                        >
-                                            Next
-                                            <ChevronRight className="h-3 w-3 ml-1" />
-                                        </Button>
-                                    </div>
+                                <div className="w-px h-6 bg-foreground/10" />
+                                <div className="flex items-center gap-3">
+                                    <span className="text-[9px] font-black text-foreground/20 uppercase tracking-widest">Page Size</span>
+                                    <Select value={itemsPerPage.toString()} onValueChange={(val: string) => { setItemsPerPage(Number(val)); setCurrentPage(1); }}>
+                                        <SelectTrigger className="h-8 w-20 bg-foreground/5 border-foreground/10 rounded-xl text-[10px] font-black text-foreground">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                            {[10, 20, 50, 100].map((size) => (
+                                                <SelectItem key={size} value={size.toString()} className="text-[10px] font-black uppercase">{size}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
-                        )}
+
+                            <div className="flex items-center gap-4">
+                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-[0.3em] mr-4">
+                                    Cycle <span className="text-primary">{currentPage}</span> / {totalPages}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="icon" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        disabled={currentPage === 1}
+                                        className="h-10 w-10 rounded-xl border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground disabled:opacity-10 transition-all active:scale-90"
+                                    >
+                                        <ChevronLeft className="h-5 w-5" />
+                                    </Button>
+                                    <Button variant="outline" size="icon" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        disabled={currentPage >= totalPages}
+                                        className="h-10 w-10 rounded-xl border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground disabled:opacity-10 transition-all active:scale-90"
+                                    >
+                                        <ChevronRight className="h-5 w-5" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <DialogFooter className="flex-shrink-0 pt-4 border-t">
-                    <Button variant="outline" onClick={() => closeDialog('chart-of-accounts')}>
-                        Close
-                    </Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

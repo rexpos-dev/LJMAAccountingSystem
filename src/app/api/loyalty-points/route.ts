@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { fetchWithCache } from '@/lib/api-cache';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,20 +10,22 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get('page') || '1';
 
     // Fetch from external API
-    const externalUrl = new URL('http://192.168.1.163:3001/api/customer-loyalty');
+    const externalUrl = new URL('http://192.168.1.163:3000/api/customer-loyalty');
     externalUrl.searchParams.append('search', search);
     externalUrl.searchParams.append('limit', limit);
     externalUrl.searchParams.append('page', page);
 
-    const response = await fetch(externalUrl.toString(), {
-      next: { revalidate: 0 } // Disable caching to get fresh data
-    });
+    const result = await fetchWithCache<any>(
+      externalUrl.toString(),
+      { headers: { 'Cache-Control': 'no-cache' } },
+      15
+    );
 
-    if (!response.ok) {
-      throw new Error(`External API returned ${response.status}`);
+    if (!result.success || !result.data) {
+      throw new Error(`External API returned ${result.status || result.error}`);
     }
 
-    const externalData = await response.json();
+    const externalData = result.data;
 
     let rawData = [];
     if (Array.isArray(externalData)) {

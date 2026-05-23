@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useDialog } from '@/components/layout/dialog-provider';
+import { useDialog } from '@/components/layout/dialog-context';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
@@ -29,25 +29,17 @@ export default function CustomReportDialog() {
                         <Label>Select Custom Report</Label>
                         <div className="relative">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search custom report..."
-                                className="pl-8"
-                                value={reportName}
-                                onChange={(e) => setReportName(e.target.value)}
+                            <Input placeholder="Search custom report..." className="pl-8" value={reportName} onChange={(e) => setReportName(e.target.value)}
                             />
                         </div>
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('custom-report-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('custom-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

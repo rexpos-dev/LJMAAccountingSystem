@@ -53,6 +53,7 @@ import {
 } from '@/components/ui/table';
 import { useUserPermissions } from '@/hooks/use-user-permissions';
 import { useAccounts } from '@/hooks/use-accounts';
+import { useEmployees } from '@/hooks/use-employees';
 
 const formSchema = z.object({
     requesterName: z.string().min(1, 'Requestor is required'),
@@ -67,9 +68,9 @@ const formSchema = z.object({
     })).min(1, 'At least one item is required'),
     total: z.coerce.number().min(0),
     requestedBy: z.string().optional(),
-    verifiedBy: z.string().optional(),
-    approvedBy: z.string().optional(),
-    processedBy: z.string().optional(),
+    verifiedBy: z.string().min(1, 'Verified by is required'),
+    approvedBy: z.string().min(1, 'Approved by is required'),
+    processedBy: z.string().min(1, 'Processed by is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -85,14 +86,18 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: userPermissions = [] } = useUserPermissions();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
+    const { data: employees = [], isLoading: employeesLoading } = useEmployees();
     const isReadOnly = mode === 'view';
     const { user } = useAuth();
     const formName = "STORE USE REQUEST FORM";
 
+    const isAdmin = (u: any) => ['Admin', 'Administrator', 'Super Admin'].includes(u.accountType);
+    const isAdminStaff = (u: any) => isAdmin(u) || u.accountType === 'AdminStaff';
+
     // Permissions for signatures
-    const verifiers = userPermissions.filter(u => u.isActive && (u.accountType === 'Verifier' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const approvers = userPermissions.filter(u => u.isActive && (u.accountType === 'Approver' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
-    const processors = userPermissions.filter(u => u.isActive && (u.accountType === 'Processor' || u.accountType === 'Admin' || u.accountType === 'Administrator'));
+    const verifiers = userPermissions.filter(u => u.isActive && (u.formPermissions === 'Verifier' || isAdmin(u)));
+    const approvers = userPermissions.filter(u => u.isActive && isAdmin(u));
+    const processors = userPermissions.filter(u => u.isActive && isAdminStaff(u));
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -211,14 +216,33 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
                                 <FormField control={form.control} name="requesterName" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Requestor</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2 font-semibold" disabled={isReadOnly} /></FormControl>
+                                        <Select value={field.value} onValueChange={(val) => {
+                                            field.onChange(val);
+                                            const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
+                                            if (emp && emp.designation) {
+                                                form.setValue('position', emp.designation, { shouldValidate: true });
+                                            }
+                                        }} disabled={isReadOnly || employeesLoading}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-8 text-sm px-2 font-semibold">
+                                                    <SelectValue placeholder="Select name" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {employees.map((emp: any) => (
+                                                    <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`}>
+                                                        {emp.firstName} {emp.lastName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="position" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Position</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -281,7 +305,7 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
                                 <Plus className="h-3 w-3" /> Item Description
                             </h3>
                             {!isReadOnly && (
-                                <Button type="button" variant="outline" size="sm" className="h-7 text-[9px] uppercase font-bold gap-1 border-primary/20 hover:bg-primary/5" onClick={() => append({ description: '', quantity: 1, price: 0, total: 0 })}>
+                                <Button type="button" variant="outline" size="sm" className="text-[9px] uppercase font-bold gap-1 border-primary/20 hover:bg-primary/5" onClick={() => append({ description: '', quantity: 1, price: 0, total: 0 })}>
                                     <Plus className="h-2.5 w-2.5" /> Add New Item
                                 </Button>
                             )}
@@ -294,7 +318,7 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((field, index) => (
-                                        <TableRow key={field.id} className="hover:bg-muted/5 border-b last:border-0 h-10"><TableCell className="text-center border-r text-[10px] font-bold text-muted-foreground p-0 px-2 h-10">{index + 1}</TableCell><TableCell className="p-0 h-10 border-r"><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<FormItem className="p-0"><FormControl><Input {...field} className="h-10 border-none px-3 text-xs focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl></FormItem>)} /></TableCell><TableCell className="p-0 h-10 border-r text-center"><FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<FormItem className="p-0"><FormControl><Input {...field} type="number" step="0.01" className="h-10 border-none px-2 text-center text-xs focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl></FormItem>)} /></TableCell><TableCell className="p-0 h-10 border-r text-right"><FormField control={form.control} name={`items.${index}.price`} render={({ field }) => (<FormItem className="p-0"><FormControl><Input {...field} type="number" step="0.01" className="h-10 border-none px-2 text-right text-xs focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl></FormItem>)} /></TableCell><TableCell className="p-0 h-10 text-right pr-4 font-bold text-xs bg-muted/5 select-none">₱{watchItems[index]?.total?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>{!isReadOnly && (<TableCell className="p-0 text-center h-10"><Button type="button" variant="ghost" size="sm" className="h-10 w-full rounded-none hover:bg-destructive/10 hover:text-destructive text-muted-foreground" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-3 w-3" /></Button></TableCell>)}</TableRow>
+                                        <TableRow key={field.id} className="hover:bg-muted/5 border-b last:border-0"><TableCell className="text-center border-r text-[10px] font-bold text-muted-foreground px-2 h-10">{index + 1}</TableCell><TableCell className="h-10 border-r"><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<FormItem className="p-0"><FormControl><Input {...field} className="border-none px-3 text-xs focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl></FormItem>)} /></TableCell><TableCell className="h-10 border-r text-center"><FormField control={form.control} name={`items.${index}.quantity`} render={({ field }) => (<FormItem className="p-0"><FormControl><Input {...field} type="number" step="0.01" className="border-none px-2 text-center text-xs focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl></FormItem>)} /></TableCell><TableCell className="h-10 border-r text-right"><FormField control={form.control} name={`items.${index}.price`} render={({ field }) => (<FormItem className="p-0"><FormControl><Input {...field} type="number" step="0.01" className="border-none px-2 text-right text-xs focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl></FormItem>)} /></TableCell><TableCell className="h-10 text-right pr-4 font-bold text-xs bg-muted/5 select-none">₱{watchItems[index]?.total?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>{!isReadOnly && (<TableCell className="text-center h-10"><Button type="button" variant="ghost" size="sm" className="w-full rounded-none hover:bg-destructive/10 hover:text-destructive text-muted-foreground" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-3 w-3" /></Button></TableCell>)}</TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -315,7 +339,7 @@ export function StoreUseRequestForm({ initialData, mode = 'create', onSuccess, o
                         <FormField control={form.control} name="requestedBy" render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground mb-1">Requested by</FormLabel>
-                                <FormControl><Input {...field} className="h-8 text-[11px] text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" disabled={isReadOnly} /></FormControl>
+                                <FormControl><Input {...field} className="text-[11px] text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" disabled={isReadOnly} /></FormControl>
                                 <div className="text-[7px] text-center pt-1 italic text-muted-foreground uppercase">Name / Signature / Date</div>
                             </FormItem>
                         )} />
