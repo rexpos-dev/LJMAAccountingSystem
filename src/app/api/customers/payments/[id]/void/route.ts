@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const { id } = params;
+    const { id } = await params;
 
     try {
         console.log(`[API] Voiding customer payment: ${id}`);

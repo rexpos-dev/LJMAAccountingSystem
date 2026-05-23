@@ -164,23 +164,14 @@ export default function EditAccountDialog() {
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="number">Account No.</Label>
-                  <Input
-                    id="number"
-                    value={formData.account_no || ''}
-                    readOnly
-                    className="bg-muted"
-                  />
+                  <Input id="number" value={formData.account_no || ''} readOnly className="bg-muted" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="account-name">
                     Account Name<span className="text-destructive">*</span>
                   </Label>
-                  <Input
-                    id="account-name"
-                    placeholder="Enter account name"
-                    value={formData.account_name || ''}
-                    onChange={(e) => handleInputChange('account_name', e.target.value)}
+                  <Input id="account-name" placeholder="Enter account name" value={formData.account_name || ''} onChange={(e) => handleInputChange('account_name', e.target.value)}
                     list="edit-existing-account-names"
                   />
                   <datalist id="edit-existing-account-names">
@@ -192,12 +183,7 @@ export default function EditAccountDialog() {
 
                 <div className="space-y-2">
                   <Label htmlFor="opening-balance">Opening Balance</Label>
-                  <Input
-                    id="opening-balance"
-                    type="number"
-                    placeholder="0.00"
-                    value={formData.balance ?? 0}
-                    onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)}
+                  <Input id="opening-balance" type="number" placeholder="0.00" value={formData.balance ?? 0} onChange={(e) => handleInputChange('balance', parseFloat(e.target.value) || 0)}
                   />
                 </div>
 
@@ -260,11 +246,7 @@ export default function EditAccountDialog() {
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  placeholder="Optional description"
-                  value={formData.account_description || ''}
-                  onChange={(e) => handleInputChange('account_description', e.target.value)}
+                <Input id="description" placeholder="Optional description" value={formData.account_description || ''} onChange={(e) => handleInputChange('account_description', e.target.value)}
                 />
               </div>
 
@@ -296,26 +278,17 @@ export default function EditAccountDialog() {
                     <div className="grid grid-cols-2 gap-x-8 gap-y-4 pt-4 border-t">
                       <div className="space-y-2">
                         <Label htmlFor="bank-code">Bank Code</Label>
-                        <Input
-                          id="bank-code"
-                          value={formData.bank_code || ''}
-                          onChange={(e) => handleInputChange('bank_code', e.target.value)}
+                        <Input id="bank-code" value={formData.bank_code || ''} onChange={(e) => handleInputChange('bank_code', e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="bank-name">Bank Name</Label>
-                        <Input
-                          id="bank-name"
-                          value={formData.bank_name || ''}
-                          onChange={(e) => handleInputChange('bank_name', e.target.value)}
+                        <Input id="bank-name" value={formData.bank_name || ''} onChange={(e) => handleInputChange('bank_name', e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="bank-account-no">Bank Account No.</Label>
-                        <Input
-                          id="bank-account-no"
-                          value={formData.bank_account_no || ''}
-                          onChange={(e) => handleInputChange('bank_account_no', e.target.value)}
+                        <Input id="bank-account-no" value={formData.bank_account_no || ''} onChange={(e) => handleInputChange('bank_account_no', e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
@@ -335,10 +308,7 @@ export default function EditAccountDialog() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="branch">Branch</Label>
-                        <Input
-                          id="branch"
-                          value={formData.branch || ''}
-                          onChange={(e) => handleInputChange('branch', e.target.value)}
+                        <Input id="branch" value={formData.branch || ''} onChange={(e) => handleInputChange('branch', e.target.value)}
                         />
                       </div>
                     </div>
@@ -366,21 +336,13 @@ export default function EditAccountDialog() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="opening-balance-mig">Opening Balance (Migration)</Label>
-                          <Input
-                            id="opening-balance-mig"
-                            type="number"
-                            value={formData.opening_balance ?? 0}
-                            onChange={(e) => handleInputChange('opening_balance', parseFloat(e.target.value) || 0)}
+                          <Input id="opening-balance-mig" type="number" value={formData.opening_balance ?? 0} onChange={(e) => handleInputChange('opening_balance', parseFloat(e.target.value) || 0)}
                             placeholder="0.00"
                           />
                         </div>
                         <div className="space-y-2 col-span-2">
                           <Label htmlFor="opening-date">Opening Date</Label>
-                          <Input
-                            id="opening-date"
-                            type="date"
-                            value={formData.opening_date ? new Date(formData.opening_date).toISOString().split('T')[0] : ''}
-                            onChange={(e) => handleInputChange('opening_date', e.target.value)}
+                          <Input id="opening-date" type="date" value={formData.opening_date ? new Date(formData.opening_date).toISOString().split('T')[0] : ''} onChange={(e) => handleInputChange('opening_date', e.target.value)}
                           />
                         </div>
                       </div>

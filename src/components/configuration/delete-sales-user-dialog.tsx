@@ -61,11 +61,7 @@ export default function DeleteSalesUserDialog() {
           <Button variant="outline" onClick={handleClose} disabled={deleteSalesUser.isPending}>
             Cancel
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleteSalesUser.isPending}
-          >
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteSalesUser.isPending} >
             {deleteSalesUser.isPending ? 'Deleting...' : 'Delete User'}
           </Button>
         </DialogFooter>

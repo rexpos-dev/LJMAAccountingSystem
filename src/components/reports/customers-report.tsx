@@ -1,14 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -26,9 +18,6 @@ import {
 } from '@/components/ui/dialog';
 import {
     FileText,
-    Printer,
-    Save,
-    ListVideo,
     ChevronLeft,
     ChevronRight,
     Users,
@@ -36,6 +25,7 @@ import {
     CreditCard,
     Loader2,
 } from 'lucide-react';
+import { ReportToolbar } from './report-toolbar';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
@@ -57,6 +47,7 @@ interface Customer {
 
 export default function CustomersReport() {
     const { openDialogs, closeDialog } = useDialog();
+    const contentRef = useRef<HTMLDivElement>(null);
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -115,26 +106,12 @@ export default function CustomersReport() {
         <Dialog open={openDialogs['customers-report'] || false} onOpenChange={() => closeDialog('customers-report' as any)}>
             <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('customers-report')}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Customers Report"
+                        subtitle="Detailed summary of all registered customers"
+                        closeKey="customers-report"
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left border-b pb-4">
@@ -144,7 +121,7 @@ export default function CustomersReport() {
                                 <FileText className="w-8 h-8 text-primary" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-bold text-white text-left">Customers Report</DialogTitle>
+                                <DialogTitle className="text-xl font-bold text-foreground text-left">Customers Report</DialogTitle>
                                 <p className="text-sm text-muted-foreground">Detailed summary of all registered customers</p>
                             </div>
                         </div>
@@ -187,6 +164,7 @@ export default function CustomersReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6 py-4'>
+                    <div ref={contentRef}>
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/50 border-b-2">
@@ -253,6 +231,7 @@ export default function CustomersReport() {
                             )}
                         </TableBody>
                     </Table>
+                    </div>
                 </ScrollArea>
 
                 <footer className="p-4 border-t flex items-center justify-between bg-muted/20">
@@ -260,10 +239,7 @@ export default function CustomersReport() {
                         Showing <span className="text-foreground">{paginatedCustomers.length}</span> of <span className="text-foreground">{customers.length}</span> entries
                     </p>
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1 || isLoading}
                             className="h-8 gap-1"
                         >
@@ -271,21 +247,14 @@ export default function CustomersReport() {
                         </Button>
                         <div className="flex items-center gap-1">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                <Button
-                                    key={page}
-                                    variant={currentPage === page ? 'default' : 'outline'}
-                                    size="sm"
-                                    onClick={() => setCurrentPage(page)}
+                                <Button key={page} variant={currentPage === page ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)}
                                     className="h-8 w-8 p-0"
                                 >
                                     {page}
                                 </Button>
                             ))}
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages || isLoading || customers.length === 0}
                             className="h-8 gap-1"
                         >

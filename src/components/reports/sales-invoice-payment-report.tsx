@@ -1,14 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useMemo, useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -17,7 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -25,12 +16,8 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
-import {
-    FileText,
-    Printer,
-    Save,
-    ListVideo,
-} from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { ReportToolbar } from './report-toolbar';
 import { format, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
@@ -40,6 +27,7 @@ import { Activity, CreditCard, Loader2 } from 'lucide-react';
 
 export default function SalesInvoicePaymentReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
+    const contentRef = useRef<HTMLDivElement>(null);
     const dialogData = getDialogData('sales-invoice-payment-report');
     const fromDate = dialogData?.fromDate ? new Date(dialogData.fromDate) : new Date();
     const toDate = dialogData?.toDate ? new Date(dialogData.toDate) : new Date();
@@ -86,26 +74,12 @@ export default function SalesInvoicePaymentReport() {
         <Dialog open={openDialogs['sales-invoice-payment-report']} onOpenChange={() => closeDialog('sales-invoice-payment-report')}>
             <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('sales-invoice-payment-report')}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Customer Payment Report"
+                        subtitle={`Period: ${format(fromDate, 'MM/dd/yyyy')} - ${format(toDate, 'MM/dd/yyyy')} | Type: ${selectedPaymentType === 'all' ? 'All' : selectedPaymentType}`}
+                        closeKey="sales-invoice-payment-report"
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left border-b">
@@ -115,7 +89,7 @@ export default function SalesInvoicePaymentReport() {
                                 <FileText className="w-8 h-8 text-primary" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-bold text-white text-left">Customer Payment Report</DialogTitle>
+                                <DialogTitle className="text-xl font-bold text-foreground text-left">Customer Payment Report</DialogTitle>
                                 <DialogDescription className="text-left">
                                     Period: {format(fromDate, 'MM/dd/yyyy')} - {format(toDate, 'MM/dd/yyyy')} | Type: {selectedPaymentType === 'all' ? 'All' : selectedPaymentType}
                                 </DialogDescription>
@@ -149,6 +123,7 @@ export default function SalesInvoicePaymentReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6 py-4'>
+                    <div ref={contentRef}>
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/30 border-b-2">
@@ -196,6 +171,7 @@ export default function SalesInvoicePaymentReport() {
                             )}
                         </TableBody>
                     </Table>
+                    </div>
                 </ScrollArea>
             </DialogContent>
         </Dialog>

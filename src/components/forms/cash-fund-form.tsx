@@ -159,31 +159,31 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
     const watchedAmount = form.watch('amount');
 
     return (
-        <div className="w-full flex flex-col bg-slate-950/50 rounded-3xl border border-white/10 overflow-hidden backdrop-blur-xl">
+        <div className="w-full flex flex-col bg-background/50 rounded-3xl border border-foreground/10 overflow-hidden backdrop-blur-xl">
             {/* Header Area */}
-            <div className="px-8 py-6 border-b border-white/10 bg-white/5 flex items-center justify-between shrink-0">
+            <div className="px-8 py-6 border-b border-foreground/10 bg-foreground/5 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.1)]">
                         <Wallet className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black italic tracking-tighter uppercase text-white leading-none">Cash / Fund Request</h2>
+                        <h2 className="text-2xl font-black italic tracking-tighter uppercase text-foreground leading-none">Cash / Fund Request</h2>
                         <div className="flex items-center gap-2 mt-1.5">
                             <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">Liquidity Protocol</span>
-                            <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Module CFR-v3.5</span>
+                            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Module CFR-v3.5</span>
                         </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-6">
                     <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Control Reference</span>
-                        <span className="text-sm font-bold text-white font-mono uppercase tracking-tighter">
+                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">Control Reference</span>
+                        <span className="text-sm font-bold text-foreground font-mono uppercase tracking-tighter">
                             {initialData?.requestNumber || "NEW-CFR-ENTRY"}
                         </span>
                     </div>
-                    <div className="h-10 w-px bg-white/10" />
+                    <div className="h-10 w-px bg-foreground/10" />
                     <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Request Value</span>
+                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">Request Value</span>
                         <span className="text-xl font-black italic tracking-tighter text-primary leading-none">
                             ₱{Number(watchedAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </span>
@@ -199,12 +199,12 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                             <div className="lg:col-span-5 space-y-6">
                                 <div className="flex items-center gap-2">
                                     <div className="w-1 h-4 bg-primary rounded-full" />
-                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Personnel Node Identification</h3>
+                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Personnel Node Identification</h3>
                                 </div>
-                                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-4">
+                                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl space-y-4">
                                     <FormField control={form.control} name="requesterName" render={({ field }) => (
                                         <FormItem className="space-y-1.5">
-                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Requesting Entity</FormLabel>
+                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Requesting Entity</FormLabel>
                                             <Select value={field.value} onValueChange={(val) => {
                                                 field.onChange(val);
                                                 const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
@@ -214,11 +214,11 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                                 }
                                             }} disabled={isReadOnly || employeesLoading}>
                                                 <FormControl>
-                                                    <SelectTrigger className="h-11 bg-white/5 border-white/10 text-white rounded-xl font-bold uppercase text-xs">
+                                                    <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-xs">
                                                         <SelectValue placeholder="Identify Personnel" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                                <SelectContent className="bg-card border-foreground/10 text-foreground">
                                                     {employees.map((emp: any) => (
                                                         <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`} className="uppercase text-[10px] font-black">
                                                             {emp.firstName} {emp.lastName}
@@ -231,22 +231,22 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                     )} />
                                     <FormField control={form.control} name="position" render={({ field }) => (
                                         <FormItem className="space-y-1.5">
-                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Personnel Designation</FormLabel>
-                                            <FormControl><Input {...field} className="h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs uppercase" disabled={isReadOnly} /></FormControl>
+                                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Personnel Designation</FormLabel>
+                                            <FormControl><Input {...field} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs uppercase" disabled={isReadOnly} /></FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )} />
                                     <div className="grid grid-cols-2 gap-4">
                                         <FormField control={form.control} name="tempChargeTo" render={({ field }) => (
                                             <FormItem className="space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Charge Allocation</FormLabel>
-                                                <FormControl><Input {...field} className="h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs uppercase" disabled={isReadOnly} placeholder="..." /></FormControl>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Charge Allocation</FormLabel>
+                                                <FormControl><Input {...field} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs uppercase" disabled={isReadOnly} placeholder="..." /></FormControl>
                                             </FormItem>
                                         )} />
                                         <FormField control={form.control} name="tempAccountNo" render={({ field }) => (
                                             <FormItem className="space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Account Node</FormLabel>
-                                                <FormControl><Input {...field} className="h-11 bg-white/5 border-white/10 text-white rounded-xl font-mono text-xs uppercase" disabled={isReadOnly} placeholder="..." /></FormControl>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Account Node</FormLabel>
+                                                <FormControl><Input {...field} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-mono text-xs uppercase" disabled={isReadOnly} placeholder="..." /></FormControl>
                                             </FormItem>
                                         )} />
                                     </div>
@@ -256,21 +256,21 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                             <div className="lg:col-span-7 space-y-6">
                                 <div className="flex items-center gap-2">
                                     <div className="w-1 h-4 bg-primary rounded-full" />
-                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Financial Matrix Configuration</h3>
+                                    <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Financial Matrix Configuration</h3>
                                 </div>
-                                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-6">
+                                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <FormField control={form.control} name="date" render={({ field }) => (
                                             <FormItem className="space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Protocol Date</FormLabel>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Protocol Date</FormLabel>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="outline" className="w-full h-11 bg-white/5 border-white/10 text-white rounded-xl font-bold uppercase tracking-tighter text-xs justify-start px-3">
+                                                        <Button variant="outline" className="w-full bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase tracking-tighter text-xs justify-start px-3">
                                                             <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
                                                             {field.value ? format(field.value, "PPP") : "Select Date"}
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10">
+                                                    <PopoverContent className="w-auto p-0 bg-card border-foreground/10">
                                                         <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus disabled={isReadOnly} />
                                                     </PopoverContent>
                                                 </Popover>
@@ -278,16 +278,16 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                         )} />
                                         <FormField control={form.control} name="depositAccount" render={({ field }) => (
                                             <FormItem className="space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Funding Channel</FormLabel>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Funding Channel</FormLabel>
                                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                     <FormControl>
-                                                        <SelectTrigger className="h-11 bg-white/5 border-white/10 text-white rounded-xl font-bold uppercase text-xs">
+                                                        <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-xs">
                                                             <SelectValue placeholder="Identify Channel" />
                                                         </SelectTrigger>
                                                     </FormControl>
-                                                    <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                                    <SelectContent className="bg-card border-foreground/10 text-foreground">
                                                         {accountsLoading ? (
-                                                            <div className="p-2 text-xs font-black uppercase text-white/20">Scanning...</div>
+                                                            <div className="p-2 text-xs font-black uppercase text-foreground/20">Scanning...</div>
                                                         ) : (
                                                             accounts?.filter((acc: any) => acc.bank === 'Yes' || acc.account_type === 'Asset').map((account: any) => (
                                                                 <SelectItem key={account.id} value={account.id || account.account_name} className="uppercase text-[10px] font-black">
@@ -303,16 +303,16 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                         <FormField control={form.control} name="purpose" render={({ field }) => (
                                             <FormItem className="md:col-span-3 space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Operational Justification</FormLabel>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Operational Justification</FormLabel>
                                                 <FormControl>
-                                                    <Textarea {...field} placeholder="State the strategic purpose for this liquidity request..." className="min-h-[100px] bg-white/5 border-white/10 text-white rounded-xl text-xs uppercase resize-none focus-visible:ring-primary/20" disabled={isReadOnly} />
+                                                    <Textarea {...field} placeholder="State the strategic purpose for this liquidity request..." className="min-h-[100px] bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs uppercase resize-none focus-visible:ring-primary/20" disabled={isReadOnly} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )} />
                                         <FormField control={form.control} name="amount" render={({ field }) => (
                                             <FormItem className="space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Requested Value</FormLabel>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Requested Value</FormLabel>
                                                 <div className="relative h-[100px]">
                                                     <div className="absolute left-3 top-3 text-primary/40 font-black text-lg">₱</div>
                                                     <FormControl>
@@ -336,7 +336,7 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                         </div>
 
                         {/* Bottom Section: Authorization Protocols */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 pt-8 border-t border-white/10 border-dashed">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 pt-8 border-t border-foreground/10 border-dashed">
                             {[
                                 { name: 'requesterName', label: 'Requested By Node', icon: User, readOnly: true },
                                 { name: 'verifiedBy', label: 'Verification Node', icon: ShieldCheck, options: verifiers },
@@ -352,16 +352,16 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                         <FormItem className="space-y-2">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <sig.icon className="h-3 w-3 text-primary/60" />
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-white/40">{sig.label}</FormLabel>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40">{sig.label}</FormLabel>
                                             </div>
                                             {sig.options ? (
                                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                     <FormControl>
-                                                        <SelectTrigger className="h-10 bg-white/5 border-white/10 text-white rounded-xl font-bold uppercase text-[10px] hover:bg-white/10 transition-all">
+                                                        <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-[10px] hover:bg-foreground/10 transition-all">
                                                             <SelectValue placeholder="Identify Staff" />
                                                         </SelectTrigger>
                                                     </FormControl>
-                                                    <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                                    <SelectContent className="bg-card border-foreground/10 text-foreground">
                                                         {sig.options.map((u: any) => (
                                                             <SelectItem key={u.id} value={`${u.firstName} ${u.lastName}`} className="uppercase text-[10px] font-black">
                                                                 {u.firstName} {u.lastName}
@@ -370,12 +370,12 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
                                                     </SelectContent>
                                                 </Select>
                                             ) : (
-                                                <div className="h-10 flex items-center px-3 bg-white/5 border border-white/10 rounded-xl font-bold text-[10px] text-white/60 uppercase truncate">
+                                                <div className="h-10 flex items-center px-3 bg-foreground/5 border border-foreground/10 rounded-xl font-bold text-[10px] text-foreground/60 uppercase truncate">
                                                     {field.value || "---"}
                                                 </div>
                                             )}
-                                            <div className="h-px bg-white/5 my-2" />
-                                            <p className="text-[9px] text-center text-white/20 font-black uppercase tracking-widest italic">Digital Signatory Timestamp</p>
+                                            <div className="h-px bg-foreground/5 my-2" />
+                                            <p className="text-[9px] text-center text-foreground/20 font-black uppercase tracking-widest italic">Digital Signatory Timestamp</p>
                                         </FormItem>
                                     )}
                                 />
@@ -386,34 +386,23 @@ export function CashFundForm({ initialData, mode = 'create', onSuccess, onCancel
             </ScrollArea>
 
             {/* Footer Control Bar */}
-            <div className="px-8 py-6 border-t border-white/10 bg-white/5 flex items-center justify-between shrink-0 no-print">
-                <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+            <div className="px-8 py-6 border-t border-foreground/10 bg-foreground/5 flex items-center justify-between shrink-0 no-print">
+                <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     Protocol Ready for Transmission
                 </div>
                 <div className="flex items-center gap-4">
-                    <Button 
-                        variant="outline" 
-                        onClick={onCancel}
-                        className="px-6 h-12 rounded-2xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-[10px]"
-                    >
+                    <Button variant="outline" onClick={onCancel} className="px-6 rounded-2xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-[10px]" >
                         {isReadOnly ? 'Close Protocol' : 'Abort Entry'}
                     </Button>
                     {!isReadOnly && (
-                        <Button 
-                            onClick={form.handleSubmit(onSubmit)}
-                            disabled={isSubmitting}
-                            className="px-10 h-12 rounded-2xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all gap-2"
-                        >
+                        <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting} className="px-10 rounded-2xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all gap-2" >
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
                             {mode === 'edit' ? 'Update Protocol' : 'Commit Request'}
                         </Button>
                     )}
-                    <Button 
-                        type="button" 
-                        variant="secondary" 
-                        onClick={() => window.print()} 
-                        className="h-12 px-6 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all font-black uppercase tracking-widest text-[10px] gap-2"
+                    <Button type="button" variant="secondary" onClick={() => window.print()} 
+                        className="h-12 px-6 rounded-2xl bg-foreground/5 border border-foreground/10 text-foreground hover:bg-foreground/10 transition-all font-black uppercase tracking-widest text-[10px] gap-2"
                     >
                         <Printer className="h-4 w-4 text-primary" /> Print Matrix
                     </Button>

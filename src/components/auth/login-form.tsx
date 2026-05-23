@@ -195,7 +195,7 @@ export function LoginForm() {
                     </div>
 
                     <h2
-                        className="text-3xl font-extrabold text-white tracking-tight"
+                        className="text-3xl font-extrabold text-foreground tracking-tight"
                         style={{ fontFamily: 'Poppins, sans-serif' }}
                     >
                         Welcome Back
@@ -229,14 +229,7 @@ export function LoginForm() {
                                                     className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
                                                     style={{ color: 'rgba(100,116,139,0.9)' }}
                                                 />
-                                                <Input
-                                                    placeholder="email@example.com"
-                                                    className="pl-10 focus-visible:ring-blue-500 focus-visible:ring-1 placeholder:text-slate-600"
-                                                    style={inputStyle}
-                                                    disabled={loading}
-                                                    autoComplete="email"
-                                                    {...field}
-                                                />
+                                                <Input placeholder="email@example.com" className="pl-10 focus-visible:ring-blue-500 focus-visible:ring-1 placeholder:text-slate-600" style={inputStyle} disabled={loading} autoComplete="email" {...field} />
                                             </div>
                                         </FormControl>
                                         <FormMessage className="text-red-400 text-xs" />
@@ -263,15 +256,7 @@ export function LoginForm() {
                                                     className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
                                                     style={{ color: 'rgba(100,116,139,0.9)' }}
                                                 />
-                                                <Input
-                                                    type="password"
-                                                    placeholder="••••••••"
-                                                    className="pl-10 focus-visible:ring-blue-500 focus-visible:ring-1 placeholder:text-slate-600"
-                                                    style={inputStyle}
-                                                    disabled={loading}
-                                                    autoComplete="current-password"
-                                                    {...field}
-                                                />
+                                                <Input type="password" placeholder="••••••••" className="pl-10 focus-visible:ring-blue-500 focus-visible:ring-1 placeholder:text-slate-600" style={inputStyle} disabled={loading} autoComplete="current-password" {...field} />
                                             </div>
                                         </FormControl>
                                         <FormMessage className="text-red-400 text-xs" />
@@ -286,20 +271,7 @@ export function LoginForm() {
                                 whileTap={{ scale: 0.97 }}
                                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                             >
-                                <Button
-                                    type="submit"
-                                    className="w-full h-11 text-sm font-semibold tracking-wide relative overflow-hidden"
-                                    style={{
-                                        background:
-                                            'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)',
-                                        border: 'none',
-                                        borderRadius: '10px',
-                                        boxShadow:
-                                            '0 4px 20px rgba(59,130,246,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
-                                        color: '#fff',
-                                    }}
-                                    disabled={loading}
-                                >
+                                <Button type="submit" className="w-full text-sm font-semibold tracking-wide relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)', border: 'none', borderRadius: '10px', boxShadow: '0 4px 20px rgba(59,130,246,0.35), inset 0 1px 0 rgba(255,255,255,0.15)', color: '#fff', }} disabled={loading} >
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">
                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -353,12 +325,7 @@ export function LoginForm() {
                             <Label htmlFor="name">Full Name</Label>
                             <div className="relative">
                                 <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="name"
-                                    placeholder="John Doe"
-                                    className="pl-10"
-                                    value={contactName}
-                                    onChange={(e) => setContactName(e.target.value)}
+                                <Input id="name" placeholder="John Doe" className="pl-10" value={contactName} onChange={(e) => setContactName(e.target.value)}
                                     required
                                 />
                             </div>
@@ -367,23 +334,13 @@ export function LoginForm() {
                             <Label htmlFor="phone">Number to call</Label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="phone"
-                                    type="tel"
-                                    placeholder="0912 345 6789"
-                                    className="pl-10"
-                                    value={contactNumber}
-                                    onChange={(e) => setContactNumber(e.target.value)}
+                                <Input id="phone" type="tel" placeholder="0912 345 6789" className="pl-10" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)}
                                     required
                                 />
                             </div>
                         </div>
                         <DialogFooter className="pt-4">
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={isSubmittingContact}
-                            >
+                            <Button type="submit" className="w-full" disabled={isSubmittingContact} >
                                 {isSubmittingContact ? (
                                     <span className="flex items-center justify-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />

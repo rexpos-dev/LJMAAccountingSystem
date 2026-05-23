@@ -162,10 +162,7 @@ export function TransactionHistoryDialog({
                                 <MessageSquare className="h-4 w-4" />
                                 Auditor Remarks & Comments
                             </h3>
-                            <Textarea
-                                placeholder="Add comments, findings, or questions regarding this audit item..."
-                                value={remarks}
-                                onChange={(e) => setRemarks(e.target.value)}
+                            <Textarea placeholder="Add comments, findings, or questions regarding this audit item..." value={remarks} onChange={(e) => setRemarks(e.target.value)}
                                 className="min-h-[100px] mb-4"
                             />
 
@@ -173,7 +170,7 @@ export function TransactionHistoryDialog({
                                 <div className="space-y-1 w-[300px]">
                                     <label className="text-xs font-medium text-muted-foreground">Notify User (Optional)</label>
                                     <Select value={notifyUserId} onValueChange={setNotifyUserId}>
-                                        <SelectTrigger className="h-9">
+                                        <SelectTrigger className="">
                                             <SelectValue placeholder="Select user to notify" />
                                         </SelectTrigger>
                                         <SelectContent>

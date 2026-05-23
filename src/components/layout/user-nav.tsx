@@ -22,7 +22,7 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+        <Button variant="ghost" className="relative w-9 rounded-full">
           <Avatar className="h-9 w-9">
             <AvatarImage src={`https://picsum.photos/seed/${user.username}/40/40`} alt={user.firstName} />
             <AvatarFallback>{user.firstName[0]}{user.lastName[0]}</AvatarFallback>

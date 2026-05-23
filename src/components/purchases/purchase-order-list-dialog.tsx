@@ -58,6 +58,8 @@ import {
 import { useDialog } from '@/components/layout/dialog-context';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { format } from 'date-fns';
 
 interface PurchaseOrder {
@@ -81,6 +83,7 @@ export default function PurchaseOrderListDialog() {
     const [error, setError] = useState<string | null>(null);
     const [showRestrictedAlert, setShowRestrictedAlert] = useState(false);
     const { toast } = useToast();
+    const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
 
     // Filters
     const [period, setPeriod] = useState('all');
@@ -252,7 +255,8 @@ export default function PurchaseOrderListDialog() {
 
     const handleDelete = async () => {
         if (!selectedOrderId) return;
-        if (!confirm('Are you sure you want to delete this order?')) return;
+        const ok = await confirm({ description: 'Are you sure you want to delete this order?', title: 'Delete Order', variant: 'destructive' });
+        if (!ok) return;
 
         try {
             const res = await fetch(`/api/purchase-orders?id=${selectedOrderId}`, {
@@ -339,9 +343,9 @@ export default function PurchaseOrderListDialog() {
 
     return (
         <Dialog open={openDialogs['purchase-order-list']} onOpenChange={() => closeDialog('purchase-order-list')}>
-            <DialogContent className="max-w-[1450px] w-[95vw] p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
+            <DialogContent className="max-w-[1450px] w-[95vw] p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
                 {/* Premium Glassmorphism Header */}
-                <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+                <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-500/10 via-transparent to-transparent pointer-events-none" />
                     
                     <div className="relative z-10 flex items-center gap-4">
@@ -349,113 +353,80 @@ export default function PurchaseOrderListDialog() {
                             <FileText className="h-6 w-6" />
                         </div>
                         <div>
-                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">Purchase Procurement</DialogTitle>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Purchase Procurement</DialogTitle>
                             <div className="flex items-center gap-2 mt-0.5">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/20">Procurement Matrix</span>
-                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{totalCount} Orders Logged</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">{totalCount} Orders Logged</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="relative z-10 flex items-center gap-4">
-                        <button 
-                            onClick={() => closeDialog('purchase-order-list')}
-                            className="p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all group"
-                        >
-                            <X className="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
-                        </button>
+                        
                     </div>
                 </div>
 
                 {/* Tactical Control Strip */}
-                <div className="px-8 py-4 bg-white/[0.02] border-b border-white/5 flex items-center gap-4 shrink-0 overflow-x-auto no-scrollbar">
-                    <Button 
-                        onClick={handleNew}
-                        className="bg-blue-500 hover:bg-blue-400 text-black font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-6 gap-2 shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all"
-                    >
+                <div className="px-8 py-4 bg-foreground/[0.02] border-b border-foreground/5 flex items-center gap-4 shrink-0 overflow-x-auto no-scrollbar">
+                    <Button onClick={handleNew} className="bg-blue-500 hover:bg-blue-400 text-black font-black uppercase tracking-widest text-[10px] rounded-xl px-6 gap-2 shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all" >
                         <Plus className="h-4 w-4" />
                         New Order
                     </Button>
-                    <div className="w-px h-6 bg-white/10 mx-2" />
+                    <div className="w-px h-6 bg-foreground/10 mx-2" />
                     
-                    <Button 
-                        variant="outline" 
-                        disabled={!selectedOrderId}
-                        onClick={() => handleEdit()}
-                        className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
+                    <Button variant="outline" disabled={!selectedOrderId} onClick={() => handleEdit()}
+                        className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
                     >
                         <Pencil className="h-3.5 w-3.5" />
                         Modify
                     </Button>
 
-                    <Button 
-                        variant="outline" 
-                        disabled={!selectedOrderId}
-                        onClick={() => handleView()}
-                        className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
+                    <Button variant="outline" disabled={!selectedOrderId} onClick={() => handleView()}
+                        className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
                     >
                         <Eye className="h-3.5 w-3.5" />
                         Preview
                     </Button>
 
-                    <Button 
-                        variant="outline" 
-                        disabled={!selectedOrderId}
-                        onClick={handlePurchaseHistory}
-                        className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
-                    >
+                    <Button variant="outline" disabled={!selectedOrderId} onClick={handlePurchaseHistory} className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground font-black uppercase tracking-widest text-[10px] rounded-xl px-4 gap-2 disabled:opacity-20 transition-all" >
                         <History className="h-3.5 w-3.5" />
                         History
                     </Button>
 
-                    <Button 
-                        variant="outline" 
-                        disabled={!selectedOrderId}
-                        onClick={handleDelete}
-                        className="border-white/10 bg-white/5 text-red-400/60 hover:bg-red-400/10 hover:text-red-400 font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
-                    >
+                    <Button variant="outline" disabled={!selectedOrderId} onClick={handleDelete} className="border-foreground/10 bg-foreground/5 text-red-400/60 hover:bg-red-400/10 hover:text-red-400 font-black uppercase tracking-widest text-[10px] rounded-xl px-4 gap-2 disabled:opacity-20 transition-all" >
                         <X className="h-3.5 w-3.5" />
                         Terminate
                     </Button>
 
-                    <div className="w-px h-6 bg-white/10 mx-2" />
+                    <div className="w-px h-6 bg-foreground/10 mx-2" />
 
-                    <Button 
-                        variant="outline" 
-                        onClick={handleBulkUpload}
-                        className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 transition-all"
-                    >
+                    <Button variant="outline" onClick={handleBulkUpload} className="border-foreground/10 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground font-black uppercase tracking-widest text-[10px] rounded-xl px-4 gap-2 transition-all" >
                         <Upload className="h-3.5 w-3.5" />
                         Bulk Upload
                     </Button>
 
-                    <Button 
-                        variant="outline" 
-                        onClick={handleFetchPOS}
-                        disabled={loading}
-                        className="border-blue-500/20 bg-blue-500/5 text-blue-400 hover:bg-blue-500/10 font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-4 gap-2 disabled:opacity-20 transition-all"
-                    >
+                    <Button variant="outline" onClick={handleFetchPOS} disabled={loading} className="border-blue-500/20 bg-blue-500/5 text-blue-400 hover:bg-blue-500/10 font-black uppercase tracking-widest text-[10px] rounded-xl px-4 gap-2 disabled:opacity-20 transition-all" >
                         <ArrowDownToLine className={cn("h-3.5 w-3.5", loading && "animate-bounce")} />
                         Fetch POS
                     </Button>
 
                     <button 
                         onClick={() => fetchOrders(false, true)}
-                        className="ml-auto p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all active:scale-95"
+                        className="ml-auto p-2.5 rounded-xl bg-foreground/5 border border-foreground/10 text-foreground/40 hover:text-foreground transition-all active:scale-95"
                     >
                         <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
                     </button>
                 </div>
 
                 {/* Intelligence Filters */}
-                <div className="px-8 py-4 bg-white/5 border-b border-white/5 flex flex-wrap items-center gap-6 shrink-0">
+                <div className="px-8 py-4 bg-foreground/5 border-b border-foreground/5 flex flex-wrap items-center gap-6 shrink-0">
                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Temporal Period</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Temporal Period</span>
                         <Select value={period} onValueChange={handlePeriodChange}>
-                            <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white text-[10px] font-bold uppercase tracking-wider h-9 rounded-lg focus:ring-blue-500/20">
+                            <SelectTrigger className="w-40 bg-foreground/5 border-foreground/10 text-foreground text-[10px] font-bold uppercase tracking-wider rounded-lg focus:ring-blue-500/20">
                                 <SelectValue placeholder="All" />
                             </SelectTrigger>
-                            <SelectContent className="bg-slate-950 border-white/10 text-white">
+                            <SelectContent className="bg-background border-foreground/10 text-foreground">
                                 <SelectItem value="all">Cumulative Archive</SelectItem>
                                 <SelectItem value="today">Current Cycle (Today)</SelectItem>
                                 <SelectItem value="week">Weekly Span</SelectItem>
@@ -465,28 +436,20 @@ export default function PurchaseOrderListDialog() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Input 
-                            type="date" 
-                            className="w-36 bg-white/5 border-white/10 text-white text-[10px] h-9 rounded-lg" 
-                            value={startDate} 
-                            onChange={(e) => setStartDate(e.target.value)} 
+                        <Input type="date" className="w-36 bg-foreground/5 border-foreground/10 text-foreground text-[10px] rounded-lg" value={startDate} onChange={(e) => setStartDate(e.target.value)} 
                         />
-                        <span className="text-white/20">/</span>
-                        <Input 
-                            type="date" 
-                            className="w-36 bg-white/5 border-white/10 text-white text-[10px] h-9 rounded-lg" 
-                            value={endDate} 
-                            onChange={(e) => setEndDate(e.target.value)} 
+                        <span className="text-foreground/20">/</span>
+                        <Input type="date" className="w-36 bg-foreground/5 border-foreground/10 text-foreground text-[10px] rounded-lg" value={endDate} onChange={(e) => setEndDate(e.target.value)} 
                         />
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Provider</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Provider</span>
                         <Select value={supplierFilter} onValueChange={setSupplierFilter}>
-                            <SelectTrigger className="w-48 bg-white/5 border-white/10 text-white text-[10px] font-bold uppercase tracking-wider h-9 rounded-lg">
+                            <SelectTrigger className="w-48 bg-foreground/5 border-foreground/10 text-foreground text-[10px] font-bold uppercase tracking-wider rounded-lg">
                                 <SelectValue placeholder="All Providers" />
                             </SelectTrigger>
-                            <SelectContent className="bg-slate-950 border-white/10 text-white max-h-[300px]">
+                            <SelectContent className="bg-background border-foreground/10 text-foreground max-h-[300px]">
                                 <SelectItem value="all">Global Network</SelectItem>
                                 {suppliers.map(s => (
                                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
@@ -496,12 +459,12 @@ export default function PurchaseOrderListDialog() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Status</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Status</span>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white text-[10px] font-bold uppercase tracking-wider h-9 rounded-lg">
+                            <SelectTrigger className="w-40 bg-foreground/5 border-foreground/10 text-foreground text-[10px] font-bold uppercase tracking-wider rounded-lg">
                                 <SelectValue placeholder="Global Status" />
                             </SelectTrigger>
-                            <SelectContent className="bg-slate-950 border-white/10 text-white">
+                            <SelectContent className="bg-background border-foreground/10 text-foreground">
                                 <SelectItem value="all">All States</SelectItem>
                                 <SelectItem value="Open">Pending / Open</SelectItem>
                                 <SelectItem value="Approved">Verified / Approved</SelectItem>
@@ -511,9 +474,7 @@ export default function PurchaseOrderListDialog() {
                         </Select>
                     </div>
 
-                    <Button
-                        className="h-9 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest px-6 ml-auto rounded-lg gap-2 transition-all"
-                        onClick={() => fetchOrders(false, true)}
+                    <Button className="bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 text-foreground text-[10px] font-black uppercase tracking-widest px-6 ml-auto rounded-lg gap-2 transition-all" onClick={() => fetchOrders(false, true)}
                     >
                         <Filter className="h-3.5 w-3.5" />
                         Execute Filter
@@ -524,16 +485,16 @@ export default function PurchaseOrderListDialog() {
                 <div className="flex-1 overflow-hidden relative flex flex-col">
                     <div className="flex-1 overflow-auto custom-scrollbar">
                         <div className="p-8">
-                            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+                            <div className="bg-foreground/5 border border-foreground/10 rounded-2xl overflow-hidden backdrop-blur-sm">
                                 <Table>
-                                    <TableHeader className="bg-white/5">
-                                        <TableRow className="border-white/5 hover:bg-transparent">
-                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 pl-6">Temporal Stamp</TableHead>
-                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14">Order Identifier</TableHead>
-                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14">Provider Entity</TableHead>
-                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14">Status State</TableHead>
-                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Fiscal Quantum</TableHead>
-                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-center pr-6">Operational Control</TableHead>
+                                    <TableHeader className="bg-foreground/5">
+                                        <TableRow className="border-foreground/5 hover:bg-transparent">
+                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 pl-6">Temporal Stamp</TableHead>
+                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14">Order Identifier</TableHead>
+                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14">Provider Entity</TableHead>
+                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14">Status State</TableHead>
+                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Fiscal Quantum</TableHead>
+                                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-center pr-6">Operational Control</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -558,7 +519,7 @@ export default function PurchaseOrderListDialog() {
                                         ) : orders.length === 0 ? (
                                             <TableRow className="hover:bg-transparent">
                                                 <TableCell colSpan={6} className="h-64 text-center">
-                                                    <div className="flex flex-col items-center justify-center text-white/20 gap-4">
+                                                    <div className="flex flex-col items-center justify-center text-foreground/20 gap-4">
                                                         <Search className="h-12 w-12 opacity-20" />
                                                         <p className="text-sm font-black uppercase tracking-widest">No Procurement Data Detected</p>
                                                     </div>
@@ -569,77 +530,67 @@ export default function PurchaseOrderListDialog() {
                                                 <TableRow
                                                     key={order.id}
                                                     className={cn(
-                                                        "border-white/5 transition-all duration-300 group",
-                                                        selectedOrderId === order.id ? "bg-blue-500/10" : "hover:bg-white/[0.02]"
+                                                        "border-foreground/5 transition-all duration-300 group",
+                                                        selectedOrderId === order.id ? "bg-blue-500/10" : "hover:bg-foreground/[0.02]"
                                                     )}
                                                     onClick={() => setSelectedOrderId(order.id)}
                                                 >
-                                                    <TableCell className="py-4 pl-6">
-                                                        <span className="text-[10px] font-black text-white/60 tracking-wider">
+                                                    <TableCell className="pl-6">
+                                                        <span className="text-[10px] font-black text-foreground/60 tracking-wider">
                                                             {format(new Date(order.date), 'yyyy.MM.dd')}
                                                         </span>
                                                     </TableCell>
-                                                    <TableCell className="py-4">
-                                                        <span className="text-xs font-black uppercase tracking-tight text-white group-hover:text-blue-400 transition-colors">
+                                                    <TableCell className="">
+                                                        <span className="text-xs font-black uppercase tracking-tight text-foreground group-hover:text-blue-400 transition-colors">
                                                             {order.orderNumber || order.id.slice(0, 8)}
                                                         </span>
                                                     </TableCell>
-                                                    <TableCell className="py-4">
+                                                    <TableCell className="">
                                                         <div className="flex flex-col">
-                                                            <span className="text-xs font-bold text-white/80 group-hover:translate-x-1 transition-transform">
+                                                            <span className="text-xs font-bold text-foreground/80 group-hover:translate-x-1 transition-transform">
                                                                 {order.supplier?.name || 'Unknown Provider'}
                                                             </span>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="py-4">
+                                                    <TableCell className="">
                                                         <div className={cn(
                                                             "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest",
                                                             order.status === 'Approved' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
                                                             order.status === 'Open' ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
                                                             order.status === 'Void' ? "bg-red-500/10 border-red-500/20 text-red-400" :
-                                                            "bg-white/5 border-white/10 text-white/40"
+                                                            "bg-foreground/5 border-foreground/10 text-foreground/40"
                                                         )}>
                                                             <div className={cn(
                                                                 "h-1.5 w-1.5 rounded-full animate-pulse",
                                                                 order.status === 'Approved' ? "bg-emerald-400" :
                                                                 order.status === 'Open' ? "bg-amber-400" :
-                                                                order.status === 'Void' ? "bg-red-400" : "bg-white/40"
+                                                                order.status === 'Void' ? "bg-red-400" : "bg-foreground/40"
                                                             )} />
                                                             {order.status}
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="py-4 text-right">
+                                                    <TableCell className="text-right">
                                                         <span className="text-sm font-black italic tracking-tighter text-blue-400">
                                                             ₱{(order.total || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                         </span>
                                                     </TableCell>
-                                                    <TableCell className="py-4 text-center pr-6" onClick={(e) => e.stopPropagation()}>
+                                                    <TableCell className="text-center pr-6" onClick={(e) => e.stopPropagation()}>
                                                         <div className="flex justify-center items-center gap-1">
-                                                            <Button 
-                                                                variant="ghost" 
-                                                                size="icon" 
-                                                                className="h-8 w-8 rounded-lg hover:bg-blue-500/20 text-blue-400/60 hover:text-blue-400 transition-all" 
-                                                                title="View Details" 
-                                                                onClick={() => handleView(order.id)}
+                                                            <Button variant="ghost" size="icon" className="w-8 rounded-lg hover:bg-blue-500/20 text-blue-400/60 hover:text-blue-400 transition-all" title="View Details" onClick={() => handleView(order.id)}
                                                             >
                                                                 <Eye className="h-4 w-4" />
                                                             </Button>
-                                                            <Button 
-                                                                variant="ghost" 
-                                                                size="icon" 
-                                                                className="h-8 w-8 rounded-lg hover:bg-amber-500/20 text-amber-400/60 hover:text-amber-400 transition-all" 
-                                                                title="Edit Matrix" 
-                                                                onClick={() => handleEdit(order.id)}
+                                                            <Button variant="ghost" size="icon" className="w-8 rounded-lg hover:bg-amber-500/20 text-amber-400/60 hover:text-amber-400 transition-all" title="Edit Matrix" onClick={() => handleEdit(order.id)}
                                                             >
                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
-                                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all">
+                                                                    <Button variant="ghost" size="icon" className="w-8 rounded-lg hover:bg-foreground/10 text-foreground/40 hover:text-foreground transition-all">
                                                                         <MoreVertical className="h-4 w-4" />
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align="end" className="bg-slate-950 border-white/10 text-white">
+                                                                <DropdownMenuContent align="end" className="bg-background border-foreground/10 text-foreground">
                                                                     {order.status === 'Approved' ? (
                                                                         <>
                                                                             <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest focus:bg-emerald-500/20 focus:text-emerald-400" onClick={() => handleAction('Receive', order.id)}>Initialize Receipt</DropdownMenuItem>
@@ -667,40 +618,32 @@ export default function PurchaseOrderListDialog() {
                 </div>
 
                 {/* Intelligence Summary Footer */}
-                <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+                <div className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-12">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Operational Count</span>
-                            <span className="text-xl font-black italic tracking-tighter text-white">{totalCount} <span className="text-[10px] not-italic text-white/40 ml-1">ENTRIES</span></span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/20">Operational Count</span>
+                            <span className="text-xl font-black italic tracking-tighter text-foreground">{totalCount} <span className="text-[10px] not-italic text-foreground/40 ml-1">ENTRIES</span></span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Cumulative Exposure</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/20">Cumulative Exposure</span>
                             <span className="text-xl font-black italic tracking-tighter text-blue-400">₱{totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-9 px-4 rounded-lg text-white/60 hover:text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest disabled:opacity-20"
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                        <div className="flex items-center gap-2 bg-foreground/5 border border-foreground/10 rounded-xl p-1">
+                            <Button variant="ghost" size="sm" className="px-4 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/10 text-[10px] font-black uppercase tracking-widest disabled:opacity-20" onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1 || loading}
                             >
                                 <ChevronLeft className="h-4 w-4 mr-2" />
                                 Previous
                             </Button>
-                            <div className="w-px h-4 bg-white/10" />
-                            <span className="px-4 text-[10px] font-black text-white/40 uppercase tracking-widest">
-                                Sector {page} <span className="text-white/20 mx-1">/</span> {Math.ceil(totalCount / pageSize) || 1}
+                            <div className="w-px h-4 bg-foreground/10" />
+                            <span className="px-4 text-[10px] font-black text-foreground/40 uppercase tracking-widest">
+                                Sector {page} <span className="text-foreground/20 mx-1">/</span> {Math.ceil(totalCount / pageSize) || 1}
                             </span>
-                            <div className="w-px h-4 bg-white/10" />
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-9 px-4 rounded-lg text-white/60 hover:text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest disabled:opacity-20"
-                                onClick={() => setPage(p => p + 1)}
+                            <div className="w-px h-4 bg-foreground/10" />
+                            <Button variant="ghost" size="sm" className="px-4 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/10 text-[10px] font-black uppercase tracking-widest disabled:opacity-20" onClick={() => setPage(p => p + 1)}
                                 disabled={page >= Math.ceil(totalCount / pageSize) || loading}
                             >
                                 Next
@@ -711,18 +654,24 @@ export default function PurchaseOrderListDialog() {
                 </div>
             </DialogContent>
 
+            <ConfirmDialog
+                open={confirmOpen}
+                {...confirmOptions}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
             <AlertDialog open={showRestrictedAlert} onOpenChange={setShowRestrictedAlert}>
-                <AlertDialogContent className="bg-slate-950 border-white/10 text-white">
+                <AlertDialogContent className="bg-background border-foreground/10 text-foreground">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-black uppercase italic tracking-tighter text-red-400">Security Restriction</AlertDialogTitle>
-                        <AlertDialogDescription className="text-white/60 font-bold uppercase tracking-widest text-xs">
+                        <AlertDialogDescription className="text-foreground/60 font-bold uppercase tracking-widest text-xs">
                             This procurement node is locked due to its current status. Please contact administrative oversight for override authorization.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogAction 
                             onClick={() => setShowRestrictedAlert(false)}
-                            className="bg-white/10 hover:bg-white/20 text-white font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-8"
+                            className="bg-foreground/10 hover:bg-foreground/20 text-foreground font-black uppercase tracking-widest text-[10px] h-10 rounded-xl px-8"
                         >
                             Acknowledge
                         </AlertDialogAction>

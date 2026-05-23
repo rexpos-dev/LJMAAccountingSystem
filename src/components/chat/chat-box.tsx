@@ -105,16 +105,15 @@ export function ChatBox() {
     if (!isOpen) {
         return (
             <div className="fixed bottom-6 right-6 z-50">
-                <Button
-                    onClick={() => setIsOpen(true)}
+                <Button onClick={() => setIsOpen(true)}
                     className={cn(
-                        "h-14 w-14 rounded-full shadow-2xl bg-primary hover:scale-110 transition-all duration-300 flex items-center justify-center border-2 border-white/20 relative group",
+                        "h-14 w-14 rounded-full shadow-2xl bg-primary hover:scale-110 transition-all duration-300 flex items-center justify-center border-2 border-foreground/20 relative group",
                         unreadCount > 0 && "animate-bounce shadow-[0_0_20px_rgba(var(--primary),0.4)]"
                     )}
                 >
                     <MessageCircle className="h-7 w-7 text-primary-foreground group-hover:rotate-12 transition-transform" />
                     {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-6 w-6 bg-destructive text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-background shadow-lg animate-in zoom-in duration-300">
+                        <span className="absolute -top-1 -right-1 h-6 w-6 bg-destructive text-foreground text-[10px] font-black rounded-full flex items-center justify-center border-2 border-background shadow-lg animate-in zoom-in duration-300">
                             {unreadCount}
                         </span>
                     )}
@@ -132,20 +131,16 @@ export function ChatBox() {
     return (
         <div
             className={cn(
-                "fixed bottom-6 right-6 w-[350px] sm:w-[400px] flex flex-col z-50 transition-all duration-300 ease-in-out shadow-2xl border border-white/10 overflow-hidden",
+                "fixed bottom-6 right-6 w-[350px] sm:w-[400px] flex flex-col z-50 transition-all duration-300 ease-in-out shadow-2xl border border-foreground/10 overflow-hidden",
                 isMinimized ? "h-14" : "h-[550px] max-h-[85vh]",
                 "bg-background/80 backdrop-blur-xl rounded-2xl"
             )}
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-primary/5">
+            <div className="flex items-center justify-between p-4 border-b border-foreground/10 bg-primary/5">
                 <div className="flex items-center gap-2 overflow-hidden">
                     {view === 'chat' && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 -ml-2"
-                            onClick={() => setView('rooms')}
+                        <Button variant="ghost" size="icon" className="w-8 -ml-2" onClick={() => setView('rooms')}
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
@@ -158,14 +153,11 @@ export function ChatBox() {
                             <div className="flex items-center gap-2">
                                 {isRenaming ? (
                                     <div className="flex items-center gap-1">
-                                        <Input
-                                            className="h-6 text-xs w-32"
-                                            value={roomNameInput}
-                                            onChange={(e) => setRoomNameInput(e.target.value)}
+                                        <Input className="text-xs w-32" value={roomNameInput} onChange={(e) => setRoomNameInput(e.target.value)}
                                             autoFocus
                                         />
-                                        <Button size="icon" className="h-6 w-6" onClick={handleRename}><Send className="h-3 w-3" /></Button>
-                                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setIsRenaming(false)}><X className="h-3 w-3" /></Button>
+                                        <Button size="icon" className="w-6" onClick={handleRename}><Send className="h-3 w-3" /></Button>
+                                        <Button size="icon" variant="ghost" className="w-6" onClick={() => setIsRenaming(false)}><X className="h-3 w-3" /></Button>
                                     </div>
                                 ) : (
                                     <>
@@ -173,11 +165,7 @@ export function ChatBox() {
                                             {activeRoom ? getRoomName(activeRoom) : 'Loading...'}
                                         </h3>
                                         {activeRoom?.isGroup && (
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-5 w-5 opacity-50 hover:opacity-100"
-                                                onClick={() => {
+                                            <Button variant="ghost" size="icon" className="w-5 opacity-50 hover:opacity-100" onClick={() => {
                                                     setRoomNameInput(activeRoom.name || '');
                                                     setIsRenaming(true);
                                                 }}
@@ -195,30 +183,22 @@ export function ChatBox() {
                 <div className="flex items-center gap-1">
                     {view === 'rooms' && (
                         <>
-                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setIsSelectUserOpen(true)}>
+                            <Button size="icon" variant="ghost" className="w-8" onClick={() => setIsSelectUserOpen(true)}>
                                 <UserPlus className="h-4 w-4" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setIsCreateGroupOpen(true)}>
+                            <Button size="icon" variant="ghost" className="w-8" onClick={() => setIsCreateGroupOpen(true)}>
                                 <Users className="h-4 w-4" />
                             </Button>
                         </>
                     )}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:bg-white/10"
-                        onClick={() => setIsMinimized(!isMinimized)}
+                    <Button variant="ghost" size="icon" className="w-8 hover:bg-foreground/10" onClick={() => setIsMinimized(!isMinimized)}
                     >
                         {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
                         {isMinimized && unreadCount > 0 && (
                             <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full border border-background animate-pulse" />
                         )}
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:bg-white/10 text-destructive"
-                        onClick={() => setIsOpen(false)}
+                    <Button variant="ghost" size="icon" className="w-8 hover:bg-foreground/10 text-destructive" onClick={() => setIsOpen(false)}
                     >
                         <X className="h-4 w-4" />
                     </Button>
@@ -247,8 +227,8 @@ export function ChatBox() {
                                                 setView('chat');
                                             }}
                                             className={cn(
-                                                "w-full flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition-all text-left group relative",
-                                                activeRoomId === room.id && "bg-white/10 border border-white/5 shadow-inner"
+                                                "w-full flex items-center gap-3 p-3 hover:bg-foreground/5 rounded-xl transition-all text-left group relative",
+                                                activeRoomId === room.id && "bg-foreground/10 border border-foreground/5 shadow-inner"
                                             )}
                                         >
                                             {(() => {
@@ -261,7 +241,7 @@ export function ChatBox() {
                                                     <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)] animate-pulse" />
                                                 ) : null;
                                             })()}
-                                            <Avatar className="h-10 w-10 border border-white/10">
+                                            <Avatar className="h-10 w-10 border border-foreground/10">
                                                 <AvatarFallback className={cn(
                                                     "bg-primary/10 text-primary font-bold text-xs",
                                                     room.isGroup && "bg-blue-500/10 text-blue-500"
@@ -321,7 +301,7 @@ export function ChatBox() {
                                                             "px-3 py-2 rounded-2xl text-sm break-words shadow-sm",
                                                             isMine
                                                                 ? "bg-primary text-primary-foreground rounded-tr-none"
-                                                                : "bg-muted text-muted-foreground rounded-tl-none border border-white/5"
+                                                                : "bg-muted text-muted-foreground rounded-tl-none border border-foreground/5"
                                                         )}
                                                     >
                                                         {msg.content}
@@ -336,7 +316,7 @@ export function ChatBox() {
                                                                         rel="noopener noreferrer"
                                                                         className={cn(
                                                                             "flex items-center gap-2 p-1.5 rounded-lg text-xs transition-colors group/file",
-                                                                            isMine ? "bg-white/10 hover:bg-white/20" : "bg-background/50 hover:bg-background/80"
+                                                                            isMine ? "bg-foreground/10 hover:bg-foreground/20" : "bg-background/50 hover:bg-background/80"
                                                                         )}
                                                                     >
                                                                         {att.fileType.startsWith('image/') ? <ImageIcon className="h-3 w-3" /> : <FileText className="h-3 w-3" />}
@@ -358,7 +338,7 @@ export function ChatBox() {
                             </ScrollArea>
 
                             {/* Input Area */}
-                            <div className="p-4 border-t border-white/10 bg-white/5">
+                            <div className="p-4 border-t border-foreground/10 bg-foreground/5">
                                 {attachments.length > 0 && (
                                     <div className="flex flex-wrap gap-2 mb-2">
                                         {attachments.map((att, i) => (
@@ -377,7 +357,7 @@ export function ChatBox() {
                                     <div className="relative flex items-center gap-2">
                                         <button
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-xl bg-background/50 border border-white/10 hover:bg-white/5 hover:border-white/20 transition-all"
+                                            className="flex-shrink-0 h-9 w-9 flex items-center justify-center rounded-xl bg-background/50 border border-foreground/10 hover:bg-foreground/5 hover:border-foreground/20 transition-all"
                                             disabled={isUploading}
                                         >
                                             {isUploading ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Paperclip className="h-4 w-4 opacity-50" />}
@@ -393,16 +373,11 @@ export function ChatBox() {
                                                 }
                                             }}
                                             placeholder="Type a message..."
-                                            className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none h-10 min-h-[40px] max-h-[100px] transition-all scrollbar-hide"
+                                            className="w-full bg-background/50 border border-foreground/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none h-10 min-h-[40px] max-h-[100px] transition-all scrollbar-hide"
                                             rows={1}
                                         />
 
-                                        <Button
-                                            size="icon"
-                                            className="flex-shrink-0 h-9 w-9 rounded-xl shadow-lg hover:scale-105 transition-transform"
-                                            onClick={handleSend}
-                                            disabled={(!inputValue.trim() && attachments.length === 0) || isSending}
-                                        >
+                                        <Button size="icon" className="flex-shrink-0 w-9 rounded-xl shadow-lg hover:scale-105 transition-transform" onClick={handleSend} disabled={(!inputValue.trim() && attachments.length === 0) || isSending} >
                                             {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                                         </Button>
                                     </div>

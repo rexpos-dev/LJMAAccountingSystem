@@ -58,15 +58,12 @@ export default function BankHistoryPage() {
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                     <div className="relative w-full sm:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search history..."
-                            className="pl-9 bg-muted/20 border-none focus-visible:ring-1 focus-visible:ring-primary h-9"
-                        />
+                        <Input placeholder="Search history..." className="pl-9 bg-muted/20 border-none focus-visible:ring-1 focus-visible:ring-primary" />
                     </div>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2 h-9 min-w-[180px] justify-between">
+                            <Button variant="outline" size="sm" className="gap-2 min-w-[180px] justify-between">
                                 <span className="truncate">
                                     {selectedAccount ? `${selectedAccount.account_name}` : "All Bank Accounts"}
                                 </span>

@@ -1,14 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useEffect, useState, useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -28,15 +20,13 @@ import {
 } from '@/components/ui/dialog';
 import {
     FileText,
-    Printer,
-    Save,
-    ListVideo,
     ArrowLeft,
     Search,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
+import { ReportToolbar } from './report-toolbar';
 
 interface GLTransaction {
     id: string;
@@ -66,6 +56,7 @@ interface GLAccount {
 
 export default function GeneralLedgerReport() {
     const { openDialogs, closeDialog, getDialogData, openDialog } = useDialog();
+    const contentRef = useRef<HTMLDivElement>(null);
     const [data, setData] = useState<GLAccount[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -140,43 +131,26 @@ export default function GeneralLedgerReport() {
         <Dialog open={openDialogs['general-ledger-report'] || false} onOpenChange={() => closeDialog('general-ledger-report' as any)}>
             <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem onClick={handleBack}><ArrowLeft className="mr-2 h-4 w-4" />Back to Options</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('general-ledger-report' as any)}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={handleBack}>
-                            <ArrowLeft className="h-5 w-5" />
-                            <span>Back</span>
-                        </Button>
-                        <div className="w-px h-8 bg-border mx-1" />
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => window.print()}><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-
-                        <div className="ml-auto relative w-64 mr-2">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search by account or trans. no..."
-                                className="pl-9 h-9"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="General Ledger"
+                        subtitle={`${accountId !== 'all' ? 'Filtered Account' : 'All Accounts'} | Period: ${format(fromDate, 'MM/dd/yyyy')} - ${format(toDate, 'MM/dd/yyyy')}`}
+                        closeKey="general-ledger-report"
+                        extra={
+                            <>
+                                <Button variant="ghost" size="sm" className="flex-col h-auto gap-0.5 px-3" onClick={handleBack}>
+                                    <ArrowLeft className="h-5 w-5" />
+                                    <span className="text-[10px]">Back</span>
+                                </Button>
+                                <div className="w-px h-8 bg-border mx-1" />
+                                <div className="relative w-64">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input placeholder="Search by account or trans. no..." className="pl-9" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                            </>
+                        }
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left shrink-0">
@@ -185,7 +159,7 @@ export default function GeneralLedgerReport() {
                             <FileText className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">General Ledger</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">General Ledger</DialogTitle>
                             <DialogDescription className="text-left mt-1">
                                 {accountId !== 'all' ? 'Filtered Account' : 'All Accounts'} | Period: {format(fromDate, 'MM/dd/yyyy')} - {format(toDate, 'MM/dd/yyyy')}
                             </DialogDescription>
@@ -194,6 +168,7 @@ export default function GeneralLedgerReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     {loading ? (
                         <div className="flex justify-center items-center h-32">
                             <span className="text-muted-foreground animate-pulse">Running report...</span>
@@ -275,6 +250,7 @@ export default function GeneralLedgerReport() {
                             ))}
                         </div>
                     )}
+                    </div>
                 </ScrollArea>
             </DialogContent>
         </Dialog>

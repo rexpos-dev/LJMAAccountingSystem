@@ -247,14 +247,7 @@ export default function EnterApPage() {
                   <Label htmlFor="date">Date:</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant={'outline'}
-                        id="date"
-                        className={cn(
-                          'w-full justify-start text-left font-normal col-span-2',
-                          !date && 'text-muted-foreground'
-                        )}
-                      >
+                      <Button variant={'outline'} id="date" className={cn( 'w-full justify-start text-left font-normal col-span-2', !date && 'text-muted-foreground' )} >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
                       </Button>
@@ -273,14 +266,7 @@ export default function EnterApPage() {
                   <Label htmlFor="due-date">Due Date:</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant={'outline'}
-                        id="due-date"
-                        className={cn(
-                          'w-full justify-start text-left font-normal col-span-2',
-                          !dueDate && 'text-muted-foreground'
-                        )}
-                      >
+                      <Button variant={'outline'} id="due-date" className={cn( 'w-full justify-start text-left font-normal col-span-2', !dueDate && 'text-muted-foreground' )} >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {dueDate ? format(dueDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
                       </Button>
@@ -359,7 +345,7 @@ export default function EnterApPage() {
             </div>
 
             <div className="p-4 border rounded-lg bg-black/20 space-y-4">
-              <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider">Expense Source & Proration</h3>
+              <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">Expense Source & Proration</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Select Account (COA)</Label>
@@ -405,7 +391,7 @@ export default function EnterApPage() {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-white">Account Allocation</h3>
+              <h3 className="text-lg font-medium text-foreground">Account Allocation</h3>
               <div className="border rounded-md">
                 <Table>
                   <TableHeader>
@@ -422,7 +408,7 @@ export default function EnterApPage() {
                   <TableBody>
                     {allocations.length === 0 ? (
                       <TableRow onDoubleClick={handleRowDoubleClick} className="cursor-pointer">
-                        <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                        <TableCell colSpan={6} className="text-center text-muted-foreground">
                           Double-click here to allocate an amount to account(s).
                         </TableCell>
                       </TableRow>
@@ -469,35 +455,29 @@ export default function EnterApPage() {
                             </Select>
                           </TableCell>
                           <TableCell>
-                            <span className="text-sm text-white/50">
+                            <span className="text-sm text-foreground/50">
                               {branches.find(b => b.id === allocation.branch_id)?.name || '-'}
                             </span>
                           </TableCell>
                           <TableCell>
-                            <span className="text-sm text-white/50">
+                            <span className="text-sm text-foreground/50">
                               {(() => {
                                 const matchedAcc = accounts.find(acc => acc.account_no?.toString() === allocation.account_no);
                                 return isProfitCenterEligible(matchedAcc?.account_type)
                                   ? (allocation.profit_center_id || '-')
-                                  : <span className="text-white/20 italic">N/A</span>;
+                                  : <span className="text-foreground/20 italic">N/A</span>;
                               })()}
                             </span>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Input
-                              type="number"
-                              value={allocation.amount}
-                              onChange={(e) => handleAmountChange(allocation.id, e.target.value)}
+                            <Input type="number" value={allocation.amount} onChange={(e) => handleAmountChange(allocation.id, e.target.value)}
                               className="w-full text-right"
                               placeholder="0.00"
                             />
                           </TableCell>
                           <TableCell className="text-right flex items-center justify-end gap-2">
                             <span>{allocation.type}</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteAllocation(allocation.id)}
+                            <Button variant="ghost" size="sm" onClick={() => handleDeleteAllocation(allocation.id)}
                               className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
                             >
                               <Trash2 className="h-4 w-4" />

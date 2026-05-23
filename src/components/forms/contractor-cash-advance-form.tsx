@@ -193,7 +193,7 @@ export function ContractorCashAdvanceForm({ initialData, mode = 'create', onSucc
                         <div className="flex items-center gap-4">
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase">Control No.</span>
-                                <Input className="w-32 h-9 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
+                                <Input className="w-32 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
                             </div>
                             <FormField
                                 control={form.control}
@@ -204,14 +204,7 @@ export function ContractorCashAdvanceForm({ initialData, mode = 'create', onSucc
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        disabled={isReadOnly}
-                                                        className={cn(
-                                                            "w-full h-9 justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
+                                                    <Button variant={"outline"} disabled={isReadOnly} className={cn( "w-full justify-start text-left font-normal", !field.value && "text-muted-foreground" )} >
                                                         <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                         {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                     </Button>
@@ -356,7 +349,7 @@ export function ContractorCashAdvanceForm({ initialData, mode = 'create', onSucc
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((field, index) => (
-                                        <TableRow key={field.id} className="hover:bg-muted/5"><TableCell className="text-center font-mono text-xs text-muted-foreground">{index + 1}</TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<Textarea {...field} placeholder="Describe the purpose of this amount..." className="min-h-[60px] border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background resize-none" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.amount`} render={({ field }) => (<Input {...field} type="number" step="0.01" className="h-10 border-none bg-transparent text-right font-bold text-lg focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell>{!isReadOnly && (<TableCell className="p-0 text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>)}</TableCell>)}</TableRow>
+                                        <TableRow key={field.id} className="hover:bg-muted/5"><TableCell className="text-center font-mono text-xs text-muted-foreground">{index + 1}</TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (<Textarea {...field} placeholder="Describe the purpose of this amount..." className="min-h-[60px] border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background resize-none" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.amount`} render={({ field }) => (<Input {...field} type="number" step="0.01" className="border-none bg-transparent text-right font-bold text-lg focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell>{!isReadOnly && (<TableCell className="text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="w-8 text-destructive" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>)}</TableCell>)}</TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -395,7 +388,7 @@ export function ContractorCashAdvanceForm({ initialData, mode = 'create', onSucc
                                         {sig.options ? (
                                             <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                 <FormControl>
-                                                    <SelectTrigger className="h-9 bg-muted/20 border-dashed hover:border-primary transition-colors">
+                                                    <SelectTrigger className=" bg-muted/20 border-dashed hover:border-primary transition-colors">
                                                         <SelectValue placeholder="Select..." />
                                                     </SelectTrigger>
                                                 </FormControl>

@@ -51,7 +51,7 @@ const COLUMNS = [
     {
         id: "to-audit" as const,
         title: "To Audit",
-        color: "bg-blue-600 text-white",
+        color: "bg-blue-600 text-foreground",
         borderColor: "border-blue-500",
         activeTabBg: "bg-blue-600",
         icon: ClipboardList,
@@ -60,7 +60,7 @@ const COLUMNS = [
     {
         id: "ongoing" as const,
         title: "Ongoing Audit",
-        color: "bg-amber-500 text-white",
+        color: "bg-amber-500 text-foreground",
         borderColor: "border-amber-500",
         activeTabBg: "bg-amber-500",
         icon: Clock,
@@ -69,7 +69,7 @@ const COLUMNS = [
     {
         id: "done" as const,
         title: "Done Audit",
-        color: "bg-emerald-600 text-white",
+        color: "bg-emerald-600 text-foreground",
         borderColor: "border-emerald-500",
         activeTabBg: "bg-emerald-600",
         icon: CheckCircle2,
@@ -78,7 +78,7 @@ const COLUMNS = [
     {
         id: "history" as const,
         title: "Audit History",
-        color: "bg-slate-600 text-white",
+        color: "bg-slate-600 text-foreground",
         borderColor: "border-slate-500",
         activeTabBg: "bg-slate-600",
         icon: ArchiveIcon,
@@ -124,16 +124,19 @@ export function AuditBoard() {
         fromDate,
         toDate,
         assigneeFilter !== "all" ? assigneeFilter : "",
+        searchQuery,
     ].filter(Boolean).length;
 
-    const fetchAuditLogs = async (useOverlay = false) => {
+    const fetchAuditLogs = async (useOverlay = false, fDate?: string, tDate?: string) => {
         if (useOverlay) setIsFiltering(true);
         else setIsLoading(true);
 
         try {
             const params = new URLSearchParams();
-            if (fromDate) params.append("fromDate", fromDate);
-            if (toDate) params.append("toDate", toDate);
+            const start = fDate !== undefined ? fDate : fromDate;
+            const end = tDate !== undefined ? tDate : toDate;
+            if (start) params.append("fromDate", start);
+            if (end) params.append("toDate", end);
 
             const res = await fetch(`/api/reports/to-audit?${params.toString()}`);
             if (!res.ok) throw new Error("Failed to fetch audit logs");
@@ -199,7 +202,7 @@ export function AuditBoard() {
         setFromDate("");
         setToDate("");
         setAssigneeFilter("all");
-        setTimeout(() => fetchAuditLogs(true), 0);
+        fetchAuditLogs(true, "", "");
     };
 
     const sensors = useSensors(
@@ -345,14 +348,30 @@ export function AuditBoard() {
 
     const accountType = user?.accountType?.toLowerCase() || "";
     const isAdmin = accountType.includes("admin");
-    const currentAssigneeName = user?.username || `${user?.firstName} ${user?.lastName}`;
+    const currentUserFullName = user ? `${user.firstName} ${user.lastName}` : "";
+    const currentAssigneeName = user?.username || currentUserFullName;
 
     const filteredItems = Object.fromEntries(
         Object.entries(items).map(([key, colItems]) => [
             key,
             colItems.filter((item) => {
-                if (!isAdmin && key !== "history" && item.assignee !== currentAssigneeName) return false;
-                if (assigneeFilter !== "all" && item.assignee !== assigneeFilter) return false;
+                if (!isAdmin && key !== "history") {
+                    if (item.assignee !== user?.username && item.assignee !== currentUserFullName) {
+                        return false;
+                    }
+                }
+
+                if (assigneeFilter !== "all") {
+                    const auditor = auditors.find(a => a.name === assigneeFilter || a.username === assigneeFilter);
+                    if (auditor) {
+                        if (item.assignee !== auditor.username && item.assignee !== auditor.name) {
+                            return false;
+                        }
+                    } else if (item.assignee !== assigneeFilter) {
+                        return false;
+                    }
+                }
+
                 const q = searchQuery.toLowerCase();
                 if (!q) return true;
                 return (
@@ -390,19 +409,10 @@ export function AuditBoard() {
                         {/* Search — always visible */}
                         <div className="relative hidden sm:block">
                             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                            <Input
-                                type="text"
-                                placeholder="Search transactions…"
-                                className="h-8 pl-8 pr-3 text-xs w-56 bg-muted/40"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                            <Input type="text" placeholder="Search transactions…" className="pl-8 pr-3 text-xs w-56 bg-muted/40" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-3 text-xs gap-1.5"
-                            onClick={() => setIsFilterOpen((v) => !v)}
+                        <Button variant="ghost" size="sm" className="px-3 text-xs gap-1.5" onClick={() => setIsFilterOpen((v) => !v)}
                         >
                             {isFilterOpen ? (
                                 <ChevronUp className="h-3.5 w-3.5" />
@@ -418,12 +428,7 @@ export function AuditBoard() {
                 <div className="sm:hidden px-4 pt-3">
                     <div className="relative">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                        <Input
-                            type="text"
-                            placeholder="Search transactions…"
-                            className="h-8 pl-8 text-xs w-full bg-muted/40"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                        <Input type="text" placeholder="Search transactions…" className="pl-8 text-xs w-full bg-muted/40" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                 </div>
@@ -444,22 +449,14 @@ export function AuditBoard() {
                                     <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                                         <CalendarIcon className="h-3 w-3" /> From Date
                                     </Label>
-                                    <Input
-                                        type="date"
-                                        className="h-8 text-xs w-[150px] bg-background"
-                                        value={fromDate}
-                                        onChange={(e) => setFromDate(e.target.value)}
+                                    <Input type="date" className="text-xs w-[150px] bg-background" value={fromDate} onChange={(e) => setFromDate(e.target.value)}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                                         <CalendarIcon className="h-3 w-3" /> To Date
                                     </Label>
-                                    <Input
-                                        type="date"
-                                        className="h-8 text-xs w-[150px] bg-background"
-                                        value={toDate}
-                                        onChange={(e) => setToDate(e.target.value)}
+                                    <Input type="date" className="text-xs w-[150px] bg-background" value={toDate} onChange={(e) => setToDate(e.target.value)}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-1.5 min-w-[170px]">
@@ -481,12 +478,7 @@ export function AuditBoard() {
                                     </Select>
                                 </div>
                                 <div className="flex items-center gap-2 ml-auto">
-                                    <Button
-                                        size="sm"
-                                        onClick={handleFilter}
-                                        disabled={isFiltering}
-                                        className="h-8 px-4 text-xs gap-1.5"
-                                    >
+                                    <Button size="sm" onClick={handleFilter} disabled={isFiltering} className="px-4 text-xs gap-1.5" >
                                         {isFiltering ? (
                                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                         ) : (
@@ -494,13 +486,7 @@ export function AuditBoard() {
                                         )}
                                         Apply
                                     </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleReset}
-                                        disabled={isFiltering}
-                                        className="h-8 px-4 text-xs gap-1.5"
-                                    >
+                                    <Button variant="outline" size="sm" onClick={handleReset} disabled={isFiltering} className="px-4 text-xs gap-1.5" >
                                         <RotateCcw className="h-3.5 w-3.5" />
                                         Reset
                                     </Button>

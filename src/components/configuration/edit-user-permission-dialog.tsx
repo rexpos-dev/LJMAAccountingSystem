@@ -287,20 +287,14 @@ export default function EditUserPermissionDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={formData.username}
-                  onChange={(e) => handleInputChange('username', e.target.value)}
+                <Input id="username" value={formData.username} onChange={(e) => handleInputChange('username', e.target.value)}
                   placeholder="Enter username"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="contactNo">Contact No</Label>
-                <Input
-                  id="contactNo"
-                  value={formData.contactNo}
-                  onChange={(e) => handleInputChange('contactNo', e.target.value)}
+                <Input id="contactNo" value={formData.contactNo} onChange={(e) => handleInputChange('contactNo', e.target.value)}
                   placeholder="Enter contact number"
                 />
               </div>
@@ -309,21 +303,13 @@ export default function EditUserPermissionDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="password">New Password (Leave blank to keep same)</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
+                <Input id="password" type="password" value={formData.password} onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="Enter new password"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   placeholder="Confirm new password"
                 />
               </div>
@@ -332,20 +318,14 @@ export default function EditUserPermissionDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                <Input id="firstName" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e.target.value)}
                   placeholder="Enter first name"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                <Input id="lastName" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e.target.value)}
                   placeholder="Enter last name"
                 />
               </div>

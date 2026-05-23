@@ -104,11 +104,7 @@ export default function AddLoyaltyPointsDialog() {
 
                     <div className="space-y-2">
                         <Label htmlFor="amount">Amount of Points</Label>
-                        <Input
-                            id="amount"
-                            type="number"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
+                        <Input id="amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)}
                             placeholder="0.00"
                         />
                     </div>

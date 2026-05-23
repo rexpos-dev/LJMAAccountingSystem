@@ -10,7 +10,7 @@ export default function AccountingFlowchartPage() {
         {/* Decorative Element */}
         <div className="absolute -top-4 -left-4 w-20 h-20 bg-primary/20 blur-3xl rounded-full" />
         
-        <h2 className="text-4xl font-black tracking-tight font-headline text-white uppercase italic">
+        <h2 className="text-4xl font-black tracking-tight font-headline text-foreground uppercase italic">
           Operational <span className="text-primary not-italic">Flowchart</span>
         </h2>
         <p className="text-sm text-muted-foreground/80 max-w-2xl font-medium tracking-wide">
@@ -23,7 +23,7 @@ export default function AccountingFlowchartPage() {
         {/* Container Glow */}
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 blur-2xl opacity-50 group-hover:opacity-75 transition-opacity" />
         
-        <div className="relative w-full overflow-x-auto rounded-[2.5rem] border border-white/5 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
+        <div className="relative w-full overflow-x-auto rounded-[2.5rem] border border-foreground/5 bg-card/40 backdrop-blur-sm shadow-2xl">
           <div className="min-w-[1400px] p-8">
             <Flowchart />
           </div>

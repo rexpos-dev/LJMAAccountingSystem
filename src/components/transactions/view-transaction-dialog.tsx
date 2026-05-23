@@ -118,9 +118,9 @@ export default function ViewTransactionDialog({ transaction }: { transaction?: T
 
   return (
     <Dialog open={openDialogs['view-transaction']} onOpenChange={handleClose}>
-      <DialogContent className="max-w-5xl w-full p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
+      <DialogContent className="max-w-5xl w-full p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative overflow-hidden">
+        <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-4">
@@ -128,32 +128,25 @@ export default function ViewTransactionDialog({ transaction }: { transaction?: T
               <FileText className="h-6 w-6" />
             </div>
             <div>
-              <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase text-white">Transaction Intelligence</DialogTitle>
-              <p className="text-sm text-white/40 font-medium tracking-wide mt-0.5">Deep view analysis of financial record #{transaction.seq || '---'}</p>
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Transaction Intelligence</DialogTitle>
+              <p className="text-sm text-foreground/40 font-medium tracking-wide mt-0.5">Deep view analysis of financial record #{transaction.seq || '---'}</p>
             </div>
           </div>
 
           <div className="relative z-10 flex items-center gap-4">
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-10 w-10 rounded-xl text-white/40 hover:bg-white/10 hover:text-white transition-all"
-                onClick={handleClose}
-              >
-                <X className="h-5 w-5" />
-              </Button>
+            
           </div>
         </div>
 
         <div className="p-8 overflow-y-auto max-h-[70vh] custom-scrollbar">
           {/* Particulars Hero Section */}
-          <div className="glass-card p-6 mb-8 border-white/5 bg-white/[0.02] relative overflow-hidden">
+          <div className="glass-card p-6 mb-8 border-foreground/5 bg-foreground/[0.02] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
               <Info className="h-32 w-32" />
             </div>
             <div className="relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2 block">Transaction Particulars</span>
-              <p className="text-xl font-medium text-white/90 leading-relaxed max-w-3xl">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-2 block">Transaction Particulars</span>
+              <p className="text-xl font-medium text-foreground/90 leading-relaxed max-w-3xl">
                 {transaction.particulars || "No detailed particulars recorded for this transaction."}
               </p>
             </div>
@@ -162,21 +155,21 @@ export default function ViewTransactionDialog({ transaction }: { transaction?: T
           {/* Data Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dataGroups.map((group, idx) => (
-              <div key={idx} className="glass-card p-5 border-white/5 space-y-4 flex flex-col">
-                <div className="flex items-center gap-2 border-b border-white/5 pb-3 mb-1">
+              <div key={idx} className="glass-card p-5 border-foreground/5 space-y-4 flex flex-col">
+                <div className="flex items-center gap-2 border-b border-foreground/5 pb-3 mb-1">
                   {group.icon}
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">{group.title}</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60">{group.title}</span>
                 </div>
                 <div className="space-y-4 flex-1">
                   {group.fields.map((field, fIdx) => (
                     <div key={fIdx} className="space-y-1">
                       <div className="flex items-center gap-1.5 opacity-40">
                         {'icon' in field && field.icon}
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white">{field.label}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-foreground">{field.label}</span>
                       </div>
                       <div className={cn(
                         "text-sm font-semibold tracking-tight truncate",
-                        'highlight' in field && field.highlight ? "text-primary italic font-black" : "text-white/80",
+                        'highlight' in field && field.highlight ? "text-primary italic font-black" : "text-foreground/80",
                         'className' in field ? field.className : ""
                       )}>
                         {field.value || '---'}
@@ -190,27 +183,22 @@ export default function ViewTransactionDialog({ transaction }: { transaction?: T
         </div>
 
         {/* Action Footer */}
-        <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between">
+        <div className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between">
            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 border border-foreground/5">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Read Only Mode</span>
+                <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Read Only Mode</span>
               </div>
            </div>
 
            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => window.print()}
-                className="h-11 border-white/10 bg-white/5 hover:bg-white/10 rounded-xl px-6 text-xs font-black uppercase tracking-widest text-white/60"
+              <Button variant="outline" onClick={() => window.print()}
+                className="h-11 border-foreground/10 bg-foreground/5 hover:bg-foreground/10 rounded-xl px-6 text-xs font-black uppercase tracking-widest text-foreground/60"
               >
                 <Printer className="h-4 w-4 mr-2" />
                 Export PDF
               </Button>
-              <Button 
-                onClick={handleClose}
-                className="h-11 bg-primary text-black hover:bg-primary/90 font-black rounded-xl px-8 text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95"
-              >
+              <Button onClick={handleClose} className="bg-primary text-black hover:bg-primary/90 font-black rounded-xl px-8 text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95" >
                 Close View
               </Button>
            </div>

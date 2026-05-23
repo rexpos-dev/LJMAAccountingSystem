@@ -193,12 +193,7 @@ export default function AddBranchDialog() {
                                         className="object-contain"
                                     />
                                 </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={removeLogo}
-                                    className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
-                                >
+                                <Button variant="ghost" size="sm" onClick={removeLogo} className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10" >
                                     <X className="w-3 h-3 mr-1" /> Remove Logo
                                 </Button>
                             </div>
@@ -206,11 +201,7 @@ export default function AddBranchDialog() {
                             <div className="text-center">
                                 <ImageIcon className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
                                 <p className="text-xs font-medium text-muted-foreground mb-2">Branch Logo (Optional)</p>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8"
-                                    onClick={() => fileInputRef.current?.click()}
+                                <Button variant="outline" size="sm" className="" onClick={() => fileInputRef.current?.click()}
                                 >
                                     <Upload className="w-3 h-3 mr-2" /> Upload
                                 </Button>
@@ -229,20 +220,14 @@ export default function AddBranchDialog() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="branch-name" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Branch Name <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="branch-name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                            <Input id="branch-name" value={name} onChange={(e) => setName(e.target.value)}
                                 placeholder="Ex. Main Branch"
                                 className="h-9"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="branch-code" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Code (Optional)</Label>
-                            <Input
-                                id="branch-code"
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
+                            <Input id="branch-code" value={code} onChange={(e) => setCode(e.target.value)}
                                 placeholder="Ex. MB-01"
                                 className="h-9"
                             />
@@ -253,7 +238,7 @@ export default function AddBranchDialog() {
                         <div className="space-y-2">
                             <Label htmlFor="branch-type" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Branch Type <span className="text-destructive">*</span></Label>
                             <Select value={type} onValueChange={setType}>
-                                <SelectTrigger id="branch-type" className="h-9">
+                                <SelectTrigger id="branch-type" className="">
                                     <SelectValue placeholder="Select type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -266,10 +251,7 @@ export default function AddBranchDialog() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="branch-phone" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contact Number</Label>
-                            <Input
-                                id="branch-phone"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                            <Input id="branch-phone" value={phone} onChange={(e) => setPhone(e.target.value)}
                                 placeholder="Enter phone number"
                                 className="h-9"
                             />
@@ -278,10 +260,7 @@ export default function AddBranchDialog() {
 
                     <div className="space-y-2">
                         <Label htmlFor="branch-address" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Address / Location <span className="text-destructive">*</span></Label>
-                        <Textarea
-                            id="branch-address"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
+                        <Textarea id="branch-address" value={address} onChange={(e) => setAddress(e.target.value)}
                             placeholder="Enter complete address"
                             rows={2}
                             className="resize-none"

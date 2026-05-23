@@ -129,7 +129,7 @@ export default function ProfitCenterPage() {
     <div className="p-6 space-y-6">
       <Card className="bg-background/50 border-muted">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl font-headline text-white">Profit Centers</CardTitle>
+          <CardTitle className="text-2xl font-headline text-foreground">Profit Centers</CardTitle>
           <div className="flex items-center gap-2">
             <Button onClick={handleAdd} size="sm">
               <Plus className="h-4 w-4 mr-2" />
@@ -144,10 +144,7 @@ export default function ProfitCenterPage() {
           <div className="flex items-center gap-4 mb-6">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search profit centers..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+              <Input placeholder="Search profit centers..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9"
               />
             </div>
@@ -167,11 +164,11 @@ export default function ProfitCenterPage() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">Loading...</TableCell>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">Loading...</TableCell>
                   </TableRow>
                 ) : filteredCenters.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No profit centers found.</TableCell>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">No profit centers found.</TableCell>
                   </TableRow>
                 ) : (
                   filteredCenters.map((center) => (
@@ -215,10 +212,7 @@ export default function ProfitCenterPage() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="id">Profit Center ID (2 Digits)</Label>
-              <Input
-                id="id"
-                value={formData.id || ''}
-                onChange={(e) => setFormData({ ...formData, id: e.target.value.slice(0, 2) })}
+              <Input id="id" value={formData.id || ''} onChange={(e) => setFormData({ ...formData, id: e.target.value.slice(0, 2) })}
                 disabled={isEditing}
                 placeholder="e.g. 01"
                 maxLength={2}
@@ -227,19 +221,13 @@ export default function ProfitCenterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={formData.name || ''}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              <Input id="name" value={formData.name || ''} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g. Sales Division"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={formData.description || ''}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              <Input id="description" value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Optional details"
               />
             </div>

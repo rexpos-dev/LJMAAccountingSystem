@@ -95,7 +95,7 @@ export default function CustomerStatementDialog() {
                                     <Label className="text-xs text-muted-foreground uppercase">From Date</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-start text-left h-8 px-2 font-normal text-xs">
+                                            <Button variant="outline" className="w-full justify-start text-left px-2 font-normal text-xs">
                                                 <CalendarIcon className="mr-2 h-3 w-3" />
                                                 {fromDate ? format(fromDate, "MM/dd/yyyy") : <span>Pick date</span>}
                                             </Button>
@@ -109,7 +109,7 @@ export default function CustomerStatementDialog() {
                                     <Label className="text-xs text-muted-foreground uppercase">To Date</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button variant="outline" className="w-full justify-start text-left h-8 px-2 font-normal text-xs">
+                                            <Button variant="outline" className="w-full justify-start text-left px-2 font-normal text-xs">
                                                 <CalendarIcon className="mr-2 h-3 w-3" />
                                                 {toDate ? format(toDate, "MM/dd/yyyy") : <span>Pick date</span>}
                                             </Button>
@@ -144,11 +144,11 @@ export default function CustomerStatementDialog() {
                             <TableBody>
                                 {loading ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground animate-pulse">Loading transactions...</TableCell>
+                                        <TableCell colSpan={6} className="text-center text-muted-foreground animate-pulse">Loading transactions...</TableCell>
                                     </TableRow>
                                 ) : transactions.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No transactions found for this period.</TableCell>
+                                        <TableCell colSpan={6} className="text-center text-muted-foreground">No transactions found for this period.</TableCell>
                                     </TableRow>
                                 ) : (
                                     transactions.map((tx, idx) => {

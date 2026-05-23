@@ -276,7 +276,7 @@ export default function CreateInvoiceDialog() {
                                             Customer & Invoice Details
                                         </CardTitle>
                                         <CollapsibleTrigger asChild>
-                                            <Button variant="ghost" size="sm" className="w-9 p-0">
+                                            <Button variant="ghost" size="sm" className="w-9">
                                                 {isHeaderOpen ? (
                                                     <ChevronDown className="h-4 w-4" />
                                                 ) : (
@@ -420,13 +420,7 @@ export default function CreateInvoiceDialog() {
                                                             <Label>Date</Label>
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
-                                                                    <Button
-                                                                        variant={"outline"}
-                                                                        className={cn(
-                                                                            "w-full justify-start text-left font-normal",
-                                                                            !date && "text-muted-foreground"
-                                                                        )}
-                                                                    >
+                                                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !date && "text-muted-foreground" )} >
                                                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                                                         {date ? format(date, "PPP") : <span>Pick a date</span>}
                                                                     </Button>
@@ -519,10 +513,7 @@ export default function CreateInvoiceDialog() {
                                     <div className="mb-4">
                                         <label className="sr-only">Search products</label>
                                         <div className="relative">
-                                            <Input
-                                                placeholder="Search products"
-                                                value={productQuery}
-                                                onChange={(e) => setProductQuery(e.target.value)}
+                                            <Input placeholder="Search products" value={productQuery} onChange={(e) => setProductQuery(e.target.value)}
                                             />
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                                 <Search className="h-4 w-4" />
@@ -576,7 +567,7 @@ export default function CreateInvoiceDialog() {
                                             <TableBody>
                                                 {items.length === 0 ? (
                                                     <TableRow>
-                                                        <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                                                        <TableCell colSpan={7} className="text-center text-muted-foreground">
                                                             Click here to add items to this invoice.
                                                         </TableCell>
                                                     </TableRow>
@@ -584,10 +575,7 @@ export default function CreateInvoiceDialog() {
                                                     items.map(item => (
                                                         <TableRow key={item.lineId ?? item.id}>
                                                             <TableCell className="w-[80px]">
-                                                                <Input
-                                                                    type="number"
-                                                                    value={String(item.qty)}
-                                                                    onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
+                                                                <Input type="number" value={String(item.qty)} onChange={(e) => updateQty(item.lineId ?? item.id, Math.max(0, Number(e.target.value || 0)))}
                                                                     className="w-20"
                                                                 />
                                                             </TableCell>

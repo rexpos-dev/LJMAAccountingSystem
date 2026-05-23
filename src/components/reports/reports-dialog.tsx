@@ -96,7 +96,7 @@ export default function ReportsDialog() {
         <Dialog open={openDialogs['reports-dashboard']} onOpenChange={(open) => !open && closeDialog('reports-dashboard')}>
             <DialogContent className="max-w-[95vw] mx-auto w-full p-0 border-x shadow-2xl rounded-b-2xl" variant="top-drawer">
                 <DialogHeader className="px-6 py-4 border-b bg-card">
-                    <DialogTitle className="text-3xl font-bold tracking-tight font-headline">
+                    <DialogTitle className="text-2xl font-bold tracking-tight font-headline">
                         Reports
                     </DialogTitle>
                     <p className="text-muted-foreground mt-2">

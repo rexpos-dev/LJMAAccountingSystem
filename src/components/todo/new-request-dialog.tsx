@@ -133,12 +133,7 @@ export function NewRequestDialog({ open, onOpenChange, onRequestCreated }: NewRe
             )}>
                 {selectedForm && (
                     <DialogHeader className="flex flex-row items-center gap-4 space-y-0 px-6 py-4 border-b shrink-0">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleBack}
-                            className="h-8 px-2"
-                        >
+                        <Button variant="ghost" size="sm" onClick={handleBack} className="px-2" >
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back
                         </Button>
                         <DialogTitle className="text-xl">{selectedForm}</DialogTitle>
@@ -153,11 +148,7 @@ export function NewRequestDialog({ open, onOpenChange, onRequestCreated }: NewRe
                         <div className="flex-1 overflow-y-auto">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
                                 {REQUEST_FORMS.map((form) => (
-                                    <Button
-                                        key={form}
-                                        variant="outline"
-                                        className="justify-start h-auto py-4 px-4 text-left whitespace-normal break-words hover:border-primary hover:bg-primary/5 transition-colors group border-muted-foreground/20"
-                                        onClick={() => handleSelect(form)}
+                                    <Button key={form} variant="outline" className="justify-start h-auto px-4 text-left whitespace-normal break-words hover:border-primary hover:bg-primary/5 transition-colors group border-muted-foreground/20" onClick={() => handleSelect(form)}
                                     >
                                         <FileText className="mr-3 h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary" />
                                         <span className="text-sm font-medium">{form}</span>

@@ -84,29 +84,19 @@ export default function EditSalesUserDialog() {
                 <div className="space-y-4 py-2">
                     <div className="space-y-2">
                         <Label>SP ID (Read-only)</Label>
-                        <Input
-                            value={user?.sp_id || user?.uniqueId || ''}
-                            disabled
-                            className="bg-muted"
-                        />
+                        <Input value={user?.sp_id || user?.uniqueId || ''} disabled className="bg-muted" />
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="edit-username">Username</Label>
-                        <Input
-                            id="edit-username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                        <Input id="edit-username" value={username} onChange={(e) => setUsername(e.target.value)}
                             placeholder="Enter username"
                         />
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="edit-complete-name">Complete Name</Label>
-                        <Input
-                            id="edit-complete-name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                        <Input id="edit-complete-name" value={name} onChange={(e) => setName(e.target.value)}
                             placeholder="Enter complete name"
                         />
                     </div>

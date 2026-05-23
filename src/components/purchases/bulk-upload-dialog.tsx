@@ -139,18 +139,18 @@ export default function BulkUploadDialog() {
 
     return (
         <Dialog open={openDialogs['bulk-upload-purchase-order']} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[900px] h-[80vh] flex flex-col p-0 gap-0 sm:rounded-[2rem] overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
-                <DialogHeader className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+            <DialogContent className="max-w-[900px] h-[80vh] flex flex-col p-0 gap-0 sm:rounded-[2rem] overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
+                <DialogHeader className="px-8 py-4 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
                     <div className="relative z-10 flex items-center gap-4">
                         <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20">
                             <Upload className="h-6 w-6" />
                         </div>
                         <div>
-                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">Bulk Data Ingestion</DialogTitle>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Bulk Data Ingestion</DialogTitle>
                             <div className="flex items-center gap-2 mt-0.5">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">System Payload</span>
-                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">External Dataset Synchronizer</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">External Dataset Synchronizer</span>
                             </div>
                         </div>
                     </div>
@@ -161,23 +161,18 @@ export default function BulkUploadDialog() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
                             <div className="w-1 h-4 bg-blue-400 rounded-full" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Dataset Ingestion Gateway</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Dataset Ingestion Gateway</h3>
                         </div>
-                        <div className="bg-white/5 border border-white/10 p-8 rounded-3xl space-y-6 relative group transition-all hover:bg-white/[0.07] hover:border-white/20">
+                        <div className="bg-foreground/5 border border-foreground/10 p-8 rounded-3xl space-y-6 relative group transition-all hover:bg-foreground/[0.07] hover:border-foreground/20">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <FileText className="h-24 w-24" />
                             </div>
                             
                             <div className="relative z-10 space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Select Operational CSV File</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Select Operational CSV File</Label>
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1 relative">
-                                        <Input
-                                            type="file"
-                                            accept=".csv"
-                                            onChange={handleFileChange}
-                                            className="bg-white/5 border-white/10 text-white h-12 rounded-xl pl-4 pr-12 font-bold cursor-pointer file:hidden"
-                                        />
+                                        <Input type="file" accept=".csv" onChange={handleFileChange} className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl pl-4 pr-12 font-bold cursor-pointer file:hidden" />
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/20">
                                             <Upload className="h-4 w-4" />
                                         </div>
@@ -227,32 +222,32 @@ export default function BulkUploadDialog() {
                                 <div className="w-1 h-4 bg-emerald-400 rounded-full" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-400/60 ml-1">Payload Telemetry Preview ({csvData.length} Nodes)</h3>
                             </div>
-                            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+                            <div className="bg-foreground/5 border border-foreground/10 rounded-2xl overflow-hidden backdrop-blur-sm">
                                 <Table>
-                                    <TableHeader className="bg-white/5">
-                                        <TableRow className="border-white/5 hover:bg-transparent">
-                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-white/40 h-10 pl-6">Entity</TableHead>
-                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-white/40 h-10">SKU Code</TableHead>
-                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-white/40 h-10">Description</TableHead>
-                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-white/40 h-10">Quantum</TableHead>
-                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-white/40 h-10 text-right pr-6">Valuation</TableHead>
+                                    <TableHeader className="bg-foreground/5">
+                                        <TableRow className="border-foreground/5 hover:bg-transparent">
+                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-foreground/40 h-10 pl-6">Entity</TableHead>
+                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-foreground/40 h-10">SKU Code</TableHead>
+                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-foreground/40 h-10">Description</TableHead>
+                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-foreground/40 h-10">Quantum</TableHead>
+                                            <TableHead className="text-[9px] font-black uppercase tracking-widest text-foreground/40 h-10 text-right pr-6">Valuation</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {csvData.slice(0, 10).map((row, index) => (
-                                            <TableRow key={index} className="border-white/5 hover:bg-white/[0.02] transition-colors">
-                                                <TableCell className="py-3 pl-6 text-[10px] font-bold text-white/60 uppercase">{row.Supplier}</TableCell>
-                                                <TableCell className="py-3 text-[10px] font-mono text-blue-400/60">{row.SKU}</TableCell>
-                                                <TableCell className="py-3 text-[10px] font-bold text-white/80 max-w-[200px] truncate uppercase italic">{row['Product Description']}</TableCell>
-                                                <TableCell className="py-3 text-[10px] font-black text-white/60">{row['Order QTY']}</TableCell>
-                                                <TableCell className="py-3 text-right pr-6 text-[11px] font-black italic tracking-tighter text-blue-400">₱{parseFloat(row['Net Cost Amount']).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                                            <TableRow key={index} className="border-foreground/5 hover:bg-foreground/[0.02] transition-colors">
+                                                <TableCell className="pl-6 text-[10px] font-bold text-foreground/60 uppercase">{row.Supplier}</TableCell>
+                                                <TableCell className="text-[10px] font-mono text-blue-400/60">{row.SKU}</TableCell>
+                                                <TableCell className="text-[10px] font-bold text-foreground/80 max-w-[200px] truncate uppercase italic">{row['Product Description']}</TableCell>
+                                                <TableCell className="text-[10px] font-black text-foreground/60">{row['Order QTY']}</TableCell>
+                                                <TableCell className="text-right pr-6 text-[11px] font-black italic tracking-tighter text-blue-400">₱{parseFloat(row['Net Cost Amount']).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
                                 </Table>
                                 {csvData.length > 10 && (
-                                    <div className="py-3 px-6 text-center bg-white/[0.02] border-t border-white/5">
-                                        <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Additional {csvData.length - 10} Data Nodes Suppressed in Preview</p>
+                                    <div className="py-3 px-6 text-center bg-foreground/[0.02] border-t border-foreground/5">
+                                        <p className="text-[9px] font-black text-foreground/20 uppercase tracking-widest">Additional {csvData.length - 10} Data Nodes Suppressed in Preview</p>
                                     </div>
                                 )}
                             </div>
@@ -264,7 +259,7 @@ export default function BulkUploadDialog() {
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center gap-2">
                                 <div className={cn("w-1 h-4 rounded-full", uploadResult.success ? "bg-emerald-400" : "bg-red-400")} />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Synchronization Report</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Synchronization Report</h3>
                             </div>
                             <div className={cn(
                                 "border rounded-2xl p-6 relative overflow-hidden",
@@ -279,15 +274,15 @@ export default function BulkUploadDialog() {
                                         {uploadResult.createdOrders && uploadResult.createdOrders.length > 0 && (
                                             <div className="grid grid-cols-1 gap-2">
                                                 {uploadResult.createdOrders.map((order, index) => (
-                                                    <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 group hover:border-emerald-500/30 transition-all">
+                                                    <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-foreground/5 border border-foreground/10 group hover:border-emerald-500/30 transition-all">
                                                         <div className="flex items-center gap-3">
                                                             <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
                                                                 <CheckCircle className="h-3.5 w-3.5" />
                                                             </div>
-                                                            <span className="text-[10px] font-black text-white/80 uppercase tracking-tight">{order.supplier}</span>
+                                                            <span className="text-[10px] font-black text-foreground/80 uppercase tracking-tight">{order.supplier}</span>
                                                         </div>
                                                         <div className="flex items-center gap-6">
-                                                            <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">{order.itemCount} Units</span>
+                                                            <span className="text-[9px] font-bold text-foreground/40 uppercase tracking-widest">{order.itemCount} Units</span>
                                                             <span className="text-xs font-black italic tracking-tighter text-emerald-400">₱{order.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                                         </div>
                                                     </div>
@@ -312,16 +307,12 @@ export default function BulkUploadDialog() {
                     )}
                 </div>
  
-                <DialogFooter className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-end shrink-0">
-                    <Button variant="outline" onClick={handleClose} className="px-6 h-12 rounded-xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-xs">
+                <DialogFooter className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-end shrink-0">
+                    <Button variant="outline" onClick={handleClose} className="px-6 rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-xs">
                         {uploadResult ? 'Terminate Protocol' : 'Abort Ingestion'}
                     </Button>
                     {!uploadResult && (
-                        <Button
-                            onClick={handleUpload}
-                            disabled={!isValid || uploading}
-                            className="ml-4 px-10 h-12 rounded-xl bg-blue-500 hover:bg-blue-400 text-black font-black uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all gap-2 disabled:opacity-20"
-                        >
+                        <Button onClick={handleUpload} disabled={!isValid || uploading} className="ml-4 px-10 rounded-xl bg-blue-500 hover:bg-blue-400 text-black font-black uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all gap-2 disabled:opacity-20" >
                             {uploading ? (
                                 <RefreshCw className="h-4 w-4 animate-spin" />
                             ) : (

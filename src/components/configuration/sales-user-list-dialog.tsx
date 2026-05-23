@@ -83,30 +83,17 @@ export default function SalesUserListDialog() {
               <Plus className="mr-2 h-4 w-4" />
               Add
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!selectedUser}
-              onClick={handleEdit}
-            >
+            <Button variant="outline" size="sm" disabled={!selectedUser} onClick={handleEdit} >
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!selectedUser}
-              onClick={handleDelete}
-            >
+            <Button variant="outline" size="sm" disabled={!selectedUser} onClick={handleDelete} >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </Button>
             <div className="relative flex-1 ml-auto">
               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => {
+              <Input placeholder="Search..." value={searchQuery} onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
@@ -127,19 +114,19 @@ export default function SalesUserListDialog() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8 text-sm">
+                    <TableCell colSpan={3} className="text-center text-sm">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : error ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8 text-sm text-destructive">
+                    <TableCell colSpan={3} className="text-center text-sm text-destructive">
                       Failed to load
                     </TableCell>
                   </TableRow>
                 ) : paginatedUsers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8 text-sm text-muted-foreground">
+                    <TableCell colSpan={3} className="text-center text-sm text-muted-foreground">
                       {searchQuery ? 'No matches' : 'No sales users'}
                     </TableCell>
                   </TableRow>
@@ -170,23 +157,13 @@ export default function SalesUserListDialog() {
 
           <div className="border-t pt-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
+              <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1} >
                 Prev
               </Button>
               <span className="text-sm text-muted-foreground px-2">
                 Page {currentPage} of {totalPages || 1}
               </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
+              <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} >
                 Next
               </Button>
             </div>
@@ -194,7 +171,7 @@ export default function SalesUserListDialog() {
               <span className="text-xs text-muted-foreground">
                 {filteredUsers.length} total
               </span>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleRefresh}>
+              <Button variant="ghost" size="icon" className="w-8" onClick={handleRefresh}>
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>

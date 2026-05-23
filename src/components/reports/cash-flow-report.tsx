@@ -1,13 +1,6 @@
 'use client';
 
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -16,7 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -24,46 +16,29 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
-import {
-    File,
-    Printer,
-    Save,
-    ListVideo,
-} from 'lucide-react';
+import { File } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
+import { ReportToolbar } from './report-toolbar';
 
 export default function CashFlowReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
     const dialogData = getDialogData('cash-flow-report');
     const fromDate = dialogData?.fromDate || new Date();
     const toDate = dialogData?.toDate || new Date();
+    const contentRef = useRef<HTMLDivElement>(null);
 
     return (
         <Dialog open={openDialogs['cash-flow-report']} onOpenChange={() => closeDialog('cash-flow-report')}>
             <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('cash-flow-report')}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Cash Flow Statement"
+                        subtitle={`Period: ${format(fromDate, 'MM/dd/yyyy')} - ${format(toDate, 'MM/dd/yyyy')}`}
+                        closeKey="cash-flow-report"
+                    />
                 </header>
 
                 <DialogHeader className="p-6">
@@ -72,7 +47,7 @@ export default function CashFlowReport() {
                             <File className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">Cash Flow Statement</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">Cash Flow Statement</DialogTitle>
                             <DialogDescription className="text-left">
                                 Period: {format(fromDate, 'MM/dd/yyyy')} - {format(toDate, 'MM/dd/yyyy')}
                             </DialogDescription>
@@ -81,6 +56,7 @@ export default function CashFlowReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/30">
@@ -89,7 +65,7 @@ export default function CashFlowReport() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow className="font-bold text-white bg-secondary/20">
+                            <TableRow className="font-bold text-foreground bg-secondary/20">
                                 <TableCell colSpan={2}>Operating Activities</TableCell>
                             </TableRow>
                             <TableRow>
@@ -99,6 +75,7 @@ export default function CashFlowReport() {
                             </TableRow>
                         </TableBody>
                     </Table>
+                    </div>
                 </ScrollArea>
             </DialogContent>
         </Dialog>

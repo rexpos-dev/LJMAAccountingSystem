@@ -41,11 +41,16 @@ export async function fetchWithCache<T>(
         // Fetch from external API
         let fetchError: any = null;
         let response: Response | null = null;
+        let timeoutId: NodeJS.Timeout | undefined;
 
         try {
-            response = await fetch(url, options);
+            const controller = new AbortController();
+            timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+            response = await fetch(url, { ...options, signal: controller.signal });
         } catch (err) {
             fetchError = err;
+        } finally {
+            if (timeoutId) clearTimeout(timeoutId);
         }
 
         if (fetchError || !response || !response.ok) {

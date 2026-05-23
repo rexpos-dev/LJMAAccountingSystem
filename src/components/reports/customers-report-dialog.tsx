@@ -23,15 +23,11 @@ export default function CustomersReportDialog() {
                     <p>Generate a comprehensive list of all customers and their status.</p>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('customers-report-dialog')}
+                        <Button variant="outline" onClick={() => closeDialog('customers-report-dialog')}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

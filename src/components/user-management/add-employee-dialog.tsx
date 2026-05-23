@@ -118,19 +118,11 @@ export default function AddEmployeeDialog() {
                         <div className="space-y-2">
                             <Label htmlFor="employeeId">Employee ID <span className="text-red-500">*</span></Label>
                             <div className="flex space-x-2">
-                                <Input
-                                    id="employeeId"
-                                    value={formData.employeeId}
-                                    onChange={(e) => handleInputChange('employeeId', e.target.value)}
+                                <Input id="employeeId" value={formData.employeeId} onChange={(e) => handleInputChange('employeeId', e.target.value)}
                                     placeholder="Enter Employee ID"
                                     className={isDuplicateId ? "border-red-500 pr-24" : "pr-24"}
                                 />
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={generateId}
-                                    className="shrink-0"
-                                >
+                                <Button type="button" variant="secondary" onClick={generateId} className="shrink-0" >
                                     Generate
                                 </Button>
                             </div>
@@ -140,10 +132,7 @@ export default function AddEmployeeDialog() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="designation">Designation</Label>
-                            <Input
-                                id="designation"
-                                value={formData.designation}
-                                onChange={(e) => handleInputChange('designation', e.target.value)}
+                            <Input id="designation" value={formData.designation} onChange={(e) => handleInputChange('designation', e.target.value)}
                                 placeholder="Enter designation"
                             />
                         </div>
@@ -152,19 +141,13 @@ export default function AddEmployeeDialog() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                            <Input
-                                id="firstName"
-                                value={formData.firstName}
-                                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                            <Input id="firstName" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e.target.value)}
                                 placeholder="First name"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
-                            <Input
-                                id="lastName"
-                                value={formData.lastName}
-                                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                            <Input id="lastName" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e.target.value)}
                                 placeholder="Last name"
                             />
                         </div>

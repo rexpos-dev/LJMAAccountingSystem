@@ -195,14 +195,14 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                 <FormField control={form.control} name="position" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Position</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="purpose" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Purpose</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -239,14 +239,14 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                 <FormField control={form.control} name="chargeTo" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Charge To</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="accountNo" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Account No.</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -319,7 +319,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                             <FormControl>
                                                 <div className="space-y-2">
                                                     <span className="text-[10px] uppercase font-bold text-muted-foreground">Total Budget</span>
-                                                    <Input {...field} type="number" step="0.01" className="h-12 text-center text-xl font-black text-primary bg-background border-primary/20" disabled={isReadOnly} />
+                                                    <Input {...field} type="number" step="0.01" className="text-center text-xl font-black text-primary bg-background border-primary/20" disabled={isReadOnly} />
                                                     <div className="text-[9px] text-muted-foreground italic">Approximate cost for job order implementation.</div>
                                                 </div>
                                             </FormControl>
@@ -336,7 +336,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                         <FormField control={form.control} name="requestedBy" render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Requested by</FormLabel>
-                                <FormControl><Input {...field} className="h-9 text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" placeholder="NAME / SIGNATURE" disabled={isReadOnly} /></FormControl>
+                                <FormControl><Input {...field} className="text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" placeholder="NAME / SIGNATURE" disabled={isReadOnly} /></FormControl>
                                 <div className="text-[8px] text-center pt-1.5 italic text-muted-foreground uppercase">Signature Over Printed Name / Date</div>
                             </FormItem>
                         )} />
@@ -345,7 +345,7 @@ export function JobOrderInternalForm({ initialData, mode = 'create', onSuccess, 
                                 <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Approved by</FormLabel>
                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                     <FormControl>
-                                        <SelectTrigger className="h-9 text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary">
+                                        <SelectTrigger className=" text-sm text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary">
                                             <SelectValue placeholder="SELECT APPROVER" />
                                         </SelectTrigger>
                                     </FormControl>

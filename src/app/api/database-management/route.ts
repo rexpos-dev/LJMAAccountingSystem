@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin, getSession } from '@/lib/auth-server';
+import mysqldump from 'mysqldump';
+import fs from 'fs';
+import path from 'path';
+
+// Table mappings for each module
+const MODULE_TABLES: Record<string, string[]> = {
+    'transactions': ['transactions', 'pos_sales', 'pos_sale_item', 'invoice', 'invoice_item', 'customer_payments', 'bank_transactions', 'bank_reconciliations', 'payables_ledger', 'audit_log'],
+    'chart-of-accounts': ['chart_of_account', 'account_type'],
+    'banks': ['bank_accounts', 'bank_transactions', 'bank_reconciliations'],
+    'user-permissions': ['user_permission'],
+    'sales-users': ['sales_user'],
+    'customers': ['customer', 'loyalty_point', 'loyalty_point_setting'],
+    'employees': ['employee']
+};
 
 // POST: Execute a database management action
 export async function POST(request: NextRequest) {
@@ -147,77 +161,63 @@ export async function GET(request: NextRequest) {
 
     try {
         const { searchParams } = new URL(request.url);
-        const module = searchParams.get('module');
+        const moduleKey = searchParams.get('module');
 
-        if (!module) {
+        if (!moduleKey) {
             return NextResponse.json({ error: 'No module specified.' }, { status: 400 });
         }
 
-        let data: any = {};
-
-        switch (module) {
-            case 'transactions':
-                data = {
-                    transactions: await prisma.transaction.findMany(),
-                    posSales: await prisma.posSale.findMany({ include: { items: true } }),
-                    invoices: await prisma.invoice.findMany({ include: { items: true } }),
-                    customerPayments: await prisma.customerPayment.findMany(),
-                    bankTransactions: await prisma.bankTransaction.findMany(),
-                    bankReconciliations: await prisma.bankReconciliation.findMany(),
-                    payablesLedger: await prisma.payablesLedger.findMany(),
-                    auditLogs: await prisma.auditLog.findMany(),
-                };
-                break;
-
-            case 'chart-of-accounts':
-                data = {
-                    accounts: await prisma.account.findMany(),
-                    accountTypes: await prisma.accountType.findMany(),
-                };
-                break;
-
-            case 'banks':
-                data = {
-                    bankAccounts: await prisma.bankAccount.findMany(),
-                    bankTransactions: await prisma.bankTransaction.findMany(),
-                };
-                break;
-
-            case 'user-permissions':
-                data = {
-                    userPermissions: await prisma.userPermission.findMany(),
-                };
-                break;
-
-            case 'sales-users':
-                data = {
-                    salesUsers: await prisma.salesUser.findMany(),
-                };
-                break;
-
-            case 'customers':
-                data = {
-                    customers: await prisma.customer.findMany({ include: { loyaltyPoints: true } }),
-                    customerPayments: await prisma.customerPayment.findMany(),
-                };
-                break;
-
-            case 'employees':
-                data = {
-                    employees: await prisma.employee.findMany(),
-                };
-                break;
-
-            default:
-                return NextResponse.json({ error: 'Invalid module specified.' }, { status: 400 });
+        const tables = MODULE_TABLES[moduleKey];
+        if (!tables) {
+            return NextResponse.json({ error: 'Invalid module specified.' }, { status: 400 });
         }
 
-        // Return the data as a JSON file
-        return new NextResponse(JSON.stringify(data, null, 2), {
+        const connectionUrl = process.env.DATABASE_URL;
+        if (!connectionUrl) {
+            return NextResponse.json({ error: 'DATABASE_URL not configured' }, { status: 500 });
+        }
+
+        // Parse connection URL
+        const url = new URL(connectionUrl);
+        const dbName = url.pathname.substring(1);
+
+        // Ensure backup directory exists
+        const backupDir = path.join(process.cwd(), 'storage', 'backups');
+        if (!fs.existsSync(backupDir)) {
+            fs.mkdirSync(backupDir, { recursive: true });
+        }
+
+        const timestamp = Date.now();
+        const tempFilePath = path.join(backupDir, `temp-module-${moduleKey}-${timestamp}.sql`);
+
+        // Generate the SQL dump for specific tables
+        await mysqldump({
+            connection: {
+                host: url.hostname,
+                user: url.username,
+                password: url.password,
+                database: dbName,
+                port: parseInt(url.port || '3306'),
+            },
+            dumpToFile: tempFilePath,
+            dump: {
+                tables: tables,
+            }
+        });
+
+        // Read the generated SQL
+        const sqlContent = fs.readFileSync(tempFilePath, 'utf8');
+        
+        // Cleanup temp file
+        fs.unlinkSync(tempFilePath);
+
+        // Return the data as a SQL file
+        return new NextResponse(sqlContent, {
             status: 200,
             headers: {
-                'Content-Type': 'application/json',
-                'Content-Disposition': `attachment; filename="backup-${module}-${new Date().toISOString().slice(0, 10)}.json"`,
+                'Content-Type': 'application/sql',
+                'Content-Disposition': `attachment; filename="backup-${moduleKey}-${new Date().toISOString().slice(0, 10)}.sql"`,
+                'Content-Length': Buffer.byteLength(sqlContent).toString(),
             },
         });
 
@@ -229,3 +229,4 @@ export async function GET(request: NextRequest) {
         );
     }
 }
+

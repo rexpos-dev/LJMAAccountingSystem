@@ -24,15 +24,11 @@ export default function ChartOfAccountsReportDialog() {
                     </p>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('chart-of-accounts-report-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('chart-of-accounts-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

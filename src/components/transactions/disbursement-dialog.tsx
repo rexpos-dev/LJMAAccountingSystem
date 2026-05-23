@@ -20,7 +20,7 @@ export function DisbursementDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-6xl h-[95vh] flex flex-col p-6 overflow-y-auto bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
+            <DialogContent className="max-w-6xl h-[95vh] flex flex-col p-6 overflow-y-auto bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
                 <DialogTitle className="sr-only">Disbursement Slip</DialogTitle>
                 {open && (
                     <DisbursementSlipForm

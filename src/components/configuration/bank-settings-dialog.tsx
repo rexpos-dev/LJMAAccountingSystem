@@ -32,11 +32,14 @@ import {
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useBankAccounts } from '@/hooks/use-bank-accounts';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function BankSettingsDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const { bankAccounts, isLoading, mutate: refetch } = useBankAccounts();
     const { toast } = useToast();
+    const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
 
     const [searchName, setSearchName] = useState('');
     const [searchNumber, setSearchNumber] = useState('');
@@ -59,26 +62,42 @@ export default function BankSettingsDialog() {
     };
 
     const handleDeleteClick = async () => {
-        if (selectedAccount && confirm(`Are you sure you want to delete the bank account "${selectedAccount.account_name}"?`)) {
-            try {
-                const response = await fetch(`/api/bank-accounts?id=${selectedAccount.id}`, {
-                    method: 'DELETE',
-                });
-                if (!response.ok) throw new Error('Failed to delete bank account');
+        if (!selectedAccount) return;
+        const ok = await confirm({ description: `Are you sure you want to delete the bank account "${selectedAccount.account_name}"?`, title: 'Delete Bank Account', variant: 'destructive' });
+        if (!ok) return;
+        try {
+            const response = await fetch(`/api/bank-accounts?id=${selectedAccount.id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) throw new Error('Failed to delete bank account');
 
-                toast({
-                    title: 'Success',
-                    description: 'Bank account deleted successfully',
-                });
-                refetch();
-                setSelectedAccount(null);
-            } catch (error: any) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: error.message,
-                });
-            }
+            toast({
+                title: 'Success',
+                description: 'Bank account deleted successfully',
+            });
+            refetch();
+            setSelectedAccount(null);
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: error.message,
+            });
+        }
+    };
+
+    const handleDeleteAccountRow = async (account: any) => {
+        const ok = await confirm({ description: `Are you sure you want to delete "${account.account_name}"?`, title: 'Delete Bank Account', variant: 'destructive' });
+        if (!ok) return;
+        try {
+            const response = await fetch(`/api/bank-accounts?id=${account.id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) throw new Error('Failed to delete');
+            toast({ title: 'Success', description: 'Deleted successfully' });
+            refetch();
+        } catch (err: any) {
+            toast({ variant: 'destructive', title: 'Error', description: err.message });
         }
     };
 
@@ -120,6 +139,13 @@ export default function BankSettingsDialog() {
     };
 
     return (
+        <>
+        <ConfirmDialog
+            open={confirmOpen}
+            {...confirmOptions}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
         <Dialog open={openDialogs['bank-settings']} onOpenChange={() => closeDialog('bank-settings' as any)}>
             <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
                 <DialogHeader className="flex-shrink-0">
@@ -145,13 +171,7 @@ export default function BankSettingsDialog() {
                                 <Plus className="h-5 w-5" />
                                 <span className="text-[10px]">New</span>
                             </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="flex-col h-auto"
-                                onClick={handleEditClick}
-                                disabled={!selectedAccount}
-                            >
+                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={handleEditClick} disabled={!selectedAccount} >
                                 <Pencil className="h-5 w-5" />
                                 <span className="text-[10px]">Edit</span>
                             </Button>
@@ -164,19 +184,13 @@ export default function BankSettingsDialog() {
                         <div className="flex gap-4 flex-1">
                             <div className="relative flex-1 max-w-xs">
                                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search Number..."
-                                    value={searchNumber}
-                                    onChange={(e) => setSearchNumber(e.target.value)}
+                                <Input placeholder="Search Number..." value={searchNumber} onChange={(e) => setSearchNumber(e.target.value)}
                                     className="pl-7 h-8"
                                 />
                             </div>
                             <div className="relative flex-1 max-w-sm">
                                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search Name..."
-                                    value={searchName}
-                                    onChange={(e) => setSearchName(e.target.value)}
+                                <Input placeholder="Search Name..." value={searchName} onChange={(e) => setSearchName(e.target.value)}
                                     className="pl-7 h-8"
                                 />
                             </div>
@@ -211,9 +225,9 @@ export default function BankSettingsDialog() {
                                 </thead>
                                 <tbody className="divide-y [&_tr:last-child]:border-0">
                                     {isLoading ? (
-                                        <tr><td colSpan={11} className="text-center py-10"><RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />Loading bank accounts...</td></tr>
+                                        <tr><td colSpan={11} className="text-center"><RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-primary" />Loading bank accounts...</td></tr>
                                     ) : filteredAccounts.length === 0 ? (
-                                        <tr><td colSpan={11} className="text-center py-10 text-muted-foreground">No bank accounts found.</td></tr>
+                                        <tr><td colSpan={11} className="text-center text-muted-foreground">No bank accounts found.</td></tr>
                                     ) : (
                                         paginatedList.map((account: any) => (
                                             <tr
@@ -225,26 +239,26 @@ export default function BankSettingsDialog() {
                                                 onClick={() => handleRowClick(account)}
                                                 onDoubleClick={() => handleRowDoubleClick(account)}
                                             >
-                                                <td className="p-4 align-middle font-mono">{account.bank_code || '-'}</td>
-                                                <td className="p-4 align-middle">{account.bank_name || '-'}</td>
-                                                <td className="p-4 align-middle font-medium">{account.account_name || '-'}</td>
-                                                <td className="p-4 align-middle font-mono">{account.account_number || '-'}</td>
-                                                <td className="p-4 align-middle">
+                                                <td className="align-middle font-mono">{account.bank_code || '-'}</td>
+                                                <td className="align-middle">{account.bank_name || '-'}</td>
+                                                <td className="align-middle font-medium">{account.account_name || '-'}</td>
+                                                <td className="align-middle font-mono">{account.account_number || '-'}</td>
+                                                <td className="align-middle">
                                                     <span className="px-2 py-0.5 rounded-full text-[10px] bg-secondary-foreground/10 text-secondary-foreground font-medium">
                                                         {account.account_type || 'BANK'}
                                                     </span>
                                                 </td>
-                                                <td className="p-4 align-middle whitespace-nowrap">
+                                                <td className="align-middle whitespace-nowrap">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-xs">{account.gl_account?.account_no}</span>
                                                         <span className="text-[10px] text-muted-foreground">{account.gl_account?.account_name}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-4 align-middle text-xs text-muted-foreground">
+                                                <td className="align-middle text-xs text-muted-foreground">
                                                     {account.opening_date ? new Date(account.opening_date).toLocaleDateString() : '-'}
                                                 </td>
-                                                <td className="p-4 align-middle text-right font-mono font-medium">{formatCurrency(account.opening_balance)}</td>
-                                                <td className="p-4 align-middle text-center">
+                                                <td className="align-middle text-right font-mono font-medium">{formatCurrency(account.opening_balance)}</td>
+                                                <td className="align-middle text-center">
                                                     <span className={cn(
                                                         "px-2 py-0.5 rounded-full text-[10px] font-medium",
                                                         account.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
@@ -252,7 +266,7 @@ export default function BankSettingsDialog() {
                                                         {account.is_active ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </td>
-                                                <td className="p-4 align-middle text-center">
+                                                <td className="align-middle text-center">
                                                     <span className={cn(
                                                         "px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider",
                                                         account.audit_status?.toUpperCase() === 'APPROVED' ? "bg-emerald-100 text-emerald-700" :
@@ -264,37 +278,16 @@ export default function BankSettingsDialog() {
                                                         {account.audit_status?.replace('_', ' ').toUpperCase() || 'TO AUDIT'}
                                                     </span>
                                                 </td>
-                                                <td className="p-4 align-middle text-center">
+                                                <td className="align-middle text-center">
                                                     <div className="flex items-center justify-center gap-1" onClick={(e) => e.stopPropagation()}>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 hover:text-primary"
-                                                            onClick={() => {
+                                                        <Button variant="ghost" size="icon" className="w-8 hover:text-primary" onClick={() => {
                                                                 setDialogData('edit-bank-account' as any, account);
                                                                 openDialog('edit-bank-account' as any);
                                                             }}
                                                         >
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 hover:text-destructive"
-                                                            onClick={async () => {
-                                                                if (confirm(`Are you sure you want to delete "${account.account_name}"?`)) {
-                                                                    try {
-                                                                        const response = await fetch(`/api/bank-accounts?id=${account.id}`, {
-                                                                            method: 'DELETE',
-                                                                        });
-                                                                        if (!response.ok) throw new Error('Failed to delete');
-                                                                        toast({ title: 'Success', description: 'Deleted successfully' });
-                                                                        refetch();
-                                                                    } catch (err: any) {
-                                                                        toast({ variant: 'destructive', title: 'Error', description: err.message });
-                                                                    }
-                                                                }
-                                                            }}
+                                                        <Button variant="ghost" size="icon" className="w-8 hover:text-destructive" onClick={() => handleDeleteAccountRow(account)}
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
@@ -331,21 +324,13 @@ export default function BankSettingsDialog() {
                                         Page {currentPage} of {totalPages}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-7 px-2 text-xs"
-                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        <Button variant="outline" size="sm" className="px-2 text-xs" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                             disabled={currentPage === 1}
                                         >
                                             <ChevronLeft className="h-3 w-3 mr-1" />
                                             Prev
                                         </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-7 px-2 text-xs"
-                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        <Button variant="outline" size="sm" className="px-2 text-xs" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                             disabled={currentPage >= totalPages}
                                         >
                                             Next
@@ -365,5 +350,6 @@ export default function BankSettingsDialog() {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+        </>
     );
 }

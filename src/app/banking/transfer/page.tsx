@@ -209,14 +209,7 @@ export default function AccountTransferPage() {
             <div className="col-span-2">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    id="date"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !date && 'text-muted-foreground'
-                    )}
-                  >
+                  <Button variant={'outline'} id="date" className={cn( 'w-full justify-start text-left font-normal', !date && 'text-muted-foreground' )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, 'MM/dd/yyyy') : <span>Pick a date</span>}
                   </Button>

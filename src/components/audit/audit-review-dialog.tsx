@@ -51,6 +51,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/components/providers/auth-provider";
 
 interface AuditReviewDialogProps {
     open: boolean;
@@ -66,6 +67,7 @@ export function AuditReviewDialog({
     onActionComplete
 }: AuditReviewDialogProps) {
     const { toast } = useToast();
+    const { user } = useAuth();
     const [remarks, setRemarks] = useState(item?.remarks || "");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [assignee, setAssignee] = useState<string>(item?.assignee || "");
@@ -169,6 +171,12 @@ export function AuditReviewDialog({
         item.status.toLowerCase().includes('reject') ||
         item.status.toLowerCase().includes('done');
 
+    const isToAudit = item.status.toLowerCase() === 'to audit' || item.status.toLowerCase().includes('to audit');
+    const hasNoAssignee = !item?.assignee || item.assignee.toLowerCase() === 'unassigned';
+    const hasUnsavedAssignee = assignee !== item?.assignee;
+    const isCurrentUserAssignee = item?.assignee === user?.username || item?.assignee === `${user?.firstName} ${user?.lastName}`;
+    const cannotApproveOrReject = hasNoAssignee || hasUnsavedAssignee || !isCurrentUserAssignee;
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-3xl bg-background/95 backdrop-blur-lg border-primary/10 shadow-2xl overflow-hidden p-0 gap-0">
@@ -262,7 +270,7 @@ export function AuditReviewDialog({
                                 </Label>
                                 <div className="flex gap-2">
                                     <Select value={assignee} onValueChange={setAssignee} disabled={isHistory}>
-                                        <SelectTrigger className="flex-1 bg-background text-xs h-9">
+                                        <SelectTrigger className="flex-1 bg-background text-xs ">
                                             <SelectValue placeholder="Select auditor..." />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -274,11 +282,7 @@ export function AuditReviewDialog({
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="h-9 px-3 shrink-0 text-xs font-semibold"
-                                        onClick={() => handleAction('ASSIGN_ONLY')}
+                                    <Button variant="outline" size="sm" className="px-3 shrink-0 text-xs font-semibold" onClick={() => handleAction('ASSIGN_ONLY')}
                                         disabled={isSubmitting || isLoadingUsers || (!assignee || assignee === item?.assignee) || isHistory}
                                     >
                                         Save
@@ -289,32 +293,21 @@ export function AuditReviewDialog({
                             <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-2 pt-4">
                                 <MessageSquare className="h-3 w-3" /> Auditor Findings
                             </h4>
-                            <Textarea
-                                placeholder="Add internal notes or reasons for rejection..."
-                                className="min-h-[150px] text-xs leading-relaxed resize-none focus-visible:ring-primary"
-                                value={remarks}
-                                onChange={(e) => setRemarks(e.target.value)}
+                            <Textarea placeholder="Add internal notes or reasons for rejection..." className="min-h-[150px] text-xs leading-relaxed resize-none focus-visible:ring-primary" value={remarks} onChange={(e) => setRemarks(e.target.value)}
                                 disabled={isHistory}
                             />
                         </div>
 
                         <div className="pt-4 space-y-3">
-                            <Button
-                                className="w-full bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 font-bold"
-                                size="lg"
-                                onClick={() => handleAction('APPROVE')}
-                                disabled={isSubmitting || isHistory}
+                            <Button className="w-full bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 font-bold" size="lg" onClick={() => handleAction('APPROVE')}
+                                disabled={isSubmitting || isHistory || isToAudit || cannotApproveOrReject}
                             >
                                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
                                 Approve & Post
                             </Button>
 
-                            <Button
-                                variant="outline"
-                                className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold"
-                                size="lg"
-                                onClick={() => handleAction('REJECT')}
-                                disabled={isSubmitting || isHistory}
+                            <Button variant="outline" className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold" size="lg" onClick={() => handleAction('REJECT')}
+                                disabled={isSubmitting || isHistory || isToAudit || cannotApproveOrReject}
                             >
                                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
                                 Reject & Revise
@@ -418,7 +411,7 @@ function TransactionLedgerHistory({ transactionId }: { transactionId: string }) 
                                     </TableRow>
                                 ))}
                                 <TableRow className="bg-muted/30">
-                                    <TableCell colSpan={2} className="text-[10px] uppercase font-black text-right py-2">
+                                    <TableCell colSpan={2} className="text-[10px] uppercase font-black text-right">
                                         Total
                                     </TableCell>
                                     <TableCell className={cn("text-[11px] font-black text-right tabular-nums font-mono py-2", !isBalanced && "text-destructive")}>

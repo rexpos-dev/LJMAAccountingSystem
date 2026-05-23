@@ -111,27 +111,24 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <div className="relative w-full group">
-                    <Input
-                        placeholder="Search Intelligence Matrix..."
-                        value={searchTerm}
-                        onChange={(e) => {
+                    <Input placeholder="Search Intelligence Matrix..." value={searchTerm} onChange={(e) => {
                             setSearchTerm(e.target.value);
                             if (!open) setOpen(true);
                         }}
                         onFocus={() => setOpen(true)}
-                        className="h-11 pl-11 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/20 rounded-xl transition-all shadow-xl focus-visible:ring-primary/50 focus-visible:bg-white/10 group-hover:border-white/20"
+                        className="h-11 pl-11 pr-4 bg-foreground/5 border-foreground/10 text-foreground placeholder:text-foreground/20 rounded-xl transition-all shadow-xl focus-visible:ring-primary/50 focus-visible:bg-foreground/10 group-hover:border-foreground/20"
                     />
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-hover:text-primary transition-colors pointer-events-none" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40 group-hover:text-primary transition-colors pointer-events-none" />
                 </div>
             </PopoverTrigger>
             <PopoverContent 
-                className="w-[450px] p-0 bg-slate-950/95 border-white/10 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden" 
+                className="w-[450px] p-0 bg-background/95 border-foreground/10 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden" 
                 align="start" 
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
-                <div className="p-2 border-b border-white/5 bg-white/5">
+                <div className="p-2 border-b border-foreground/5 bg-foreground/5">
                     <div className="flex items-center justify-between px-3 py-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Inventory Stream</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Inventory Stream</span>
                         <span className="text-[10px] font-bold text-primary/60">{products.length} Node{products.length !== 1 ? 's' : ''} Online</span>
                     </div>
                 </div>
@@ -140,7 +137,7 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                     {loading && (
                         <div className="p-12 flex flex-col items-center justify-center gap-4">
                             <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40 animate-pulse">Scanning Grid...</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40 animate-pulse">Scanning Grid...</span>
                         </div>
                     )}
                     
@@ -149,25 +146,25 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                             <div className="inline-flex p-3 rounded-xl bg-destructive/10 text-destructive mb-3">
                                 <HelpCircle className="h-5 w-5" />
                             </div>
-                            <div className="text-sm font-bold text-white uppercase mb-1">Signal Interrupted</div>
-                            <div className="text-xs text-white/40">{error}</div>
+                            <div className="text-sm font-bold text-foreground uppercase mb-1">Signal Interrupted</div>
+                            <div className="text-xs text-foreground/40">{error}</div>
                         </div>
                     )}
 
                     {!loading && !error && products.length === 0 && (
                         <div className="p-12 text-center">
-                            <div className="inline-flex p-3 rounded-xl bg-white/5 text-white/20 mb-3">
+                            <div className="inline-flex p-3 rounded-xl bg-foreground/5 text-foreground/20 mb-3">
                                 <Search className="h-5 w-5" />
                             </div>
-                            <div className="text-sm font-bold text-white uppercase mb-1">Null Results</div>
-                            <div className="text-xs text-white/40">No matching signatures found in the matrix.</div>
+                            <div className="text-sm font-bold text-foreground uppercase mb-1">Null Results</div>
+                            <div className="text-xs text-foreground/40">No matching signatures found in the matrix.</div>
                         </div>
                     )}
 
                     {!loading && products.map((product) => (
                         <div
                             key={product.id}
-                            className="p-4 text-sm hover:bg-white/5 cursor-pointer transition-all border-b border-white/5 last:border-0 group/item"
+                            className="p-4 text-sm hover:bg-foreground/5 cursor-pointer transition-all border-b border-foreground/5 last:border-0 group/item"
                             onClick={() => {
                                 onSelect(product);
                                 setOpen(false);
@@ -176,13 +173,13 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                         >
                             <div className="flex justify-between items-start gap-4">
                                 <div className="space-y-1">
-                                    <div className="font-bold text-white group-hover/item:text-primary transition-colors uppercase tracking-tight">{product.name}</div>
+                                    <div className="font-bold text-foreground group-hover/item:text-primary transition-colors uppercase tracking-tight">{product.name}</div>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md border border-white/5 group-hover/item:text-white/40 transition-colors">
+                                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest bg-foreground/5 px-2 py-0.5 rounded-md border border-foreground/5 group-hover/item:text-foreground/40 transition-colors">
                                             {product.sku || 'NO-SKU'}
                                         </span>
                                         {product.barcode && (
-                                            <span className="text-[10px] font-bold text-white/40 font-mono tracking-tighter italic">
+                                            <span className="text-[10px] font-bold text-foreground/40 font-mono tracking-tighter italic">
                                                 // {product.barcode}
                                             </span>
                                         )}
@@ -194,15 +191,15 @@ const ProductSearch = ({ value, onSelect }: { value: string, onSelect: (product:
                                             ₱{parseFloat(product.cost.toString()).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     )}
-                                    <div className="text-[9px] font-bold text-white/20 uppercase tracking-tighter mt-1 group-hover/item:text-primary/40 transition-colors">Unit Value</div>
+                                    <div className="text-[9px] font-bold text-foreground/20 uppercase tracking-tighter mt-1 group-hover/item:text-primary/40 transition-colors">Unit Value</div>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
                 
-                <div className="p-3 border-t border-white/5 bg-white/5 text-center">
-                    <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest italic tracking-[0.2em]">Select node to mount into payload</span>
+                <div className="p-3 border-t border-foreground/5 bg-foreground/5 text-center">
+                    <span className="text-[9px] font-bold text-foreground/20 uppercase tracking-widest italic tracking-[0.2em]">Select node to mount into payload</span>
                 </div>
             </PopoverContent>
         </Popover>
@@ -501,9 +498,9 @@ export default function CreatePurchaseOrderDialog() {
     };
     return (
         <Dialog open={openDialogs['create-purchase-order']} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[95vw] w-[1400px] h-[95vh] flex flex-col p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
+            <DialogContent className="max-w-[95vw] w-[1400px] h-[95vh] flex flex-col p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
                 {/* Premium Header */}
-                <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+                <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 via-transparent to-transparent pointer-events-none" />
                     
                     <div className="relative z-10 flex items-center gap-4">
@@ -511,22 +508,17 @@ export default function CreatePurchaseOrderDialog() {
                             <Plus className="h-6 w-6" />
                         </div>
                         <div>
-                            <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase leading-none text-foreground">
                                 {mode === 'edit' ? 'Order Modification' : 'Procurement Protocol'}
                             </DialogTitle>
                             <div className="flex items-center gap-2 mt-2">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-400/20 text-blue-400 border border-blue-400/20">Supply Acquisition</span>
-                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Global Resource Network</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Global Resource Network</span>
                             </div>
                         </div>
                     </div>
 
-                    <button 
-                        onClick={handleClose}
-                        className="relative z-10 p-2 rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-all"
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                    
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
@@ -539,58 +531,43 @@ export default function CreatePurchaseOrderDialog() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-400/60">Vendor Intelligence</span>
                             </div>
                             
-                            <div className="grid gap-4 bg-white/[0.02] border border-white/5 p-6 rounded-2xl backdrop-blur-sm">
+                            <div className="grid gap-4 bg-foreground/[0.02] border border-foreground/5 p-6 rounded-2xl backdrop-blur-sm">
                                 <div className="grid gap-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Order Supplier</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Order Supplier</Label>
                                     <div className="flex gap-2">
                                         <Select value={supplierId} onValueChange={handleSupplierChange}>
-                                            <SelectTrigger className="flex-1 bg-white/5 border-white/10 text-white h-12 rounded-xl focus:ring-blue-400/20">
+                                            <SelectTrigger className="flex-1 bg-foreground/5 border-foreground/10 text-foreground rounded-xl focus:ring-blue-400/20">
                                                 <SelectValue placeholder="Select Provider Node" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                            <SelectContent className="bg-card border-foreground/10 text-foreground">
                                                 {suppliers.map(s => (
                                                     <SelectItem key={s.id} value={s.id} className="focus:bg-blue-400/10 focus:text-blue-400">{s.name}</SelectItem>
                                                 ))}
                                                 {suppliers.length === 0 && <SelectItem value="none" disabled>No providers detected</SelectItem>}
                                             </SelectContent>
                                         </Select>
-                                        <Button 
-                                            variant="outline" 
-                                            size="icon" 
-                                            onClick={handleManageSuppliers}
-                                            className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-white/40 hover:text-white hover:bg-white/10"
-                                        >
+                                        <Button variant="outline" size="icon" onClick={handleManageSuppliers} className="w-12 rounded-xl border-foreground/10 bg-foreground/5 text-foreground/40 hover:text-foreground hover:bg-foreground/10" >
                                             <Search className="h-4 w-4" />
                                         </Button>
-                                        <Button 
-                                            variant="outline" 
-                                            size="icon" 
-                                            onClick={handleEditSupplier} 
-                                            disabled={!supplierId}
-                                            className="h-12 w-12 rounded-xl border-white/10 bg-white/5 text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-20"
-                                        >
+                                        <Button variant="outline" size="icon" onClick={handleEditSupplier} disabled={!supplierId} className="w-12 rounded-xl border-foreground/10 bg-foreground/5 text-foreground/40 hover:text-foreground hover:bg-foreground/10 disabled:opacity-20" >
                                             <Pencil className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Vendor Logistics Base</Label>
-                                    <Textarea
-                                        placeholder="Enter logistics coordinates..."
-                                        className="min-h-[100px] bg-white/5 border-white/10 text-white rounded-xl focus:ring-blue-400/20 resize-none p-4"
-                                        value={vendorAddress || ''}
-                                        onChange={(e) => setVendorAddress(e.target.value)}
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Vendor Logistics Base</Label>
+                                    <Textarea placeholder="Enter logistics coordinates..." className="min-h-[100px] bg-foreground/5 border-foreground/10 text-foreground rounded-xl focus:ring-blue-400/20 resize-none" value={vendorAddress || ''} onChange={(e) => setVendorAddress(e.target.value)}
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Financial Settlement Node</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Financial Settlement Node</Label>
                                     <Select value={depositAccount} onValueChange={setDepositAccount}>
-                                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-12 rounded-xl focus:ring-blue-400/20">
+                                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl focus:ring-blue-400/20">
                                             <SelectValue placeholder="Select Settlement Account" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                        <SelectContent className="bg-card border-foreground/10 text-foreground">
                                             {liabilityAccounts.map(account => (
                                                 <SelectItem key={account.id} value={account.id} className="focus:bg-blue-400/10 focus:text-blue-400">
                                                     {account.account_name} <span className="opacity-40 text-[10px] ml-2">[{account.account_no}]</span>
@@ -612,41 +589,31 @@ export default function CreatePurchaseOrderDialog() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400/60">Tactical Parameters</span>
                             </div>
 
-                            <div className="grid gap-4 bg-white/[0.02] border border-white/5 p-6 rounded-2xl backdrop-blur-sm">
+                            <div className="grid gap-4 bg-foreground/[0.02] border border-foreground/5 p-6 rounded-2xl backdrop-blur-sm">
                                 <div className="grid gap-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Deployment Date</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Deployment Date</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full justify-start text-left h-12 rounded-xl border-white/10 bg-white/5 text-white hover:bg-white/10",
-                                                    !date && "text-white/20"
-                                                )}
-                                            >
+                                            <Button variant={"outline"} className={cn( "w-full justify-start text-left rounded-xl border-foreground/10 bg-foreground/5 text-foreground hover:bg-foreground/10", !date && "text-foreground/20" )} >
                                                 <CalendarIcon className="mr-2 h-4 w-4 text-emerald-400" />
                                                 {date ? format(date, "MMMM dd, yyyy") : <span>Initiate Timestamp</span>}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10 shadow-2xl" align="start">
+                                        <PopoverContent className="w-auto p-0 bg-card border-foreground/10 shadow-2xl" align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={date}
                                                 onSelect={setDate}
                                                 initialFocus
-                                                className="bg-slate-900 text-white"
+                                                className="bg-card text-foreground"
                                             />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Destination Coordinates</Label>
-                                    <Textarea
-                                        placeholder="Enter delivery destination..."
-                                        className="min-h-[160px] bg-white/5 border-white/10 text-white rounded-xl focus:ring-emerald-400/20 resize-none p-4"
-                                        value={shippingAddress || ''}
-                                        onChange={(e) => setShippingAddress(e.target.value)}
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Destination Coordinates</Label>
+                                    <Textarea placeholder="Enter delivery destination..." className="min-h-[160px] bg-foreground/5 border-foreground/10 text-foreground rounded-xl focus:ring-emerald-400/20 resize-none" value={shippingAddress || ''} onChange={(e) => setShippingAddress(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -661,24 +628,24 @@ export default function CreatePurchaseOrderDialog() {
                                 <Plus className="h-4 w-4 text-blue-400" />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-400/60">Resource Manifest</span>
                             </div>
-                            <div className="flex items-center gap-4 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-sm w-96">
-                                <Search className="h-4 w-4 text-white/20 shrink-0" />
+                            <div className="flex items-center gap-4 bg-foreground/5 border border-foreground/10 px-4 py-2 rounded-xl backdrop-blur-sm w-96">
+                                <Search className="h-4 w-4 text-foreground/20 shrink-0" />
                                 <ProductSearch value="" onSelect={handleProductSelect} />
                             </div>
                         </div>
 
-                        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl">
+                        <div className="bg-foreground/5 border border-foreground/10 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl">
                             <Table>
-                                <TableHeader className="bg-white/5">
-                                    <TableRow className="border-white/5 hover:bg-transparent">
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14">Identity</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14">Resource Designation</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Units/Pack</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Pack Qty</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Pack Cost</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Unit Cost</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Protocol Unit</TableHead>
-                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-white/40 h-14 text-right">Net Allocation</TableHead>
+                                <TableHeader className="bg-foreground/5">
+                                    <TableRow className="border-foreground/5 hover:bg-transparent">
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14">Identity</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14">Resource Designation</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Units/Pack</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Pack Qty</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Pack Cost</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Unit Cost</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Protocol Unit</TableHead>
+                                        <TableHead className="text-[10px] font-black uppercase tracking-widest text-foreground/40 h-14 text-right">Net Allocation</TableHead>
                                         <TableHead className="w-[60px] h-14"></TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -686,8 +653,8 @@ export default function CreatePurchaseOrderDialog() {
                                     {items.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={9} className="h-64 text-center">
-                                                <div className="flex flex-col items-center justify-center text-white/20 gap-4">
-                                                    <div className="p-4 rounded-full bg-white/5 border border-white/10">
+                                                <div className="flex flex-col items-center justify-center text-foreground/20 gap-4">
+                                                    <div className="p-4 rounded-full bg-foreground/5 border border-foreground/10">
                                                         <HelpCircle className="h-8 w-8 opacity-20" />
                                                     </div>
                                                     <p className="text-sm font-black uppercase tracking-widest italic">Awaiting Resource Initialization</p>
@@ -696,76 +663,47 @@ export default function CreatePurchaseOrderDialog() {
                                         </TableRow>
                                     ) : (
                                         items.map((item) => (
-                                            <TableRow key={item.id} className="border-white/5 group hover:bg-white/[0.02] transition-colors">
-                                                <TableCell className="py-4">
-                                                    <Input
-                                                        value={item.barcode || ''}
-                                                        className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-xs font-mono focus:ring-blue-400/20"
-                                                        placeholder="N/A"
-                                                        onChange={(e) => updateItem(item.id, 'barcode', e.target.value)}
+                                            <TableRow key={item.id} className="border-foreground/5 group hover:bg-foreground/[0.02] transition-colors">
+                                                <TableCell className="">
+                                                    <Input value={item.barcode || ''} className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-xs font-mono focus:ring-blue-400/20" placeholder="N/A" onChange={(e) => updateItem(item.id, 'barcode', e.target.value)}
                                                     />
                                                 </TableCell>
-                                                <TableCell className="py-4">
-                                                    <Input
-                                                        value={item.item || ''}
-                                                        className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-sm font-black italic uppercase tracking-tight focus:ring-blue-400/20"
-                                                        placeholder="Resource Name"
-                                                        onChange={(e) => updateItem(item.id, 'item', e.target.value)}
+                                                <TableCell className="">
+                                                    <Input value={item.item || ''} className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-sm font-black italic uppercase tracking-tight focus:ring-blue-400/20" placeholder="Resource Name" onChange={(e) => updateItem(item.id, 'item', e.target.value)}
                                                     />
                                                 </TableCell>
-                                                <TableCell className="py-4">
-                                                    <Input
-                                                        type="number"
-                                                        value={item.qtyPerCase ?? 1}
-                                                        className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-right font-bold focus:ring-blue-400/20 w-24 ml-auto"
-                                                        onChange={(e) => updateItem(item.id, 'qtyPerCase', parseFloat(e.target.value) || 1)}
+                                                <TableCell className="">
+                                                    <Input type="number" value={item.qtyPerCase ?? 1} className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-right font-bold focus:ring-blue-400/20 w-24 ml-auto" onChange={(e) => updateItem(item.id, 'qtyPerCase', parseFloat(e.target.value) || 1)}
                                                     />
                                                 </TableCell>
-                                                <TableCell className="py-4">
-                                                    <Input
-                                                        type="number"
-                                                        value={item.orderQty ?? 0}
-                                                        className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-right font-bold focus:ring-blue-400/20 w-24 ml-auto"
-                                                        onChange={(e) => updateItem(item.id, 'orderQty', parseFloat(e.target.value) || 0)}
+                                                <TableCell className="">
+                                                    <Input type="number" value={item.orderQty ?? 0} className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-right font-bold focus:ring-blue-400/20 w-24 ml-auto" onChange={(e) => updateItem(item.id, 'orderQty', parseFloat(e.target.value) || 0)}
                                                     />
                                                 </TableCell>
-                                                <TableCell className="py-4 text-right">
+                                                <TableCell className="text-right">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <span className="text-[10px] font-black text-white/20">₱</span>
-                                                        <Input
-                                                            type="number"
-                                                            value={item.costPricePerCase || item.cost || 0}
-                                                            className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-right font-bold focus:ring-emerald-400/20 w-28"
-                                                            onChange={(e) => updateItem(item.id, 'costPricePerCase', parseFloat(e.target.value) || 0)}
+                                                        <span className="text-[10px] font-black text-foreground/20">₱</span>
+                                                        <Input type="number" value={item.costPricePerCase || item.cost || 0} className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-right font-bold focus:ring-emerald-400/20 w-28" onChange={(e) => updateItem(item.id, 'costPricePerCase', parseFloat(e.target.value) || 0)}
                                                         />
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="py-4 text-right">
+                                                <TableCell className="text-right">
                                                     <div className="flex flex-col items-end">
-                                                        <span className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Estimated Unit</span>
+                                                        <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest mb-1">Estimated Unit</span>
                                                         <span className="text-sm font-black italic text-blue-400">₱{(item.costPricePerPiece ?? 0).toFixed(2)}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="py-4 text-right">
+                                                <TableCell className="text-right">
                                                     {customUomRows[item.id] ? (
                                                         <div className="flex items-center justify-end gap-1">
-                                                            <Input
-                                                                value={item.uom || ''}
-                                                                className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-right focus:ring-blue-400/20 w-24"
-                                                                placeholder="UNIT"
-                                                                autoFocus
-                                                                onChange={(e) => updateItem(item.id, 'uom', e.target.value)}
+                                                            <Input value={item.uom || ''} className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-right focus:ring-blue-400/20 w-24" placeholder="UNIT" autoFocus onChange={(e) => updateItem(item.id, 'uom', e.target.value)}
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter') {
                                                                         setCustomUomRows(prev => ({ ...prev, [item.id]: false }));
                                                                     }
                                                                 }}
                                                             />
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-10 w-10 text-blue-400 hover:bg-blue-400/10 rounded-lg"
-                                                                onClick={() => setCustomUomRows(prev => ({ ...prev, [item.id]: false }))}
+                                                            <Button variant="ghost" size="icon" className="w-10 text-blue-400 hover:bg-blue-400/10 rounded-lg" onClick={() => setCustomUomRows(prev => ({ ...prev, [item.id]: false }))}
                                                             >
                                                                 <Check className="h-4 w-4" />
                                                             </Button>
@@ -782,17 +720,17 @@ export default function CreatePurchaseOrderDialog() {
                                                                 }
                                                             }}
                                                         >
-                                                            <SelectTrigger className="h-10 bg-white/5 border-white/10 text-white rounded-lg text-right focus:ring-blue-400/20 w-24 ml-auto">
+                                                            <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-right focus:ring-blue-400/20 w-24 ml-auto">
                                                                 <SelectValue />
                                                             </SelectTrigger>
-                                                            <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                                            <SelectContent className="bg-card border-foreground/10 text-foreground">
                                                                 <SelectItem value="pc" className="focus:bg-blue-400/10 focus:text-blue-400">pc</SelectItem>
                                                                 <SelectItem value="case" className="focus:bg-blue-400/10 focus:text-blue-400">case</SelectItem>
                                                                 <SelectItem value="bottle" className="focus:bg-blue-400/10 focus:text-blue-400">bottle</SelectItem>
                                                                 <SelectItem value="box" className="focus:bg-blue-400/10 focus:text-blue-400">box</SelectItem>
                                                                 <SelectItem value="kg" className="focus:bg-blue-400/10 focus:text-blue-400">kg</SelectItem>
                                                                 <SelectItem value="each" className="focus:bg-blue-400/10 focus:text-blue-400">each</SelectItem>
-                                                                <div className="border-t my-1 border-white/10 h-[1px]" />
+                                                                <div className="border-t my-1 border-foreground/10 h-[1px]" />
                                                                 <SelectItem value="CUSTOM_NEW" className="text-blue-400 font-black uppercase tracking-widest text-[10px] focus:bg-blue-400/10">
                                                                     <div className="flex items-center gap-2">
                                                                         <Plus className="h-3 w-3" />
@@ -803,15 +741,11 @@ export default function CreatePurchaseOrderDialog() {
                                                         </Select>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="py-4 text-right align-middle">
-                                                    <span className="text-lg font-black italic tracking-tighter text-white">₱{(item.qty * item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                                <TableCell className="text-right align-middle">
+                                                    <span className="text-lg font-black italic tracking-tighter text-foreground">₱{(item.qty * item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                                 </TableCell>
-                                                <TableCell className="py-4">
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-10 w-10 text-red-400/40 hover:text-red-400 hover:bg-red-400/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all" 
-                                                        onClick={() => {
+                                                <TableCell className="">
+                                                    <Button variant="ghost" size="icon" className="w-10 text-red-400/40 hover:text-red-400 hover:bg-red-400/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all" onClick={() => {
                                                             setItems(items.filter(i => i.id !== item.id));
                                                         }}
                                                     >
@@ -828,64 +762,56 @@ export default function CreatePurchaseOrderDialog() {
 
 
                     {/* Intelligence Summary & Financial Terminal */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-white/5 pt-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-foreground/5 pt-12">
                         {/* Intelligence Summary */}
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <Pencil className="h-3 w-3 text-white/40" />
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">External Memo</Label>
+                                    <Pencil className="h-3 w-3 text-foreground/40" />
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">External Memo</Label>
                                 </div>
-                                <Textarea
-                                    placeholder="Order annotations for provider..."
-                                    className="h-[120px] bg-white/5 border-white/10 text-white rounded-2xl focus:ring-blue-400/20 resize-none p-4 text-xs italic"
-                                    value={comments || ''}
-                                    onChange={(e) => setComments(e.target.value)}
+                                <Textarea placeholder="Order annotations for provider..." className="bg-foreground/5 border-foreground/10 text-foreground rounded-2xl focus:ring-blue-400/20 resize-none text-xs italic" value={comments || ''} onChange={(e) => setComments(e.target.value)}
                                 />
                             </div>
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <ShieldCheck className="h-3 w-3 text-white/40" />
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Secure Internal Logs</Label>
+                                    <ShieldCheck className="h-3 w-3 text-foreground/40" />
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Secure Internal Logs</Label>
                                 </div>
-                                <Textarea
-                                    placeholder="Encrypted internal observations..."
-                                    className="h-[120px] bg-white/5 border-white/10 text-white rounded-2xl focus:ring-slate-400/20 resize-none p-4 text-xs italic"
-                                    value={privateComments || ''}
-                                    onChange={(e) => setPrivateComments(e.target.value)}
+                                <Textarea placeholder="Encrypted internal observations..." className="bg-foreground/5 border-foreground/10 text-foreground rounded-2xl focus:ring-slate-400/20 resize-none text-xs italic" value={privateComments || ''} onChange={(e) => setPrivateComments(e.target.value)}
                                 />
                             </div>
                         </div>
 
                         {/* Financial Terminal */}
-                        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md relative overflow-hidden">
+                        <div className="bg-foreground/5 border border-foreground/10 rounded-3xl p-8 backdrop-blur-md relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-5">
                                 <CreditCard className="h-32 w-32" />
                             </div>
                             
                             <div className="relative z-10 space-y-6">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Subtotal Allocation</span>
-                                    <span className="text-xl font-bold text-white/60">₱{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Subtotal Allocation</span>
+                                    <span className="text-xl font-bold text-foreground/60">₱{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Tax Matrix</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Tax Matrix</span>
                                         <span className="text-[8px] font-black text-blue-400 uppercase tracking-tighter">Automatic VAT Computation</span>
                                     </div>
-                                    <span className="text-xl font-bold text-white/60">₱0.00</span>
+                                    <span className="text-xl font-bold text-foreground/60">₱0.00</span>
                                 </div>
-                                <div className="h-px bg-white/10 my-4" />
+                                <div className="h-px bg-foreground/10 my-4" />
                                 <div className="flex justify-between items-end">
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Total Fiscal Liability</span>
                                         <div className="flex items-center gap-2 mt-1">
                                             <div className="h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-                                            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Active Computation</span>
+                                            <span className="text-[8px] font-black text-foreground/20 uppercase tracking-widest">Active Computation</span>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">
-                                        <span className="text-4xl font-black italic tracking-tighter text-white">
+                                        <span className="text-4xl font-black italic tracking-tighter text-foreground">
                                             ₱{total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </span>
                                     </div>
@@ -895,31 +821,23 @@ export default function CreatePurchaseOrderDialog() {
                     </div>
                 </div>
 
-                <DialogFooter className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+                <DialogFooter className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-400/10 border border-emerald-400/20">
                             <ShieldCheck className="h-4 w-4 text-emerald-400" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Integrity Verified</span>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5">
-                            <TrendingUp className="h-4 w-4 text-white/40" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Flow: Optimized</span>
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/5 border border-foreground/5">
+                            <TrendingUp className="h-4 w-4 text-foreground/40" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Flow: Optimized</span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Button 
-                            variant="outline" 
-                            onClick={handleClose}
-                            className="px-8 h-12 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all font-black uppercase tracking-widest text-xs"
-                        >
+                        <Button variant="outline" onClick={handleClose} className="px-8 rounded-2xl border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground/40 hover:text-foreground transition-all font-black uppercase tracking-widest text-xs" >
                             Abort
                         </Button>
-                        <Button 
-                            onClick={handleSave}
-                            disabled={saving}
-                            className="px-12 h-12 rounded-2xl bg-blue-400 hover:bg-blue-400/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-400/20 transition-all gap-2"
-                        >
+                        <Button onClick={handleSave} disabled={saving} className="px-12 rounded-2xl bg-blue-400 hover:bg-blue-400/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-400/20 transition-all gap-2" >
                             {saving ? (
                                 <>
                                     <RefreshCw className="h-4 w-4 animate-spin" />

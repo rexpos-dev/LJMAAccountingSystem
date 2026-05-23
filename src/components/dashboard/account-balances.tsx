@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAccounts } from "@/hooks/use-accounts";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Building2, PiggyBank, CreditCard, Wallet } from "lucide-react";
 
 export function AccountBalances() {
     const { data: accounts, isLoading } = useAccounts();
@@ -16,13 +17,10 @@ export function AccountBalances() {
                 .filter(acc => match(acc.account_name || '', acc.account_type || ''))
                 .reduce((sum, acc) => sum + (acc.balance || 0), 0);
 
-        // Flexible matching for account names
         const checking = getBalance((name, type) =>
-            name.toLowerCase().includes('checking') || type === 'Bank' && !name.toLowerCase().includes('saving')
+            name.toLowerCase().includes('checking') || (type === 'Bank' && !name.toLowerCase().includes('saving'))
         );
-        const savings = getBalance((name, type) =>
-            name.toLowerCase().includes('saving')
-        );
+        const savings = getBalance((name) => name.toLowerCase().includes('saving'));
         const creditCard = getBalance((name, type) =>
             name.toLowerCase().includes('credit card') || type === 'Credit Card'
         );
@@ -30,53 +28,84 @@ export function AccountBalances() {
         return { checking, savings, creditCard };
     }, [accounts]);
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-PH', {
-            style: 'currency',
-            currency: 'PHP',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount);
-    };
+    const formatCurrency = (amount: number) =>
+        new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
 
     if (isLoading || !balances) {
         return (
-            <div className="grid gap-4 md:grid-cols-3">
-                <Skeleton className="h-[100px] w-full" />
-                <Skeleton className="h-[100px] w-full" />
-                <Skeleton className="h-[100px] w-full" />
+            <div className="space-y-3">
+                <Skeleton className="h-5 w-36" />
+                <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+                    {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-[90px] rounded-xl" />)}
+                </div>
             </div>
-        )
+        );
     }
+
+    const accts = [
+        {
+            label: "Checking",
+            value: balances.checking,
+            icon: Building2,
+            gradient: "from-blue-500/15 to-blue-500/0",
+            border: "border-blue-500/25",
+            accent: "bg-blue-500",
+            iconBg: "bg-blue-500/10",
+            iconColor: "text-blue-400",
+            valueColor: "text-blue-400",
+        },
+        {
+            label: "Savings",
+            value: balances.savings,
+            icon: PiggyBank,
+            gradient: "from-emerald-500/15 to-emerald-500/0",
+            border: "border-emerald-500/25",
+            accent: "bg-emerald-500",
+            iconBg: "bg-emerald-500/10",
+            iconColor: "text-emerald-400",
+            valueColor: "text-emerald-400",
+        },
+        {
+            label: "Credit Card",
+            value: balances.creditCard,
+            icon: CreditCard,
+            gradient: "from-rose-500/15 to-rose-500/0",
+            border: "border-rose-500/25",
+            accent: "bg-rose-500",
+            iconBg: "bg-rose-500/10",
+            iconColor: "text-rose-400",
+            valueColor: "text-rose-400",
+        },
+    ];
+
+    const total = balances.checking + balances.savings;
 
     return (
         <div className="space-y-3">
-            <h3 className="font-headline font-bold text-lg text-foreground/90 dark:text-white/90 px-1">Account Balances</h3>
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                <Card className="bg-background/50 border dark:bg-white/5 dark:border-none border-l-4 border-l-blue-500 backdrop-blur-sm">
-                    <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Checking Accounts</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 pt-0 pb-4">
-                        <div className="text-xl font-bold text-foreground font-headline">{formatCurrency(balances.checking)}</div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-background/50 border dark:bg-white/5 dark:border-none border-l-4 border-l-emerald-500 backdrop-blur-sm">
-                    <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Savings Account</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 pt-0 pb-4">
-                        <div className="text-xl font-bold text-foreground font-headline">{formatCurrency(balances.savings)}</div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-background/50 border dark:bg-white/5 dark:border-none border-l-4 border-l-rose-500 backdrop-blur-sm">
-                    <CardHeader className="p-3 pb-1">
-                        <CardTitle className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Credit Card</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 pt-0 pb-4">
-                        <div className="text-xl font-bold text-foreground font-headline">{formatCurrency(balances.creditCard)}</div>
-                    </CardContent>
-                </Card>
+            <div className="flex items-center justify-between px-1">
+                <h3 className="font-headline font-bold text-base text-foreground/90 flex items-center gap-2">
+                    <Wallet className="h-4 w-4 text-muted-foreground" />
+                    Account Balances
+                </h3>
+                <span className="text-xs text-muted-foreground font-mono">{formatCurrency(total)} total</span>
+            </div>
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+                {accts.map((acct) => (
+                    <Card key={acct.label} className={`overflow-hidden border ${acct.border} bg-gradient-to-b ${acct.gradient} backdrop-blur-sm hover:scale-[1.02] transition-all shadow-sm`}>
+                        <div className={`h-0.5 w-full ${acct.accent} opacity-50`} />
+                        <CardHeader className="p-3 pb-1">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{acct.label}</CardTitle>
+                                <div className={`p-1.5 rounded-lg ${acct.iconBg}`}>
+                                    <acct.icon className={`h-3.5 w-3.5 ${acct.iconColor}`} />
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-3 pt-1 pb-3">
+                            <div className={`text-lg font-bold font-headline ${acct.valueColor}`}>{formatCurrency(acct.value)}</div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </div>
     );

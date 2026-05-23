@@ -320,9 +320,9 @@ export default function ViewJournalDialog() {
   return (
     <>
       <Dialog open={openDialogs["view-journal"]} onOpenChange={() => closeDialog("view-journal")}>
-        <DialogContent className="max-w-6xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
+        <DialogContent className="max-w-6xl p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
           {/* Premium Header */}
-          <div className="px-8 py-6 border-b border-white/5 bg-white/5 backdrop-blur-md flex items-center justify-between relative overflow-hidden flex-shrink-0">
+          <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 backdrop-blur-md flex items-center justify-between relative overflow-hidden flex-shrink-0">
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
             
             <div className="relative z-10 flex items-center gap-4">
@@ -330,25 +330,19 @@ export default function ViewJournalDialog() {
                 <LayoutDashboard className="h-6 w-6" />
               </div>
               <div>
-                <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase text-white">General Journal</DialogTitle>
-                <p className="text-sm text-white/40 font-medium tracking-wide mt-0.5">Explore and audit financial transactions history</p>
+                <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">General Journal</DialogTitle>
+                <p className="text-sm text-foreground/40 font-medium tracking-wide mt-0.5">Explore and audit financial transactions history</p>
               </div>
             </div>
 
             <div className="relative z-10 flex items-center gap-2">
-               <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+               <div className="px-4 py-2 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center gap-3">
                   <div className="text-right">
-                    <span className="text-[10px] font-black text-white/40 uppercase tracking-widest block">Total Records</span>
-                    <span className="text-sm font-bold text-white uppercase tracking-tighter">{filteredTransactions.length} Entries</span>
+                    <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest block">Total Records</span>
+                    <span className="text-sm font-bold text-foreground uppercase tracking-tighter">{filteredTransactions.length} Entries</span>
                   </div>
-                  <div className="h-8 w-px bg-white/10" />
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition-all"
-                    onClick={fetchTransactions}
-                    disabled={isLoadingTransactions}
-                  >
+                  <div className="h-8 w-px bg-foreground/10" />
+                  <Button variant="ghost" size="icon" className="w-8 rounded-lg text-foreground/60 hover:bg-foreground/10 hover:text-foreground transition-all" onClick={fetchTransactions} disabled={isLoadingTransactions} >
                     <RefreshCw className={cn("h-4 w-4", isLoadingTransactions && "animate-spin")} />
                   </Button>
                </div>
@@ -357,63 +351,48 @@ export default function ViewJournalDialog() {
 
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Top Stats & Actions Bar */}
-            <div className="px-8 py-4 bg-white/[0.02] border-b border-white/5 flex items-center justify-between">
+            <div className="px-8 py-4 bg-foreground/[0.02] border-b border-foreground/5 flex items-center justify-between">
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-8 rounded-full bg-blue-500/50" />
                   <div>
-                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Total Debit</p>
+                    <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em]">Total Debit</p>
                     <p className="text-lg font-black text-blue-400 italic tracking-tighter">{formatCurrency(stats.totalDebit)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-8 rounded-full bg-orange-500/50" />
                   <div>
-                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Total Credit</p>
+                    <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em]">Total Credit</p>
                     <p className="text-lg font-black text-orange-400 italic tracking-tighter">{formatCurrency(stats.totalCredit)}</p>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <Button 
-                  onClick={() => openDialog('journal-entry')}
+                <Button onClick={() => openDialog('journal-entry')}
                   className="bg-primary text-black font-black px-4 rounded-xl hover:bg-primary/90 transition-all h-10 text-xs uppercase tracking-widest"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   New Entry
                 </Button>
                 
-                <div className="h-6 w-px bg-white/10 mx-2" />
+                <div className="h-6 w-px bg-foreground/10 mx-2" />
                 
-                <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    disabled={!selectedEntry} 
-                    onClick={() => selectedEntry && handleViewTransaction(selectedEntry)}
-                    className="rounded-lg h-8 px-3 text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10"
+                <div className="flex bg-foreground/5 p-1 rounded-xl border border-foreground/10">
+                  <Button variant="ghost" size="sm" disabled={!selectedEntry} onClick={() => selectedEntry && handleViewTransaction(selectedEntry)}
+                    className="rounded-lg h-8 px-3 text-[10px] font-black uppercase tracking-widest text-foreground/60 hover:text-foreground hover:bg-foreground/10"
                   >
                     <Eye className="h-3.5 w-3.5 mr-2" />
                     View
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    disabled={!selectedEntry} 
-                    onClick={() => selectedEntry && handleRowDoubleClick(selectedEntry)}
-                    className="rounded-lg h-8 px-3 text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10"
+                  <Button variant="ghost" size="sm" disabled={!selectedEntry} onClick={() => selectedEntry && handleRowDoubleClick(selectedEntry)}
+                    className="rounded-lg h-8 px-3 text-[10px] font-black uppercase tracking-widest text-foreground/60 hover:text-foreground hover:bg-foreground/10"
                   >
                     <Pencil className="h-3.5 w-3.5 mr-2" />
                     Edit
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    disabled={!selectedEntry} 
-                    onClick={handleDeleteClick}
-                    className="rounded-lg h-8 px-3 text-[10px] font-black uppercase tracking-widest text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
-                  >
+                  <Button variant="ghost" size="sm" disabled={!selectedEntry} onClick={handleDeleteClick} className="rounded-lg px-3 text-[10px] font-black uppercase tracking-widest text-red-400/60 hover:text-red-400 hover:bg-red-500/10" >
                     <Trash2 className="h-3.5 w-3.5 mr-2" />
                     Delete
                   </Button>
@@ -422,64 +401,45 @@ export default function ViewJournalDialog() {
             </div>
 
             {/* Filter Panel */}
-            <div className="px-8 py-6 bg-white/[0.01]">
-              <div className="glass-card p-6 border-white/5 grid grid-cols-1 md:grid-cols-5 gap-6 relative">
-                <div className="absolute top-0 right-8 -translate-y-1/2 px-3 py-1 rounded-full bg-slate-900 border border-white/10 flex items-center gap-2">
+            <div className="px-8 py-6 bg-foreground/[0.01]">
+              <div className="glass-card p-6 border-foreground/5 grid grid-cols-1 md:grid-cols-5 gap-6 relative">
+                <div className="absolute top-0 right-8 -translate-y-1/2 px-3 py-1 rounded-full bg-card border border-foreground/10 flex items-center gap-2">
                   <Filter className="h-3 w-3 text-primary" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">System Filter</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60">System Filter</span>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Reference No.</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Reference No.</Label>
                   <div className="relative group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20 group-focus-within:text-primary transition-colors" />
-                    <Input 
-                      placeholder="Search ID..."
-                      className="pl-9 h-11 bg-white/5 border-white/10 focus:border-primary/50 transition-all rounded-xl"
-                      value={referenceFilter}
-                      onChange={(e) => setReferenceFilter(e.target.value)}
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground/20 group-focus-within:text-primary transition-colors" />
+                    <Input placeholder="Search ID..." className="pl-9 bg-foreground/5 border-foreground/10 focus:border-primary/50 transition-all rounded-xl" value={referenceFilter} onChange={(e) => setReferenceFilter(e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Account Name</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Account Name</Label>
                   <div className="relative group">
-                    <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20 group-focus-within:text-primary transition-colors" />
-                    <Input 
-                      placeholder="Find account..."
-                      className="pl-9 h-11 bg-white/5 border-white/10 focus:border-primary/50 transition-all rounded-xl"
-                      value={accountNameFilter}
-                      onChange={(e) => setAccountNameFilter(e.target.value)}
+                    <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground/20 group-focus-within:text-primary transition-colors" />
+                    <Input placeholder="Find account..." className="pl-9 bg-foreground/5 border-foreground/10 focus:border-primary/50 transition-all rounded-xl" value={accountNameFilter} onChange={(e) => setAccountNameFilter(e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">From Date</Label>
-                  <Input 
-                    type="date"
-                    className="h-11 bg-white/5 border-white/10 focus:border-primary/50 transition-all rounded-xl text-white/80"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">From Date</Label>
+                  <Input type="date" className="bg-foreground/5 border-foreground/10 focus:border-primary/50 transition-all rounded-xl text-foreground/80" value={fromDate} onChange={(e) => setFromDate(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">To Date</Label>
-                  <Input 
-                    type="date"
-                    className="h-11 bg-white/5 border-white/10 focus:border-primary/50 transition-all rounded-xl text-white/80"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">To Date</Label>
+                  <Input type="date" className="bg-foreground/5 border-foreground/10 focus:border-primary/50 transition-all rounded-xl text-foreground/80" value={toDate} onChange={(e) => setToDate(e.target.value)}
                   />
                 </div>
 
                 <div className="flex items-end">
-                  <Button 
-                    variant="outline" 
-                    className="h-11 w-full rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white"
-                    onClick={() => {
+                  <Button variant="outline" className="w-full rounded-xl border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-[10px] font-black uppercase tracking-widest text-foreground/60 hover:text-foreground" onClick={() => {
                         setFromDate("");
                         setToDate("");
                         setReferenceFilter("");
@@ -495,24 +455,24 @@ export default function ViewJournalDialog() {
 
             {/* Table Area */}
             <div className="flex-1 px-8 pb-4 min-h-0">
-              <div className="h-full border border-white/5 rounded-2xl overflow-hidden bg-slate-900/40 backdrop-blur-sm flex flex-col">
+              <div className="h-full border border-foreground/5 rounded-2xl overflow-hidden bg-card/40 backdrop-blur-sm flex flex-col">
                 <ScrollArea className="flex-1">
                   <Table>
-                    <TableHeader className="bg-white/5 sticky top-0 z-10">
-                      <TableRow className="border-white/5 hover:bg-transparent">
-                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Date</TableHead>
-                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Reference</TableHead>
-                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Ledger</TableHead>
-                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Account Name</TableHead>
-                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Particulars</TableHead>
-                        <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Debit</TableHead>
-                        <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Credit</TableHead>
-                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">User</TableHead>
+                    <TableHeader className="bg-foreground/5 sticky top-0 z-10">
+                      <TableRow className="border-foreground/5 hover:bg-transparent">
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Date</TableHead>
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Reference</TableHead>
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Ledger</TableHead>
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Account Name</TableHead>
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Particulars</TableHead>
+                        <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Debit</TableHead>
+                        <TableHead className="text-right text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Credit</TableHead>
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">User</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {isLoadingTransactions ? (
-                        <TableRow className="border-white/5">
+                        <TableRow className="border-foreground/5">
                           <TableCell colSpan={8} className="h-64 text-center">
                              <div className="flex flex-col items-center gap-4 opacity-40">
                                <div className="h-10 w-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
@@ -527,19 +487,19 @@ export default function ViewJournalDialog() {
                             onClick={() => handleRowClick(entry)}
                             onDoubleClick={() => handleRowDoubleClick(entry)}
                             className={cn(
-                              "border-white/5 group cursor-pointer transition-all duration-200",
-                              selectedEntry?.id === entry.id ? "bg-primary/10" : "hover:bg-white/5"
+                              "border-foreground/5 group cursor-pointer transition-all duration-200",
+                              selectedEntry?.id === entry.id ? "bg-primary/10" : "hover:bg-foreground/5"
                             )}
                           >
-                            <TableCell className="text-xs text-white/60 group-hover:text-white">{formatTimestamp(entry.date)}</TableCell>
-                            <TableCell className="text-xs font-bold text-white tracking-tighter uppercase">{entry.transNo}</TableCell>
-                            <TableCell className="text-[10px] text-white/40 uppercase font-bold">{entry.ledger}</TableCell>
+                            <TableCell className="text-xs text-foreground/60 group-hover:text-foreground">{formatTimestamp(entry.date)}</TableCell>
+                            <TableCell className="text-xs font-bold text-foreground tracking-tighter uppercase">{entry.transNo}</TableCell>
+                            <TableCell className="text-[10px] text-foreground/40 uppercase font-bold">{entry.ledger}</TableCell>
                             <TableCell className="max-w-[180px]">
-                              <p className="text-xs font-bold text-white/80 truncate group-hover:text-white transition-colors">{entry.accountName || "N/A"}</p>
-                              <p className="text-[10px] text-white/30 font-mono tracking-tighter">{entry.accountNumber}</p>
+                              <p className="text-xs font-bold text-foreground/80 truncate group-hover:text-foreground transition-colors">{entry.accountName || "N/A"}</p>
+                              <p className="text-[10px] text-foreground/30 font-mono tracking-tighter">{entry.accountNumber}</p>
                             </TableCell>
                             <TableCell className="max-w-[200px]">
-                              <p className="text-xs text-white/40 truncate group-hover:text-white/60 transition-colors">{entry.particulars}</p>
+                              <p className="text-xs text-foreground/40 truncate group-hover:text-foreground/60 transition-colors">{entry.particulars}</p>
                             </TableCell>
                             <TableCell className="text-right font-mono font-bold text-blue-400 italic">
                                {entry.debit ? `₱${entry.debit.toLocaleString()}` : "—"}
@@ -549,16 +509,16 @@ export default function ViewJournalDialog() {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-[8px] font-black text-white/40 uppercase border border-white/10 group-hover:bg-primary/20 group-hover:text-primary transition-all">
+                                <div className="w-5 h-5 rounded-full bg-foreground/5 flex items-center justify-center text-[8px] font-black text-foreground/40 uppercase border border-foreground/10 group-hover:bg-primary/20 group-hover:text-primary transition-all">
                                   {entry.user?.[0] || "?"}
                                 </div>
-                                <span className="text-[10px] font-black uppercase text-white/30 tracking-widest">{entry.user || "System"}</span>
+                                <span className="text-[10px] font-black uppercase text-foreground/30 tracking-widest">{entry.user || "System"}</span>
                               </div>
                             </TableCell>
                           </TableRow>
                         ))
                       ) : (
-                        <TableRow className="border-white/5">
+                        <TableRow className="border-foreground/5">
                           <TableCell colSpan={8} className="h-64 text-center">
                             <div className="flex flex-col items-center gap-3 opacity-20">
                               <History className="h-12 w-12" />
@@ -572,15 +532,15 @@ export default function ViewJournalDialog() {
                 </ScrollArea>
 
                 {/* Custom Pagination */}
-                <div className="px-6 py-4 border-t border-white/5 bg-white/5 flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between">
                    <div className="flex items-center gap-6">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Density</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/20">Density</span>
                         <Select value={itemsPerPage.toString()} onValueChange={(v) => setItemsPerPage(Number(v))}>
-                           <SelectTrigger className="h-8 w-20 bg-white/5 border-white/10 rounded-lg text-xs font-bold">
+                           <SelectTrigger className="h-8 w-20 bg-foreground/5 border-foreground/10 rounded-lg text-xs font-bold">
                               <SelectValue />
                            </SelectTrigger>
-                           <SelectContent className="bg-slate-900 border-white/10">
+                           <SelectContent className="bg-card border-foreground/10">
                               <SelectItem value="10">10</SelectItem>
                               <SelectItem value="20">20</SelectItem>
                               <SelectItem value="50">50</SelectItem>
@@ -588,32 +548,20 @@ export default function ViewJournalDialog() {
                            </SelectContent>
                         </Select>
                       </div>
-                      <div className="h-4 w-px bg-white/10" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/20">
+                      <div className="h-4 w-px bg-foreground/10" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-foreground/20">
                         Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredTransactions.length)} of {filteredTransactions.length}
                       </span>
                    </div>
 
                    <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 disabled:opacity-20"
-                        onClick={handlePreviousPage}
-                        disabled={currentPage === 1}
-                      >
+                      <Button variant="ghost" size="icon" className="w-8 rounded-lg bg-foreground/5 border border-foreground/10 text-foreground/60 hover:bg-foreground/10 disabled:opacity-20" onClick={handlePreviousPage} disabled={currentPage === 1} >
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
                       <div className="px-4 h-8 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
                          <span className="text-xs font-black text-primary">PAGE {currentPage}</span>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 disabled:opacity-20"
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                      >
+                      <Button variant="ghost" size="icon" className="w-8 rounded-lg bg-foreground/5 border border-foreground/10 text-foreground/60 hover:bg-foreground/10 disabled:opacity-20" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} >
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                    </div>

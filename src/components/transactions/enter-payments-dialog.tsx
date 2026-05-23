@@ -69,9 +69,9 @@ export function EnterPaymentsDialog() {
 
   return (
     <Dialog open={openDialogs["enter-payments"]} onOpenChange={(open) => !open && closeDialog("enter-payments")}>
-      <DialogContent className="max-w-xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
+      <DialogContent className="max-w-xl p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative overflow-hidden">
+        <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-4">
@@ -79,17 +79,12 @@ export function EnterPaymentsDialog() {
               <PlusCircle className="h-6 w-6" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">Payment Initiation</DialogTitle>
-              <p className="text-xs text-white/40 font-medium tracking-wide mt-0.5">Select a financial outflow channel</p>
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Payment Initiation</DialogTitle>
+              <p className="text-xs text-foreground/40 font-medium tracking-wide mt-0.5">Select a financial outflow channel</p>
             </div>
           </div>
 
-          <button 
-            onClick={() => closeDialog("enter-payments")}
-            className="relative z-10 p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          
         </div>
 
         <div className="p-8 space-y-4">
@@ -99,7 +94,7 @@ export function EnterPaymentsDialog() {
               onClick={item.onClick}
               className={cn(
                 "w-full group relative flex items-center gap-6 p-6 rounded-2xl border transition-all duration-300 overflow-hidden",
-                "bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.05] hover:-translate-y-1 active:scale-[0.98]",
+                "bg-foreground/[0.02] border-foreground/5 hover:border-foreground/20 hover:bg-foreground/[0.05] hover:-translate-y-1 active:scale-[0.98]",
               )}
             >
               {/* Background Glow */}
@@ -118,15 +113,15 @@ export function EnterPaymentsDialog() {
               </div>
 
               <div className="flex-1 text-left">
-                <h3 className="text-lg font-black uppercase italic tracking-tighter text-white group-hover:text-primary transition-colors">
+                <h3 className="text-lg font-black uppercase italic tracking-tighter text-foreground group-hover:text-primary transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-sm text-white/40 font-medium leading-relaxed">
+                <p className="text-sm text-foreground/40 font-medium leading-relaxed">
                   {item.description}
                 </p>
               </div>
 
-              <div className="p-2 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-black transition-all">
+              <div className="p-2 rounded-full bg-foreground/5 group-hover:bg-primary group-hover:text-black transition-all">
                 <ArrowRight className="h-4 w-4" />
               </div>
             </button>
@@ -134,10 +129,10 @@ export function EnterPaymentsDialog() {
         </div>
 
         {/* Footer Meta */}
-        <div className="px-8 py-4 bg-white/5 border-t border-white/5 flex items-center justify-center gap-6">
+        <div className="px-8 py-4 bg-foreground/5 border-t border-foreground/5 flex items-center justify-center gap-6">
            <div className="flex items-center gap-2 opacity-30">
               <TrendingUp className="h-3 w-3" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-white">Secure Ledger Entry</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Secure Ledger Entry</span>
            </div>
         </div>
       </DialogContent>

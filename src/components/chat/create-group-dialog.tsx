@@ -61,11 +61,7 @@ export function CreateGroupDialog({ open, onOpenChange, onCreated, isLoading }: 
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="name">Group Name</Label>
-                        <Input
-                            id="name"
-                            placeholder="e.g. Finance Team"
-                            value={groupName}
-                            onChange={(e) => setGroupName(e.target.value)}
+                        <Input id="name" placeholder="e.g. Finance Team" value={groupName} onChange={(e) => setGroupName(e.target.value)}
                         />
                     </div>
 
@@ -73,11 +69,7 @@ export function CreateGroupDialog({ open, onOpenChange, onCreated, isLoading }: 
                         <Label>Participants ({selectedUsers.length})</Label>
                         <div className="relative">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search users..."
-                                className="pl-8"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                            <Input placeholder="Search users..." className="pl-8" value={search} onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
 

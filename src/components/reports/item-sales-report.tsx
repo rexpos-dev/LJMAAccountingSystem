@@ -1,14 +1,6 @@
 'use client';
 
 import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
-import {
     Table,
     TableBody,
     TableCell,
@@ -33,9 +25,6 @@ import {
 } from '@/components/ui/dialog';
 import {
     FileText,
-    Printer,
-    Save,
-    ListVideo,
     Search,
     ChevronLeft,
     ChevronRight,
@@ -46,12 +35,14 @@ import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
 import { useSalesTransactions } from '@/hooks/use-sales';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Input } from '../ui/input';
+import { ReportToolbar } from './report-toolbar';
 
 export default function ItemSalesReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
     const dialogData = getDialogData('item-sales-report');
+    const contentRef = useRef<HTMLDivElement>(null);
     const fromDate = dialogData?.fromDate || new Date();
     const toDate = dialogData?.toDate || new Date();
 
@@ -75,40 +66,22 @@ export default function ItemSalesReport() {
         <Dialog open={openDialogs['item-sales-report']} onOpenChange={() => closeDialog('item-sales-report')}>
             <DialogContent className="max-w-7xl h-[95vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('item-sales-report')}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center justify-between p-2 border-b">
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                        </div>
-                        <div className="relative w-64">
-                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search transaction..."
-                                className="pl-8"
-                                value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    setPage(1);
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Item Sales Report (Details)"
+                        subtitle={`Period: ${format(fromDate, 'MM/dd/yyyy')} - ${format(toDate, 'MM/dd/yyyy')}`}
+                        closeKey="item-sales-report"
+                        extra={
+                            <div className="relative w-64 ml-2">
+                                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search transaction..." className="pl-8" value={searchTerm} onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setPage(1);
+                                    }}
+                                />
+                            </div>
+                        }
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left">
@@ -117,7 +90,7 @@ export default function ItemSalesReport() {
                             <FileText className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">Item Sales Report (Details)</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">Item Sales Report (Details)</DialogTitle>
                             <DialogDescription className="text-left">
                                 Period: {format(fromDate, 'MM/dd/yyyy')} - {format(toDate, 'MM/dd/yyyy')}
                             </DialogDescription>
@@ -126,6 +99,7 @@ export default function ItemSalesReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     <div className="min-w-max">
                         <Table>
                             <TableHeader className="sticky top-0 z-10 bg-card">
@@ -175,7 +149,7 @@ export default function ItemSalesReport() {
                                                 <TableCell className="text-sm">
                                                     {transaction.customer?.name || 'Walk-in Customer'}
                                                 </TableCell>
-                                                <TableCell className="p-0">
+                                                <TableCell className="">
                                                     <div className="flex flex-col gap-1 p-2">
                                                         {transaction.items.map((item, idx) => (
                                                             <div key={item.id || idx} className="text-xs flex justify-between gap-4 border-b border-muted last:border-0 pb-1">
@@ -221,6 +195,7 @@ export default function ItemSalesReport() {
                             </TableBody>
                         </Table>
                     </div>
+                    </div>
                 </ScrollArea>
 
                 <div className="p-4 border-t flex items-center justify-between bg-card shrink-0">
@@ -254,20 +229,12 @@ export default function ItemSalesReport() {
 
                     {pagination && pagination.totalPages > 1 && (
                         <div className="flex items-center gap-1">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPage(1)}
+                            <Button variant="outline" size="icon" className="w-8" onClick={() => setPage(1)}
                                 disabled={page === 1}
                             >
                                 <ChevronsLeft className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                            <Button variant="outline" size="icon" className="w-8" onClick={() => setPage(prev => Math.max(1, prev - 1))}
                                 disabled={page === 1}
                             >
                                 <ChevronLeft className="h-4 w-4" />
@@ -275,10 +242,7 @@ export default function ItemSalesReport() {
 
                             <div className="flex items-center gap-1 mx-2">
                                 <span className="text-sm">Page</span>
-                                <Input
-                                    className="h-8 w-12 text-center p-0"
-                                    value={page}
-                                    onChange={(e) => {
+                                <Input className="w-12 text-center" value={page} onChange={(e) => {
                                         const val = parseInt(e.target.value);
                                         if (!isNaN(val) && val >= 1 && val <= pagination.totalPages) {
                                             setPage(val);
@@ -288,20 +252,12 @@ export default function ItemSalesReport() {
                                 <span className="text-sm">of {pagination.totalPages}</span>
                             </div>
 
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPage(prev => Math.min(pagination.totalPages, prev + 1))}
+                            <Button variant="outline" size="icon" className="w-8" onClick={() => setPage(prev => Math.min(pagination.totalPages, prev + 1))}
                                 disabled={page === pagination.totalPages}
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPage(pagination.totalPages)}
+                            <Button variant="outline" size="icon" className="w-8" onClick={() => setPage(pagination.totalPages)}
                                 disabled={page === pagination.totalPages}
                             >
                                 <ChevronsRight className="h-4 w-4" />

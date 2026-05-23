@@ -158,7 +158,7 @@ function Step2Details({ formData, setFormData, onNext, onBack }: { formData: any
                         value={formData.bankAccountId}
                         onValueChange={(val) => setFormData({ ...formData, bankAccountId: val })}
                     >
-                        <SelectTrigger className="h-10">
+                        <SelectTrigger className="">
                             <SelectValue placeholder="Select account" />
                         </SelectTrigger>
                         <SelectContent>
@@ -170,10 +170,7 @@ function Step2Details({ formData, setFormData, onNext, onBack }: { formData: any
                 </div>
                 <div className="space-y-2">
                     <Label>Date</Label>
-                    <Input
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    <Input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                         className="h-10"
                     />
                 </div>
@@ -186,7 +183,7 @@ function Step2Details({ formData, setFormData, onNext, onBack }: { formData: any
                         value={formData.referenceType}
                         onValueChange={(val) => setFormData({ ...formData, referenceType: val })}
                     >
-                        <SelectTrigger className="h-10">
+                        <SelectTrigger className="">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -199,10 +196,7 @@ function Step2Details({ formData, setFormData, onNext, onBack }: { formData: any
                 </div>
                 <div className="space-y-2">
                     <Label>Reference Number</Label>
-                    <Input
-                        placeholder="Ref #"
-                        value={formData.referenceNumber}
-                        onChange={(e) => setFormData({ ...formData, referenceNumber: e.target.value })}
+                    <Input placeholder="Ref #" value={formData.referenceNumber} onChange={(e) => setFormData({ ...formData, referenceNumber: e.target.value })}
                         className="h-10"
                     />
                 </div>
@@ -212,23 +206,14 @@ function Step2Details({ formData, setFormData, onNext, onBack }: { formData: any
                 <Label>Amount</Label>
                 <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">₱</span>
-                    <Input
-                        type="number"
-                        placeholder="0.00"
-                        className="pl-8 h-10 font-mono text-lg"
-                        value={formData.amount}
-                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    <Input type="number" placeholder="0.00" className="pl-8 font-mono text-lg" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
                 <Label>Description</Label>
-                <Textarea
-                    placeholder="Enter transaction description..."
-                    className="resize-none"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                <Textarea placeholder="Enter transaction description..." className="resize-none" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
                 />
             </div>
@@ -237,11 +222,7 @@ function Step2Details({ formData, setFormData, onNext, onBack }: { formData: any
                 <Button variant="ghost" onClick={onBack} className="flex-1 border hover:bg-muted font-semibold">
                     <ChevronLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
-                <Button
-                    onClick={onNext}
-                    className="flex-1 shadow-lg shadow-primary/20 font-semibold"
-                    disabled={!formData.bankAccountId || !formData.amount}
-                >
+                <Button onClick={onNext} className="flex-1 shadow-lg shadow-primary/20 font-semibold" disabled={!formData.bankAccountId || !formData.amount} >
                     Accounting Preview <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
             </DialogFooter>

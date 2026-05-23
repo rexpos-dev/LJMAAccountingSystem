@@ -182,7 +182,7 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
                         <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase">Control No.</span>
-                                <Input className="w-32 h-9 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
+                                <Input className="w-32 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
                             </div>
                             <FormField
                                 control={form.control}
@@ -193,14 +193,7 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        disabled={isReadOnly}
-                                                        className={cn(
-                                                            "w-full h-9 justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
+                                                    <Button variant={"outline"} disabled={isReadOnly} className={cn( "w-full justify-start text-left font-normal", !field.value && "text-muted-foreground" )} >
                                                         <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                         {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                     </Button>
@@ -331,7 +324,7 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((field, index) => (
-                                        <TableRow key={field.id} className="hover:bg-muted/10 transition-colors"><TableCell className="text-center font-mono text-xs">{index + 1}</TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.purpose`} render={({ field }) => (<Input {...field} placeholder="Enter purpose" className="h-8 border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.amountRequested`} render={({ field }) => (<Input {...field} type="number" className="h-8 border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background font-medium" disabled={isReadOnly} />)} /></TableCell><TableCell className="p-1"><FormField control={form.control} name={`items.${index}.amountApproved`} render={({ field }) => (<Input {...field} type="number" className="h-8 border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background font-bold text-primary" disabled={isReadOnly} />)} /></TableCell>{!isReadOnly && (<TableCell className="p-0 text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-3.5 w-3.5" /></Button>)}</TableCell>)}</TableRow>
+                                        <TableRow key={field.id} className="hover:bg-muted/10 transition-colors"><TableCell className="text-center font-mono text-xs">{index + 1}</TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.purpose`} render={({ field }) => (<Input {...field} placeholder="Enter purpose" className="border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.amountRequested`} render={({ field }) => (<Input {...field} type="number" className="border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background font-medium" disabled={isReadOnly} />)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.amountApproved`} render={({ field }) => (<Input {...field} type="number" className="border-none bg-transparent text-right focus-visible:ring-1 focus-visible:bg-background font-bold text-primary" disabled={isReadOnly} />)} /></TableCell>{!isReadOnly && (<TableCell className="text-center">{fields.length > 1 && (<Button type="button" variant="ghost" size="icon" className="w-7 text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-3.5 w-3.5" /></Button>)}</TableCell>)}</TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -360,12 +353,7 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
                                 <FormItem>
                                     <FormLabel className="text-xs font-semibold uppercase text-muted-foreground">Remarks</FormLabel>
                                     <FormControl>
-                                        <Textarea
-                                            {...field}
-                                            placeholder="Write any additional notes or terms here..."
-                                            className="min-h-[80px] bg-muted/30 focus-visible:bg-transparent resize-none border-dashed"
-                                            disabled={isReadOnly}
-                                        />
+                                        <Textarea {...field} placeholder="Write any additional notes or terms here..." className="min-h-[80px] bg-muted/30 focus-visible:bg-transparent resize-none border-dashed" disabled={isReadOnly} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -396,7 +384,7 @@ export function PurchaseOrderExternalForm({ initialData, mode = 'create', onSucc
                                         <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{sig.label}</FormLabel>
                                         <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                             <FormControl>
-                                                <SelectTrigger className="h-9 bg-muted/20 border-dashed border-muted-foreground/30 hover:border-muted-foreground/60 transition-colors">
+                                                <SelectTrigger className=" bg-muted/20 border-dashed border-muted-foreground/30 hover:border-muted-foreground/60 transition-colors">
                                                     <SelectValue placeholder="Staff..." />
                                                 </SelectTrigger>
                                             </FormControl>

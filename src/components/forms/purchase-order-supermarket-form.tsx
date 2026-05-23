@@ -198,7 +198,7 @@ export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onS
                                 <FormField control={form.control} name="businessUnit" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Business Unit</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -216,7 +216,7 @@ export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onS
                                 <FormField control={form.control} name="position" render={({ field }) => (
                                     <FormItem className="space-y-0.5">
                                         <FormLabel className="text-[10px] uppercase text-muted-foreground font-bold">Position</FormLabel>
-                                        <FormControl><Input {...field} className="h-8 text-sm px-2" disabled={isReadOnly} /></FormControl>
+                                        <FormControl><Input {...field} className="text-sm px-2" disabled={isReadOnly} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -259,10 +259,10 @@ export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onS
                     <div className="border rounded-md overflow-hidden bg-background shadow-sm">
                         <Table>
                             <TableHeader className="bg-muted/30">
-                                <TableRow className="hover:bg-transparent border-b"><TableHead className="py-2 text-[10px] font-black uppercase text-center border-r">Purpose</TableHead><TableHead className="w-[180px] py-2 text-[10px] font-black uppercase text-center border-r">Amount Requested <br /><span className="text-[8px] font-normal italic">(Requestor)</span></TableHead><TableHead className="w-[180px] py-2 text-[10px] font-black uppercase text-center">Amount Approved <br /><span className="text-[8px] font-normal italic">(Approver)</span></TableHead></TableRow>
+                                <TableRow className="hover:bg-transparent border-b"><TableHead className="text-[10px] font-black uppercase text-center border-r">Purpose</TableHead><TableHead className="w-[180px] text-[10px] font-black uppercase text-center border-r">Amount Requested <br /><span className="text-[8px] font-normal italic">(Requestor)</span></TableHead><TableHead className="w-[180px] text-[10px] font-black uppercase text-center">Amount Approved <br /><span className="text-[8px] font-normal italic">(Approver)</span></TableHead></TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow className="hover:bg-transparent"><TableCell className="p-0 border-r align-top"><FormField control={form.control} name="purpose" render={({ field }) => (<FormItem><FormControl><Textarea {...field} className="min-h-[80px] border-none resize-none focus-visible:ring-0 rounded-none text-sm p-4" placeholder="Enter detailed purpose of purchase..." disabled={isReadOnly} /></FormControl><FormMessage className="px-4 pb-2" /></FormItem>)} /></TableCell><TableCell className="p-0 border-r align-middle bg-primary/5"><FormField control={form.control} name="amountRequested" render={({ field }) => (<FormItem><FormControl><Input {...field} type="number" step="0.01" className="h-full border-none text-center text-lg font-bold focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl><FormMessage className="px-4 pb-2 text-[9px]" /></FormItem>)} /></TableCell><TableCell className="p-0 align-middle bg-muted/10"><FormField control={form.control} name="amountApproved" render={({ field }) => (<FormItem><FormControl><Input {...field} type="number" step="0.01" className="h-full border-none text-center text-lg font-bold focus-visible:ring-0 rounded-none bg-transparent text-primary" disabled={isReadOnly} /></FormControl><FormMessage className="px-4 pb-2 text-[9px]" /></FormItem>)} /></TableCell></TableRow>
+                                <TableRow className="hover:bg-transparent"><TableCell className="border-r align-top"><FormField control={form.control} name="purpose" render={({ field }) => (<FormItem><FormControl><Textarea {...field} className="min-h-[80px] border-none resize-none focus-visible:ring-0 rounded-none text-sm" placeholder="Enter detailed purpose of purchase..." disabled={isReadOnly} /></FormControl><FormMessage className="px-4 pb-2" /></FormItem>)} /></TableCell><TableCell className="border-r align-middle bg-primary/5"><FormField control={form.control} name="amountRequested" render={({ field }) => (<FormItem><FormControl><Input {...field} type="number" step="0.01" className="h-full border-none text-center text-lg font-bold focus-visible:ring-0 rounded-none bg-transparent" disabled={isReadOnly} /></FormControl><FormMessage className="px-4 pb-2 text-[9px]" /></FormItem>)} /></TableCell><TableCell className="align-middle bg-muted/10"><FormField control={form.control} name="amountApproved" render={({ field }) => (<FormItem><FormControl><Input {...field} type="number" step="0.01" className="h-full border-none text-center text-lg font-bold focus-visible:ring-0 rounded-none bg-transparent text-primary" disabled={isReadOnly} /></FormControl><FormMessage className="px-4 pb-2 text-[9px]" /></FormItem>)} /></TableCell></TableRow>
                             </TableBody>
                         </Table>
                     </div>
@@ -303,7 +303,7 @@ export function PurchaseOrderSupermarketForm({ initialData, mode = 'create', onS
                         <FormField control={form.control} name="requestedBy" render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground mb-1">Requested by</FormLabel>
-                                <FormControl><Input {...field} className="h-8 text-[11px] text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" disabled={isReadOnly} /></FormControl>
+                                <FormControl><Input {...field} className="text-[11px] text-center font-bold px-0 border-x-0 border-t-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-primary" disabled={isReadOnly} /></FormControl>
                                 <div className="text-[7px] text-center pt-1 italic text-muted-foreground uppercase">Name / Signature / Date</div>
                             </FormItem>
                         )} />

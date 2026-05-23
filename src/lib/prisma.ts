@@ -8,7 +8,17 @@ const globalForPrisma = globalThis as unknown as {
 let prismaInstance = globalForPrisma.prisma
 
 if (!prismaInstance) {
-  const dbUrl = process.env.DATABASE_URL || 'mysql://root:123700@localhost:3306/ljma_accounting';
+  let dbUrl = process.env.DATABASE_URL || 'mysql://root:123700@localhost:3306/ljma_accounting';
+  
+  // Force IPv4 to prevent Node 17+ from attempting to connect to ::1, which causes the connection to hang and timeout.
+  // Also increase the pool connection limit to prevent exhaustion during concurrent API requests.
+  const urlObj = new URL(dbUrl);
+  if (urlObj.hostname === 'localhost') {
+    urlObj.hostname = '127.0.0.1';
+  }
+  urlObj.searchParams.set('connectionLimit', '50');
+  dbUrl = urlObj.toString();
+
   console.log(`🔌 [Prisma] Initializing with URL: ${dbUrl.replace(/:[^:@]+@/, ':****@')}`);
   
   const adapter = new PrismaMariaDb(dbUrl)

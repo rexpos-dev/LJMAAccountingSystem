@@ -171,92 +171,46 @@ export default function BusinessSetupDialog() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2 col-span-2">
                                     <Label htmlFor="businessName">Business Name <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id="businessName"
-                                        value={formData.businessName}
-                                        onChange={handleChange}
-                                        placeholder="Enter business name"
-                                    />
+                                    <Input id="businessName" value={formData.businessName} onChange={handleChange} placeholder="Enter business name" />
                                 </div>
 
                                 <div className="space-y-2 col-span-2">
                                     <Label htmlFor="address">Business Address</Label>
-                                    <Input
-                                        id="address"
-                                        value={formData.address}
-                                        onChange={handleChange}
-                                        placeholder="Enter complete address"
-                                    />
+                                    <Input id="address" value={formData.address} onChange={handleChange} placeholder="Enter complete address" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="owner">Business Owner</Label>
-                                    <Input
-                                        id="owner"
-                                        value={formData.owner}
-                                        onChange={handleChange}
-                                        placeholder="Owner name"
-                                    />
+                                    <Input id="owner" value={formData.owner} onChange={handleChange} placeholder="Owner name" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email Address</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="email@example.com"
-                                    />
+                                    <Input id="email" type="email" value={formData.email} onChange={handleChange} placeholder="email@example.com" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="contactTel">Telephone No.</Label>
-                                    <Input
-                                        id="contactTel"
-                                        value={formData.contactTel}
-                                        onChange={handleChange}
-                                        placeholder="(02) 1234-5678"
-                                    />
+                                    <Input id="contactTel" value={formData.contactTel} onChange={handleChange} placeholder="(02) 1234-5678" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="contactPhone">Mobile Phone No.</Label>
-                                    <Input
-                                        id="contactPhone"
-                                        value={formData.contactPhone}
-                                        onChange={handleChange}
-                                        placeholder="0912-345-6789"
-                                    />
+                                    <Input id="contactPhone" value={formData.contactPhone} onChange={handleChange} placeholder="0912-345-6789" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="tin">TIN #</Label>
-                                    <Input
-                                        id="tin"
-                                        value={formData.tin}
-                                        onChange={handleChange}
-                                        placeholder="Tax Identification Number"
-                                    />
+                                    <Input id="tin" value={formData.tin} onChange={handleChange} placeholder="Tax Identification Number" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="permit">Business Permit</Label>
-                                    <Input
-                                        id="permit"
-                                        value={formData.permit}
-                                        onChange={handleChange}
-                                        placeholder="Permit Number"
-                                    />
+                                    <Input id="permit" value={formData.permit} onChange={handleChange} placeholder="Permit Number" />
                                 </div>
                                 <div className="space-y-2 col-span-2">
                                     <Label htmlFor="bankDetails">Bank Details / Payment Instructions</Label>
-                                    <Input
-                                        id="bankDetails"
-                                        value={formData.bankDetails}
-                                        onChange={handleChange}
-                                        placeholder="e.g. BPI: 123-456-789 | GCash: 09123456789"
-                                    />
+                                    <Input id="bankDetails" value={formData.bankDetails} onChange={handleChange} placeholder="e.g. BPI: 123-456-789 | GCash: 09123456789" />
                                 </div>
                             </div>
                         </div>
@@ -275,12 +229,7 @@ export default function BusinessSetupDialog() {
                                                 className="object-contain"
                                             />
                                         </div>
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={removeLogo}
-                                            className="gap-2"
-                                        >
+                                        <Button variant="destructive" size="sm" onClick={removeLogo} className="gap-2" >
                                             <X className="w-4 h-4" /> Remove Logo
                                         </Button>
                                     </div>
@@ -293,10 +242,7 @@ export default function BusinessSetupDialog() {
                                             <p className="text-sm font-medium">Click to upload logo</p>
                                             <p className="text-xs text-gray-500">PNG, JPG up to 2MB</p>
                                         </div>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => fileInputRef.current?.click()}
+                                        <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}
                                         >
                                             <Upload className="w-4 h-4 mr-2" /> Select File
                                         </Button>

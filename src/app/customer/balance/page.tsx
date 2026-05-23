@@ -70,10 +70,10 @@ export default function CustomerBalancePage() {
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>Customer Balances</DialogTitle>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={handleRefresh} title="Refresh" className="h-8 w-8">
+            <Button variant="outline" size="icon" onClick={handleRefresh} title="Refresh" className="w-8">
               <RefreshCw className={`h-4 w-4 ${isLoadingBalances ? 'animate-spin' : ''}`} />
             </Button>
-            <Button variant="outline" size="icon" onClick={handleRecalculate} title="Recalculate Balances" className="h-8 w-8">
+            <Button variant="outline" size="icon" onClick={handleRecalculate} title="Recalculate Balances" className="w-8">
               <Calculator className={`h-4 w-4 ${isLoadingBalances ? 'animate-spin' : ''}`} />
             </Button>
           </div>
@@ -168,13 +168,13 @@ export default function CustomerBalancePage() {
             <TableBody>
               {isLoadingBalances ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground">
                     Loading customer balances...
                   </TableCell>
                 </TableRow>
               ) : filteredBalances.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground">
                     No customer balances to display.
                   </TableCell>
                 </TableRow>
@@ -195,7 +195,7 @@ export default function CustomerBalancePage() {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button variant="ghost" size="icon" className="w-8">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

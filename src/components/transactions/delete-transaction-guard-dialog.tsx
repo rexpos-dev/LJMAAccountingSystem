@@ -187,12 +187,7 @@ export function DeleteTransactionGuardDialog({
                                 <Button variant="outline" onClick={onClose} disabled={isDeleting}>Cancel</Button>
                             </AlertDialogCancel>
                             <AlertDialogAction asChild>
-                                <Button
-                                    variant="destructive"
-                                    onClick={onConfirm}
-                                    disabled={isDeleting}
-                                    className="gap-2"
-                                >
+                                <Button variant="destructive" onClick={onConfirm} disabled={isDeleting} className="gap-2" >
                                     <Trash2 className="h-4 w-4" />
                                     {isDeleting ? 'Deleting...' : 'Delete Permanently'}
                                 </Button>

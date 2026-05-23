@@ -181,7 +181,7 @@ export default function ReconcileAccountDialog() {
                         <div className="space-y-1.5">
                             <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Select Bank</Label>
                             <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
-                                <SelectTrigger className="h-10 bg-background">
+                                <SelectTrigger className=" bg-background">
                                     <SelectValue placeholder="Choose account..." />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -198,7 +198,7 @@ export default function ReconcileAccountDialog() {
                             <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Statement Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start h-10 bg-background font-medium">
+                                    <Button variant="outline" className="w-full justify-start bg-background font-medium">
                                         <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                         {statementDate ? format(statementDate, 'MMM dd, yyyy') : "Pick date"}
                                     </Button>
@@ -211,17 +211,14 @@ export default function ReconcileAccountDialog() {
                             <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Statement Balance</Label>
                             <div className="relative">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">₱</span>
-                                <Input
-                                    className="pl-7 h-10 bg-background font-mono font-bold"
-                                    value={statementBalance}
-                                    onChange={(e) => setStatementBalance(e.target.value)}
+                                <Input className="pl-7 bg-background font-mono font-bold" value={statementBalance} onChange={(e) => setStatementBalance(e.target.value)}
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
                             <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">System Balance</Label>
-                            <div className="h-10 px-3 flex items-center bg-muted/50 rounded-md border border-white/5 font-mono font-bold text-primary">
+                            <div className="h-10 px-3 flex items-center bg-muted/50 rounded-md border border-foreground/5 font-mono font-bold text-primary">
                                 {formatCurrency(systemBalance)}
                             </div>
                         </div>
@@ -255,7 +252,7 @@ export default function ReconcileAccountDialog() {
                         <ScrollArea className="flex-1">
                             <Table>
                                 <TableHeader className="sticky top-0 bg-background z-10">
-                                    <TableRow className="hover:bg-transparent border-b h-10">
+                                    <TableRow className="hover:bg-transparent border-b">
                                         <TableHead className="w-12 text-center"></TableHead>
                                         <TableHead className="w-[85px] text-[10px] font-bold uppercase">Date</TableHead>
                                         <TableHead className="w-[100px] text-[10px] font-bold uppercase">Ref</TableHead>
@@ -302,14 +299,14 @@ export default function ReconcileAccountDialog() {
                             <h3 className="font-bold text-sm tracking-tight flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-amber-500" /> Bank Statement Entries
                             </h3>
-                            <Button variant="ghost" size="sm" className="h-7 text-[10px] font-bold uppercase tracking-tight gap-1 hover:bg-primary/5">
+                            <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-tight gap-1 hover:bg-primary/5">
                                 <Info className="h-3 w-3" /> Import Bank Feed
                             </Button>
                         </div>
                         <ScrollArea className="flex-1">
                             <Table>
                                 <TableHeader className="sticky top-0 bg-background z-10">
-                                    <TableRow className="hover:bg-transparent border-b h-10">
+                                    <TableRow className="hover:bg-transparent border-b">
                                         <TableHead className="w-12 text-center"></TableHead>
                                         <TableHead className="w-[85px] text-[10px] font-bold uppercase">Date</TableHead>
                                         <TableHead className="text-[10px] font-bold uppercase">Description</TableHead>
@@ -383,9 +380,7 @@ export default function ReconcileAccountDialog() {
                             )}>{formatCurrency(systemToBankDiff)}</span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <Button
-                                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-xl shadow-primary/20 scale-100 active:scale-95 transition-all"
-                                disabled={Math.abs(systemToStatementDiff) > 0.01 || isSubmitting || systemTransactions.length === 0}
+                            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-xl shadow-primary/20 scale-100 active:scale-95 transition-all" disabled={Math.abs(systemToStatementDiff) > 0.01 || isSubmitting || systemTransactions.length === 0}
                                 onClick={handleReconcile}
                             >
                                 {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <ShieldCheck className="h-5 w-5 mr-2" />}

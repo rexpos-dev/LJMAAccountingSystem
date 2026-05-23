@@ -133,12 +133,7 @@ export function AuditColumn({
             {/* ── Pagination ─────────────────────────────────────────── */}
             {items.length > ITEMS_PER_PAGE && (
                 <div className="px-3 py-2.5 border-t border-border/40 flex items-center justify-between gap-2 bg-muted/20 rounded-b-xl">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-lg"
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    <Button variant="ghost" size="icon" className="w-7 rounded-lg" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     >
                         <ChevronLeft className="h-3.5 w-3.5" />
                     </Button>
@@ -159,12 +154,7 @@ export function AuditColumn({
                         ))}
                     </div>
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-lg"
-                        disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    <Button variant="ghost" size="icon" className="w-7 rounded-lg" disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     >
                         <ChevronRight className="h-3.5 w-3.5" />
                     </Button>

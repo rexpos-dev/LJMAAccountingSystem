@@ -64,280 +64,362 @@ const CopyButton = ({ text }: { text: string }) => {
 export default function APIEndpointsPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
-    const accountingCategories = [
+    const apiCategories = [
         {
-            title: "Core Entities",
-            icon: <Database className="w-5 h-5 text-blue-500" />,
+            title: "Authentication",
+            icon: <Lock className="w-5 h-5 text-red-500" />,
             endpoints: [
-                { method: "GET", path: "/api/accounts", description: "Get all accounts", params: "bank (filter bank accounts), type (filter by type)" },
-                { method: "POST", path: "/api/accounts", description: "Create new account" },
-                { method: "PUT", path: "/api/accounts", description: "Update existing account" },
-                { method: "POST", path: "/api/accounts/bulk-upload", description: "Bulk upload accounts from CSV" },
-                { method: "GET", path: "/api/transactions", description: "Get all transactions", params: "accountNumber, limit, offset" },
-                { method: "POST", path: "/api/transactions", description: "Create new transaction" },
-                { method: "PUT", path: "/api/transactions", description: "Update existing transaction" },
-                { method: "DELETE", path: "/api/transactions?id={id}", description: "Delete transaction" },
-                { method: "GET", path: "/api/customers", description: "Get all customers" },
-                { method: "POST", path: "/api/customers", description: "Create new customer" },
-                { method: "PUT", path: "/api/customers", description: "Update existing customer" },
-                { method: "DELETE", path: "/api/customers?id={id}", description: "Delete customer" },
-                { method: "GET", path: "/api/products", description: "Get all products" },
-                { method: "POST", path: "/api/products", description: "Create new product" },
-                { method: "PUT", path: "/api/products", description: "Update existing product" },
-                { method: "DELETE", path: "/api/products?id={id}", description: "Delete product" },
-                { method: "GET", path: "/api/brands", description: "Get all brands" },
-                { method: "POST", path: "/api/brands", description: "Create new brand" },
-                { method: "GET", path: "/api/categories", description: "Get all parent categories" },
-                { method: "GET", path: "/api/suppliers", description: "Get all active suppliers" },
-                { method: "POST", path: "/api/suppliers", description: "Create new supplier" },
-                { method: "GET", path: "/api/units-of-measure", description: "Get all active units of measure" },
-                { method: "GET", path: "/api/conversion-factors", description: "Get all conversion factors" },
+                { method: "POST", path: "/api/auth/login", description: "Authenticate a user and return a session token" },
+                { method: "POST", path: "/api/auth/signup", description: "Register a new user account" }
             ]
         },
         {
-            title: "User Management",
-            icon: <Users className="w-5 h-5 text-green-500" />,
+            title: "Users & User Types",
+            icon: <Users className="w-5 h-5 text-indigo-500" />,
             endpoints: [
-                { method: "GET", path: "/api/user-permissions", description: "Get all user permissions" },
-                { method: "POST", path: "/api/user-permissions", description: "Create new user permission" },
-                { method: "PUT", path: "/api/user-permissions", description: "Update user permission" },
-                { method: "DELETE", path: "/api/user-permissions?id={id}", description: "Delete user permission" },
-                { method: "GET", path: "/api/sales-users", description: "Get all sales users" },
-                { method: "POST", path: "/api/sales-users", description: "Create new sales user" },
+                { method: "GET", path: "/api/users", description: "List all users" },
+                { method: "POST", path: "/api/users", description: "Create a new user" },
+                { method: "PATCH", path: "/api/users", description: "Update a user (bulk/query-based)" },
+                { method: "DELETE", path: "/api/users", description: "Delete a user (query-based)" },
+                { method: "PUT", path: "/api/users/[uid]", description: "Update a specific user by UID" },
+                { method: "GET", path: "/api/user-types", description: "List all user types/roles" },
+                { method: "POST", path: "/api/user-types", description: "Create a new user type" },
+                { method: "PATCH", path: "/api/user-types/[id]", description: "Update a specific user type" },
+                { method: "DELETE", path: "/api/user-types/[id]", description: "Delete a specific user type" }
             ]
         },
         {
-            title: "Request Management",
-            icon: <FileBarChart className="w-5 h-5 text-orange-500" />,
+            title: "User Activity Logs",
+            icon: <Activity className="w-5 h-5 text-teal-500" />,
             endpoints: [
-                { method: "GET", path: "/api/requests", description: "Get all requests" },
-                { method: "POST", path: "/api/requests", description: "Create new request" },
-                { method: "GET", path: "/api/requests/stats", description: "Get request statistics" },
-                { method: "GET", path: "/api/requests/[id]", description: "Get single request details" },
-                { method: "PATCH", path: "/api/requests/[id]", description: "Update request fields" },
-                { method: "DELETE", path: "/api/requests/[id]", description: "Delete a request" },
+                { method: "GET", path: "/api/user-activity-logs", description: "Retrieve user activity log entries" },
+                { method: "POST", path: "/api/user-activity-logs", description: "Record a new user activity log entry" }
             ]
         },
         {
-            title: "Sales & Invoicing",
-            icon: <TrendingUp className="w-5 h-5 text-purple-500" />,
+            title: "Products",
+            icon: <Package className="w-5 h-5 text-green-500" />,
             endpoints: [
-                { method: "GET", path: "/api/invoices", description: "Get all invoices" },
-                { method: "POST", path: "/api/invoices", description: "Create new invoice" },
-                { method: "GET", path: "/api/loyalty-points", description: "Get loyalty points" },
-                { method: "POST", path: "/api/loyalty-points", description: "Create loyalty points entry" },
-                { method: "GET", path: "/api/loyalty-points/summary", description: "Get loyalty points summary" },
+                { method: "GET", path: "/api/products", description: "List all products" },
+                { method: "POST", path: "/api/products", description: "Create a new product" },
+                { method: "PATCH", path: "/api/products/[id]", description: "Update a specific product" },
+                { method: "GET", path: "/api/products/attributes", description: "List all product attributes" },
+                { method: "GET", path: "/api/inventory-batches", description: "List inventory batches" },
+                { method: "GET", path: "/api/price-levels", description: "List price levels" },
+                { method: "POST", path: "/api/price-levels", description: "Create a new price level" }
+            ]
+        },
+        {
+            title: "Suppliers",
+            icon: <Truck className="w-5 h-5 text-amber-500" />,
+            endpoints: [
+                { method: "GET", path: "/api/suppliers", description: "List all suppliers" },
+                { method: "POST", path: "/api/suppliers", description: "Create a new supplier" },
+                { method: "GET", path: "/api/suppliers/[id]", description: "Get a specific supplier" },
+                { method: "PUT", path: "/api/suppliers/[id]", description: "Update a specific supplier" },
+                { method: "DELETE", path: "/api/suppliers/[id]", description: "Delete a specific supplier" },
+                { method: "GET", path: "/api/suppliers/[id]/balance", description: "Get outstanding balance for a supplier" },
+                { method: "GET", path: "/api/suppliers/export", description: "Export suppliers to a file" },
+                { method: "GET", path: "/api/temp-suppliers", description: "List temporary/unconfirmed suppliers" }
+            ]
+        },
+        {
+            title: "Customers",
+            icon: <Users className="w-5 h-5 text-blue-500" />,
+            endpoints: [
+                { method: "GET", path: "/api/customers", description: "List all customers" },
+                { method: "POST", path: "/api/customers", description: "Create a new customer" },
+                { method: "GET", path: "/api/customers/[id]", description: "Get a specific customer" },
+                { method: "PUT", path: "/api/customers/[id]", description: "Update a specific customer" },
+                { method: "DELETE", path: "/api/customers/[id]", description: "Delete a specific customer" },
+                { method: "GET", path: "/api/customers/[id]/check-transactions", description: "Check if a customer has associated transactions" },
+                { method: "GET", path: "/api/customers/balances", description: "Get outstanding balances for all customers" },
+                { method: "GET", path: "/api/customers/invoices/[id]", description: "Get a specific customer invoice" },
+                { method: "POST", path: "/api/customers/invoices/[id]/payment", description: "Record a payment against a customer invoice" },
+                { method: "GET", path: "/api/customers/invoices/outstanding", description: "List all outstanding customer invoices" },
+                { method: "GET", path: "/api/customers/payments", description: "List customer payment records" },
+                { method: "POST", path: "/api/customers/payments", description: "Record a customer payment" },
+                { method: "GET", path: "/api/customer-payments", description: "List customer payment transactions" },
+                { method: "POST", path: "/api/customer-payments", description: "Create a new customer payment transaction" }
+            ]
+        },
+        {
+            title: "Customer Loyalty",
+            icon: <Users className="w-5 h-5 text-purple-500" />,
+            endpoints: [
+                { method: "GET", path: "/api/customer-loyalty", description: "List all loyalty members" },
+                { method: "POST", path: "/api/customer-loyalty", description: "Enroll a new loyalty member" },
+                { method: "PUT", path: "/api/customer-loyalty/[id]", description: "Update a loyalty member" },
+                { method: "DELETE", path: "/api/customer-loyalty/[id]", description: "Remove a loyalty member" },
+                { method: "GET", path: "/api/customer-loyalty/lookup", description: "Look up a loyalty member by card/phone" },
+                { method: "POST", path: "/api/customer-loyalty/adjust-points", description: "Manually adjust a member's loyalty points" },
+                { method: "GET", path: "/api/customer-loyalty/point-history", description: "Get point transaction history for a member" },
+                { method: "GET", path: "/api/loyalty-settings", description: "Get loyalty program settings" },
+                { method: "POST", path: "/api/loyalty-settings", description: "Create loyalty program settings" },
+                { method: "PUT", path: "/api/loyalty-settings/[id]", description: "Update loyalty program settings" },
+                { method: "DELETE", path: "/api/loyalty-settings/[id]", description: "Delete a loyalty settings record" }
             ]
         },
         {
             title: "Purchase Orders",
-            icon: <Package className="w-5 h-5 text-yellow-500" />,
+            icon: <ShoppingCart className="w-5 h-5 text-orange-500" />,
             endpoints: [
-                { method: "GET", path: "/api/purchase-orders", description: "Get all purchase orders" },
-                { method: "POST", path: "/api/purchase-orders", description: "Create new purchase order" },
-                { method: "PUT", path: "/api/purchase-orders", description: "Update purchase order" },
-                { method: "DELETE", path: "/api/purchase-orders?id={id}", description: "Delete purchase order" },
-                { method: "GET", path: "/api/purchase-orders/[id]", description: "Get specific purchase order" },
+                { method: "GET", path: "/api/purchase-orders", description: "List all purchase orders" },
+                { method: "POST", path: "/api/purchase-orders", description: "Create a new purchase order" },
+                { method: "PATCH", path: "/api/purchase-orders/[id]", description: "Update/receive a specific purchase order" },
+                { method: "DELETE", path: "/api/purchase-orders/[id]", description: "Delete a specific purchase order" },
+                { method: "GET", path: "/api/purchase-orders/export", description: "Export purchase orders to a file" }
             ]
         },
         {
-            title: "Business Settings",
-            icon: <Activity className="w-5 h-5 text-red-500" />,
+            title: "Sales",
+            icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,
             endpoints: [
-                { method: "GET", path: "/api/business-profile", description: "Get business profile" },
-                { method: "POST", path: "/api/business-profile", description: "Update business profile" },
-                { method: "GET", path: "/api/reminders", description: "Get all active reminders" },
-                { method: "POST", path: "/api/reminders", description: "Create new reminder" },
+                { method: "GET", path: "/api/sales", description: "List sales records" },
+                { method: "POST", path: "/api/sales", description: "Create a new sale" },
+                { method: "GET", path: "/api/sales/by-date", description: "Get sales aggregated by date" },
+                { method: "GET", path: "/api/sales/by-product", description: "Get sales aggregated by product" },
+                { method: "GET", path: "/api/sales/hourly", description: "Get sales broken down by hour" },
+                { method: "GET", path: "/api/sales/monthly-category", description: "Get monthly sales by category" },
+                { method: "GET", path: "/api/sales/top-products", description: "Get top-selling products" },
+                { method: "GET", path: "/api/sales/batch-analysis", description: "Analyze sales by inventory batch" },
+                { method: "GET", path: "/api/sales/transactions", description: "List all sales transactions" },
+                { method: "POST", path: "/api/sales/transactions", description: "Record a sales transaction" },
+                { method: "GET", path: "/api/sales/orders", description: "List sales orders" },
+                { method: "POST", path: "/api/sales/orders", description: "Create a new sales order" },
+                { method: "PUT", path: "/api/sales/orders/[id]", description: "Update a specific sales order" },
+                { method: "DELETE", path: "/api/sales/orders/[id]", description: "Delete a specific sales order" },
+                { method: "GET", path: "/api/sales/returns", description: "List sales returns" },
+                { method: "POST", path: "/api/sales/returns", description: "Record a sales return" },
+                { method: "GET", path: "/api/sales/split-payments", description: "List split payment records" },
+                { method: "POST", path: "/api/sales/invoices/[id]/void", description: "Void a specific sales invoice" },
+                { method: "GET", path: "/api/sales/voids-report", description: "Get a report of voided transactions" },
+                { method: "GET", path: "/api/sales/x-reading", description: "Get current shift X-reading (interim report)" },
+                { method: "POST", path: "/api/sales/x-reading", description: "Save/print an X-reading" },
+                { method: "GET", path: "/api/sales/z-reading", description: "Get Z-reading (end-of-day report)" },
+                { method: "POST", path: "/api/sales/z-reading", description: "Close the day and save a Z-reading" },
+                { method: "GET", path: "/api/sales/overall-reading", description: "Get cumulative overall reading" },
+                { method: "GET", path: "/api/sales/ejournal", description: "Get the electronic journal of sales" }
             ]
         },
         {
-            title: "Notifications",
-            icon: <Bell className="w-5 h-5 text-blue-400" />,
-            endpoints: [
-                { method: "GET", path: "/api/notifications", description: "Get unread notifications" },
-                { method: "PUT", path: "/api/notifications", description: "Mark notification as read" },
-            ]
-        },
-        {
-            title: "Backup & Utilities",
-            icon: <ShieldCheck className="w-5 h-5 text-emerald-500" />,
-            endpoints: [
-                { method: "GET", path: "/api/backup", description: "Get recent backup jobs" },
-                { method: "POST", path: "/api/backup", description: "Trigger new database backup" },
-                { method: "GET", path: "/api/backup/download/[id]", description: "Download backup file" },
-                { method: "GET", path: "/api/invoices/next-number", description: "Get next invoice number" },
-                { method: "GET", path: "/api/purchase-orders/next-number", description: "Get next PO number" },
-                { method: "GET", path: "/api/transactions/next-reference", description: "Get next transaction reference" },
-            ]
-        },
-        {
-            title: "Authentication",
-            icon: <Lock className="w-5 h-5 text-red-400" />,
-            endpoints: [
-                { method: "GET", path: "/api/auth", description: "Get session status" },
-                { method: "POST", path: "/api/auth/login", description: "User login" },
-                { method: "POST", path: "/api/auth/logout", description: "User logout" }
-            ]
-        }
-    ];
-
-    const posCategories = [
-        {
-            title: "Point of Sale Operations",
+            title: "POS (Point of Sale)",
             icon: <Store className="w-5 h-5 text-blue-600" />,
             endpoints: [
-                { method: "POST", path: "/api/pos/checkout", description: "Process transaction checkout" },
-                { method: "POST", path: "/api/pos/cash-transfer", description: "Transfer cash between terminals" },
-                { method: "POST", path: "/api/pos/payment-validation", description: "Validate payment status" },
-                { method: "GET", path: "/api/pos/recent-sales", description: "Get recently completed sales" },
-                { method: "GET", path: "/api/pos/shifts", description: "Manage cashier shifts" },
-                { method: "GET", path: "/api/pos/terminals", description: "List all POS terminals" },
-                { method: "POST", path: "/api/pos/void-transaction", description: "Void a specific transaction" },
-                { method: "GET", path: "/api/pos-terminals", description: "Manage POS terminals" },
-                { method: "GET", path: "/api/pos-transactions", description: "Get POS transactions" }
+                { method: "POST", path: "/api/pos/checkout", description: "Process a POS checkout/sale" },
+                { method: "POST", path: "/api/pos/payment-validation", description: "Validate payment details before checkout" },
+                { method: "POST", path: "/api/pos/void-transaction", description: "Void a POS transaction" },
+                { method: "GET", path: "/api/pos/cash-transfer", description: "Get cash transfer records for the shift" },
+                { method: "POST", path: "/api/pos/cash-transfer", description: "Record a cash transfer in/out" },
+                { method: "GET", path: "/api/pos/terminals", description: "List POS terminals" },
+                { method: "GET", path: "/api/pos/shifts", description: "Get shift records" },
+                { method: "POST", path: "/api/pos/shifts", description: "Open a new POS shift" },
+                { method: "PUT", path: "/api/pos/shifts", description: "Update/close a POS shift" },
+                { method: "GET", path: "/api/pos/recent-sales", description: "Get recent sales for the active terminal" },
+                { method: "GET", path: "/api/pos-settings", description: "Get POS configuration settings" },
+                { method: "POST", path: "/api/pos-settings", description: "Save POS configuration settings" },
+                { method: "POST", path: "/api/pos-settings/upload-logo", description: "Upload a logo for POS receipts" },
+                { method: "GET", path: "/api/pos-terminals", description: "List all POS terminal registrations" },
+                { method: "POST", path: "/api/pos-terminals", description: "Register a new POS terminal" },
+                { method: "PUT", path: "/api/pos-terminals", description: "Update a POS terminal" },
+                { method: "DELETE", path: "/api/pos-terminals", description: "Deregister a POS terminal" },
+                { method: "GET", path: "/api/pos-transactions", description: "List POS transaction records" },
+                { method: "POST", path: "/api/pos-transactions", description: "Record a POS transaction" }
             ]
         },
         {
-            title: "Sales & Orders",
-            icon: <TrendingUp className="w-5 h-5 text-purple-600" />,
+            title: "Inventory",
+            icon: <Package className="w-5 h-5 text-teal-600" />,
             endpoints: [
-                { method: "GET", path: "/api/sales", description: "General sales overview" },
-                { method: "GET", path: "/api/sales/by-date", description: "Sales analytics by date" },
-                { method: "GET", path: "/api/sales/by-product", description: "Sales analytics by product" },
-                { method: "GET", path: "/api/sales/hourly", description: "Hourly sales breakdown" },
-                { method: "POST", path: "/api/sales/invoices/[id]/void", description: "Void a sales invoice" },
-                { method: "GET", path: "/api/sales/monthly-category", description: "Monthly sales by category" },
-                { method: "GET", path: "/api/sales/orders", description: "Manage sales orders" },
-                { method: "GET", path: "/api/sales/orders/[id]", description: "Get specific sales order" },
-                { method: "GET", path: "/api/sales/returns", description: "Handle sales returns" },
-                { method: "GET", path: "/api/sales/top-products", description: "Get top selling products" },
-                { method: "GET", path: "/api/sales/transactions", description: "History of all transactions" },
-                { method: "GET", path: "/api/sales/voids-report", description: "Report of voided transactions" },
-                { method: "GET", path: "/api/sales/x-reading", description: "Generate X-Reading report" },
-                { method: "GET", path: "/api/sales/z-reading", description: "Generate Z-Reading report" },
-                { method: "GET", path: "/api/sales-areas", description: "Manage sales areas" },
-                { method: "GET", path: "/api/sales-groups", description: "Manage sales groups" },
-                { method: "GET", path: "/api/sales-persons", description: "Manage sales persons" },
-                { method: "GET", path: "/api/sales-persons/[id]", description: "Get specific sales person" }
+                { method: "GET", path: "/api/inventory/stock-counts", description: "List all stock count sessions" },
+                { method: "POST", path: "/api/inventory/stock-counts", description: "Start a new stock count session" },
+                { method: "GET", path: "/api/inventory/stock-counts/[id]", description: "Get a specific stock count session" },
+                { method: "PUT", path: "/api/inventory/stock-counts/[id]", description: "Update a stock count session" },
+                { method: "DELETE", path: "/api/inventory/stock-counts/[id]", description: "Delete a stock count session" },
+                { method: "PUT", path: "/api/inventory/stock-counts/[id]/items", description: "Update counted items within a stock count" },
+                { method: "POST", path: "/api/inventory/stock-counts/[id]/complete", description: "Mark a stock count as complete and apply variances" },
+                { method: "GET", path: "/api/inventory/transfer", description: "List inventory transfer records" },
+                { method: "POST", path: "/api/inventory/transfer", description: "Create an inventory transfer between warehouses" },
+                { method: "POST", path: "/api/inventory/transfer/bulk", description: "Create multiple inventory transfers at once" },
+                { method: "POST", path: "/api/inventory/adjust/bulk", description: "Apply bulk inventory adjustments" }
             ]
         },
         {
-            title: "Customers & Loyalty",
-            icon: <Users className="w-5 h-5 text-indigo-500" />,
+            title: "Warehouses & Shelf Locations",
+            icon: <LayoutGrid className="w-5 h-5 text-indigo-600" />,
             endpoints: [
-                { method: "GET", path: "/api/customers", description: "Get all customers" },
-                { method: "GET", path: "/api/customers/[id]", description: "Get specific customer" },
-                { method: "GET", path: "/api/customers/balances", description: "Get customer balances" },
-                { method: "GET", path: "/api/customer-payments", description: "Get all customer payments" },
-                { method: "GET", path: "/api/customers/payments", description: "Manage customer payments" },
-                { method: "GET", path: "/api/customers/invoices/outstanding", description: "Get outstanding invoices" },
-                { method: "GET", path: "/api/customers/invoices/[id]", description: "Get customer invoices" },
-                { method: "POST", path: "/api/customers/invoices/[id]/payment", description: "Process customer payment" },
-                { method: "GET", path: "/api/customer-loyalty", description: "Get loyalty card data" },
-                { method: "POST", path: "/api/customer-loyalty/adjust-points", description: "Manually adjust points" },
-                { method: "GET", path: "/api/customer-loyalty/point-history", description: "View point activity log" },
-                { method: "GET", path: "/api/customer-loyalty/[id]", description: "Get specific loyalty data" }
+                { method: "GET", path: "/api/warehouses", description: "List all warehouses" },
+                { method: "POST", path: "/api/warehouses", description: "Create a new warehouse" },
+                { method: "GET", path: "/api/warehouses/[id]", description: "Get a specific warehouse" },
+                { method: "PUT", path: "/api/warehouses/[id]", description: "Update a specific warehouse" },
+                { method: "DELETE", path: "/api/warehouses/[id]", description: "Delete a specific warehouse" },
+                { method: "GET", path: "/api/shelf-locations", description: "List all shelf locations" },
+                { method: "POST", path: "/api/shelf-locations", description: "Create a new shelf location" },
+                { method: "PUT", path: "/api/shelf-locations/[id]", description: "Update a specific shelf location" },
+                { method: "DELETE", path: "/api/shelf-locations/[id]", description: "Delete a specific shelf location" }
             ]
         },
         {
-            title: "Products & Inventory",
-            icon: <Package className="w-5 h-5 text-green-600" />,
+            title: "Stock Adjustments & Movements",
+            icon: <ArrowRightLeft className="w-5 h-5 text-blue-500" />,
             endpoints: [
-                { method: "GET", path: "/api/products", description: "List available products" },
-                { method: "GET", path: "/api/products/[id]", description: "Get specific product details" },
-                { method: "GET", path: "/api/products/attributes", description: "Manage product attributes" },
-                { method: "GET", path: "/api/price-levels", description: "Manage product price levels" },
-                { method: "GET", path: "/api/stock-movements", description: "Track item movements" },
-                { method: "GET", path: "/api/stock-adjustments", description: "Manage stock adjustments" },
-                { method: "GET", path: "/api/stock-adjustments/[id]", description: "Get specific stock adjustment" },
-                { method: "GET", path: "/api/warehouses", description: "Manage warehouses" },
-                { method: "GET", path: "/api/warehouses/[id]", description: "Get specific warehouse" },
-                { method: "GET", path: "/api/bad-orders", description: "Log defective or expired goods" },
-                { method: "GET", path: "/api/bad-orders/stats", description: "Get bad orders statistics" },
-                { method: "GET", path: "/api/bad-orders/[id]", description: "Get specific bad order" },
-                { method: "POST", path: "/api/send-products", description: "Send products" }
-            ]
-        },
-        {
-            title: "Purchasing & Suppliers",
-            icon: <Truck className="w-5 h-5 text-amber-600" />,
-            endpoints: [
-                { method: "GET", path: "/api/purchase-orders", description: "Get all purchase orders" },
-                { method: "GET", path: "/api/purchase-orders/[id]", description: "Get specific purchase order" },
-                { method: "GET", path: "/api/suppliers", description: "Get all suppliers" },
-                { method: "GET", path: "/api/suppliers/[id]", description: "Get specific supplier" },
-                { method: "GET", path: "/api/suppliers/[id]/balance", description: "Get supplier balance" },
-                { method: "GET", path: "/api/temp-suppliers", description: "Manage temporary suppliers" }
-            ]
-        },
-        {
-            title: "Finance & Accounts",
-            icon: <Activity className="w-5 h-5 text-emerald-600" />,
-            endpoints: [
-                { method: "GET", path: "/api/accounts", description: "Manage chart of accounts" },
-                { method: "GET", path: "/api/payment-methods", description: "Manage payment methods" },
-                { method: "GET", path: "/api/payment-methods/[id]", description: "Get specific payment method" },
-                { method: "GET", path: "/api/payment-terms", description: "Manage payment terms" },
-                { method: "GET", path: "/api/payment-term-types", description: "Manage payment term types" },
-                { method: "GET", path: "/api/transaction-references", description: "Manage transaction references" },
-                { method: "GET", path: "/api/transactions/all-references", description: "Get all references" },
-                { method: "GET", path: "/api/transactions/last-references", description: "Get last references" }
-            ]
-        },
-        {
-            title: "Configuration & Management",
-            icon: <Settings className="w-5 h-5 text-gray-600" />,
-            endpoints: [
-                { method: "GET", path: "/api/pos-settings", description: "Retrieve terminal settings" },
-                { method: "POST", path: "/api/pos-settings/upload-logo", description: "Upload receipt/display logo" },
-                { method: "GET", path: "/api/loyalty-settings", description: "Manage loyalty program settings" },
-                { method: "GET", path: "/api/loyalty-settings/[id]", description: "Get specific loyalty setting" },
-                { method: "GET", path: "/api/settings/api-config", description: "External API connection config" },
-                { method: "GET", path: "/api/settings/api-connection", description: "Test API connection" },
-                { method: "GET", path: "/api/settings/external-api", description: "Manage external API settings" },
-                { method: "GET", path: "/api/settings/tax-rates", description: "Manage tax rates" },
-                { method: "GET", path: "/api/settings/tax-rates/[id]", description: "Get specific tax rate" },
-                { method: "GET", path: "/api/settings/database", description: "Database settings" }
-            ]
-        },
-        {
-            title: "Data Operations & Backup",
-            icon: <Database className="w-5 h-5 text-teal-600" />,
-            endpoints: [
-                { method: "GET", path: "/api/data", description: "General data operations" },
-                { method: "POST", path: "/api/data-management/reset", description: "Reset terminal data" },
-                { method: "GET", path: "/api/data-management/export/products", description: "Export products data" },
-                { method: "POST", path: "/api/data-management/import/products", description: "Import products data" },
-                { method: "GET", path: "/api/settings/backup/files", description: "List backup files" },
-                { method: "GET", path: "/api/settings/backup/download/[filename]", description: "Download specific backup" },
-                { method: "POST", path: "/api/settings/backup/manual", description: "Trigger manual backup" },
-                { method: "POST", path: "/api/settings/backup/schedule", description: "Configure backup schedule" },
-                { method: "GET", path: "/api/migrate", description: "Database migration operations" },
-                { method: "POST", path: "/api/forward", description: "Forward data operations" },
-                { method: "GET", path: "/api/external-api/logs", description: "View external API sync logs" },
-                { method: "POST", path: "/api/external-api/logs/[id]/retry", description: "Retry failed API sync" }
+                { method: "GET", path: "/api/stock-adjustments", description: "List stock adjustment records" },
+                { method: "POST", path: "/api/stock-adjustments", description: "Create a stock adjustment entry" },
+                { method: "GET", path: "/api/stock-adjustments/[id]", description: "Get a specific stock adjustment" },
+                { method: "GET", path: "/api/stock-movements", description: "List stock movement history" },
+                { method: "POST", path: "/api/stock-movements", description: "Record a stock movement" },
+                { method: "GET", path: "/api/bad-orders", description: "List bad order (damaged/expired) records" },
+                { method: "POST", path: "/api/bad-orders", description: "Record a new bad order" },
+                { method: "GET", path: "/api/bad-orders/[id]", description: "Get a specific bad order" },
+                { method: "PATCH", path: "/api/bad-orders/[id]", description: "Update a specific bad order" },
+                { method: "DELETE", path: "/api/bad-orders/[id]", description: "Delete a specific bad order" },
+                { method: "GET", path: "/api/bad-orders/stats", description: "Get bad order statistics summary" }
             ]
         },
         {
             title: "Reports",
             icon: <FileBarChart className="w-5 h-5 text-orange-600" />,
             endpoints: [
-                { method: "GET", path: "/api/reports/adjustments", description: "Stock adjustments report" },
-                { method: "GET", path: "/api/reports/inventory", description: "Generate inventory level reports" },
-                { method: "GET", path: "/api/reports/movements", description: "Stock movements report" },
-                { method: "GET", path: "/api/reports/soa", description: "Statement of Account reports" },
-                { method: "GET", path: "/api/reports/stats", description: "General performance statistics" },
-                { method: "GET", path: "/api/reports/velocity", description: "Item sales velocity analytics" }
+                { method: "GET", path: "/api/reports/stats", description: "Get high-level dashboard statistics" },
+                { method: "GET", path: "/api/reports/inventory", description: "Get inventory valuation report" },
+                { method: "GET", path: "/api/reports/movements", description: "Get stock movement report" },
+                { method: "GET", path: "/api/reports/adjustments", description: "Get inventory adjustments report" },
+                { method: "GET", path: "/api/reports/velocity", description: "Get product velocity (turnover rate) report" },
+                { method: "GET", path: "/api/reports/purchases/by-supplier", description: "Get purchases aggregated by supplier" },
+                { method: "GET", path: "/api/reports/purchases/by-product", description: "Get purchases aggregated by product" },
+                { method: "GET", path: "/api/reports/soa", description: "Get Statement of Account (SOA) report for a customer" }
             ]
         },
         {
-            title: "Authentication & Users",
-            icon: <Lock className="w-5 h-5 text-red-500" />,
+            title: "Settings",
+            icon: <Settings className="w-5 h-5 text-gray-600" />,
             endpoints: [
-                { method: "POST", path: "/api/auth/login", description: "User or POS terminal login" },
-                { method: "POST", path: "/api/auth/signup", description: "Register new user" },
-                { method: "GET", path: "/api/users", description: "Manage system users" },
-                { method: "GET", path: "/api/users/[uid]", description: "Get specific user details" }
+                { method: "GET", path: "/api/settings/database", description: "Get database connection info" },
+                { method: "POST", path: "/api/settings/database", description: "Update database connection settings" },
+                { method: "GET", path: "/api/settings/api-config", description: "Get API configuration" },
+                { method: "GET", path: "/api/settings/api-connection", description: "Get external API connection status" },
+                { method: "POST", path: "/api/settings/api-connection", description: "Save external API connection settings" },
+                { method: "GET", path: "/api/settings/tax-rates", description: "List all tax rates" },
+                { method: "POST", path: "/api/settings/tax-rates", description: "Create a new tax rate" },
+                { method: "PUT", path: "/api/settings/tax-rates/[id]", description: "Update a specific tax rate" },
+                { method: "DELETE", path: "/api/settings/tax-rates/[id]", description: "Delete a specific tax rate" },
+                { method: "GET", path: "/api/settings/external-api", description: "List configured external API connections" },
+                { method: "POST", path: "/api/settings/external-api", description: "Add a new external API connection" },
+                { method: "PUT", path: "/api/settings/external-api", description: "Update external API connection (bulk)" },
+                { method: "PUT", path: "/api/settings/external-api/[id]", description: "Update a specific external API connection" },
+                { method: "DELETE", path: "/api/settings/external-api/[id]", description: "Delete a specific external API connection" },
+                { method: "POST", path: "/api/settings/backup/manual", description: "Trigger a manual database backup" },
+                { method: "GET", path: "/api/settings/backup/files", description: "List available backup files" },
+                { method: "GET", path: "/api/settings/backup/download/[filename]", description: "Download a specific backup file" },
+                { method: "POST", path: "/api/settings/backup/restore", description: "Restore the database from a backup file" },
+                { method: "GET", path: "/api/settings/backup/schedule", description: "Get the backup schedule configuration" },
+                { method: "POST", path: "/api/settings/backup/schedule", description: "Save the backup schedule configuration" }
+            ]
+        },
+        {
+            title: "Cloud Sync",
+            icon: <RefreshCw className="w-5 h-5 text-sky-500" />,
+            endpoints: [
+                { method: "GET", path: "/api/cloud-sync/health", description: "Check health/connectivity of the cloud sync service" },
+                { method: "GET", path: "/api/cloud-sync/status", description: "Get the current cloud sync status and last sync time" },
+                { method: "POST", path: "/api/cloud-sync/push", description: "Push local data changes to the cloud" },
+                { method: "GET", path: "/api/cloud-sync/pull", description: "Pull data changes from the cloud" },
+                { method: "POST", path: "/api/sync/push", description: "Alternative sync push endpoint" },
+                { method: "GET", path: "/api/sync/pull", description: "Alternative sync pull endpoint" }
+            ]
+        },
+        {
+            title: "External API",
+            icon: <Terminal className="w-5 h-5 text-indigo-400" />,
+            endpoints: [
+                { method: "GET", path: "/api/external-api/logs", description: "List external API call logs" },
+                { method: "POST", path: "/api/external-api/logs", description: "Record a new external API log entry" },
+                { method: "POST", path: "/api/external-api/logs/[id]/retry", description: "Retry a failed external API call" }
+            ]
+        },
+        {
+            title: "Approvals",
+            icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
+            endpoints: [
+                { method: "GET", path: "/api/approvals/workflows", description: "List approval workflow definitions" },
+                { method: "POST", path: "/api/approvals/workflows", description: "Create a new approval workflow" },
+                { method: "GET", path: "/api/approvals/queue", description: "Get items pending approval" },
+                { method: "POST", path: "/api/approvals/process", description: "Approve or reject a pending item" }
+            ]
+        },
+        {
+            title: "Data Management",
+            icon: <Database className="w-5 h-5 text-teal-600" />,
+            endpoints: [
+                { method: "GET", path: "/api/data-management/export/customers", description: "Export customers to CSV/Excel" },
+                { method: "GET", path: "/api/data-management/export/products", description: "Export products to CSV/Excel" },
+                { method: "GET", path: "/api/data-management/export/suppliers", description: "Export suppliers to CSV/Excel" },
+                { method: "POST", path: "/api/data-management/import/customers", description: "Import customers from a file" },
+                { method: "POST", path: "/api/data-management/import/products", description: "Import products from a file" },
+                { method: "POST", path: "/api/data-management/import/suppliers", description: "Import suppliers from a file" },
+                { method: "POST", path: "/api/data-management/reset", description: "Reset/wipe selected data from the system" }
+            ]
+        },
+        {
+            title: "Accounts & Financials",
+            icon: <Database className="w-5 h-5 text-blue-500" />,
+            endpoints: [
+                { method: "GET", path: "/api/accounts", description: "List chart of accounts" },
+                { method: "POST", path: "/api/accounts", description: "Create a new account entry" }
+            ]
+        },
+        {
+            title: "Reference & Configuration Data",
+            icon: <Settings className="w-5 h-5 text-gray-400" />,
+            endpoints: [
+                { method: "GET", path: "/api/payment-methods", description: "List payment methods" },
+                { method: "POST", path: "/api/payment-methods", description: "Create a new payment method" },
+                { method: "GET", path: "/api/payment-methods/[id]", description: "Get a specific payment method" },
+                { method: "PUT", path: "/api/payment-methods/[id]", description: "Update a specific payment method" },
+                { method: "DELETE", path: "/api/payment-methods/[id]", description: "Delete a specific payment method" },
+                { method: "GET", path: "/api/payment-terms", description: "List payment terms" },
+                { method: "POST", path: "/api/payment-terms", description: "Create a new payment term" },
+                { method: "PUT", path: "/api/payment-terms", description: "Update a payment term (query-based)" },
+                { method: "DELETE", path: "/api/payment-terms", description: "Delete a payment term (query-based)" },
+                { method: "GET", path: "/api/payment-term-types", description: "List payment term types" },
+                { method: "POST", path: "/api/payment-term-types", description: "Create a payment term type" },
+                { method: "DELETE", path: "/api/payment-term-types", description: "Delete a payment term type" },
+                { method: "GET", path: "/api/sales-areas", description: "List sales areas" },
+                { method: "POST", path: "/api/sales-areas", description: "Create a sales area" },
+                { method: "DELETE", path: "/api/sales-areas", description: "Delete a sales area" },
+                { method: "GET", path: "/api/sales-groups", description: "List sales groups" },
+                { method: "POST", path: "/api/sales-groups", description: "Create a sales group" },
+                { method: "DELETE", path: "/api/sales-groups", description: "Delete a sales group" },
+                { method: "GET", path: "/api/sales-persons", description: "List sales persons" },
+                { method: "POST", path: "/api/sales-persons", description: "Create a sales person" },
+                { method: "DELETE", path: "/api/sales-persons", description: "Delete a sales person (query-based)" },
+                { method: "PUT", path: "/api/sales-persons/[id]", description: "Update a specific sales person" },
+                { method: "DELETE", path: "/api/sales-persons/[id]", description: "Delete a specific sales person" },
+                { method: "GET", path: "/api/transaction-references", description: "List transaction references" },
+                { method: "POST", path: "/api/transaction-references", description: "Create a transaction reference" },
+                { method: "GET", path: "/api/transactions/all-references", description: "Get all transaction reference numbers" },
+                { method: "GET", path: "/api/transactions/last-references", description: "Get the last used transaction reference" }
+            ]
+        },
+        {
+            title: "Migrations",
+            icon: <RefreshCw className="w-5 h-5 text-purple-400" />,
+            endpoints: [
+                { method: "POST", path: "/api/migrate", description: "Run pending database migrations" },
+                { method: "GET", path: "/api/migrate/batch-costing", description: "Run/check batch costing migration" },
+                { method: "GET", path: "/api/migrate/fix-batch-ids", description: "Run/check fix for batch ID inconsistencies" }
+            ]
+        },
+        {
+            title: "Miscellaneous",
+            icon: <Activity className="w-5 h-5 text-gray-500" />,
+            endpoints: [
+                { method: "GET", path: "/api/data", description: "Retrieve general application data" },
+                { method: "POST", path: "/api/data", description: "Submit general application data" },
+                { method: "GET", path: "/api/forward", description: "Proxy/forward a request to another service" },
+                { method: "POST", path: "/api/forward", description: "Proxy/forward a POST request to another service" },
+                { method: "GET", path: "/api/send-products", description: "Get product push/send status" },
+                { method: "POST", path: "/api/send-products", description: "Push product data to an external system" }
             ]
         }
     ];
@@ -355,8 +437,12 @@ export default function APIEndpointsPage() {
         })).filter(category => category.endpoints.length > 0);
     };
 
-    const filteredAccounting = useMemo(() => filterCategories(accountingCategories), [searchQuery]);
-    const filteredPOS = useMemo(() => filterCategories(posCategories), [searchQuery]);
+    const midIndex = Math.ceil(apiCategories.length / 2);
+    const leftCategories = apiCategories.slice(0, midIndex);
+    const rightCategories = apiCategories.slice(midIndex);
+
+    const filteredLeft = useMemo(() => filterCategories(leftCategories), [searchQuery]);
+    const filteredRight = useMemo(() => filterCategories(rightCategories), [searchQuery]);
 
     const getMethodBadge = (method: string) => {
         switch (method) {
@@ -378,107 +464,108 @@ export default function APIEndpointsPage() {
                 </div>
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
-            <CardContent className="px-0">
-                <Accordion type="multiple" className="space-y-3">
-                    {categories.map((category: any, idx: number) => (
-                        <AccordionItem
-                            key={idx}
-                            value={category.title}
-                            className="bg-card border rounded-lg overflow-hidden shadow-sm"
-                        >
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/30">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-1.5 bg-muted rounded-md shrink-0">
-                                        {category.icon}
-                                    </div>
-                                    <div className="text-left">
-                                        <span className="font-semibold text-sm">{category.title}</span>
-                                        <div className="text-[10px] text-muted-foreground">
-                                            {category.endpoints.length} Endpoint{category.endpoints.length !== 1 ? 's' : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 pb-4 pt-1">
-                                <div className="space-y-2 mt-2">
-                                    {category.endpoints.map((ep: any, eIdx: number) => (
-                                        <div
-                                            key={eIdx}
-                                            className="group flex flex-col gap-1.5 p-3 rounded-md bg-muted/40 border border-transparent hover:border-border hover:bg-muted/60 transition-all"
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2 overflow-hidden">
-                                                    {getMethodBadge(ep.method)}
-                                                    <code className="text-[11px] font-mono font-medium text-foreground/80 truncate">
-                                                        {ep.path}
-                                                    </code>
-                                                </div>
-                                                <CopyButton text={ep.path} />
-                                            </div>
-                                            <div className="text-[11px] text-muted-foreground px-0.5">
-                                                {ep.description}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-                {categories.length === 0 && (
-                    <div className="text-center py-10 bg-muted/10 rounded-lg border border-dashed text-muted-foreground text-sm">
-                        No matches in this section
+            <CardContent className="px-0 space-y-6">
+                {categories.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground border border-dashed rounded-xl">
+                        No endpoints match your search.
                     </div>
+                ) : (
+                    categories.map((category: any, idx: number) => (
+                        <div key={idx} className="space-y-3">
+                            <div className="flex items-center gap-2 pb-2 border-b">
+                                {category.icon}
+                                <h3 className="font-semibold text-foreground/80">{category.title}</h3>
+                                <Badge variant="secondary" className="ml-auto text-[10px] font-mono">
+                                    {category.endpoints.length} routes
+                                </Badge>
+                            </div>
+                            <Accordion type="multiple" className="w-full space-y-2">
+                                {category.endpoints.map((ep: any, eIdx: number) => (
+                                    <AccordionItem key={eIdx} value={`item-${idx}-${eIdx}`} className="border rounded-lg bg-card/50 px-3 overflow-hidden">
+                                        <AccordionTrigger className="hover:no-underline py-3">
+                                            <div className="flex items-center gap-3 text-left w-full">
+                                                {getMethodBadge(ep.method)}
+                                                <code className="text-xs font-mono font-medium truncate shrink">
+                                                    {ep.path}
+                                                </code>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pb-3 pt-1 border-t text-sm text-muted-foreground space-y-3">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <p>{ep.description}</p>
+                                                <CopyButton text={`${ep.method} ${ep.path}`} />
+                                            </div>
+                                            {ep.params && (
+                                                <div className="bg-muted p-2 rounded-md text-xs font-mono">
+                                                    <span className="text-foreground/50">Params: </span>
+                                                    <span className="text-foreground/80">{ep.params}</span>
+                                                </div>
+                                            )}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </div>
+                    ))
                 )}
             </CardContent>
         </Card>
     );
 
     return (
-        <div className="min-h-screen bg-background/95 p-6 md:p-8">
-            <div className="max-w-[1600px] mx-auto space-y-8">
-                {/* Header */}
-                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 pb-6 border-b">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-primary">
-                            <Terminal className="w-6 h-6" />
-                            <span className="font-mono text-sm tracking-widest uppercase">API Synchronization Hub</span>
+        <div className="min-h-screen bg-background pb-12">
+            {/* Header Section */}
+            <div className="bg-card border-b relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-50" />
+                <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2.5 bg-primary/10 rounded-xl">
+                            <Terminal className="w-6 h-6 text-primary" />
                         </div>
-                        <h1 className="text-4xl font-extrabold tracking-tight">API Documentation</h1>
-                        <p className="text-muted-foreground text-lg max-w-2xl">
-                            A dual-reference documentation for the LJMA System, showcasing existing Accounting services and upcoming POS integrations.
+                        <h1 className="text-3xl font-extrabold tracking-tight">API Documentation Hub</h1>
+                    </div>
+                    <p className="text-lg text-muted-foreground max-w-3xl">
+                        A comprehensive documentation for all Stock Pilot API Routes.
+                    </p>
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 mt-8 space-y-8">
+                {/* Search & Filter */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-card p-4 rounded-2xl border shadow-sm">
+                    <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-muted rounded-md">
+                            <Search className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Search endpoints by path or description
                         </p>
                     </div>
 
-                    <div className="relative w-full lg:w-96">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Find endpoint across systems..."
-                            className="pl-10 h-12 bg-muted/50 border-none shadow-inner focus-visible:ring-primary/20"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                    <div className="relative w-full md:w-96">
+                        <Input placeholder="Find endpoint..." className="pl-4 bg-muted/50 border-none shadow-inner focus-visible:ring-primary/20" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                 </div>
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {/* Left Column: Accounting */}
+                    {/* Left Column */}
                     <APIList
-                        title="Accounting API"
-                        description="Legacy systems for ledger management, procurement, and administrative reporting."
-                        categories={filteredAccounting}
+                        title="Core & Management API"
+                        description="Endpoints for users, products, sales, and primary entities."
+                        categories={filteredLeft}
                         color="bg-blue-500"
                     />
 
                     {/* Divider for Desktop */}
                     <div className="hidden lg:block absolute left-1/2 top-[280px] bottom-12 w-px bg-border -translate-x-1/2 opacity-50" />
 
-                    {/* Right Column: POS */}
+                    {/* Right Column */}
                     <APIList
-                        title="POS API"
-                        description="New endpoints designed for real-time retail transactions and terminal synchronization."
-                        categories={filteredPOS}
+                        title="Operations & Settings API"
+                        description="Endpoints for inventory, configuration, migrations, and system tools."
+                        categories={filteredRight}
                         color="bg-emerald-500"
                     />
                 </div>
@@ -499,46 +586,18 @@ export default function APIEndpointsPage() {
                             <ArrowRightLeft className="w-5 h-5 text-emerald-500" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-sm font-bold">Data Sync</h4>
-                            <p className="text-xs text-muted-foreground">POS transactions automatically reconcile with Accounting ledgers via internal bridge services.</p>
+                            <h4 className="text-sm font-bold">Real-time Sync</h4>
+                            <p className="text-xs text-muted-foreground">POS data synchronizes locally when online, bridging retail operations with core ledgers.</p>
                         </div>
                     </div>
-                    <div className="p-5 bg-orange-500/5 rounded-xl border border-orange-500/10 flex gap-4">
-                        <div className="shrink-0 p-3 bg-orange-500/10 rounded-lg h-fit">
-                            <RefreshCw className="w-5 h-5 text-orange-500" />
+                    <div className="p-5 bg-purple-500/5 rounded-xl border border-purple-500/10 flex gap-4">
+                        <div className="shrink-0 p-3 bg-purple-500/10 rounded-lg h-fit">
+                            <Activity className="w-5 h-5 text-purple-500" />
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-sm font-bold">POS Versioning</h4>
-                            <p className="text-xs text-muted-foreground">The POS API is currently in V2-RC (Release Candidate) phase. Expect minor path adjustments.</p>
+                            <h4 className="text-sm font-bold">Monitoring</h4>
+                            <p className="text-xs text-muted-foreground">All external terminal requests are logged and monitored for latency and success rates.</p>
                         </div>
-                    </div>
-                </div>
-
-                {/* Developer Attribution */}
-                <div className="pt-8 flex flex-col items-center text-center space-y-2">
-                    <Separator className="mb-6 opacity-50" />
-                    <div className="flex items-center gap-2 text-muted-foreground/60 text-xs font-medium uppercase tracking-widest">
-                        <Users className="w-3.5 h-3.5" />
-                        <span>Developed By</span>
-                    </div>
-                    <p className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                        Rex C. Domingo & Jhazon Enanoria
-                    </p>
-                    <div className="flex flex-col md:flex-row items-center gap-4">
-                        <a
-                            href="mailto:rexdomingocabiling@gmail.com"
-                            className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-                        >
-                            <Bell className="w-3.5 h-3.5" />
-                            rexdomingocabiling@gmail.com
-                        </a>
-                        <a
-                            href="mailto:jhazoneanoria@gmail.com"
-                            className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
-                        >
-                            <Bell className="w-3.5 h-3.5" />
-                            jhazoneanoria@gmail.com
-                        </a>
                     </div>
                 </div>
             </div>

@@ -137,9 +137,9 @@ export default function AddSupplierDialog() {
 
   return (
     <Dialog open={openDialogs["add-supplier"]} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[85vh]">
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[85vh]">
         {/* Premium Header */}
-        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+        <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-400/10 via-transparent to-transparent pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-4">
@@ -147,22 +147,17 @@ export default function AddSupplierDialog() {
               <Building2 className="h-6 w-6" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">
                 {isEditMode ? "Supplier Refinement" : "Vendor Acquisition"}
               </DialogTitle>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-400/20 text-blue-400 border border-blue-400/20">Supply Chain Node</span>
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Global Provider Database</span>
+                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Global Provider Database</span>
               </div>
             </div>
           </div>
 
-          <button 
-            onClick={handleClose}
-            className="relative z-10 p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          
         </div>
 
         <ScrollArea className="flex-1">
@@ -172,36 +167,30 @@ export default function AddSupplierDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-blue-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Entity Identification</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Entity Identification</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Legal Trade Name</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Legal Trade Name</Label>
                     <div className="relative">
-                      <Input 
-                        value={formData.name} 
-                        onChange={(e) => handleInputChange("name", e.target.value)}
-                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10 font-bold uppercase italic tracking-tight" 
+                      <Input value={formData.name} onChange={(e) => handleInputChange("name", e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10 font-bold uppercase italic tracking-tight" 
                         placeholder="OFFICIAL VENDOR NAME"
                       />
-                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Company Alias</Label>
-                      <Input 
-                        value={formData.contactPerson} 
-                        onChange={(e) => handleInputChange("contactPerson", e.target.value)}
-                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl" 
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Company Alias</Label>
+                      <Input value={formData.contactPerson} onChange={(e) => handleInputChange("contactPerson", e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl" 
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Tax ID (TIN)</Label>
-                      <Input 
-                        value={formData.vatInfo} 
-                        onChange={(e) => handleInputChange("vatInfo", e.target.value)}
-                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-mono text-xs" 
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Tax ID (TIN)</Label>
+                      <Input value={formData.vatInfo} onChange={(e) => handleInputChange("vatInfo", e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl font-mono text-xs" 
                         placeholder="000-000-000-000"
                       />
                     </div>
@@ -212,42 +201,36 @@ export default function AddSupplierDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-emerald-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Communication Node</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Communication Node</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Primary Email Gateway</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Primary Email Gateway</Label>
                     <div className="relative">
-                      <Input 
-                        value={formData.email} 
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                      <Input value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10" 
                         placeholder="vendor@enterprise.net"
                       />
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Landline Comms</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Landline Comms</Label>
                       <div className="relative">
-                        <Input 
-                          value={formData.phone} 
-                          onChange={(e) => handleInputChange("phone", e.target.value)}
-                          className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        <Input value={formData.phone} onChange={(e) => handleInputChange("phone", e.target.value)}
+                          className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10" 
                         />
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Mobile Uplink</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Mobile Uplink</Label>
                       <div className="relative">
-                        <Input 
-                          value={formData.phoneAlternative} 
-                          onChange={(e) => handleInputChange("phoneAlternative", e.target.value)}
-                          className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        <Input value={formData.phoneAlternative} onChange={(e) => handleInputChange("phoneAlternative", e.target.value)}
+                          className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10" 
                         />
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                       </div>
                     </div>
                   </div>
@@ -260,20 +243,20 @@ export default function AddSupplierDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-primary rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Commercial Configuration</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Commercial Configuration</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Settlement Terms</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Settlement Terms</Label>
                       <Select 
                         value={formData.paymentTerms} 
                         onValueChange={(val) => handleInputChange("paymentTerms", val)}
                       >
-                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl">
                           <SelectValue placeholder="Select Terms" />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectContent className="bg-card border-foreground/10 text-foreground">
                           <SelectItem value="Pay in Days">Standard Credit</SelectItem>
                           <SelectItem value="COD">Cash on Delivery</SelectItem>
                           <SelectItem value="Prepaid">Pre-Funded Protocol</SelectItem>
@@ -281,23 +264,20 @@ export default function AddSupplierDialog() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Margin Escalation (%)</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Margin Escalation (%)</Label>
                       <div className="relative">
-                        <Input 
-                          type="number" 
-                          value={formData.markup} 
-                          onChange={(e) => handleInputChange("markup", e.target.value)}
-                          className="bg-white/5 border-white/10 text-primary h-11 rounded-xl pl-10 font-black italic" 
+                        <Input type="number" value={formData.markup} onChange={(e) => handleInputChange("markup", e.target.value)}
+                          className="bg-foreground/5 border-foreground/10 text-primary h-11 rounded-xl pl-10 font-black italic" 
                         />
-                        <Percent className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                        <Percent className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Operation Parameters</Label>
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Operation Parameters</Label>
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-foreground/5 border border-foreground/10">
                        <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                       <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Auto-Reconcile Invoices</span>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-foreground/60">Auto-Reconcile Invoices</span>
                        <div className="ml-auto w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     </div>
                   </div>
@@ -307,19 +287,17 @@ export default function AddSupplierDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-orange-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Logistics Matrix</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Logistics Matrix</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Headquarters Address</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Headquarters Address</Label>
                     <div className="relative">
-                      <Textarea 
-                        value={formData.address} 
-                        onChange={(e) => handleInputChange("address", e.target.value)}
-                        className="bg-white/5 border-white/10 text-white rounded-xl min-h-[140px] pl-10 pt-3" 
+                      <Textarea value={formData.address} onChange={(e) => handleInputChange("address", e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl min-h-[140px] pl-10 pt-3" 
                         placeholder="Logistics Hub Location..."
                       />
-                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-white/20" />
+                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-foreground/20" />
                     </div>
                   </div>
                 </div>
@@ -329,25 +307,17 @@ export default function AddSupplierDialog() {
         </ScrollArea>
 
         {/* Action Footer */}
-        <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2 text-white/20">
+        <div className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2 text-foreground/20">
             <ShieldCheck className="h-4 w-4" />
             <span className="text-[10px] font-black uppercase tracking-widest">Provider Integrity Verified</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={handleClose}
-              className="px-6 h-12 rounded-xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-xs"
-            >
+            <Button variant="outline" onClick={handleClose} className="px-6 rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-xs" >
               Discard
             </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={loading}
-              className="px-8 h-12 rounded-xl bg-blue-400 hover:bg-blue-400/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-400/20 transition-all gap-2"
-            >
+            <Button onClick={handleSubmit} disabled={loading} className="px-8 rounded-xl bg-blue-400 hover:bg-blue-400/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-blue-400/20 transition-all gap-2" >
               {loading ? (
                 <div className="h-4 w-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
               ) : (

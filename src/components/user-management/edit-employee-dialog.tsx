@@ -138,19 +138,11 @@ export default function EditEmployeeDialog() {
                         <div className="space-y-2">
                             <Label htmlFor="edit-employeeId">Employee ID <span className="text-red-500">*</span></Label>
                             <div className="flex space-x-2">
-                                <Input
-                                    id="edit-employeeId"
-                                    value={formData.employeeId}
-                                    onChange={(e) => handleInputChange('employeeId', e.target.value)}
+                                <Input id="edit-employeeId" value={formData.employeeId} onChange={(e) => handleInputChange('employeeId', e.target.value)}
                                     placeholder="Enter Employee ID"
                                     className={isDuplicateId ? "border-red-500 pr-24" : "pr-24"}
                                 />
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={generateId}
-                                    className="shrink-0"
-                                >
+                                <Button type="button" variant="secondary" onClick={generateId} className="shrink-0" >
                                     Generate
                                 </Button>
                             </div>
@@ -160,10 +152,7 @@ export default function EditEmployeeDialog() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-designation">Designation</Label>
-                            <Input
-                                id="edit-designation"
-                                value={formData.designation}
-                                onChange={(e) => handleInputChange('designation', e.target.value)}
+                            <Input id="edit-designation" value={formData.designation} onChange={(e) => handleInputChange('designation', e.target.value)}
                                 placeholder="Enter designation"
                             />
                         </div>
@@ -172,19 +161,13 @@ export default function EditEmployeeDialog() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="edit-firstName">First Name <span className="text-red-500">*</span></Label>
-                            <Input
-                                id="edit-firstName"
-                                value={formData.firstName}
-                                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                            <Input id="edit-firstName" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e.target.value)}
                                 placeholder="First name"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-lastName">Last Name <span className="text-red-500">*</span></Label>
-                            <Input
-                                id="edit-lastName"
-                                value={formData.lastName}
-                                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                            <Input id="edit-lastName" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e.target.value)}
                                 placeholder="Last name"
                             />
                         </div>

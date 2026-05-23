@@ -67,14 +67,7 @@ export default function IncomeStatementPage() {
             <div className='col-span-2'>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    id="start-date"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !startDate && 'text-muted-foreground'
-                    )}
-                  >
+                  <Button variant={'outline'} id="start-date" className={cn( 'w-full justify-start text-left font-normal', !startDate && 'text-muted-foreground' )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {startDate ? format(startDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
                   </Button>
@@ -97,14 +90,7 @@ export default function IncomeStatementPage() {
             <div className='col-span-2'>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    id="end-date"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !endDate && 'text-muted-foreground'
-                    )}
-                  >
+                  <Button variant={'outline'} id="end-date" className={cn( 'w-full justify-start text-left font-normal', !endDate && 'text-muted-foreground' )} >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {endDate ? format(endDate, 'MM/dd/yyyy') : <span>Pick a date</span>}
                   </Button>

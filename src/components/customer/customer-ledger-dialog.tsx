@@ -92,7 +92,7 @@ export default function CustomerLedgerDialog() {
                             <Label className="text-xs font-semibold">From:</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-[140px] justify-start text-left h-8 text-xs font-normal">
+                                    <Button variant="outline" className="w-[140px] justify-start text-left text-xs font-normal">
                                         <CalendarIcon className="mr-2 h-3 w-3" />
                                         {fromDate ? format(fromDate, "MM/dd/yyyy") : "Start Date"}
                                     </Button>
@@ -106,7 +106,7 @@ export default function CustomerLedgerDialog() {
                             <Label className="text-xs font-semibold">To:</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-[140px] justify-start text-left h-8 text-xs font-normal">
+                                    <Button variant="outline" className="w-[140px] justify-start text-left text-xs font-normal">
                                         <CalendarIcon className="mr-2 h-3 w-3" />
                                         {toDate ? format(toDate, "MM/dd/yyyy") : "End Date"}
                                     </Button>
@@ -134,11 +134,11 @@ export default function CustomerLedgerDialog() {
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-12 text-muted-foreground animate-pulse">Running ledger analysis...</TableCell>
+                                    <TableCell colSpan={6} className="text-center text-muted-foreground animate-pulse">Running ledger analysis...</TableCell>
                                 </TableRow>
                             ) : transactions.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No ledger entries found for this customer.</TableCell>
+                                    <TableCell colSpan={6} className="text-center text-muted-foreground">No ledger entries found for this customer.</TableCell>
                                 </TableRow>
                             ) : (
                                 transactions.map((tx, idx) => {

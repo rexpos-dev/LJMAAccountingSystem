@@ -173,23 +173,13 @@ export default function BulkUploadAccountsDialog() {
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <label className="text-sm font-medium">Select CSV File</label>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={downloadTemplate}
-                                className="flex items-center gap-2"
-                            >
+                            <Button variant="outline" size="sm" onClick={downloadTemplate} className="flex items-center gap-2" >
                                 <Download className="h-4 w-4" />
                                 Download Template
                             </Button>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Input
-                                type="file"
-                                accept=".csv"
-                                onChange={handleFileChange}
-                                className="flex-1"
-                            />
+                            <Input type="file" accept=".csv" onChange={handleFileChange} className="flex-1" />
                             {file && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <FileText className="h-4 w-4" />
@@ -308,10 +298,7 @@ export default function BulkUploadAccountsDialog() {
                         {uploadResult ? 'Close' : 'Cancel'}
                     </Button>
                     {!uploadResult && (
-                        <Button
-                            onClick={handleUpload}
-                            disabled={!isValid || uploading}
-                        >
+                        <Button onClick={handleUpload} disabled={!isValid || uploading} >
                             {uploading ? 'Uploading...' : 'Upload'}
                         </Button>
                     )}

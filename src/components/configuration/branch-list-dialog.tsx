@@ -21,10 +21,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-context';
 import { useBranches, Branch } from '@/hooks/use-branches';
+import { useToast } from '@/hooks/use-toast';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function BranchListDialog() {
     const { openDialogs, closeDialog, openDialog, setDialogData } = useDialog();
     const { data: branches = [], isLoading, error, refetch, deleteBranch } = useBranches();
+    const { toast } = useToast();
+    const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
@@ -56,13 +61,14 @@ export default function BranchListDialog() {
     };
 
     const handleDelete = async () => {
-        if (selectedBranch && window.confirm(`Are you sure you want to delete branch "${selectedBranch.name}"?`)) {
-            try {
-                await deleteBranch(selectedBranch.id);
-                setSelectedBranch(null);
-            } catch (err: any) {
-                alert(err.message || 'Failed to delete branch');
-            }
+        if (!selectedBranch) return;
+        const ok = await confirm({ description: `Are you sure you want to delete branch "${selectedBranch.name}"?`, title: 'Delete Branch', variant: 'destructive' });
+        if (!ok) return;
+        try {
+            await deleteBranch(selectedBranch.id);
+            setSelectedBranch(null);
+        } catch (err: any) {
+            toast({ title: 'Error', description: err.message || 'Failed to delete branch', variant: 'destructive' });
         }
     };
 
@@ -79,6 +85,13 @@ export default function BranchListDialog() {
     };
 
     return (
+        <>
+        <ConfirmDialog
+            open={confirmOpen}
+            {...confirmOptions}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
         <Dialog open={openDialogs['branch-list']} onOpenChange={() => closeDialog('branch-list')}>
             <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
                 <DialogHeader>
@@ -90,30 +103,17 @@ export default function BranchListDialog() {
                         <Plus className="mr-2 h-4 w-4" />
                         Add
                     </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={!selectedBranch}
-                        onClick={handleEdit}
-                    >
+                    <Button variant="outline" size="sm" disabled={!selectedBranch} onClick={handleEdit} >
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                     </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={!selectedBranch}
-                        onClick={handleDelete}
-                    >
+                    <Button variant="outline" size="sm" disabled={!selectedBranch} onClick={handleDelete} >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                     </Button>
                     <div className="relative flex-1 ml-auto">
                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search..."
-                            value={searchQuery}
-                            onChange={(e) => {
+                        <Input placeholder="Search..." value={searchQuery} onChange={(e) => {
                                 setSearchQuery(e.target.value);
                                 setCurrentPage(1);
                             }}
@@ -137,19 +137,19 @@ export default function BranchListDialog() {
                         <TableBody>
                             {isLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center py-8 text-sm">
+                                    <TableCell colSpan={3} className="text-center text-sm">
                                         Loading...
                                     </TableCell>
                                 </TableRow>
                             ) : error ? (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center py-8 text-sm text-destructive">
+                                    <TableCell colSpan={3} className="text-center text-sm text-destructive">
                                         Failed to load
                                     </TableCell>
                                 </TableRow>
                             ) : paginatedBranches.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center py-8 text-sm text-muted-foreground">
+                                    <TableCell colSpan={3} className="text-center text-sm text-muted-foreground">
                                         {searchQuery ? 'No matches' : 'No branches'}
                                     </TableCell>
                                 </TableRow>
@@ -182,23 +182,13 @@ export default function BranchListDialog() {
 
                 <div className="border-t pt-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handlePreviousPage}
-                            disabled={currentPage === 1}
-                        >
+                        <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1} >
                             Prev
                         </Button>
                         <span className="text-sm text-muted-foreground px-2">
                             Page {currentPage} of {totalPages || 1}
                         </span>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleNextPage}
-                            disabled={currentPage === totalPages || totalPages === 0}
-                        >
+                        <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} >
                             Next
                         </Button>
                     </div>
@@ -206,12 +196,13 @@ export default function BranchListDialog() {
                         <span className="text-xs text-muted-foreground">
                             {filteredBranches.length} total
                         </span>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleRefresh}>
+                        <Button variant="ghost" size="icon" className="w-8" onClick={handleRefresh}>
                             <RefreshCw className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </DialogContent>
         </Dialog>
+        </>
     );
 }

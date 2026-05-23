@@ -81,11 +81,7 @@ export default function DeleteUserPermissionDialog() {
           <Button variant="outline" onClick={handleClose} disabled={deleteUserPermission.isPending}>
             Cancel
           </Button>
-          <Button 
-            variant="destructive" 
-            onClick={handleDelete} 
-            disabled={deleteUserPermission.isPending}
-          >
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteUserPermission.isPending} >
             {deleteUserPermission.isPending ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>

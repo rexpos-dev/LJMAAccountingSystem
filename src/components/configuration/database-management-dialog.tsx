@@ -197,6 +197,11 @@ export default function DatabaseManagementDialog() {
                 });
                 setSelectedAction(null);
                 setConfirmationCode('');
+                
+                // Automatically refresh tables/page data after a successful reset
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } else {
                 setActionResults(prev => ({
                     ...prev,
@@ -247,7 +252,7 @@ export default function DatabaseManagementDialog() {
             const a = document.createElement('a');
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
             a.href = url;
-            a.download = `backup-${action.moduleKey}-${timestamp}.json`;
+            a.download = `backup-${action.moduleKey}-${timestamp}.sql`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -314,6 +319,11 @@ export default function DatabaseManagementDialog() {
                     title: "Restore Successful",
                     description: data.message,
                 });
+                
+                // Automatically refresh tables/page data after a successful restore
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } else {
                 setUploadProgress('');
                 toast({
@@ -355,15 +365,15 @@ export default function DatabaseManagementDialog() {
                 }
             }}
         >
-            <DialogContent className="sm:max-w-[1100px] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 border-white/10 shadow-2xl bg-slate-950/95 backdrop-blur-3xl rounded-[2.5rem]">
-                <DialogHeader className="px-10 py-8 border-b border-white/10 bg-white/5">
+            <DialogContent className="sm:max-w-[1100px] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 border-foreground/10 shadow-2xl bg-background/95 backdrop-blur-3xl rounded-[2.5rem]">
+                <DialogHeader className="px-10 py-4 border-b border-foreground/10 bg-foreground/5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-5">
                             <div className="p-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-2xl border border-red-500/30 shadow-lg shadow-red-500/10">
                                 <Database className="w-8 h-8 text-red-500" />
                             </div>
                             <div>
-                                <DialogTitle className="text-3xl font-black tracking-tighter text-white uppercase font-headline">
+                                <DialogTitle className="text-2xl font-black tracking-tighter text-foreground uppercase font-headline">
                                     System Control Center
                                 </DialogTitle>
                                 <DialogDescription className="text-slate-400 text-xs font-medium tracking-widest uppercase mt-1">
@@ -410,7 +420,7 @@ export default function DatabaseManagementDialog() {
                                             <div
                                                 className={cn(
                                                     "w-full text-left p-5 rounded-2xl border transition-all duration-300 cursor-pointer",
-                                                    "bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/[0.07]",
+                                                    "bg-foreground/5 border-foreground/10 hover:border-foreground/20 hover:bg-foreground/[0.07]",
                                                     isSelected && "border-red-500/40 bg-red-500/10 ring-1 ring-red-500/20 shadow-2xl shadow-red-500/10",
                                                     result?.success && "border-emerald-500/30 bg-emerald-500/5"
                                                 )}
@@ -425,7 +435,7 @@ export default function DatabaseManagementDialog() {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-3">
-                                                            <h4 className="text-sm font-black text-white uppercase tracking-wider">{action.title}</h4>
+                                                            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">{action.title}</h4>
                                                             <div className={cn(
                                                                 "px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border",
                                                                 action.severity === 'critical'
@@ -451,14 +461,7 @@ export default function DatabaseManagementDialog() {
                                                     </div>
 
                                                     <div className="flex items-center gap-2">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className={cn(
-                                                                "h-10 w-10 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-blue-500 hover:border-blue-400 transition-all duration-300",
-                                                                isDownloading === action.id && "animate-pulse bg-blue-500"
-                                                            )}
-                                                            onClick={(e) => {
+                                                        <Button variant="ghost" size="icon" className={cn( " w-10 rounded-xl bg-foreground/5 border border-foreground/10 text-foreground hover:bg-blue-500 hover:border-blue-400 transition-all duration-300", isDownloading === action.id && "animate-pulse bg-blue-500" )} onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 handleDownloadBackup(action);
                                                             }}
@@ -485,7 +488,7 @@ export default function DatabaseManagementDialog() {
                                                         <div>
                                                             <h5 className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">Destructive Protocol Required</h5>
                                                             <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                                                                Authorized deletion of: <span className="text-white font-bold">{action.affectedData.join(', ')}</span>. This operation bypasses normal data retention rules.
+                                                                Authorized deletion of: <span className="text-foreground font-bold">{action.affectedData.join(', ')}</span>. This operation bypasses normal data retention rules.
                                                             </p>
                                                         </div>
                                                     </div>
@@ -496,23 +499,16 @@ export default function DatabaseManagementDialog() {
                                                             </Label>
                                                             <div className="flex gap-3">
                                                                 <div className="relative flex-1">
-                                                                    <Input
-                                                                        id="confirm-code"
-                                                                        value={confirmationCode}
-                                                                        onChange={(e) => setConfirmationCode(e.target.value)}
+                                                                    <Input id="confirm-code" value={confirmationCode} onChange={(e) => setConfirmationCode(e.target.value)}
                                                                         placeholder="CONFIRM-RESET"
-                                                                        className="font-mono text-sm h-12 bg-black/40 border-white/10 text-white placeholder:text-slate-600 rounded-xl focus:ring-red-500/50"
+                                                                        className="font-mono text-sm h-12 bg-black/40 border-foreground/10 text-foreground placeholder:text-slate-600 rounded-xl focus:ring-red-500/50"
                                                                         autoComplete="off"
                                                                     />
                                                                     <div className="absolute right-3 top-3.5 px-2 py-0.5 rounded bg-red-500/10 text-red-500 text-[9px] font-black font-mono">
                                                                         REQUIRED
                                                                     </div>
                                                                 </div>
-                                                                <Button
-                                                                    variant="destructive"
-                                                                    className="h-12 px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/20 hover:scale-105 active:scale-95 transition-all"
-                                                                    disabled={confirmationCode !== 'CONFIRM-RESET' || isProcessing}
-                                                                    onClick={() => handleResetAction(action)}
+                                                                <Button variant="destructive" className="px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/20 hover:scale-105 active:scale-95 transition-all" disabled={confirmationCode !== 'CONFIRM-RESET' || isProcessing} onClick={() => handleResetAction(action)}
                                                                 >
                                                                     {isProcessing ? (
                                                                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -536,7 +532,7 @@ export default function DatabaseManagementDialog() {
                         <div className="lg:col-span-5 space-y-8">
                             
                             {/* Global Backup Vault */}
-                            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 group">
+                            <div className="relative overflow-hidden rounded-3xl border border-foreground/10 bg-foreground/5 p-6 group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-blue-500/20 transition-all duration-500" />
                                 
                                 <div className="flex items-center gap-4 mb-6">
@@ -544,15 +540,12 @@ export default function DatabaseManagementDialog() {
                                         <HardDrive className="w-6 h-6 text-blue-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-black text-white uppercase tracking-widest">Global Backup Vault</h3>
+                                        <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Global Backup Vault</h3>
                                         <p className="text-[10px] text-slate-500 font-medium tracking-wide">FULL DATABASE SYNC & ARCHIVE</p>
                                     </div>
                                 </div>
 
-                                <Button
-                                    className="w-full h-14 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black uppercase tracking-widest shadow-xl shadow-blue-900/20 group transition-all"
-                                    onClick={handleOpenBackupManager}
-                                >
+                                <Button className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-foreground font-black uppercase tracking-widest shadow-xl shadow-blue-900/20 group transition-all" onClick={handleOpenBackupManager} >
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">
                                             <Download className="w-5 h-5 mr-3 group-hover:translate-y-0.5 transition-transform" />
@@ -568,13 +561,13 @@ export default function DatabaseManagementDialog() {
                             </div>
 
                             {/* Restore Protocol Interface */}
-                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                            <div className="rounded-3xl border border-foreground/10 bg-foreground/5 p-6">
                                 <div className="flex items-center gap-4 mb-6">
                                     <div className="p-3 bg-emerald-500/20 rounded-xl border border-emerald-500/30">
                                         <Upload className="w-6 h-6 text-emerald-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-black text-white uppercase tracking-widest">Restore Protocol</h3>
+                                        <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Restore Protocol</h3>
                                         <p className="text-[10px] text-slate-500 font-medium tracking-wide">LEGACY DATA RE-INTEGRATION</p>
                                     </div>
                                 </div>
@@ -590,7 +583,7 @@ export default function DatabaseManagementDialog() {
                                 <div
                                     className={cn(
                                         "border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 cursor-pointer group",
-                                        "border-white/10 bg-black/20 hover:border-emerald-500/40 hover:bg-emerald-500/5",
+                                        "border-foreground/10 bg-black/20 hover:border-emerald-500/40 hover:bg-emerald-500/5",
                                         isUploading && "border-emerald-500/40 bg-emerald-500/10 pointer-events-none"
                                     )}
                                     onClick={() => !isUploading && fileInputRef.current?.click()}
@@ -605,11 +598,11 @@ export default function DatabaseManagementDialog() {
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
-                                            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                                            <div className="w-12 h-12 bg-foreground/5 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
                                                 <Upload className="w-6 h-6 text-slate-500 group-hover:text-emerald-400 transition-colors" />
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-xs font-black text-white uppercase tracking-widest">Inject Backup File</p>
+                                                <p className="text-xs font-black text-foreground uppercase tracking-widest">Inject Backup File</p>
                                                 <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">
                                                     Supports .sql & .zip (500MB MAX)
                                                 </p>
@@ -646,23 +639,20 @@ export default function DatabaseManagementDialog() {
                 </div>
 
                 {/* Status Bar Footer */}
-                <div className="px-10 py-5 border-t border-white/10 bg-white/5 flex items-center justify-between">
+                <div className="px-10 py-5 border-t border-foreground/10 bg-foreground/5 flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2">
                             <Shield className="w-4 h-4 text-slate-500" />
                             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Auth Level: Level-3 ADMIN</span>
                         </div>
-                        <div className="h-4 w-px bg-white/10" />
+                        <div className="h-4 w-px bg-foreground/10" />
                         <div className="flex items-center gap-2">
                             <Landmark className="w-4 h-4 text-slate-500" />
                             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Region: PH-STND</span>
                         </div>
                     </div>
                     
-                    <Button
-                        variant="ghost"
-                        className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white hover:bg-white/5 px-6 rounded-xl transition-all"
-                        onClick={() => {
+                    <Button variant="ghost" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-foreground hover:bg-foreground/5 px-6 rounded-xl transition-all" onClick={() => {
                             closeDialog("database-management" as any);
                             setSelectedAction(null);
                             setConfirmationCode('');

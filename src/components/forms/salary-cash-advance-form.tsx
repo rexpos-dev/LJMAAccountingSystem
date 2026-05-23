@@ -213,7 +213,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                             <div className="flex flex-col md:flex-row items-end md:items-center gap-4">
                                 <div className="flex flex-col">
                                     <span className="text-[10px] font-bold text-muted-foreground uppercase">Control No.</span>
-                                    <Input className="w-32 h-9 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
+                                    <Input className="w-32 bg-muted/20 border-dashed" placeholder="Auto" readOnly />
                                 </div>
                                 <FormField
                                     control={form.control}
@@ -224,14 +224,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            disabled={isReadOnly}
-                                                            className={cn(
-                                                                "w-full h-9 justify-start text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
+                                                        <Button variant={"outline"} disabled={isReadOnly} className={cn( "w-full justify-start text-left font-normal", !field.value && "text-muted-foreground" )} >
                                                             <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
                                                             {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                                                         </Button>
@@ -311,12 +304,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                         name="company"
                                         render={({ field }) => (
                                             <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="[Company/Unit Name]"
-                                                    className="h-7 min-w-[300px] border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary px-2 mx-2 text-center"
-                                                    disabled={isReadOnly}
-                                                />
+                                                <Input {...field} placeholder="[Company/Unit Name]" className="min-w-[300px] border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary px-2 mx-2 text-center" disabled={isReadOnly} />
                                             </FormControl>
                                         )}
                                     />
@@ -326,13 +314,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                         name="amount"
                                         render={({ field }) => (
                                             <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    type="number"
-                                                    placeholder="0.00"
-                                                    className="h-7 w-32 border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary px-2 mx-2 text-center font-bold"
-                                                    disabled={isReadOnly}
-                                                />
+                                                <Input {...field} type="number" placeholder="0.00" className="w-32 border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary px-2 mx-2 text-center font-bold" disabled={isReadOnly} />
                                             </FormControl>
                                         )}
                                     />
@@ -356,14 +338,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
-                                                        <Button
-                                                            variant={"ghost"}
-                                                            disabled={isReadOnly}
-                                                            className={cn(
-                                                                "h-7 min-w-[200px] border-b border-black rounded-none font-bold mx-2 hover:bg-transparent",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
+                                                        <Button variant={"ghost"} disabled={isReadOnly} className={cn( "h-7 min-w-[200px] border-b border-black rounded-none font-bold mx-2 hover:bg-transparent", !field.value && "text-muted-foreground" )} >
                                                             {field.value ? format(field.value, "MMMM dd, yyyy") : <span>Pick a date</span>}
                                                         </Button>
                                                     </FormControl>
@@ -432,12 +407,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                     render={({ field }) => (
                                         <FormItem className="w-full text-center">
                                             <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    readOnly
-                                                    className="h-10 border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent text-center font-bold text-lg px-0 focus-visible:ring-0"
-                                                    placeholder="Employee Name"
-                                                />
+                                                <Input {...field} readOnly className="border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent text-center font-bold text-lg px-0 focus-visible:ring-0" placeholder="Employee Name" />
                                             </FormControl>
                                             <p className="text-xs font-bold uppercase mt-2">Employee Name & Signature</p>
                                         </FormItem>
@@ -450,7 +420,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                         <FormItem className="w-full flex items-center gap-2">
                                             <FormLabel className="text-xs font-bold uppercase shrink-0">Employee ID:</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-7 border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0" disabled={isReadOnly} />
+                                                <Input {...field} className="border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0" disabled={isReadOnly} />
                                             </FormControl>
                                         </FormItem>
                                     )}
@@ -462,7 +432,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                         <FormItem className="w-full flex items-center gap-2">
                                             <FormLabel className="text-xs font-bold uppercase shrink-0">Position:</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="h-7 border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0" disabled={isReadOnly} />
+                                                <Input {...field} className="border-x-0 border-t-0 border-b border-black rounded-none bg-transparent focus-visible:ring-0" disabled={isReadOnly} />
                                             </FormControl>
                                         </FormItem>
                                     )}
@@ -477,14 +447,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
-                                                        <Button
-                                                            variant={"ghost"}
-                                                            disabled={isReadOnly}
-                                                            className={cn(
-                                                                "h-7 w-full border-b border-black rounded-none px-0 font-normal hover:bg-transparent justify-start",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
+                                                        <Button variant={"ghost"} disabled={isReadOnly} className={cn( "h-7 w-full border-b border-black rounded-none px-0 font-normal hover:bg-transparent justify-start", !field.value && "text-muted-foreground" )} >
                                                             {field.value ? format(field.value, "MMMM dd, yyyy") : <span>Select Date</span>}
                                                         </Button>
                                                     </FormControl>
@@ -518,7 +481,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                             </div>
                                             <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                 <FormControl>
-                                                    <SelectTrigger className="h-10 border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent hover:bg-muted/10 transition-colors text-center font-bold text-lg px-0">
+                                                    <SelectTrigger className=" border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent hover:bg-muted/10 transition-colors text-center font-bold text-lg px-0">
                                                         <SelectValue placeholder="Select Approver..." />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -547,7 +510,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                                 </div>
                                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                     <FormControl>
-                                                        <SelectTrigger className="h-10 border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent hover:bg-muted/10 transition-colors text-center font-bold text-lg px-0">
+                                                        <SelectTrigger className=" border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent hover:bg-muted/10 transition-colors text-center font-bold text-lg px-0">
                                                             <SelectValue placeholder="Select Processor..." />
                                                         </SelectTrigger>
                                                     </FormControl>
@@ -574,7 +537,7 @@ export function SalaryCashAdvanceForm({ initialData, mode = 'create', onSuccess,
                                                 </div>
                                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                     <FormControl>
-                                                        <SelectTrigger className="h-10 border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent hover:bg-muted/10 transition-colors text-center font-bold text-lg px-0">
+                                                        <SelectTrigger className=" border-x-0 border-t-0 border-b-2 border-black rounded-none bg-transparent hover:bg-muted/10 transition-colors text-center font-bold text-lg px-0">
                                                             <SelectValue placeholder="Select Verifier..." />
                                                         </SelectTrigger>
                                                     </FormControl>

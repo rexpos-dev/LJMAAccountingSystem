@@ -21,6 +21,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, Pencil, Trash2, RefreshCw, Search } from 'lucide-react';
 import { useDialog } from '@/components/layout/dialog-context';
 import { useToast } from '@/hooks/use-toast';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Customer {
   id: string;
@@ -50,6 +52,7 @@ interface Customer {
 export default function CustomerListPage() {
   const { openDialogs, openDialog, closeDialog, setDialogData } = useDialog();
   const { toast } = useToast();
+  const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -123,9 +126,8 @@ export default function CustomerListPage() {
   const handleDelete = async () => {
     if (!selectedCustomer) return;
 
-    if (!confirm(`Are you sure you want to delete "${selectedCustomer.customerName}"?`)) {
-      return;
-    }
+    const ok = await confirm({ description: `Are you sure you want to delete "${selectedCustomer.customerName}"?`, title: 'Delete Customer', variant: 'destructive' });
+    if (!ok) return;
 
     try {
       const response = await fetch(`/api/customers?id=${selectedCustomer.id}`, {
@@ -172,6 +174,13 @@ export default function CustomerListPage() {
   };
 
   return (
+    <>
+    <ConfirmDialog
+      open={confirmOpen}
+      {...confirmOptions}
+      onConfirm={handleConfirm}
+      onCancel={handleCancel}
+    />
     <Dialog open={openDialogs['customer-list']} onOpenChange={() => closeDialog('customer-list')}>
       <DialogContent className="max-w-[95vw] h-[90vh] flex flex-col">
         <DialogHeader>
@@ -184,10 +193,7 @@ export default function CustomerListPage() {
               <Plus className="mr-2 h-4 w-4" />
               Add Customer
             </Button>
-            <Button
-              variant="outline"
-              disabled={!selectedCustomer}
-              onClick={() => {
+            <Button variant="outline" disabled={!selectedCustomer} onClick={() => {
                 if (selectedCustomer) {
                   setDialogData('add-customer', selectedCustomer);
                   openDialog('add-customer');
@@ -197,21 +203,14 @@ export default function CustomerListPage() {
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </Button>
-            <Button
-              variant="outline"
-              disabled={!selectedCustomer}
-              onClick={handleDelete}
-            >
+            <Button variant="outline" disabled={!selectedCustomer} onClick={handleDelete} >
               <Trash2 className="mr-2 h-4 w-4" />
               Remove
             </Button>
           </div>
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search customers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+            <Input placeholder="Search customers..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
             />
           </div>
@@ -235,13 +234,13 @@ export default function CustomerListPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center">
                     Loading customers...
                   </TableCell>
                 </TableRow>
               ) : paginatedCustomers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8">
+                  <TableCell colSpan={9} className="text-center">
                     {searchQuery ? 'No customers found matching your search.' : 'No customers found.'}
                   </TableCell>
                 </TableRow>
@@ -288,27 +287,13 @@ export default function CustomerListPage() {
         <div className="border-t pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
+              <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1} >
                 Prev
               </Button>
-              <Button
-                variant={currentPage === 1 ? 'default' : 'outline'}
-                size="sm"
-                className="min-w-[40px]"
-              >
+              <Button variant={currentPage === 1 ? 'default' : 'outline'} size="sm" className="min-w-[40px]" >
                 {currentPage}
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
+              <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} >
                 Next
               </Button>
             </div>
@@ -328,5 +313,6 @@ export default function CustomerListPage() {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

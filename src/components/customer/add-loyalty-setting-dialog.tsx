@@ -107,11 +107,7 @@ export function AddLoyaltySettingDialog() {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              placeholder="Enter Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <Input id="description" placeholder="Enter Description" value={description} onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
@@ -131,11 +127,7 @@ export function AddLoyaltySettingDialog() {
 
           <div className="space-y-2">
             <Label htmlFor="amount">Amount</Label>
-            <Input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+            <Input id="amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)}
               min="0"
               step="0.01"
             />
@@ -143,11 +135,7 @@ export function AddLoyaltySettingDialog() {
 
           <div className="space-y-2">
             <Label htmlFor="equivalent-point">Equivalent Point</Label>
-            <Input
-              id="equivalent-point"
-              type="number"
-              value={equivalentPoint}
-              onChange={(e) => setEquivalentPoint(e.target.value)}
+            <Input id="equivalent-point" type="number" value={equivalentPoint} onChange={(e) => setEquivalentPoint(e.target.value)}
               min="0"
               step="0.01"
             />

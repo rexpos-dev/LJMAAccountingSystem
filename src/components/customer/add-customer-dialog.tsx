@@ -22,13 +22,13 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useDialog } from "@/components/layout/dialog-context";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Phone, 
-  Mail, 
-  User, 
-  ShieldCheck, 
-  Save, 
-  X, 
+import {
+  Phone,
+  Mail,
+  User,
+  ShieldCheck,
+  Save,
+  X,
   Zap,
   CreditCard,
   MapPin,
@@ -207,17 +207,17 @@ export function AddCustomerDialog() {
 
   return (
     <Dialog open={openDialogs["add-customer"]} onOpenChange={(open) => !open && closeDialog("add-customer")}>
-      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
+      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[90vh]">
         {/* Premium Header */}
-        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+        <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
-          
+
           <div className="relative z-10 flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/20">
               <User className="h-6 w-6" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white">
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">
                 {isEditing ? "Profile Modification" : "Customer Acquisition"}
               </DialogTitle>
               <div className="flex items-center gap-2 mt-0.5">
@@ -227,17 +227,11 @@ export function AddCustomerDialog() {
                 )}>
                   {isActive ? "Active Account" : "Inactive Account"}
                 </span>
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{code}</span>
+                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">{code}</span>
               </div>
             </div>
           </div>
 
-          <button 
-            onClick={() => closeDialog("add-customer")}
-            className="relative z-10 p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
-          >
-            <X className="h-5 w-5" />
-          </button>
         </div>
 
         <ScrollArea className="flex-1">
@@ -248,21 +242,21 @@ export function AddCustomerDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-primary rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Identity Matrix</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Identity Matrix</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Unique Identifier</Label>
-                      <Input value={code} readOnly className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-mono text-xs" />
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Unique Identifier</Label>
+                      <Input value={code} readOnly className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-mono text-xs" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Classification</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Classification</Label>
                       <Select value={customerGroup} onValueChange={setCustomerGroup}>
-                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectContent className="bg-card border-foreground/10 text-foreground">
                           <SelectItem value="default">Standard Entity</SelectItem>
                           <SelectItem value="vip">Tier-1 VIP</SelectItem>
                           <SelectItem value="wholesale">B2B Wholesale</SelectItem>
@@ -271,24 +265,20 @@ export function AddCustomerDialog() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Legal Entity Name</Label>
-                    <Input 
-                      value={customerName} 
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-bold uppercase italic tracking-tight" 
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Legal Entity Name</Label>
+                    <Input value={customerName} onChange={(e) => setCustomerName(e.target.value)}
+                      className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl font-bold uppercase italic tracking-tight"
                       placeholder="FULL CORPORATE OR INDIVIDUAL NAME"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Contact Person</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Contact Person</Label>
                     <div className="relative">
-                      <Input 
-                        value={contactFirstName} 
-                        onChange={(e) => setContactFirstName(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                      <Input value={contactFirstName} onChange={(e) => setContactFirstName(e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10"
                         placeholder="Primary Representative"
                       />
-                      <Contact2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      <Contact2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                     </div>
                   </div>
                 </div>
@@ -298,56 +288,48 @@ export function AddCustomerDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-blue-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Communication Mesh</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Communication Mesh</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Primary Email Gateway</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Primary Email Gateway</Label>
                     <div className="relative">
-                      <Input 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                      <Input value={email} onChange={(e) => setEmail(e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10"
                         placeholder="entity@network.com"
                       />
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Primary Comms</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Primary Comms</Label>
                       <div className="relative">
-                        <Input 
-                          value={phonePrimary} 
-                          onChange={(e) => setPhonePrimary(e.target.value)}
-                          className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        <Input value={phonePrimary} onChange={(e) => setPhonePrimary(e.target.value)}
+                          className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10"
                           placeholder="+63 --- --- ---"
                         />
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Alternate Line</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Alternate Line</Label>
                       <div className="relative">
-                        <Input 
-                          value={phoneAlternative} 
-                          onChange={(e) => setPhoneAlternative(e.target.value)}
-                          className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10" 
+                        <Input value={phoneAlternative} onChange={(e) => setPhoneAlternative(e.target.value)}
+                          className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl pl-10"
                         />
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Geospatial Coordinates</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Geospatial Coordinates</Label>
                     <div className="relative">
-                      <Textarea 
-                        value={address} 
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="bg-white/5 border-white/10 text-white rounded-xl min-h-[100px] pl-10 pt-3" 
+                      <Textarea value={address} onChange={(e) => setAddress(e.target.value)}
+                        className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl min-h-[100px] pl-10 pt-3"
                         placeholder="Street, City, Province, ZIP"
                       />
-                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-white/20" />
+                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-foreground/20" />
                     </div>
                   </div>
                 </div>
@@ -360,38 +342,35 @@ export function AddCustomerDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-emerald-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Fiscal Configuration</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Fiscal Configuration</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-6">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Exposure Limit</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Exposure Limit</Label>
                       <div className="relative">
-                        <Input 
-                          type="number" 
-                          value={creditLimit} 
-                          onChange={(e) => setCreditLimit(e.target.value)}
-                          className="bg-white/5 border-white/10 text-emerald-400 h-11 rounded-xl pl-10 font-black italic" 
+                        <Input type="number" value={creditLimit} onChange={(e) => setCreditLimit(e.target.value)}
+                          className="bg-foreground/5 border-foreground/10 text-emerald-400 h-11 rounded-xl pl-10 font-black italic"
                         />
-                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
                       </div>
                     </div>
                     <div className="space-y-4 flex flex-col justify-end">
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-foreground/5 border border-foreground/5">
                         <Checkbox id="tax-exempt" checked={isTaxExempt} onCheckedChange={(c) => setIsTaxExempt(c as boolean)} />
-                        <Label htmlFor="tax-exempt" className="text-[10px] font-black uppercase tracking-widest text-white/60 cursor-pointer">Tax Exempt Protocol</Label>
+                        <Label htmlFor="tax-exempt" className="text-[10px] font-black uppercase tracking-widest text-foreground/60 cursor-pointer">Tax Exempt Protocol</Label>
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Payment Terms</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Payment Terms</Label>
                       <Select value={paymentTerms} onValueChange={setPaymentTerms}>
-                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectContent className="bg-card border-foreground/10 text-foreground">
                           <SelectItem value="days">Pay in Days</SelectItem>
                           <SelectItem value="net">Net Protocol</SelectItem>
                           <SelectItem value="due">Due on Receipt</SelectItem>
@@ -399,25 +378,25 @@ export function AddCustomerDialog() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Terms Value</Label>
-                      <Input value={paymentTermsValue} onChange={(e) => setPaymentTermsValue(e.target.value)} className="bg-white/5 border-white/10 text-white h-11 rounded-xl" />
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Terms Value</Label>
+                      <Input value={paymentTermsValue} onChange={(e) => setPaymentTermsValue(e.target.value)} className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Assigned Strategist</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Assigned Strategist</Label>
                     <div className="relative">
                       <Select value={salesperson} onValueChange={setSalesperson}>
-                        <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl pl-10">
+                        <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl pl-10">
                           <SelectValue placeholder="Select Sales Personnel" />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900 border-white/10 text-white">
+                        <SelectContent className="bg-card border-foreground/10 text-foreground">
                           {salesUsers.map((u: any) => (
                             <SelectItem key={u.id} value={u.complete_name || u.name}>{u.complete_name || u.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 z-10 pointer-events-none" />
+                      <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20 z-10 pointer-events-none" />
                     </div>
                   </div>
                 </div>
@@ -427,26 +406,26 @@ export function AddCustomerDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-yellow-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Reward Ecosystem</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Reward Ecosystem</h3>
                 </div>
-                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-6">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-6">
                   <div className="flex items-center justify-between p-4 rounded-xl bg-yellow-400/5 border border-yellow-400/10">
                     <div className="flex items-center gap-3">
                       <Checkbox id="loyalty" checked={isEntitledToLoyaltyPoints} onCheckedChange={(c) => setIsEntitledToLoyaltyPoints(c as boolean)} />
                       <Label htmlFor="loyalty" className="text-xs font-black uppercase tracking-widest text-yellow-400 cursor-pointer italic">Activate Reward Protocol</Label>
                     </div>
-                    <Trophy className={cn("h-5 w-5 transition-all", isEntitledToLoyaltyPoints ? "text-yellow-400 scale-110" : "text-white/10")} />
+                    <Trophy className={cn("h-5 w-5 transition-all", isEntitledToLoyaltyPoints ? "text-yellow-400 scale-110" : "text-foreground/10")} />
                   </div>
 
                   {isEntitledToLoyaltyPoints && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
                       <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Point Generation Setting</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Point Generation Setting</Label>
                         <Select value={pointSetting} onValueChange={setPointSetting}>
-                          <SelectTrigger className="bg-white/5 border-white/10 text-white h-11 rounded-xl">
+                          <SelectTrigger className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl">
                             <SelectValue placeholder="Select Configuration" />
                           </SelectTrigger>
-                          <SelectContent className="bg-slate-900 border-white/10 text-white">
+                          <SelectContent className="bg-card border-foreground/10 text-foreground">
                             {loyaltySettings.map((s) => (
                               <SelectItem key={s.id} value={s.id || s.description}>{s.description}</SelectItem>
                             ))}
@@ -455,29 +434,24 @@ export function AddCustomerDialog() {
                       </div>
 
                       <RadioGroup value={loyaltyCalculationMethod} onValueChange={setLoyaltyCalculationMethod} className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
+                        <div className="flex items-center gap-3 p-4 rounded-xl bg-foreground/5 border border-foreground/5 hover:bg-foreground/10 transition-all cursor-pointer">
                           <RadioGroupItem value="automatic" id="auto" />
-                          <Label htmlFor="auto" className="text-[10px] font-black uppercase tracking-widest text-white/60 cursor-pointer">Automatic Engine</Label>
+                          <Label htmlFor="auto" className="text-[10px] font-black uppercase tracking-widest text-foreground/60 cursor-pointer">Automatic Engine</Label>
                         </div>
-                        <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
+                        <div className="flex items-center gap-3 p-4 rounded-xl bg-foreground/5 border border-foreground/5 hover:bg-foreground/10 transition-all cursor-pointer">
                           <RadioGroupItem value="manual" id="manual" />
-                          <Label htmlFor="manual" className="text-[10px] font-black uppercase tracking-widest text-white/60 cursor-pointer">Manual Override</Label>
+                          <Label htmlFor="manual" className="text-[10px] font-black uppercase tracking-widest text-foreground/60 cursor-pointer">Manual Override</Label>
                         </div>
                       </RadioGroup>
 
                       <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Credential Identifier</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Credential Identifier</Label>
                         <div className="flex gap-2">
-                          <Input 
-                            value={loyaltyCardNumber} 
-                            onChange={(e) => setLoyaltyCardNumber(e.target.value)}
-                            className="bg-white/5 border-white/10 text-white h-11 rounded-xl font-mono" 
+                          <Input value={loyaltyCardNumber} onChange={(e) => setLoyaltyCardNumber(e.target.value)}
+                            className="bg-foreground/5 border-foreground/10 text-foreground h-11 rounded-xl font-mono"
                             placeholder="CARD-0000000000000"
                           />
-                          <Button 
-                            variant="outline" 
-                            className="h-11 rounded-xl border-yellow-400/20 text-yellow-400 hover:bg-yellow-400 hover:text-black font-black uppercase tracking-widest text-[10px]"
-                            onClick={() => setLoyaltyCardNumber(Array.from({ length: 13 }, () => Math.floor(Math.random() * 10)).join(""))}
+                          <Button variant="outline" className="rounded-xl border-yellow-400/20 text-yellow-400 hover:bg-yellow-400 hover:text-black font-black uppercase tracking-widest text-[10px]" onClick={() => setLoyaltyCardNumber(Array.from({ length: 13 }, () => Math.floor(Math.random() * 10)).join(""))}
                           >
                             Generate
                           </Button>
@@ -492,27 +466,21 @@ export function AddCustomerDialog() {
         </ScrollArea>
 
         {/* Action Footer */}
-        <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+        <div className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-white/20">
+            <div className="flex items-center gap-2 text-foreground/20">
               <ShieldCheck className="h-4 w-4" />
               <span className="text-[10px] font-black uppercase tracking-widest">Compliance Verified</span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={() => closeDialog("add-customer")}
-              className="px-6 h-12 rounded-xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-xs"
+            <Button variant="outline" onClick={() => closeDialog("add-customer")}
+              className="px-6 h-12 rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-xs"
             >
               Cancel
             </Button>
-            <Button 
-              onClick={handleOk}
-              disabled={isSaving}
-              className="px-8 h-12 rounded-xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all gap-2"
-            >
+            <Button onClick={handleOk} disabled={isSaving} className="px-8 rounded-xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all gap-2" >
               {isSaving ? (
                 <div className="h-4 w-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
               ) : (

@@ -50,13 +50,7 @@ export default function MileageReportDialog() {
                             <Label>From Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !fromDate && "text-muted-foreground"
-                                        )}
-                                    >
+                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !fromDate && "text-muted-foreground" )} >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                         {fromDate ? format(fromDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                     </Button>
@@ -75,13 +69,7 @@ export default function MileageReportDialog() {
                             <Label>To Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !toDate && "text-muted-foreground"
-                                        )}
-                                    >
+                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !toDate && "text-muted-foreground" )} >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                         {toDate ? format(toDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                     </Button>
@@ -99,15 +87,11 @@ export default function MileageReportDialog() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('mileage-report-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('mileage-report-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

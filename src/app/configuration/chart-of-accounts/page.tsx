@@ -167,7 +167,7 @@ export default function ChartOfAccountsPage(props: any) {
         <TableCell
           className={cn({
             'pl-8': !isHeader,
-            'font-semibold text-white': isHeader,
+            'font-semibold text-foreground': isHeader,
           })}
         >
           {account.account_name}
@@ -211,7 +211,7 @@ export default function ChartOfAccountsPage(props: any) {
       <Dialog open={openDialogs['chart-of-accounts']} onOpenChange={() => { closeDialog('chart-of-accounts'); onAccountSelect(null); }}>
         <DialogContent className="max-w-6xl h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle className="font-headline text-white">Chart of Accounts</DialogTitle>
+            <DialogTitle className="font-headline text-foreground">Chart of Accounts</DialogTitle>
           </DialogHeader>
           <ScrollArea className="flex-1 pr-6 -mr-6">
             <div className="space-y-4">
@@ -257,13 +257,7 @@ export default function ChartOfAccountsPage(props: any) {
                     <span>Restore</span>
                   </Button>
                   <div className="ml-auto flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex-col h-auto"
-                      onClick={refetch}
-                      disabled={isLoading}
-                    >
+                    <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={refetch} disabled={isLoading} >
                       <RefreshCw className={`h-6 w-6 ${isLoading ? 'animate-spin' : ''}`} />
                       <span>Refresh</span>
                     </Button>
@@ -290,10 +284,7 @@ export default function ChartOfAccountsPage(props: any) {
                 </div>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search accounts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                  <Input placeholder="Search accounts..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9"
                   />
                 </div>
@@ -333,8 +324,8 @@ export default function ChartOfAccountsPage(props: any) {
                         item.isHeader ? (
                           <TableRow key={item.id} className="bg-muted/40">
                             <TableCell></TableCell>
-                            <TableCell className="font-bold text-white">{item.category}</TableCell>
-                            <TableCell className="text-right font-bold text-white">{formatCurrency(item.totalBalance)}</TableCell>
+                            <TableCell className="font-bold text-foreground">{item.category}</TableCell>
+                            <TableCell className="text-right font-bold text-foreground">{formatCurrency(item.totalBalance)}</TableCell>
                             <TableCell></TableCell>
                             <TableCell></TableCell>
                             <TableCell></TableCell>
@@ -378,21 +369,13 @@ export default function ChartOfAccountsPage(props: any) {
                       Page {currentPage} of {totalPages}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2 text-xs"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      <Button variant="outline" size="sm" className="px-2 text-xs" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                       >
                         <ChevronLeft className="h-4 w-4 mr-1" />
                         Prev
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2 text-xs"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      <Button variant="outline" size="sm" className="px-2 text-xs" onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                         disabled={currentPage >= totalPages}
                       >
                         Next

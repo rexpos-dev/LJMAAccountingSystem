@@ -130,37 +130,25 @@ export default function AddBankAccountDialog() {
                     <div className="grid grid-cols-2 gap-4 py-4">
                         <div className="space-y-2">
                             <Label htmlFor="bank-code">Bank Code <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="bank-code"
-                                value={bankCode}
-                                onChange={(e) => setBankCode(e.target.value)}
+                            <Input id="bank-code" value={bankCode} onChange={(e) => setBankCode(e.target.value)}
                                 placeholder="e.g. BDO-CHK-001"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="bank-name">Bank Name <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="bank-name"
-                                value={bankName}
-                                onChange={(e) => setBankName(e.target.value)}
+                            <Input id="bank-name" value={bankName} onChange={(e) => setBankName(e.target.value)}
                                 placeholder="e.g. BDO, BPI"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="account-name">Account Name <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="account-name"
-                                value={accountName}
-                                onChange={(e) => setAccountName(e.target.value)}
+                            <Input id="account-name" value={accountName} onChange={(e) => setAccountName(e.target.value)}
                                 placeholder="Company name in bank"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="bank-account-no">Account Number <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="bank-account-no"
-                                value={bankAccountNo}
-                                onChange={(e) => setBankAccountNo(e.target.value)}
+                            <Input id="bank-account-no" value={bankAccountNo} onChange={(e) => setBankAccountNo(e.target.value)}
                                 placeholder="Bank account number"
                             />
                         </div>
@@ -190,35 +178,29 @@ export default function AddBankAccountDialog() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="branch">Branch (Optional)</Label>
-                            <Input
-                                id="branch"
-                                value={branch}
-                                onChange={(e) => setBranch(e.target.value)}
+                            <Input id="branch" value={branch} onChange={(e) => setBranch(e.target.value)}
                                 placeholder="Branch name"
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="opening-balance">Opening Balance</Label>
-                            <Input
-                                id="opening-balance"
-                                value={initialBalance}
-                                onChange={(e) => setInitialBalance(e.target.value)}
+                            <Input id="opening-balance" value={initialBalance} onChange={(e) => setInitialBalance(e.target.value)}
                                 placeholder="0.00"
                             />
                         </div>
-                        <div className="flex items-center justify-between col-span-2 py-2 border-t border-white/10 mt-2">
+                        <div className="flex items-center justify-between col-span-2 py-2 border-t border-foreground/10 mt-2">
                             <div className="flex items-center space-x-2">
                                 <Switch
                                     id="is-active"
                                     checked={isActive}
                                     onCheckedChange={setIsActive}
                                 />
-                                <Label htmlFor="is-active" className="font-medium text-white">Active Account</Label>
+                                <Label htmlFor="is-active" className="font-medium text-foreground">Active Account</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Label htmlFor="audit-status" className="text-slate-400">Audit Status:</Label>
                                 <Select value={auditStatus} onValueChange={setAuditStatus}>
-                                    <SelectTrigger id="audit-status" className="h-8 w-[140px] bg-white/5 border-white/10 text-xs text-white">
+                                    <SelectTrigger id="audit-status" className="h-8 w-[140px] bg-foreground/5 border-foreground/10 text-xs text-foreground">
                                         <SelectValue placeholder="Status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -252,38 +234,26 @@ export default function AddBankAccountDialog() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="opening-balance-mig">Opening Balance (Migration)</Label>
-                                <Input
-                                    id="opening-balance-mig"
-                                    value={migrationOpeningBalance}
-                                    onChange={(e) => setMigrationOpeningBalance(e.target.value)}
+                                <Input id="opening-balance-mig" value={migrationOpeningBalance} onChange={(e) => setMigrationOpeningBalance(e.target.value)}
                                     placeholder="0.00"
                                 />
                             </div>
                             <div className="space-y-2 col-span-2">
                                 <Label htmlFor="opening-date">Opening Date</Label>
-                                <Input
-                                    id="opening-date"
-                                    type="date"
-                                    value={openingDate}
-                                    onChange={(e) => setOpeningDate(e.target.value)}
+                                <Input id="opening-date" type="date" value={openingDate} onChange={(e) => setOpeningDate(e.target.value)}
                                 />
                             </div>
                         </div>
                     </div>
                 </ScrollArea>
                 <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/5" onClick={() => closeDialog('add-bank-account' as any)}>Cancel</Button>
+                    <Button variant="ghost" className="text-slate-400 hover:text-foreground hover:bg-foreground/5" onClick={() => closeDialog('add-bank-account' as any)}>Cancel</Button>
                     <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            className="bg-white/5 border-white/10 text-white hover:bg-white/10"
-                            onClick={() => handleAdd('DRAFT')}
+                        <Button variant="outline" className="bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10" onClick={() => handleAdd('DRAFT')}
                         >
                             Save Draft
                         </Button>
-                        <Button
-                            className="bg-primary hover:bg-primary/90 text-white"
-                            onClick={() => handleAdd('TO_AUDIT')}
+                        <Button className="bg-primary hover:bg-primary/90 text-foreground" onClick={() => handleAdd('TO_AUDIT')}
                             disabled={!isFormValid}
                         >
                             Submit for Audit

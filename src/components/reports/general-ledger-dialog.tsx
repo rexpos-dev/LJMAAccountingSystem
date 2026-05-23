@@ -70,13 +70,7 @@ export default function GeneralLedgerDialog() {
                         <Label>Select Account</Label>
                         <Popover open={isAccountPopoverOpen} onOpenChange={setIsAccountPopoverOpen}>
                             <PopoverTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    aria-expanded={isAccountPopoverOpen}
-                                    className="w-full justify-between font-normal"
-                                    disabled={accountsLoading}
-                                >
+                                <Button variant="outline" role="combobox" aria-expanded={isAccountPopoverOpen} className="w-full justify-between font-normal" disabled={accountsLoading} >
                                     <span className="truncate">
                                         {accountId === 'all'
                                             ? "All Accounts"
@@ -91,20 +85,14 @@ export default function GeneralLedgerDialog() {
                                 <div className="p-2 border-b">
                                     <div className="flex items-center px-2 bg-muted/50 rounded-md">
                                         <Search className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search account..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                        <Input placeholder="Search account..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                                             className="h-9 border-0 bg-transparent focus-visible:ring-0 px-0"
                                         />
                                     </div>
                                 </div>
                                 <ScrollArea className="h-72">
                                     <div className="p-1">
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start font-normal"
-                                            onClick={() => {
+                                        <Button variant="ghost" className="w-full justify-start font-normal" onClick={() => {
                                                 setAccountId('all');
                                                 setIsAccountPopoverOpen(false);
                                                 setSearchQuery('');
@@ -119,11 +107,7 @@ export default function GeneralLedgerDialog() {
                                             -- All Accounts --
                                         </Button>
                                         {filteredAccounts?.map((acc) => (
-                                            <Button
-                                                key={acc.id}
-                                                variant="ghost"
-                                                className="w-full justify-start font-normal"
-                                                onClick={() => {
+                                            <Button key={acc.id} variant="ghost" className="w-full justify-start font-normal" onClick={() => {
                                                     setAccountId(acc.id || '');
                                                     setIsAccountPopoverOpen(false);
                                                     setSearchQuery('');
@@ -154,13 +138,7 @@ export default function GeneralLedgerDialog() {
                             <Label>From Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !fromDate && "text-muted-foreground"
-                                        )}
-                                    >
+                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !fromDate && "text-muted-foreground" )} >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                         {fromDate ? format(fromDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                     </Button>
@@ -179,13 +157,7 @@ export default function GeneralLedgerDialog() {
                             <Label>To Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal",
-                                            !toDate && "text-muted-foreground"
-                                        )}
-                                    >
+                                    <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !toDate && "text-muted-foreground" )} >
                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                         {toDate ? format(toDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                     </Button>
@@ -203,16 +175,11 @@ export default function GeneralLedgerDialog() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('general-ledger-dialog' as any)}
+                        <Button variant="outline" onClick={() => closeDialog('general-ledger-dialog' as any)}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                            disabled={!fromDate || !toDate}
-                        >
+                        <Button onClick={handleRunReport} disabled={!fromDate || !toDate} >
                             Run Report
                         </Button>
                     </div>

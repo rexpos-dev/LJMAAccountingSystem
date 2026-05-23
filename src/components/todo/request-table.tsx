@@ -24,6 +24,8 @@ import { Badge } from '@/components/ui/badge';
 import format from '@/lib/date-format';
 import { useAuth } from '@/components/providers/auth-provider';
 import { useDialog } from '@/components/layout/dialog-context';
+import { useConfirm } from '@/hooks/use-confirm';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface Request {
     id: string;
@@ -52,6 +54,7 @@ export function RequestTable() {
     const [currentPage, setCurrentPage] = useState(1);
     const { user } = useAuth();
     const { openDialog, setDialogData } = useDialog();
+    const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
 
     // Role checks
     const accountType = (user?.accountType || '').trim().toLowerCase();
@@ -105,7 +108,8 @@ export function RequestTable() {
 
         try {
             if (action === 'delete') {
-                if (!confirm('Are you sure you want to delete this request?')) return;
+                const ok = await confirm({ description: 'Are you sure you want to delete this request?', title: 'Delete Request', variant: 'destructive' });
+                if (!ok) return;
                 const res = await fetch(`/api/requests/${id}`, { method: 'DELETE' });
                 if (res.ok) {
                     fetchRequests();
@@ -170,6 +174,13 @@ export function RequestTable() {
     }
 
     return (
+        <>
+        <ConfirmDialog
+            open={confirmOpen}
+            {...confirmOptions}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
         <div className="space-y-0">
             <div className="rounded-md border overflow-auto max-h-[600px]">
                 <Table>
@@ -239,7 +250,7 @@ export function RequestTable() {
                                     </TableCell>
                                     <TableCell><Badge variant={request.status === 'Released' ? 'default' : request.status === 'Received' ? 'secondary' : 'outline'}>{request.status}</Badge></TableCell>
                                     <TableCell><DropdownMenu><DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0"><span className="sr-only">Open menu</span><MoreHorizontal className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" className="w-8"><span className="sr-only">Open menu</span><MoreHorizontal className="h-4 w-4" /></Button>
                                     </DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuLabel>Actions</DropdownMenuLabel>
                                             <DropdownMenuItem onClick={() => handleAction('view', request.id)}><Eye className="mr-2 h-4 w-4" /> View</DropdownMenuItem>
                                             <DropdownMenuSeparator />
@@ -318,5 +329,6 @@ export function RequestTable() {
                 </div>
             </div>
         </div>
+        </>
     );
 }

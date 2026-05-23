@@ -1,13 +1,6 @@
 'use client';
 
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -16,7 +9,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -24,44 +16,27 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
-import {
-    FileText,
-    Printer,
-    Save,
-    ListVideo,
-} from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
+import { ReportToolbar } from './report-toolbar';
 
 export default function BudgetReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
     const dialogData = getDialogData('budget-report' as any);
     const year = dialogData?.year || new Date().getFullYear().toString();
+    const contentRef = useRef<HTMLDivElement>(null);
 
     return (
         <Dialog open={openDialogs['budget-report'] || false} onOpenChange={() => closeDialog('budget-report' as any)}>
             <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('budget-report' as any)}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                        <MenubarMenu>
-                            <MenubarTrigger>Help</MenubarTrigger>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center gap-2 p-2 border-b">
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-                        <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="Budget Report"
+                        subtitle={`Financial Year: ${year}`}
+                        closeKey="budget-report"
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left">
@@ -70,7 +45,7 @@ export default function BudgetReport() {
                             <FileText className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">Budget Report</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">Budget Report</DialogTitle>
                             <DialogDescription className="text-left">
                                 Financial Year: {year}
                             </DialogDescription>
@@ -79,6 +54,7 @@ export default function BudgetReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/30">
@@ -97,6 +73,7 @@ export default function BudgetReport() {
                             </TableRow>
                         </TableBody>
                     </Table>
+                    </div>
                 </ScrollArea>
             </DialogContent>
         </Dialog>

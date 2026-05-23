@@ -118,9 +118,9 @@ export default function ViewPurchaseOrderDialog() {
 
     return (
         <Dialog open={openDialogs['view-purchase-order']} onOpenChange={() => closeDialog('view-purchase-order')}>
-            <DialogContent className="max-w-[1200px] h-[95vh] flex flex-col p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl">
+            <DialogContent className="max-w-[1200px] h-[95vh] flex flex-col p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl">
 
-                <DialogHeader className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0 print:hidden">
+                <DialogHeader className="px-8 py-4 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0 print:hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
                     
                     <div className="relative z-10 flex items-center gap-4">
@@ -128,32 +128,27 @@ export default function ViewPurchaseOrderDialog() {
                             <FileText className="h-6 w-6" />
                         </div>
                         <div>
-                            <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase leading-none text-foreground">
                                 Procurement Audit
                             </DialogTitle>
                             <div className="flex items-center gap-2 mt-2">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">System Payload</span>
-                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Operational Intelligence</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Operational Intelligence</span>
                             </div>
                         </div>
                     </div>
 
-                    <button 
-                        onClick={() => closeDialog('view-purchase-order')}
-                        className="relative z-10 p-2 rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-all"
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                    
                 </DialogHeader>
 
-                <div className="flex-1 overflow-auto bg-slate-900/50 p-4 md:p-12 custom-scrollbar relative print:bg-white print:p-0">
+                <div className="flex-1 overflow-auto bg-card/50 p-4 md:p-12 custom-scrollbar relative print:bg-white print:p-0">
                     {/* Thematic Background Pattern - Screen Only */}
                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none print:hidden" 
                         style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} 
                     />
 
                     {loading ? (
-                        <div className="flex flex-col justify-center items-center h-full gap-4 text-white/20">
+                        <div className="flex flex-col justify-center items-center h-full gap-4 text-foreground/20">
                             <div className="h-12 w-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
                             <span className="text-xs font-black uppercase tracking-widest italic">Decrypting Payload...</span>
                         </div>
@@ -165,7 +160,7 @@ export default function ViewPurchaseOrderDialog() {
                                     <div className="space-y-4">
                                         <div className="space-y-1">
                                             <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">{businessProfile?.businessName || "GAUDENCIOS LUGAWAN"}</h1>
-                                            <div className="h-1 w-12 bg-slate-950" />
+                                            <div className="h-1 w-12 bg-background" />
                                         </div>
                                         <div className="text-[11px] font-bold text-slate-500 space-y-0.5 uppercase tracking-wide">
                                             <p>{businessProfile?.address || "TAGUM CITY, DAVAO DEL NORTE"}</p>
@@ -174,7 +169,7 @@ export default function ViewPurchaseOrderDialog() {
                                         </div>
                                     </div>
                                     <div className="text-right flex flex-col items-end">
-                                        <div className="text-[10px] font-black bg-slate-950 text-white px-3 py-1 mb-6 tracking-[0.3em] uppercase italic">
+                                        <div className="text-[10px] font-black bg-background text-foreground px-3 py-1 mb-6 tracking-[0.3em] uppercase italic">
                                             Purchase Order
                                         </div>
                                         <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-right">
@@ -224,42 +219,42 @@ export default function ViewPurchaseOrderDialog() {
                                 {/* Items Table */}
                                 <div className="mt-8 border border-slate-200">
                                     <table className="w-full text-left text-[11px]">
-                                        <thead className="bg-slate-950 text-white">
+                                        <thead className="bg-background text-foreground">
                                             <tr>
-                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 w-[15%]">Identifier</th>
-                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 w-[40%]">Designation</th>
-                                                <th className="px-2 py-3 font-black uppercase tracking-widest border-r border-white/10 text-right w-[10%]">Quantum</th>
-                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 text-right w-[12%]">Cost/Unit</th>
-                                                <th className="px-3 py-3 font-black uppercase tracking-widest border-r border-white/10 text-center w-[10%]">UOM</th>
-                                                <th className="px-4 py-3 font-black uppercase tracking-widest text-right w-[13%]">Subtotal</th>
+                                                <th className="px-3 font-black uppercase tracking-widest border-r border-foreground/10 w-[15%]">Identifier</th>
+                                                <th className="px-3 font-black uppercase tracking-widest border-r border-foreground/10 w-[40%]">Designation</th>
+                                                <th className="px-2 font-black uppercase tracking-widest border-r border-foreground/10 text-right w-[10%]">Quantum</th>
+                                                <th className="px-3 font-black uppercase tracking-widest border-r border-foreground/10 text-right w-[12%]">Cost/Unit</th>
+                                                <th className="px-3 font-black uppercase tracking-widest border-r border-foreground/10 text-center w-[10%]">UOM</th>
+                                                <th className="px-4 font-black uppercase tracking-widest text-right w-[13%]">Subtotal</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100">
                                             {order.items.map((item, idx) => (
                                                 <tr key={item.id || idx} className="hover:bg-slate-50/50 transition-colors">
-                                                    <td className="px-3 py-3 border-r border-slate-100 font-mono text-[10px] text-slate-400">{item.barcode || item.product?.barcode || "NON-EXT"}</td>
-                                                    <td className="px-3 py-3 border-r border-slate-100 font-black uppercase text-slate-800">{item.itemDescription}</td>
-                                                    <td className="px-3 py-3 border-r border-slate-100 text-right font-bold">{item.orderQty || item.quantity}</td>
-                                                    <td className="px-3 py-3 border-r border-slate-100 text-right font-bold text-slate-600">{(item.costPricePerPiece || item.unitPrice).toFixed(2)}</td>
-                                                    <td className="px-3 py-3 border-r border-slate-100 text-center font-bold text-slate-400 uppercase">{item.buyingUom || "pc"}</td>
-                                                    <td className="px-4 py-3 text-right font-black text-slate-950 italic">₱{item.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                                                    <td className="px-3 border-r border-slate-100 font-mono text-[10px] text-slate-400">{item.barcode || item.product?.barcode || "NON-EXT"}</td>
+                                                    <td className="px-3 border-r border-slate-100 font-black uppercase text-slate-800">{item.itemDescription}</td>
+                                                    <td className="px-3 border-r border-slate-100 text-right font-bold">{item.orderQty || item.quantity}</td>
+                                                    <td className="px-3 border-r border-slate-100 text-right font-bold text-slate-600">{(item.costPricePerPiece || item.unitPrice).toFixed(2)}</td>
+                                                    <td className="px-3 border-r border-slate-100 text-center font-bold text-slate-400 uppercase">{item.buyingUom || "pc"}</td>
+                                                    <td className="px-4 text-right font-black text-slate-950 italic">₱{item.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                                                 </tr>
                                             ))}
                                             {/* Filler rows for aesthetic balance */}
                                             {Array.from({ length: Math.max(0, 3 - order.items.length) }).map((_, i) => (
                                                 <tr key={`filler-${i}`}>
-                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
-                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
-                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
-                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
-                                                    <td className="px-4 py-4 border-r border-slate-100">&nbsp;</td>
-                                                    <td className="px-4 py-4">&nbsp;</td>
+                                                    <td className="px-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4 border-r border-slate-100">&nbsp;</td>
+                                                    <td className="px-4">&nbsp;</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                         <tfoot className="border-t-2 border-slate-950">
                                             <tr className="bg-slate-50">
-                                                <td colSpan={4} className="p-6 align-top border-r border-slate-200">
+                                                <td colSpan={4} className="align-top border-r border-slate-200">
                                                     <div className="space-y-4">
                                                         <div className="space-y-1">
                                                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Authorization Notes</span>
@@ -272,7 +267,7 @@ export default function ViewPurchaseOrderDialog() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td colSpan={2} className="p-0 align-top">
+                                                <td colSpan={2} className="align-top">
                                                     <div className="grid grid-cols-2 text-[10px] font-black uppercase tracking-widest">
                                                         <div className="px-4 py-3 border-b border-r border-slate-200 text-slate-400">Subtotal</div>
                                                         <div className="px-4 py-3 border-b border-slate-200 text-right font-bold text-slate-600">₱{order.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
@@ -283,7 +278,7 @@ export default function ViewPurchaseOrderDialog() {
                                                         <div className="px-4 py-3 border-r border-slate-200 text-slate-400">Logistics</div>
                                                         <div className="px-4 py-3 text-right font-bold text-slate-600">₱0.00</div>
                                                     </div>
-                                                    <div className="flex justify-between items-center bg-slate-950 text-white p-4">
+                                                    <div className="flex justify-between items-center bg-background text-foreground p-4">
                                                         <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Total Payload</span>
                                                         <span className="text-xl font-black italic tracking-tighter">₱{order.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                                     </div>
@@ -309,32 +304,27 @@ export default function ViewPurchaseOrderDialog() {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full gap-4 text-white/10">
+                        <div className="flex flex-col items-center justify-center h-full gap-4 text-foreground/10">
                             <X className="h-12 w-12" />
                             <p className="text-xs font-black uppercase tracking-widest">Data Stream Terminated</p>
                         </div>
                     )}
                 </div>
 
-                <DialogFooter className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0 print:hidden">
+                <DialogFooter className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0 print:hidden">
 
-                    <div className="flex items-center gap-2 text-white/20">
+                    <div className="flex items-center gap-2 text-foreground/20">
                         <ShieldCheck className="h-4 w-4" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Audit Trail Synchronized</span>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Button 
-                            variant="outline" 
-                            onClick={() => closeDialog('view-purchase-order')}
-                            className="px-6 h-12 rounded-xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-xs"
+                        <Button variant="outline" onClick={() => closeDialog('view-purchase-order')}
+                            className="px-6 h-12 rounded-xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-xs"
                         >
                             Dismiss
                         </Button>
-                        <Button 
-                            onClick={handlePrint}
-                            className="px-8 h-12 rounded-xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all gap-2"
-                        >
+                        <Button onClick={handlePrint} className="px-8 rounded-xl bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all gap-2" >
                             <Printer className="h-4 w-4" />
                             Print Payload
                         </Button>

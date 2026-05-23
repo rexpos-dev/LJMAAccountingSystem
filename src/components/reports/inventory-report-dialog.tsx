@@ -32,13 +32,7 @@ export default function InventoryReportDialog() {
                         <Label>As of Date</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full justify-start text-left font-normal",
-                                        !reportDate && "text-muted-foreground"
-                                    )}
-                                >
+                                <Button variant={"outline"} className={cn( "w-full justify-start text-left font-normal", !reportDate && "text-muted-foreground" )} >
                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                     {reportDate ? format(reportDate, "MM/dd/yyyy") : <span>Pick a date</span>}
                                 </Button>
@@ -55,15 +49,11 @@ export default function InventoryReportDialog() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => closeDialog('inventory-report-dialog')}
+                        <Button variant="outline" onClick={() => closeDialog('inventory-report-dialog')}
                         >
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleRunReport}
-                        >
+                        <Button onClick={handleRunReport} >
                             Run Report
                         </Button>
                     </div>

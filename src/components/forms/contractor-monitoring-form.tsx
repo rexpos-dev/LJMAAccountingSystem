@@ -187,7 +187,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                             <span className="text-primary/50 text-[10px] italic">Required</span>
                                         </FormLabel>
                                         <FormControl>
-                                            <Input {...field} placeholder="Enter Project Name..." className="h-11 text-lg font-medium focus-visible:ring-1" disabled={isReadOnly} />
+                                            <Input {...field} placeholder="Enter Project Name..." className="text-lg font-medium focus-visible:ring-1" disabled={isReadOnly} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -201,7 +201,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                         <FormControl>
                                             <div className="relative">
                                                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <Input {...field} type="number" step="0.01" className="h-11 pl-9 text-lg font-bold text-primary focus-visible:ring-1" disabled={isReadOnly} />
+                                                <Input {...field} type="number" step="0.01" className="pl-9 text-lg font-bold text-primary focus-visible:ring-1" disabled={isReadOnly} />
                                             </div>
                                         </FormControl>
                                         <FormMessage />
@@ -232,7 +232,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((field, index) => (
-                                        <TableRow key={field.id} className="hover:bg-muted/5 group"><TableCell className="p-2"><FormField control={form.control} name={`items.${index}.date`} render={({ field }) => (<Popover><PopoverTrigger asChild><FormControl><Button variant="ghost" className={cn("w-full h-9 justify-center text-center font-normal", !field.value && "text-muted-foreground")} disabled={isReadOnly}><CalendarIcon className="mr-2 h-3 w-3 opacity-50" />{field.value ? format(field.value, "MM/dd/yy") : "Select"}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="center"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus disabled={isReadOnly} /></PopoverContent></Popover>)} /></TableCell><TableCell className="p-2"><FormField control={form.control} name={`items.${index}.name`} render={({ field }) => (<FormControl><Input {...field} className="h-9 border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" placeholder="Description..." disabled={isReadOnly} /></FormControl>)} /></TableCell><TableCell className="p-2"><FormField control={form.control} name={`items.${index}.controlNumber`} render={({ field }) => (<FormControl><Input {...field} className="h-9 border-none bg-transparent text-center font-mono text-sm focus-visible:ring-1 focus-visible:bg-background" placeholder="CN-0000" disabled={isReadOnly} /></FormControl>)} /></TableCell><TableCell className="p-2 px-6"><FormField control={form.control} name={`items.${index}.amount`} render={({ field }) => (<FormControl><Input {...field} type="number" step="0.01" className="h-9 border-none bg-transparent text-right font-bold focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} /></FormControl>)} /></TableCell>{!isReadOnly && (<TableCell className="p-2 text-center"><Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground group-hover:text-destructive transition-colors" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-4 w-4" /></Button></TableCell>)}</TableRow>
+                                        <TableRow key={field.id} className="hover:bg-muted/5 group"><TableCell className=""><FormField control={form.control} name={`items.${index}.date`} render={({ field }) => (<Popover><PopoverTrigger asChild><FormControl><Button variant="ghost" className={cn("w-full justify-center text-center font-normal", !field.value && "text-muted-foreground")} disabled={isReadOnly}><CalendarIcon className="mr-2 h-3 w-3 opacity-50" />{field.value ? format(field.value, "MM/dd/yy") : "Select"}</Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="center"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus disabled={isReadOnly} /></PopoverContent></Popover>)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.name`} render={({ field }) => (<FormControl><Input {...field} className="border-none bg-transparent focus-visible:ring-1 focus-visible:bg-background" placeholder="Description..." disabled={isReadOnly} /></FormControl>)} /></TableCell><TableCell className=""><FormField control={form.control} name={`items.${index}.controlNumber`} render={({ field }) => (<FormControl><Input {...field} className="border-none bg-transparent text-center font-mono text-sm focus-visible:ring-1 focus-visible:bg-background" placeholder="CN-0000" disabled={isReadOnly} /></FormControl>)} /></TableCell><TableCell className="px-6"><FormField control={form.control} name={`items.${index}.amount`} render={({ field }) => (<FormControl><Input {...field} type="number" step="0.01" className="border-none bg-transparent text-right font-bold focus-visible:ring-1 focus-visible:bg-background" disabled={isReadOnly} /></FormControl>)} /></TableCell>{!isReadOnly && (<TableCell className="text-center"><Button type="button" variant="ghost" size="icon" className="w-8 text-muted-foreground group-hover:text-destructive transition-colors" onClick={() => remove(index)} disabled={fields.length === 1}><Trash2 className="h-4 w-4" /></Button></TableCell>)}</TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -276,7 +276,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
-                                                    <Button variant="outline" className={cn("w-full h-10 text-xs", !field.value && "text-muted-foreground")} disabled={isReadOnly}>
+                                                    <Button variant="outline" className={cn("w-full text-xs", !field.value && "text-muted-foreground")} disabled={isReadOnly}>
                                                         {field.value ? format(field.value, "PP") : "Select date"}
                                                     </Button>
                                                 </FormControl>
@@ -293,7 +293,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
-                                                    <Button variant="outline" className={cn("w-full h-10 text-xs", !field.value && "text-muted-foreground")} disabled={isReadOnly}>
+                                                    <Button variant="outline" className={cn("w-full text-xs", !field.value && "text-muted-foreground")} disabled={isReadOnly}>
                                                         {field.value ? format(field.value, "PP") : "Select date"}
                                                     </Button>
                                                 </FormControl>
@@ -317,7 +317,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                     <FormItem>
                                         <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Validated by</FormLabel>
                                         <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
-                                            <FormControl><SelectTrigger className="h-10 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                                            <FormControl><SelectTrigger className=" text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
                                             <SelectContent>
                                                 {verifiers.map(u => <SelectItem key={u.id} value={`${u.firstName} ${u.lastName}`}>{u.firstName} {u.lastName}</SelectItem>)}
                                             </SelectContent>
@@ -329,7 +329,7 @@ export function ContractorMonitoringForm({ initialData, mode = 'create', onSucce
                                     <FormItem>
                                         <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Reviewed by</FormLabel>
                                         <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
-                                            <FormControl><SelectTrigger className="h-10 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                                            <FormControl><SelectTrigger className=" text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
                                             <SelectContent>
                                                 {approvers.map(u => <SelectItem key={u.id} value={`${u.firstName} ${u.lastName}`}>{u.firstName} {u.lastName}</SelectItem>)}
                                             </SelectContent>

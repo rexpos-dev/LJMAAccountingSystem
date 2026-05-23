@@ -217,29 +217,15 @@ export default function HistoryLogsDialog() {
                         <div className="flex items-center gap-3">
                             <div className="relative w-64 mr-2">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
-                                <Input
-                                    placeholder="Search actions, users, details…"
-                                    className="pl-9 h-10 bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary shadow-sm"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
+                                <Input placeholder="Search actions, users, details…" className="pl-9 bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary shadow-sm" value={search} onChange={e => setSearch(e.target.value)}
                                 />
                             </div>
 
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-10 w-10 border-primary/10 bg-primary/5 hover:bg-primary/10"
-                                onClick={fetchLogs}
-                                title="Refresh"
-                            >
+                            <Button variant="outline" size="icon" className="w-10 border-primary/10 bg-primary/5 hover:bg-primary/10" onClick={fetchLogs} title="Refresh" >
                                 <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
                             </Button>
 
-                            <Button
-                                variant="outline"
-                                className="gap-2 border-primary/10 bg-primary/5 hover:bg-primary/10"
-                                onClick={handleExport}
-                            >
+                            <Button variant="outline" className="gap-2 border-primary/10 bg-primary/5 hover:bg-primary/10" onClick={handleExport} >
                                 <Download className="h-4 w-4" /> Export
                             </Button>
                         </div>
@@ -248,14 +234,14 @@ export default function HistoryLogsDialog() {
 
                 {/* ── Filters ── */}
                 <div className="flex-none">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 px-6 py-4 bg-muted/20 rounded-2xl border border-white/5 shadow-inner">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 px-6 py-4 bg-muted/20 rounded-2xl border border-foreground/5 shadow-inner">
                         {/* Action Type */}
                         <div className="space-y-1.5">
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">
                                 <Activity className="inline h-3 w-3 mr-1" />Action Type
                             </label>
                             <Select value={selectedActionType} onValueChange={setSelectedActionType}>
-                                <SelectTrigger className="h-10 bg-card border-white/5 shadow-sm font-medium">
+                                <SelectTrigger className=" bg-card border-foreground/5 shadow-sm font-medium">
                                     <SelectValue placeholder="All types" />
                                 </SelectTrigger>
                                 <SelectContent className="p-1 max-h-60">
@@ -273,7 +259,7 @@ export default function HistoryLogsDialog() {
                                 <User className="inline h-3 w-3 mr-1" />User
                             </label>
                             <Select value={selectedUser} onValueChange={setSelectedUser}>
-                                <SelectTrigger className="h-10 bg-card border-white/5 shadow-sm font-medium">
+                                <SelectTrigger className=" bg-card border-foreground/5 shadow-sm font-medium">
                                     <SelectValue placeholder="All users" />
                                 </SelectTrigger>
                                 <SelectContent className="p-1 max-h-60">
@@ -289,7 +275,7 @@ export default function HistoryLogsDialog() {
                         <div className="space-y-1.5">
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Status</label>
                             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                                <SelectTrigger className="h-10 bg-card border-white/5 shadow-sm font-medium">
+                                <SelectTrigger className=" bg-card border-foreground/5 shadow-sm font-medium">
                                     <SelectValue placeholder="All status" />
                                 </SelectTrigger>
                                 <SelectContent className="p-1">
@@ -307,11 +293,8 @@ export default function HistoryLogsDialog() {
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Date From</label>
                             <div className="relative">
                                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none" />
-                                <Input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className="h-10 pl-9 bg-card border-white/5 shadow-sm"
+                                <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
+                                    className="h-10 pl-9 bg-card border-foreground/5 shadow-sm"
                                 />
                             </div>
                         </div>
@@ -321,11 +304,8 @@ export default function HistoryLogsDialog() {
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Date To</label>
                             <div className="relative">
                                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none" />
-                                <Input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className="h-10 pl-9 bg-card border-white/5 shadow-sm"
+                                <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
+                                    className="h-10 pl-9 bg-card border-foreground/5 shadow-sm"
                                 />
                             </div>
                         </div>
@@ -333,11 +313,11 @@ export default function HistoryLogsDialog() {
                 </div>
 
                 {/* ── Table ── */}
-                <div className="flex-1 overflow-hidden rounded-2xl border border-white/5 bg-card shadow-2xl relative">
+                <div className="flex-1 overflow-hidden rounded-2xl border border-foreground/5 bg-card shadow-2xl relative">
                     <div className="absolute inset-0 overflow-auto">
                         <Table>
                             <TableHeader className="sticky top-0 z-10 bg-muted/50 backdrop-blur-sm">
-                                <TableRow className="border-b border-white/5 hover:bg-transparent">
+                                <TableRow className="border-b border-foreground/5 hover:bg-transparent">
                                     <TableHead className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider whitespace-nowrap w-40">Date & Time</TableHead>
                                     <TableHead className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider whitespace-nowrap">Action Type</TableHead>
                                     <TableHead className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider whitespace-nowrap">Initiated By</TableHead>
@@ -350,7 +330,7 @@ export default function HistoryLogsDialog() {
                             <TableBody>
                                 {isLoading ? (
                                     Array.from({ length: pageSize }).map((_, i) => (
-                                        <TableRow key={i} className="border-b border-white/5">
+                                        <TableRow key={i} className="border-b border-foreground/5">
                                             {Array.from({ length: 7 }).map((_, j) => (
                                                 <TableCell key={j}>
                                                     <div className="h-4 bg-muted/50 rounded animate-pulse" />
@@ -373,7 +353,7 @@ export default function HistoryLogsDialog() {
                                         <TableRow
                                             key={log.id}
                                             className={cn(
-                                                'border-b border-white/5 transition-colors hover:bg-muted/10',
+                                                'border-b border-foreground/5 transition-colors hover:bg-muted/10',
                                                 idx % 2 === 0 ? 'bg-transparent' : 'bg-muted/5'
                                             )}
                                         >
@@ -436,12 +416,7 @@ export default function HistoryLogsDialog() {
                             <History className="h-3 w-3" />
                             {total.toLocaleString()} total {total === 1 ? 'log' : 'logs'}
                         </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-[10px] h-7 uppercase font-bold tracking-wider hover:bg-rose-500/10 hover:text-rose-500"
-                            onClick={handleClear}
-                        >
+                        <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold tracking-wider hover:bg-rose-500/10 hover:text-rose-500" onClick={handleClear} >
                             Reset filters
                         </Button>
                     </div>
@@ -451,20 +426,12 @@ export default function HistoryLogsDialog() {
                             Page <strong>{page}</strong> of <strong>{totalPages || 1}</strong>
                         </span>
                         <div className="flex items-center gap-1">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                            <Button variant="outline" size="icon" className="w-8" onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page <= 1 || isLoading}
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            <Button variant="outline" size="icon" className="w-8" onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page >= totalPages || isLoading}
                             >
                                 <ChevronRight className="h-4 w-4" />

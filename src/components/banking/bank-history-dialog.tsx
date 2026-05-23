@@ -92,11 +92,7 @@ export default function BankHistoryDialog() {
                         <div className="flex items-center gap-3">
                             <div className="relative w-64 mr-2">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
-                                <Input
-                                    placeholder="Search reference, particular..."
-                                    className="pl-9 h-10 bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary shadow-sm"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                <Input placeholder="Search reference, particular..." className="pl-9 bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary shadow-sm" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
 
@@ -130,12 +126,12 @@ export default function BankHistoryDialog() {
 
                 <div className="flex-1 flex flex-col space-y-4 min-h-0 overflow-hidden mt-6">
                     {/* Filter Bar */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 px-6 py-4 bg-muted/20 rounded-2xl border border-white/5 shadow-inner">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 px-6 py-4 bg-muted/20 rounded-2xl border border-foreground/5 shadow-inner">
                         <div className="space-y-1.5">
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Account Filter</label>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="w-full gap-2 h-10 justify-between bg-card hover:bg-muted/50 border-white/5 shadow-sm">
+                                    <Button variant="outline" size="sm" className="w-full gap-2 justify-between bg-card hover:bg-muted/50 border-foreground/5 shadow-sm">
                                         <span className="truncate font-medium">
                                             {selectedAccount ? `${selectedAccount.account_name}` : "All accounts"}
                                         </span>
@@ -160,7 +156,7 @@ export default function BankHistoryDialog() {
                         <div className="space-y-1.5">
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Type</label>
                             <Select value={filterType} onValueChange={setFilterType}>
-                                <SelectTrigger className="h-10 bg-card border-white/5 shadow-sm font-medium">
+                                <SelectTrigger className=" bg-card border-foreground/5 shadow-sm font-medium">
                                     <SelectValue placeholder="All types" />
                                 </SelectTrigger>
                                 <SelectContent className="p-1">
@@ -177,7 +173,7 @@ export default function BankHistoryDialog() {
                         <div className="space-y-1.5">
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Audit Status</label>
                             <Select value={filterStatus} onValueChange={setFilterStatus}>
-                                <SelectTrigger className="h-10 bg-card border-white/5 shadow-sm font-medium">
+                                <SelectTrigger className=" bg-card border-foreground/5 shadow-sm font-medium">
                                     <SelectValue placeholder="All status" />
                                 </SelectTrigger>
                                 <SelectContent className="p-1">
@@ -196,11 +192,8 @@ export default function BankHistoryDialog() {
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Date range (From)</label>
                             <div className="relative">
                                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none" />
-                                <Input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    className="h-10 pl-9 bg-card border-white/5 shadow-sm"
+                                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                                    className="h-10 pl-9 bg-card border-foreground/5 shadow-sm"
                                 />
                             </div>
                         </div>
@@ -209,18 +202,15 @@ export default function BankHistoryDialog() {
                             <label className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-wider ml-1">Date range (To)</label>
                             <div className="relative">
                                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70 pointer-events-none" />
-                                <Input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="h-10 pl-9 bg-card border-white/5 shadow-sm"
+                                <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+                                    className="h-10 pl-9 bg-card border-foreground/5 shadow-sm"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Table section */}
-                    <div className="flex-1 overflow-hidden rounded-2xl border border-white/5 bg-card shadow-2xl relative">
+                    <div className="flex-1 overflow-hidden rounded-2xl border border-foreground/5 bg-card shadow-2xl relative">
                         <div className="absolute inset-0 overflow-auto">
                             <BankTransactionsTable
                                 bankAccountId={selectedAccountId}
@@ -240,12 +230,7 @@ export default function BankHistoryDialog() {
                             <Search className="h-3 w-3" />
                             {debouncedSearch ? `Search active: "${debouncedSearch}"` : "Real-time filtering enabled"}
                         </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-[10px] h-7 uppercase font-bold tracking-wider hover:bg-rose-500/10 hover:text-rose-500"
-                            onClick={handleClearFilters}
-                        >
+                        <Button variant="ghost" size="sm" className="text-[10px] uppercase font-bold tracking-wider hover:bg-rose-500/10 hover:text-rose-500" onClick={handleClearFilters} >
                             Reset all filters
                         </Button>
                     </div>

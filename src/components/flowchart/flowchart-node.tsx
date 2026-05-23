@@ -24,9 +24,9 @@ export function FlowchartNode({ id, content, position, color, size, disabled, on
       onClick={onClick}
       className={cn(
         "absolute flex flex-col items-center justify-center p-3 rounded-xl shadow-2xl transition-all duration-300 group",
-        "backdrop-blur-md border border-white/10 overflow-hidden",
+        "backdrop-blur-md border border-foreground/10 overflow-hidden",
         isClickable 
-          ? "cursor-pointer hover:scale-105 active:scale-95 hover:border-white/30 hover:shadow-[0_0_20px_rgba(var(--primary),0.3)]" 
+          ? "cursor-pointer hover:scale-105 active:scale-95 hover:border-foreground/30 hover:shadow-[0_0_20px_rgba(var(--primary),0.3)]" 
           : "opacity-40 cursor-not-allowed grayscale-[0.5]",
         color
       )}
@@ -49,23 +49,23 @@ export function FlowchartNode({ id, content, position, color, size, disabled, on
       )}
 
       {/* Shine Effect */}
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-foreground/20 to-transparent" />
 
       <div className="flex flex-col items-center gap-1.5 text-center">
         {Icon && (
           <div className={cn(
             "p-2 rounded-lg transition-colors",
-            isClickable ? "bg-white/5 group-hover:bg-white/10" : "bg-transparent"
+            isClickable ? "bg-foreground/5 group-hover:bg-foreground/10" : "bg-transparent"
           )}>
-            <Icon className="w-5 h-5 text-white/90" />
+            <Icon className="w-5 h-5 text-foreground/90" />
           </div>
         )}
         <div className="flex flex-col gap-0.5">
-          <span className="text-[13px] font-bold text-white tracking-tight leading-tight">
+          <span className="text-[13px] font-bold text-foreground tracking-tight leading-tight">
             {content}
           </span>
           {description && (
-            <span className="text-[10px] text-white/50 font-normal leading-tight px-2">
+            <span className="text-[10px] text-foreground/50 font-normal leading-tight px-2">
               {description}
             </span>
           )}

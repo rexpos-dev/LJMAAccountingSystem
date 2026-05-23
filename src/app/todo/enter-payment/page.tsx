@@ -63,14 +63,7 @@ export default function EnterPaymentPage() {
                 <div className="col-span-2">
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant={'outline'}
-                        id="date"
-                        className={cn(
-                          'w-full justify-start text-left font-normal',
-                          !date && 'text-muted-foreground'
-                        )}
-                      >
+                      <Button variant={'outline'} id="date" className={cn( 'w-full justify-start text-left font-normal', !date && 'text-muted-foreground' )} >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {date ? format(date, 'PPP') : <span>Pick a date</span>}
                       </Button>
@@ -123,21 +116,12 @@ export default function EnterPaymentPage() {
 
               <div className="grid grid-cols-3 items-center gap-4">
                 <Label htmlFor="account-balance">Account Balance:</Label>
-                <Input
-                  id="account-balance"
-                  value="₱0.00"
-                  disabled
-                  className="col-span-2"
-                />
+                <Input id="account-balance" value="₱0.00" disabled className="col-span-2" />
               </div>
 
               <div className="grid grid-cols-3 items-start gap-4">
                 <Label htmlFor="journal-memo">Journal memo:</Label>
-                <Textarea
-                  id="journal-memo"
-                  placeholder="Payment"
-                  className="col-span-2"
-                />
+                <Textarea id="journal-memo" placeholder="Payment" className="col-span-2" />
               </div>
 
             </div>
@@ -162,12 +146,7 @@ export default function EnterPaymentPage() {
 
               <div className="grid grid-cols-3 items-center gap-4">
                 <Label htmlFor="amount">Amount:</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="₱0.00"
-                  className="col-span-2"
-                />
+                <Input id="amount" type="number" placeholder="₱0.00" className="col-span-2" />
               </div>
 
               <div className="grid grid-cols-3 items-center gap-4">
@@ -190,7 +169,7 @@ export default function EnterPaymentPage() {
           </div>
 
           <div className="mt-8">
-            <h3 className="text-lg font-medium mb-2 text-white">Account Allocation</h3>
+            <h3 className="text-lg font-medium mb-2 text-foreground">Account Allocation</h3>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -202,7 +181,7 @@ export default function EnterPaymentPage() {
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={3} className="text-center text-muted-foreground">
                       Click here to allocate an amount to account(s).
                     </TableCell>
                   </TableRow>

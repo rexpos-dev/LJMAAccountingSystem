@@ -1,14 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarTrigger,
-} from '@/components/ui/menubar';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import {
     Table,
     TableBody,
@@ -27,14 +19,12 @@ import {
 } from '@/components/ui/dialog';
 import {
     FileText,
-    Printer,
-    Save,
-    ListVideo,
     ChevronLeft,
     ChevronRight,
     Search,
     RefreshCw,
 } from 'lucide-react';
+import { ReportToolbar } from './report-toolbar';
 import { format } from 'date-fns';
 import { useDialog } from '../layout/dialog-context';
 import { ScrollArea } from '../ui/scroll-area';
@@ -56,6 +46,7 @@ interface AuditLog {
 
 export function ToAuditReport() {
     const { openDialogs, closeDialog, getDialogData } = useDialog();
+    const contentRef = useRef<HTMLDivElement>(null);
     const [data, setData] = useState<AuditLog[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -134,62 +125,33 @@ export function ToAuditReport() {
         <Dialog open={openDialogs['to-audit-report' as any] || false} onOpenChange={() => closeDialog('to-audit-report' as any)}>
             <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0">
                 <header>
-                    <Menubar className="rounded-none border-x-0 border-b border-t-0">
-                        <MenubarMenu>
-                            <MenubarTrigger>Report</MenubarTrigger>
-                            <MenubarContent>
-                                <MenubarItem>Print Preview</MenubarItem>
-                                <MenubarItem onClick={() => window.print()}>Print</MenubarItem>
-                                <MenubarItem>Save</MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem onClick={() => closeDialog('to-audit-report' as any)}>Close</MenubarItem>
-                            </MenubarContent>
-                        </MenubarMenu>
-                    </Menubar>
-                    <div className="flex items-center justify-between p-2 border-b bg-muted/10">
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => window.print()}><Printer className="h-5 w-5" /><span>Print</span></Button>
-                            <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-                            <div className="w-px h-10 bg-border mx-2" />
-                            <Button variant="ghost" size="sm" className="flex-col h-auto" onClick={() => fetchReportData()}><RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} /><span>Refresh</span></Button>
-                        </div>
-
-                        <div className="flex items-center gap-4 px-4">
-                            <div className="flex items-center gap-2">
-                                <Label htmlFor="from-date" className="text-xs font-medium uppercase text-muted-foreground whitespace-nowrap">From</Label>
-                                <Input
-                                    id="from-date"
-                                    type="date"
-                                    className="h-9 w-[150px]"
-                                    value={localFromDate}
-                                    onChange={(e) => setLocalFromDate(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Label htmlFor="to-date" className="text-xs font-medium uppercase text-muted-foreground whitespace-nowrap">To</Label>
-                                <Input
-                                    id="to-date"
-                                    type="date"
-                                    className="h-9 w-[150px]"
-                                    value={localToDate}
-                                    onChange={(e) => setLocalToDate(e.target.value)}
-                                />
-                            </div>
-                            <div className="relative w-64">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search action, ID, or details..."
-                                    className="h-9 pl-9"
-                                    value={searchTerm}
-                                    onChange={(e) => {
-                                        setSearchTerm(e.target.value);
-                                        setCurrentPage(1);
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <ReportToolbar
+                        contentRef={contentRef as any}
+                        title="To Audit Items Report"
+                        subtitle={`Period: ${dateDisplay}`}
+                        closeKey="to-audit-report"
+                        extra={
+                            <>
+                                <div className="w-px h-8 bg-border mx-1" />
+                                <Button variant="ghost" size="sm" className="flex-col h-auto gap-0.5 px-3" onClick={() => fetchReportData()}>
+                                    <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                                    <span className="text-[10px]">Refresh</span>
+                                </Button>
+                                <div className="flex items-center gap-2 ml-2">
+                                    <Label htmlFor="from-date" className="text-xs font-medium uppercase text-muted-foreground whitespace-nowrap">From</Label>
+                                    <Input id="from-date" type="date" className="w-[150px]" value={localFromDate} onChange={(e) => setLocalFromDate(e.target.value)} />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="to-date" className="text-xs font-medium uppercase text-muted-foreground whitespace-nowrap">To</Label>
+                                    <Input id="to-date" type="date" className="w-[150px]" value={localToDate} onChange={(e) => setLocalToDate(e.target.value)} />
+                                </div>
+                                <div className="relative w-64">
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input placeholder="Search action, ID, or details..." className="pl-9" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
+                                </div>
+                            </>
+                        }
+                    />
                 </header>
 
                 <DialogHeader className="p-6 text-left shrink-0">
@@ -198,7 +160,7 @@ export function ToAuditReport() {
                             <FileText className="w-8 h-8 text-primary" />
                         </div>
                         <div>
-                            <DialogTitle className="text-xl font-bold text-white text-left">To Audit Items Report</DialogTitle>
+                            <DialogTitle className="text-xl font-bold text-foreground text-left">To Audit Items Report</DialogTitle>
                             <DialogDescription className="text-left mt-1">
                                 Period: {dateDisplay}
                             </DialogDescription>
@@ -207,6 +169,7 @@ export function ToAuditReport() {
                 </DialogHeader>
 
                 <ScrollArea className='flex-1 px-6'>
+                    <div ref={contentRef}>
                     {loading && data.length === 0 ? (
                         <div className="flex justify-center items-center h-32">
                             <span className="text-muted-foreground animate-pulse">Fetching audit records...</span>
@@ -259,20 +222,18 @@ export function ToAuditReport() {
                             </Table>
                         </div>
                     )}
+                    </div>
                 </ScrollArea>
 
                 {/* Pagination Footer */}
                 {!loading && filteredData.length > 0 && (
                     <div className="p-4 border-t bg-muted/20 flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">
-                            Showing <span className="text-white font-medium">{Math.min(filteredData.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)}</span> to <span className="text-white font-medium">{Math.min(filteredData.length, currentPage * ITEMS_PER_PAGE)}</span> of <span className="text-white font-medium">{filteredData.length}</span> records
+                            Showing <span className="text-foreground font-medium">{Math.min(filteredData.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)}</span> to <span className="text-foreground font-medium">{Math.min(filteredData.length, currentPage * ITEMS_PER_PAGE)}</span> of <span className="text-foreground font-medium">{filteredData.length}</span> records
                             {searchTerm && <span className="ml-2">(filtered from {data.length} total)</span>}
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 disabled={currentPage === 1}
                                 className="h-8"
                             >
@@ -282,10 +243,7 @@ export function ToAuditReport() {
                             <div className="px-3 text-sm font-medium">
                                 Page {currentPage} of {totalPages}
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                 disabled={currentPage === totalPages}
                                 className="h-8"
                             >

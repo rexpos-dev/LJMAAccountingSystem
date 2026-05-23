@@ -8,14 +8,15 @@ export async function GET(req: Request) {
         const toDate = searchParams.get('toDate');
 
         // Optional date filtering
-        let dateFilter = {};
-        if (fromDate && toDate) {
-            dateFilter = {
-                date: {
-                    gte: new Date(fromDate),
-                    lte: new Date(toDate + 'T23:59:59'),
-                }
-            };
+        let dateFilter: any = {};
+        if (fromDate || toDate) {
+            dateFilter = { date: {} };
+            if (fromDate) {
+                dateFilter.date.gte = new Date(fromDate);
+            }
+            if (toDate) {
+                dateFilter.date.lte = new Date(toDate + 'T23:59:59');
+            }
         }
 
         const logs = await prisma.auditLog.findMany({

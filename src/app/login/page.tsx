@@ -173,7 +173,7 @@ export default function LoginPage() {
 
                     <motion.h1
                         variants={textItemVariants}
-                        className="text-5xl font-extrabold tracking-tight text-white"
+                        className="text-5xl font-extrabold tracking-tight text-foreground"
                         style={{ fontFamily: 'Poppins, sans-serif', textShadow: '0 0 40px rgba(59,130,246,0.4)' }}
                     >
                         LJMA Accounting
@@ -270,7 +270,7 @@ export default function LoginPage() {
                             className="mx-auto mb-3 drop-shadow-lg"
                         />
                         <h1
-                            className="text-2xl font-extrabold text-white tracking-tight"
+                            className="text-2xl font-extrabold text-foreground tracking-tight"
                             style={{ fontFamily: 'Poppins, sans-serif' }}
                         >
                             LJMA Accounting

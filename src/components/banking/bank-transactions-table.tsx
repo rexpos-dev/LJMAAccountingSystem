@@ -220,7 +220,7 @@ export function BankTransactionsTable({
                                     )}
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-primary/10 hover:text-primary">
+                                    <Button variant="ghost" size="icon" className="w-7 hover:bg-primary/10 hover:text-primary">
                                         <Eye className="h-3.5 w-3.5" />
                                     </Button>
                                 </TableCell>

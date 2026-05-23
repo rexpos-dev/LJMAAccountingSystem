@@ -115,9 +115,9 @@ export default function CashFundRequestDialog() {
 
   return (
     <Dialog open={openDialogs["cash-fund-request"]} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[85vh]">
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-2xl flex flex-col h-[85vh]">
         {/* Premium Header */}
-        <div className="px-8 py-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+        <div className="px-8 py-6 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-amber-400/10 via-transparent to-transparent pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-4">
@@ -125,27 +125,22 @@ export default function CashFundRequestDialog() {
               <DollarSign className="h-6 w-6" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-white leading-none">Liquidity Requisition</DialogTitle>
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground leading-none">Liquidity Requisition</DialogTitle>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-400 border border-amber-400/20">Operational Cash</span>
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Protocol CR-v2.0</span>
+                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Protocol CR-v2.0</span>
               </div>
             </div>
           </div>
 
           <div className="relative z-10 flex items-center gap-6">
             <div className="flex flex-col items-end">
-              <span className="text-[10px] font-black text-white/20 uppercase tracking-widest text-right">Reference Serial</span>
-              <span className="text-sm font-bold text-white font-mono uppercase tracking-tighter">
+              <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest text-right">Reference Serial</span>
+              <span className="text-sm font-bold text-foreground font-mono uppercase tracking-tighter">
                 {formData.controlNo || "UNASSIGNED-NODE"}
               </span>
             </div>
-            <button 
-              onClick={handleClose}
-              className="p-2 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            
           </div>
         </div>
 
@@ -153,11 +148,11 @@ export default function CashFundRequestDialog() {
           <div className="p-8 space-y-8">
             {/* Top Insight Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+              <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-amber-400">
                   <Calculator className="h-10 w-10" />
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Requested Liquidity</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-1">Requested Liquidity</p>
                 <div className="flex items-baseline gap-1">
                   <span className="text-xs font-bold text-amber-400/60 uppercase">PHP</span>
                   <span className="text-3xl font-black italic tracking-tighter text-amber-400">
@@ -166,29 +161,29 @@ export default function CashFundRequestDialog() {
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+              <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-blue-400">
                   <User className="h-10 w-10" />
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Initiating Entity</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-1">Initiating Entity</p>
                 <span className="text-2xl font-black italic tracking-tighter text-blue-400 uppercase truncate block">
                   {formData.requestor || "IDENTIFY REQUESTOR"}
                 </span>
               </div>
 
-              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
+              <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl backdrop-blur-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-emerald-400">
                   <Activity className="h-10 w-10" />
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Compliance Status</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40 mb-1">Compliance Status</p>
                 <div className="flex items-center gap-2 mt-1">
                   <div className={cn(
                     "w-2 h-2 rounded-full",
-                    formData.requestor && formData.amount ? "bg-emerald-400 animate-pulse" : "bg-white/10"
+                    formData.requestor && formData.amount ? "bg-emerald-400 animate-pulse" : "bg-foreground/10"
                   )} />
                   <span className={cn(
                     "text-lg font-black italic tracking-tighter uppercase",
-                    formData.requestor && formData.amount ? "text-emerald-400" : "text-white/20"
+                    formData.requestor && formData.amount ? "text-emerald-400" : "text-foreground/20"
                   )}>
                     {formData.requestor && formData.amount ? "Node Validated" : "Awaiting Data"}
                   </span>
@@ -201,36 +196,28 @@ export default function CashFundRequestDialog() {
               <div className="lg:col-span-5 space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-amber-400 rounded-full" />
-                  <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Requisition Parameters</h3>
+                  <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Requisition Parameters</h3>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-6">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Event Horizon</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Event Horizon</Label>
                       <div className="relative group">
                         <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-400 transition-transform group-focus-within:scale-110" />
-                        <Input 
-                          type="date"
-                          className="pl-10 h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs font-bold uppercase transition-all focus:bg-white/10"
-                          value={formData.date}
-                          onChange={(e) => handleInputChange("date", e.target.value)}
+                        <Input type="date" className="pl-10 bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs font-bold uppercase transition-all focus:bg-foreground/10" value={formData.date} onChange={(e) => handleInputChange("date", e.target.value)}
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Serial Node</Label>
-                      <Input 
-                        className="h-11 bg-white/5 border-white/10 text-white rounded-xl font-mono text-xs placeholder:text-white/10"
-                        placeholder="AUTO-GEN"
-                        value={formData.controlNo}
-                        onChange={(e) => handleInputChange("controlNo", e.target.value)}
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Serial Node</Label>
+                      <Input className="bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-mono text-xs placeholder:text-foreground/10" placeholder="AUTO-GEN" value={formData.controlNo} onChange={(e) => handleInputChange("controlNo", e.target.value)}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Initiating Identity</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Initiating Identity</Label>
                     <Select value={formData.requestor} onValueChange={(val) => {
                       handleInputChange('requestor', val);
                       const emp = employees.find((e: any) => `${e.firstName} ${e.lastName}` === val);
@@ -239,10 +226,10 @@ export default function CashFundRequestDialog() {
                         if (emp.employeeId) handleInputChange('tempAccountNo', emp.employeeId);
                       }
                     }}>
-                      <SelectTrigger className="h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs font-bold uppercase">
+                      <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs font-bold uppercase">
                         <SelectValue placeholder="Identify Personnel" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-white/10 text-white">
+                      <SelectContent className="bg-card border-foreground/10 text-foreground">
                         {employees.map((emp: any) => (
                           <SelectItem key={emp.id} value={`${emp.firstName} ${emp.lastName}`} className="text-xs font-bold uppercase">
                             {emp.firstName} {emp.lastName}
@@ -253,13 +240,10 @@ export default function CashFundRequestDialog() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Designation Context</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Designation Context</Label>
                     <div className="relative group">
                       <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400 group-focus-within:animate-pulse" />
-                      <Input 
-                        className="pl-10 h-11 bg-white/5 border-white/10 text-white rounded-xl text-xs font-bold uppercase"
-                        value={formData.position}
-                        onChange={(e) => handleInputChange("position", e.target.value)}
+                      <Input className="pl-10 bg-foreground/5 border-foreground/10 text-foreground rounded-xl text-xs font-bold uppercase" value={formData.position} onChange={(e) => handleInputChange("position", e.target.value)}
                       />
                     </div>
                   </div>
@@ -270,41 +254,41 @@ export default function CashFundRequestDialog() {
               <div className="lg:col-span-7 space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-emerald-400 rounded-full" />
-                  <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Fiscal Target Matrix</h3>
+                  <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Fiscal Target Matrix</h3>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-6">
+                <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl space-y-6">
                   <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <div className="space-y-4 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5">
                       <div className="flex items-center gap-2 mb-2">
                         <Activity className="h-3 w-3 text-amber-400/60" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Temporal Node</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20">Temporal Node</span>
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-1.5">
-                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Business Unit</Label>
-                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg text-xs uppercase" value={formData.temporaryChargeTo} onChange={(e) => handleInputChange("temporaryChargeTo", e.target.value)} />
+                          <Label className="text-[9px] font-black uppercase text-foreground/30 ml-1">Business Unit</Label>
+                          <Input className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-xs uppercase" value={formData.temporaryChargeTo} onChange={(e) => handleInputChange("temporaryChargeTo", e.target.value)} />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Account Ref</Label>
-                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg font-mono text-[10px]" value={formData.tempAccountNo} onChange={(e) => handleInputChange("tempAccountNo", e.target.value)} />
+                          <Label className="text-[9px] font-black uppercase text-foreground/30 ml-1">Account Ref</Label>
+                          <Input className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg font-mono text-[10px]" value={formData.tempAccountNo} onChange={(e) => handleInputChange("tempAccountNo", e.target.value)} />
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <div className="space-y-4 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5">
                       <div className="flex items-center gap-2 mb-2">
                         <Target className="h-3 w-3 text-emerald-400/60" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Final Allocation</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20">Final Allocation</span>
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-1.5">
-                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Ledger Target</Label>
-                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg text-xs uppercase" value={formData.finalChargeTo} onChange={(e) => handleInputChange("finalChargeTo", e.target.value)} />
+                          <Label className="text-[9px] font-black uppercase text-foreground/30 ml-1">Ledger Target</Label>
+                          <Input className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg text-xs uppercase" value={formData.finalChargeTo} onChange={(e) => handleInputChange("finalChargeTo", e.target.value)} />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[9px] font-black uppercase text-white/30 ml-1">Account Node</Label>
-                          <Input className="h-9 bg-white/5 border-white/10 text-white rounded-lg font-mono text-[10px]" value={formData.finalAccountNo} onChange={(e) => handleInputChange("finalAccountNo", e.target.value)} />
+                          <Label className="text-[9px] font-black uppercase text-foreground/30 ml-1">Account Node</Label>
+                          <Input className="bg-foreground/5 border-foreground/10 text-foreground rounded-lg font-mono text-[10px]" value={formData.finalAccountNo} onChange={(e) => handleInputChange("finalAccountNo", e.target.value)} />
                         </div>
                       </div>
                     </div>
@@ -312,22 +296,15 @@ export default function CashFundRequestDialog() {
 
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                     <div className="md:col-span-8 space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Intent Logic / Purpose</Label>
-                      <Textarea 
-                        className="min-h-[100px] bg-white/5 border-white/10 text-white/80 rounded-2xl text-xs font-bold leading-relaxed resize-none p-4 placeholder:text-white/5"
-                        placeholder="Add mission-critical particulars..."
-                        value={formData.purpose}
-                        onChange={(e) => handleInputChange("purpose", e.target.value)}
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Intent Logic / Purpose</Label>
+                      <Textarea className="min-h-[100px] bg-foreground/5 border-foreground/10 text-foreground/80 rounded-2xl text-xs font-bold leading-relaxed resize-none placeholder:text-foreground/5" placeholder="Add mission-critical particulars..." value={formData.purpose} onChange={(e) => handleInputChange("purpose", e.target.value)}
                       />
                     </div>
                     <div className="md:col-span-4 space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Value Capture</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Value Capture</Label>
                       <div className="relative group h-[100px]">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-amber-400 italic group-focus-within:scale-110 transition-transform">₱</span>
-                        <Input 
-                          className="pl-10 h-full bg-amber-400/5 border-amber-400/10 focus:border-amber-400/30 text-amber-400 text-3xl font-black italic tracking-tighter text-right rounded-2xl pr-4 transition-all"
-                          value={formData.amount}
-                          onChange={(e) => handleInputChange("amount", e.target.value)}
+                        <Input className="pl-10 h-full bg-amber-400/5 border-amber-400/10 focus:border-amber-400/30 text-amber-400 text-3xl font-black italic tracking-tighter text-right rounded-2xl pr-4 transition-all" value={formData.amount} onChange={(e) => handleInputChange("amount", e.target.value)}
                           placeholder="0.00"
                         />
                       </div>
@@ -341,7 +318,7 @@ export default function CashFundRequestDialog() {
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-4 bg-emerald-400 rounded-full" />
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-white">Authorization Hierarchy</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-foreground">Authorization Hierarchy</h3>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -352,19 +329,19 @@ export default function CashFundRequestDialog() {
                   { label: "Processing Unit", field: "processedBy", icon: Activity },
                   { label: "Release Receptor", field: "releasedReceivedBy", icon: CheckCircle2 }
                 ].map((auth, idx) => (
-                  <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-3 group hover:bg-white/[0.08] transition-all">
+                  <div key={idx} className="bg-foreground/5 border border-foreground/10 p-4 rounded-2xl space-y-3 group hover:bg-foreground/[0.08] transition-all">
                     <div className="flex items-center gap-2">
-                      <auth.icon className="h-3 w-3 text-white/20 group-hover:text-amber-400 transition-colors" />
-                      <Label className="text-[9px] font-black uppercase tracking-widest text-white/40">{auth.label}</Label>
+                      <auth.icon className="h-3 w-3 text-foreground/20 group-hover:text-amber-400 transition-colors" />
+                      <Label className="text-[9px] font-black uppercase tracking-widest text-foreground/40">{auth.label}</Label>
                     </div>
                     <Select 
                       value={(formData as any)[auth.field]} 
                       onValueChange={(value) => handleInputChange(auth.field, value)}
                     >
-                      <SelectTrigger className="h-9 bg-transparent border-white/10 text-white rounded-lg text-[10px] font-black uppercase tracking-tight italic">
+                      <SelectTrigger className=" bg-transparent border-foreground/10 text-foreground rounded-lg text-[10px] font-black uppercase tracking-tight italic">
                         <SelectValue placeholder="Identify..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900 border-white/10 text-white">
+                      <SelectContent className="bg-card border-foreground/10 text-foreground">
                         {userPermissions.filter(u => u.isActive).map((user) => (
                           <SelectItem key={user.id} value={`${user.firstName} ${user.lastName}`} className="text-[10px] font-black uppercase">
                             {user.firstName} {user.lastName}
@@ -372,8 +349,8 @@ export default function CashFundRequestDialog() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <div className="h-px bg-white/5 mt-2" />
-                    <span className="text-[8px] font-black uppercase text-white/10 text-center block tracking-[0.3em]">Signatory</span>
+                    <div className="h-px bg-foreground/5 mt-2" />
+                    <span className="text-[8px] font-black uppercase text-foreground/10 text-center block tracking-[0.3em]">Signatory</span>
                   </div>
                 ))}
               </div>
@@ -382,12 +359,10 @@ export default function CashFundRequestDialog() {
         </ScrollArea>
 
         {/* Action Footer */}
-        <div className="px-8 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
+        <div className="px-8 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={() => window.print()}
-              className="h-12 rounded-2xl border-white/10 hover:bg-white/5 text-white/60 hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-6 gap-2"
+            <Button variant="outline" onClick={() => window.print()}
+              className="h-12 rounded-2xl border-foreground/10 hover:bg-foreground/5 text-foreground/60 hover:text-foreground transition-all font-black uppercase tracking-widest text-[10px] px-6 gap-2"
             >
               <Printer className="h-4 w-4" />
               Hardcopy Stream
@@ -395,18 +370,10 @@ export default function CashFundRequestDialog() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              onClick={handleClose}
-              className="h-12 rounded-2xl text-white/20 hover:text-white hover:bg-white/5 transition-all font-black uppercase tracking-widest text-[10px] px-6"
-            >
+            <Button variant="ghost" onClick={handleClose} className="rounded-2xl text-foreground/20 hover:text-foreground hover:bg-foreground/5 transition-all font-black uppercase tracking-widest text-[10px] px-6" >
               Abort Requisition
             </Button>
-            <Button 
-              onClick={handleSave}
-              disabled={isSaving || !formData.amount || !formData.requestor}
-              className="h-12 rounded-2xl bg-amber-400 hover:bg-amber-400/90 text-black font-black uppercase tracking-widest text-[10px] px-10 shadow-lg shadow-amber-400/20 transition-all gap-2"
-            >
+            <Button onClick={handleSave} disabled={isSaving || !formData.amount || !formData.requestor} className="rounded-2xl bg-amber-400 hover:bg-amber-400/90 text-black font-black uppercase tracking-widest text-[10px] px-10 shadow-lg shadow-amber-400/20 transition-all gap-2" >
               {isSaving ? <Activity className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Commit Requisition
             </Button>

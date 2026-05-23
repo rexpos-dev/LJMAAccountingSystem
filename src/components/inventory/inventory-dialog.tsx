@@ -146,9 +146,9 @@ export default function InventoryDialog() {
 
     return (
         <Dialog open={openDialogs['inventory']} onOpenChange={() => closeDialog('inventory')}>
-            <DialogContent className="max-w-[95vw] w-[1450px] h-[92vh] flex flex-col p-0 overflow-hidden bg-slate-950/98 border-white/10 backdrop-blur-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <DialogContent variant="top-drawer" className="max-w-[95vw] w-[1450px] h-[92vh] flex flex-col p-0 overflow-hidden bg-background/98 border-foreground/10 backdrop-blur-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] mx-auto">
                 {/* Premium Operational Header */}
-                <div className="px-10 py-8 border-b border-white/5 bg-white/5 flex items-center justify-between relative shrink-0">
+                <div className="px-10 py-8 border-b border-foreground/5 bg-foreground/5 flex items-center justify-between relative shrink-0">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary/10 via-transparent to-transparent pointer-events-none" />
                     
                     <div className="relative z-10 flex items-center gap-6">
@@ -156,61 +156,52 @@ export default function InventoryDialog() {
                             <Filter className="h-8 w-8" />
                         </div>
                         <div>
-                            <DialogTitle className="text-4xl font-black italic tracking-tighter uppercase leading-none text-white">Logistics Matrix</DialogTitle>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase leading-none text-foreground">Logistics Matrix</DialogTitle>
                             <div className="flex items-center gap-3 mt-3">
                                 <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-black">Inventory Core</span>
-                                <span className="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em]">Stock Intelligence Network</span>
+                                <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-[0.3em]">Stock Intelligence Network</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="relative z-10 flex items-center gap-6">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-foreground/5 border border-foreground/10">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/80">Active Monitoring</span>
                         </div>
-                        <button 
-                            onClick={() => closeDialog('inventory')}
-                            className="p-3 rounded-2xl hover:bg-white/10 text-white/40 hover:text-white transition-all group"
-                        >
-                            <X className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
-                        </button>
+                        
                     </div>
                 </div>
 
                 {/* Advanced Control Interface */}
-                <div className="flex-shrink-0 px-10 py-4 bg-white/[0.02] border-b border-white/5 flex flex-wrap items-center gap-6">
+                <div className="flex-shrink-0 px-10 py-4 bg-foreground/[0.02] border-b border-foreground/5 flex flex-wrap items-center gap-6">
                     <div className="flex items-center gap-3">
                         {!isAuditor && (
-                            <Button 
-                                onClick={() => openDialog('add-product' as any)}
+                            <Button onClick={() => openDialog('add-product' as any)}
                                 className="bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl px-8 shadow-xl shadow-primary/20 transition-all active:scale-95"
                             >
                                 <Plus className="h-5 w-5 mr-2 stroke-[3]" />
                                 Deploy Product
                             </Button>
                         )}
-                        <div className="w-px h-8 bg-white/10 mx-2" />
+                        <div className="w-px h-8 bg-foreground/10 mx-2" />
                     </div>
 
                     {/* Filters Container */}
                     <div className="flex-1 flex flex-wrap items-center gap-4">
                         <div className="relative flex-[1.5]">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
-                            <Input
-                                placeholder="Search by ID or Identity..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="pl-12 h-12 bg-white/5 border-white/10 text-white rounded-2xl font-bold uppercase tracking-wider text-xs focus:ring-primary/20 placeholder:text-white/10"
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
+                            <Input placeholder="Search by ID or Identity..." value={search} onChange={(e) => setSearch(e.target.value)}
+                                className="pl-12 h-12 bg-foreground/5 border-foreground/10 text-foreground rounded-2xl font-bold uppercase tracking-wider text-xs focus:ring-primary/20 placeholder:text-foreground/10"
                             />
                         </div>
 
                         <div className="w-48">
                             <Select value={filterBy} onValueChange={setFilterBy}>
-                                <SelectTrigger className="h-12 bg-white/5 border-white/10 rounded-2xl text-[10px] font-black uppercase text-white/60">
+                                <SelectTrigger className=" bg-foreground/5 border-foreground/10 rounded-2xl text-[10px] font-black uppercase text-foreground/60">
                                     <SelectValue placeholder="Protocol" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-900 border-white/10 text-white">
+                                <SelectContent className="bg-card border-foreground/10 text-foreground">
                                     <SelectItem value="date" className="text-[10px] font-black uppercase">Temporal</SelectItem>
                                     <SelectItem value="productName" className="text-[10px] font-black uppercase">Identity</SelectItem>
                                     <SelectItem value="category" className="text-[10px] font-black uppercase">Category</SelectItem>
@@ -224,18 +215,12 @@ export default function InventoryDialog() {
                             {filterBy === 'date' ? (
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button
-                                            variant={'outline'}
-                                            className={cn(
-                                                'h-12 w-full justify-start text-left font-black uppercase tracking-widest text-[10px] bg-white/5 border-white/10 rounded-2xl',
-                                                !filterDate && 'text-white/20'
-                                            )}
-                                        >
+                                        <Button variant={'outline'} className={cn( ' w-full justify-start text-left font-black uppercase tracking-widest text-[10px] bg-foreground/5 border-foreground/10 rounded-2xl', !filterDate && 'text-foreground/20' )} >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                             {filterDate ? format(filterDate, 'MM/dd/yyyy') : <span>Temporal Lock</span>}
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 bg-slate-900 border-white/10 shadow-2xl">
+                                    <PopoverContent className="w-auto p-0 bg-card border-foreground/10 shadow-2xl">
                                         <Calendar
                                             mode="single"
                                             selected={filterDate}
@@ -244,35 +229,24 @@ export default function InventoryDialog() {
                                                 setFilterValue(date ? format(date, 'yyyy-MM-dd') : '');
                                             }}
                                             initialFocus
-                                            className="text-white"
+                                            className="text-foreground"
                                         />
                                     </PopoverContent>
                                 </Popover>
                             ) : (
-                                <Input
-                                    placeholder="Matrix Value..."
-                                    value={filterValue}
-                                    onChange={(e) => setFilterValue(e.target.value)}
+                                <Input placeholder="Matrix Value..." value={filterValue} onChange={(e) => setFilterValue(e.target.value)}
                                     disabled={!filterBy}
-                                    className="h-12 bg-white/5 border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] focus:ring-primary/20 placeholder:text-white/10 disabled:opacity-20"
+                                    className="h-12 bg-foreground/5 border-foreground/10 text-foreground rounded-2xl font-black uppercase tracking-widest text-[10px] focus:ring-primary/20 placeholder:text-foreground/10 disabled:opacity-20"
                                 />
                             )}
                         </div>
 
                         <div className="flex gap-2">
-                            <Button 
-                                onClick={applyFilters} 
-                                variant="outline"
-                                className="h-12 border-primary/20 bg-primary/10 text-primary hover:bg-primary hover:text-black font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 transition-all shadow-xl shadow-primary/5"
-                            >
+                            <Button onClick={applyFilters} variant="outline" className="border-primary/20 bg-primary/10 text-primary hover:bg-primary hover:text-black font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 transition-all shadow-xl shadow-primary/5" >
                                 <Filter className="h-4 w-4 mr-2" />
                                 Apply
                             </Button>
-                            <Button 
-                                onClick={clearFilters} 
-                                variant="outline"
-                                className="h-12 border-white/10 bg-white/5 text-white/40 hover:bg-white/10 hover:text-white font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 transition-all"
-                            >
+                            <Button onClick={clearFilters} variant="outline" className="border-foreground/10 bg-foreground/5 text-foreground/40 hover:bg-foreground/10 hover:text-foreground font-black uppercase tracking-widest text-[10px] rounded-2xl px-6 transition-all" >
                                 Clear
                             </Button>
                         </div>
@@ -280,7 +254,7 @@ export default function InventoryDialog() {
 
                     <button 
                         onClick={() => refreshExternalProducts()}
-                        className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all shadow-xl active:scale-95"
+                        className="p-3 rounded-2xl bg-foreground/5 border border-foreground/10 text-foreground/40 hover:text-foreground transition-all shadow-xl active:scale-95"
                     >
                         <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
                     </button>
@@ -288,19 +262,19 @@ export default function InventoryDialog() {
 
                 <div className="flex-1 min-h-0 flex flex-col p-10 bg-black/20">
                     {/* Matrix Viewport */}
-                    <div className="flex-1 flex flex-col min-h-0 bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
+                    <div className="flex-1 flex flex-col min-h-0 bg-foreground/5 border border-foreground/10 rounded-[2.5rem] overflow-hidden backdrop-blur-xl shadow-2xl">
                         <div className="flex-1 overflow-auto custom-scrollbar">
                             <table className="w-full border-separate border-spacing-0">
                                 <thead className="sticky top-0 z-30">
-                                    <tr className="bg-slate-900/90 backdrop-blur-md">
-                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Signal</th>
-                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Serial</th>
-                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Identity</th>
-                                        <th className="h-16 px-8 text-left text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Category</th>
-                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Price Point</th>
-                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Unit Cost</th>
-                                        <th className="h-16 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5">Stock Level</th>
-                                        <th className="h-16 px-8 text-center text-[10px] font-black uppercase tracking-[0.2em] text-white/40 border-b border-white/5 pr-10">Command</th>
+                                    <tr className="bg-card/90 backdrop-blur-md">
+                                        <th className="h-10 px-4 text-left text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Signal</th>
+                                        <th className="h-10 px-4 text-left text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Serial</th>
+                                        <th className="h-10 px-4 text-left text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Identity</th>
+                                        <th className="h-10 px-4 text-left text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Category</th>
+                                        <th className="h-10 px-4 text-right text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Price Point</th>
+                                        <th className="h-10 px-4 text-right text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Unit Cost</th>
+                                        <th className="h-10 px-4 text-right text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5">Stock Level</th>
+                                        <th className="h-10 px-4 text-center text-[9px] font-black uppercase tracking-[0.2em] text-foreground/40 border-b border-foreground/5 pr-6">Command</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -338,54 +312,54 @@ export default function InventoryDialog() {
                                                 onClick={() => setSelectedProducts(product.sku)}
                                                 className={cn(
                                                     "cursor-pointer transition-all duration-300 group relative",
-                                                    selectedProducts === product.sku ? "bg-primary/10" : "hover:bg-white/[0.02]"
+                                                    selectedProducts === product.sku ? "bg-primary/10" : "hover:bg-foreground/[0.02]"
                                                 )}
                                             >
-                                                <td className="px-8 py-5">
+                                                <td className="px-4">
                                                     <div className="flex justify-center">
                                                         <div className={cn(
-                                                            "w-4 h-4 rounded-md border transition-all flex items-center justify-center",
-                                                            selectedProducts === product.sku ? "border-primary bg-primary text-black" : "border-white/10 bg-white/5"
+                                                            "w-3 h-3 rounded-[4px] border transition-all flex items-center justify-center",
+                                                            selectedProducts === product.sku ? "border-primary bg-primary text-black" : "border-foreground/10 bg-foreground/5"
                                                         )}>
                                                             {selectedProducts === product.sku && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-5">
-                                                    <span className="font-mono text-xs font-black tracking-tighter text-white/40 group-hover:text-primary transition-colors">
+                                                <td className="px-4">
+                                                    <span className="font-mono text-[10px] font-black tracking-tighter text-foreground/40 group-hover:text-primary transition-colors">
                                                         {product.sku}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-5">
+                                                <td className="px-4">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-black uppercase italic tracking-tight text-white group-hover:translate-x-1 transition-transform">
+                                                        <span className="text-xs font-black uppercase italic tracking-tight text-foreground group-hover:translate-x-1 transition-transform">
                                                             {product.name}
                                                         </span>
-                                                        <span className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                                                        <span className="text-[8px] font-bold text-foreground/20 uppercase tracking-[0.2em]">
                                                             {product.brand || "UNBRANDED ASSET"}
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-5">
-                                                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/5 bg-white/5 text-white/40">
+                                                <td className="px-4">
+                                                    <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border border-foreground/5 bg-foreground/5 text-foreground/40">
                                                         {product.category || "UNCLASSIFIED"}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-5 text-right">
-                                                    <span className="text-sm font-black italic tracking-tighter text-primary">
+                                                <td className="px-4 text-right">
+                                                    <span className="text-xs font-black italic tracking-tighter text-primary">
                                                         ₱{Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-5 text-right">
-                                                    <span className="text-sm font-black italic tracking-tighter text-white/40">
+                                                <td className="px-4 text-right">
+                                                    <span className="text-xs font-black italic tracking-tighter text-foreground/40">
                                                         ₱{product.cost ? Number(product.cost).toLocaleString(undefined, { minimumFractionDigits: 2 }) : '-'}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-5 text-right">
+                                                <td className="px-4 text-right">
                                                     <div className="flex flex-col items-end">
                                                         <span className={cn(
-                                                            "text-sm font-black tracking-tighter",
-                                                            product.stock <= 5 ? "text-red-400" : "text-white"
+                                                            "text-xs font-black tracking-tighter",
+                                                            product.stock <= 5 ? "text-red-400" : "text-foreground"
                                                         )}>
                                                             {product.stock.toLocaleString()}
                                                         </span>
@@ -394,19 +368,19 @@ export default function InventoryDialog() {
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-5 pr-10">
+                                                <td className="px-4 pr-6">
                                                     <div className="flex justify-center">
                                                         <Select
                                                             value={selectedActions[product.sku] || ''}
                                                             onValueChange={(value) => setSelectedActions(prev => ({ ...prev, [product.sku]: value }))}
                                                         >
-                                                            <SelectTrigger className="h-8 w-24 bg-white/5 border-white/10 rounded-xl text-[10px] font-black uppercase text-white/60 hover:border-primary/20 transition-all">
+                                                            <SelectTrigger className="h-7 w-24 bg-foreground/5 border-foreground/10 rounded-lg text-[9px] font-black uppercase text-foreground/60 hover:border-primary/20 transition-all">
                                                                 <SelectValue placeholder="Protocol" />
                                                             </SelectTrigger>
-                                                            <SelectContent className="bg-slate-900 border-white/10 text-white">
-                                                                {!isAuditor && <SelectItem value="edit" className="text-[10px] font-black uppercase">Refine</SelectItem>}
-                                                                <SelectItem value="view" className="text-[10px] font-black uppercase">Analyze</SelectItem>
-                                                                {!isAuditor && <SelectItem value="update" className="text-[10px] font-black uppercase">Calibrate</SelectItem>}
+                                                            <SelectContent className="bg-card border-foreground/10 text-foreground">
+                                                                {!isAuditor && <SelectItem value="edit" className="text-[9px] font-black uppercase">Refine</SelectItem>}
+                                                                <SelectItem value="view" className="text-[9px] font-black uppercase">Analyze</SelectItem>
+                                                                {!isAuditor && <SelectItem value="update" className="text-[9px] font-black uppercase">Calibrate</SelectItem>}
                                                             </SelectContent>
                                                         </Select>
                                                     </div>
@@ -420,30 +394,24 @@ export default function InventoryDialog() {
 
                         {/* High-Tech Pagination */}
                         {pagination && (
-                            <div className="px-10 py-6 border-t border-white/5 bg-white/5 flex items-center justify-between shrink-0">
-                                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
-                                    Showing <span className="text-white">{pagination.offset + 1}</span> - <span className="text-white">{Math.min(pagination.offset + externalProducts.length, pagination.total)}</span> of <span className="text-primary">{pagination.total}</span> Assets
+                            <div className="px-10 py-6 border-t border-foreground/5 bg-foreground/5 flex items-center justify-between shrink-0">
+                                <div className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em]">
+                                    Showing <span className="text-foreground">{pagination.offset + 1}</span> - <span className="text-foreground">{Math.min(pagination.offset + externalProducts.length, pagination.total)}</span> of <span className="text-primary">{pagination.total}</span> Assets
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mr-4">
+                                    <div className="text-[10px] font-black text-foreground/40 uppercase tracking-[0.3em] mr-4">
                                         Cycle <span className="text-primary">{currentPage}</span> / {Math.ceil(pagination.total / pagination.limit)}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        <Button variant="outline" size="icon" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                             disabled={currentPage === 1}
-                                            className="h-10 w-10 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-10 transition-all active:scale-90"
+                                            className="h-10 w-10 rounded-xl border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground disabled:opacity-10 transition-all active:scale-90"
                                         >
                                             <ChevronLeft className="h-5 w-5" />
                                         </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => setCurrentPage(prev => prev + 1)}
+                                        <Button variant="outline" size="icon" onClick={() => setCurrentPage(prev => prev + 1)}
                                             disabled={!pagination.hasMore}
-                                            className="h-10 w-10 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white disabled:opacity-10 transition-all active:scale-90"
+                                            className="h-10 w-10 rounded-xl border-foreground/10 bg-foreground/5 hover:bg-foreground/10 text-foreground disabled:opacity-10 transition-all active:scale-90"
                                         >
                                             <ChevronRight className="h-5 w-5" />
                                         </Button>
@@ -456,11 +424,11 @@ export default function InventoryDialog() {
                     {/* Premium Summary Intelligence */}
                     {!isLoading && externalProducts.length > 0 && (
                         <div className="mt-8 grid grid-cols-3 gap-8">
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
+                            <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/10 transition-colors" />
                                 <div className="relative z-10">
-                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Asset Quantification</div>
-                                    <div className="text-4xl font-black italic tracking-tighter text-white">{summaryTotals.itemCount.toLocaleString()}</div>
+                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40 mb-2">Asset Quantification</div>
+                                    <div className="text-4xl font-black italic tracking-tighter text-foreground">{summaryTotals.itemCount.toLocaleString()}</div>
                                     <div className="mt-2 flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                                         <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Total Managed SKU</span>
@@ -468,10 +436,10 @@ export default function InventoryDialog() {
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
+                            <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-orange-500/10 transition-colors" />
                                 <div className="relative z-10">
-                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Cumulative Exposure</div>
+                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40 mb-2">Cumulative Exposure</div>
                                     <div className="text-4xl font-black italic tracking-tighter text-orange-500">₱{summaryTotals.totalCosts.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                                     <div className="mt-2 flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
@@ -480,10 +448,10 @@ export default function InventoryDialog() {
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
+                            <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-3xl backdrop-blur-xl relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-emerald-500/10 transition-colors" />
                                 <div className="relative z-10">
-                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Projected Yield</div>
+                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40 mb-2">Projected Yield</div>
                                     <div className="text-4xl font-black italic tracking-tighter text-emerald-500">₱{summaryTotals.totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                                     <div className="mt-2 flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

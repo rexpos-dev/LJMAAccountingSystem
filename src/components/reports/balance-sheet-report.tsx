@@ -1,14 +1,6 @@
 'use client';
 
 import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from '@/components/ui/menubar';
-import {
   Table,
   TableBody,
   TableCell,
@@ -16,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -24,20 +15,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import {
-  File,
-  Printer,
-  Save,
-  Mail,
-  ListVideo,
-  HelpCircle,
-} from 'lucide-react';
+import { File } from 'lucide-react';
 import format from '@/lib/date-format';
 import { useAccounts } from '@/hooks/use-accounts';
 import type { Account } from '@/types/account';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDialog } from '../layout/dialog-context';
+import { ReportToolbar } from './report-toolbar';
 import { ScrollArea } from '../ui/scroll-area';
 
 const formatCurrency = (amount?: number) => {
@@ -52,6 +37,7 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
   const { openDialogs, closeDialog, getDialogData } = useDialog();
   const dialogData = getDialogData('balance-sheet-report');
   const reportDate = propReportDate || dialogData?.reportDate || new Date();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const { data: accountsData, isLoading } = useAccounts();
 
@@ -119,6 +105,7 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
   const renderReport = () => (
     <>
       <ScrollArea className='flex-1 px-6'>
+        <div ref={contentRef}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30">
@@ -128,13 +115,13 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="font-bold text-white bg-secondary/20"><TableCell colSpan={3}>Assets</TableCell></TableRow>
+            <TableRow className="font-bold text-foreground bg-secondary/20"><TableCell colSpan={3}>Assets</TableCell></TableRow>
             {assets.map(renderAccountRow)}
             {renderSectionTotal("Total Assets:", totalAssets, true)}
 
             <TableRow><TableCell colSpan={3}>&nbsp;</TableCell></TableRow>
 
-            <TableRow className="font-bold text-white bg-secondary/20"><TableCell colSpan={3}>Liabilities</TableCell></TableRow>
+            <TableRow className="font-bold text-foreground bg-secondary/20"><TableCell colSpan={3}>Liabilities</TableCell></TableRow>
             {liabilities.length > 0 ? liabilities.map(renderAccountRow) : <TableRow><TableCell colSpan={3} className="pl-8 text-muted-foreground italic">No liabilities</TableCell></TableRow>}
             {renderSectionTotal("Total Liabilities:", totalLiabilities)}
 
@@ -144,12 +131,13 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
 
             <TableRow><TableCell colSpan={3}>&nbsp;</TableCell></TableRow>
 
-            <TableRow className="font-bold text-white bg-secondary/20"><TableCell colSpan={3}>Equity</TableCell></TableRow>
+            <TableRow className="font-bold text-foreground bg-secondary/20"><TableCell colSpan={3}>Equity</TableCell></TableRow>
             {equity.map(renderAccountRow)}
             {renderSectionTotal("Total Equity:", totalEquity, true)}
 
           </TableBody>
         </Table>
+        </div>
       </ScrollArea>
 
     </>
@@ -159,24 +147,12 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
     <Dialog open={openDialogs['balance-sheet-report']} onOpenChange={() => closeDialog('balance-sheet-report')}>
       <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
         <header>
-          <Menubar className="rounded-none border-x-0 border-b border-t-0">
-            <MenubarMenu>
-              <MenubarTrigger>Report</MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem>Print Preview</MenubarItem>
-                <MenubarItem>Print</MenubarItem>
-                <MenubarItem>Save</MenubarItem>
-                <MenubarItem>Email</MenubarItem>
-                <MenubarItem onClick={() => closeDialog('balance-sheet-report')}>Close</MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
-          <div className="flex items-center gap-2 p-2 border-b">
-            <Button variant="ghost" size="sm" className="flex-col h-auto"><ListVideo className="h-5 w-5" /><span>Preview</span></Button>
-            <Button variant="ghost" size="sm" className="flex-col h-auto"><Printer className="h-5 w-5" /><span>Print</span></Button>
-            <Button variant="ghost" size="sm" className="flex-col h-auto"><Save className="h-5 w-5" /><span>Save</span></Button>
-            <Button variant="ghost" size="sm" className="flex-col h-auto"><Mail className="h-5 w-5" /><span>Email</span></Button>
-          </div>
+          <ReportToolbar
+            contentRef={contentRef as any}
+            title="Balance Sheet"
+            subtitle={`As at: ${format(reportDate, 'MM/dd/yyyy')}`}
+            closeKey="balance-sheet-report"
+          />
         </header>
 
         <DialogHeader className="p-6">
@@ -185,7 +161,7 @@ export default function BalanceSheetReport({ reportDate: propReportDate }: { rep
               <File className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <DialogTitle className="text-xl font-bold font-headline text-white text-left">Balance Sheet</DialogTitle>
+              <DialogTitle className="text-xl font-bold font-headline text-foreground text-left">Balance Sheet</DialogTitle>
               <DialogDescription className="text-left">As at: {format(reportDate, 'MM/dd/yyyy')}</DialogDescription>
             </div>
           </div>

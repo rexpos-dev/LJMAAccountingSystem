@@ -103,34 +103,22 @@ export default function EditBankAccountDialog() {
                     <div className="grid grid-cols-2 gap-4 py-4">
                         <div className="space-y-2">
                             <Label htmlFor="edit-bank-code">Bank Code <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="edit-bank-code"
-                                value={formData.bank_code || ''}
-                                onChange={(e) => handleInputChange('bank_code', e.target.value)}
+                            <Input id="edit-bank-code" value={formData.bank_code || ''} onChange={(e) => handleInputChange('bank_code', e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-bank-name">Bank Name <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="edit-bank-name"
-                                value={formData.bank_name || ''}
-                                onChange={(e) => handleInputChange('bank_name', e.target.value)}
+                            <Input id="edit-bank-name" value={formData.bank_name || ''} onChange={(e) => handleInputChange('bank_name', e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-account-name">Account Name <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="edit-account-name"
-                                value={formData.account_name || ''}
-                                onChange={(e) => handleInputChange('account_name', e.target.value)}
+                            <Input id="edit-account-name" value={formData.account_name || ''} onChange={(e) => handleInputChange('account_name', e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-account-number">Account Number <span className="text-destructive">*</span></Label>
-                            <Input
-                                id="edit-account-number"
-                                value={formData.account_number || ''}
-                                onChange={(e) => handleInputChange('account_number', e.target.value)}
+                            <Input id="edit-account-number" value={formData.account_number || ''} onChange={(e) => handleInputChange('account_number', e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">
@@ -189,20 +177,12 @@ export default function EditBankAccountDialog() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit-opening-balance">Opening Balance (Migration)</Label>
-                                <Input
-                                    id="edit-opening-balance"
-                                    type="number"
-                                    value={formData.opening_balance ?? 0}
-                                    onChange={(e) => handleInputChange('opening_balance', parseFloat(e.target.value) || 0)}
+                                <Input id="edit-opening-balance" type="number" value={formData.opening_balance ?? 0} onChange={(e) => handleInputChange('opening_balance', parseFloat(e.target.value) || 0)}
                                 />
                             </div>
                             <div className="space-y-2 col-span-2">
                                 <Label htmlFor="edit-opening-date">Opening Date</Label>
-                                <Input
-                                    id="edit-opening-date"
-                                    type="date"
-                                    value={formData.opening_date || ''}
-                                    onChange={(e) => handleInputChange('opening_date', e.target.value)}
+                                <Input id="edit-opening-date" type="date" value={formData.opening_date || ''} onChange={(e) => handleInputChange('opening_date', e.target.value)}
                                 />
                             </div>
                         </div>

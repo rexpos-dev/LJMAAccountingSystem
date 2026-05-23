@@ -20,7 +20,7 @@ export function DailyCashFlowChart() {
 
     if (isLoading) {
         return (
-            <Card className="h-full border-none bg-white/5 backdrop-blur-sm">
+            <Card className="h-full border-none bg-foreground/5 backdrop-blur-sm">
                 <CardHeader>
                     <Skeleton className="h-6 w-32 mb-2" />
                     <Skeleton className="h-4 w-48" />
@@ -44,9 +44,9 @@ export function DailyCashFlowChart() {
     const net = inflow - outflow;
 
     return (
-        <Card className="border-none bg-white/5 backdrop-blur-sm flex flex-col">
+        <Card className="border-none bg-foreground/5 backdrop-blur-sm flex flex-col">
             <CardHeader className="flex-none">
-                <CardTitle className="font-headline text-white text-xl">Daily Cash Flow</CardTitle>
+                <CardTitle className="font-headline text-foreground text-xl">Daily Cash Flow</CardTitle>
                 <CardDescription className="text-slate-400">Inflow vs Outflow for today</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-between pb-6">
@@ -90,14 +90,14 @@ export function DailyCashFlowChart() {
                                 <TrendingUp className="h-3 w-3 text-emerald-500" />
                                 <span className="text-[10px] font-medium text-emerald-500 uppercase">Inflow</span>
                             </div>
-                            <p className="text-sm font-bold text-white">{formatCurrency(inflow)}</p>
+                            <p className="text-sm font-bold text-foreground">{formatCurrency(inflow)}</p>
                         </div>
                         <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                             <div className="flex items-center gap-2 mb-1">
                                 <TrendingDown className="h-3 w-3 text-red-500" />
                                 <span className="text-[10px] font-medium text-red-500 uppercase">Outflow</span>
                             </div>
-                            <p className="text-sm font-bold text-white">{formatCurrency(outflow)}</p>
+                            <p className="text-sm font-bold text-foreground">{formatCurrency(outflow)}</p>
                         </div>
                     </div>
 

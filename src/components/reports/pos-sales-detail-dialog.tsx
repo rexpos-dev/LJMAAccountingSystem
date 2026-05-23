@@ -85,13 +85,10 @@ export default function PosSalesDetailDialog() {
     return (
         <Dialog open={openDialogs['pos-sales-detail'] || false} onOpenChange={() => closeDialog('pos-sales-detail' as any)}>
             <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 overflow-hidden">
-                <DialogHeader className="px-6 py-4 border-b bg-white dark:bg-slate-950 z-10 flex flex-row items-center justify-between">
+                <DialogHeader className="px-6 py-4 border-b bg-white dark:bg-background z-10 flex flex-row items-center justify-between">
                     <DialogTitle className="text-2xl font-bold">POS Sales Detail Dashboard</DialogTitle>
                     <div className="flex items-center gap-2">
-                        <Button
-                            onClick={handleSync}
-                            disabled={isSyncing || loading}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm h-9">
+                        <Button onClick={handleSync} disabled={isSyncing || loading} className="bg-indigo-600 hover:bg-indigo-700 text-foreground px-4 rounded-md font-medium flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm">
                             {isSyncing ? (
                                 <>
                                     <div className="animate-spin h-4 w-4 border-2 border-white border-b-transparent rounded-full mr-2" />
@@ -104,18 +101,11 @@ export default function PosSalesDetailDialog() {
                                 </>
                             )}
                         </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => closeDialog('pos-sales-detail' as any)}
-                            className="h-9 w-9 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full"
-                        >
-                            <X className="h-5 w-5" />
-                        </Button>
+                        
                     </div>
                 </DialogHeader>
 
-                <div className="flex-1 overflow-auto p-6 bg-slate-50 dark:bg-slate-900 border-t">
+                <div className="flex-1 overflow-auto p-6 bg-slate-50 dark:bg-card border-t">
                     {loading ? (
                         <div className="flex items-center justify-center h-full">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -126,7 +116,7 @@ export default function PosSalesDetailDialog() {
                         </div>
                     ) : stats ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-8">
-                            <Card className={`bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-lg overflow-hidden relative border-0 ${stats.totalRevenueAllTime > 0 ? "" : "grayscale opacity-50"}`}>
+                            <Card className={`bg-gradient-to-br from-indigo-500 to-indigo-600 text-foreground shadow-lg overflow-hidden relative border-0 ${stats.totalRevenueAllTime > 0 ? "" : "grayscale opacity-50"}`}>
                                 <div className="absolute right-0 top-0 opacity-10 p-4">
                                     <PhilippinePeso size={100} />
                                 </div>
@@ -141,7 +131,7 @@ export default function PosSalesDetailDialog() {
                                 </CardContent>
                             </Card>
 
-                            <Card className={`bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg overflow-hidden relative border-0 ${stats.totalRevenueMonth > 0 ? "" : "grayscale opacity-50"}`}>
+                            <Card className={`bg-gradient-to-br from-emerald-500 to-emerald-600 text-foreground shadow-lg overflow-hidden relative border-0 ${stats.totalRevenueMonth > 0 ? "" : "grayscale opacity-50"}`}>
                                 <div className="absolute right-0 top-0 opacity-10 p-4">
                                     <PhilippinePeso size={100} />
                                 </div>
@@ -156,7 +146,7 @@ export default function PosSalesDetailDialog() {
                                 </CardContent>
                             </Card>
 
-                            <Card className={`bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg overflow-hidden relative border-0 ${stats.totalSalesMonth > 0 ? "" : "grayscale opacity-50"}`}>
+                            <Card className={`bg-gradient-to-br from-blue-500 to-blue-600 text-foreground shadow-lg overflow-hidden relative border-0 ${stats.totalSalesMonth > 0 ? "" : "grayscale opacity-50"}`}>
                                 <div className="absolute right-0 top-0 opacity-10 p-4">
                                     <ShoppingCart size={100} />
                                 </div>
@@ -171,7 +161,7 @@ export default function PosSalesDetailDialog() {
                                 </CardContent>
                             </Card>
 
-                            <Card className={stats.productsSoldMonth > 0 ? "bg-blue-50 dark:bg-blue-900/20 shadow-md border-0 ring-1 ring-blue-100 dark:ring-blue-800" : "bg-white dark:bg-slate-800 shadow-md border-0 ring-1 ring-slate-100 dark:ring-slate-700"}>
+                            <Card className={stats.productsSoldMonth > 0 ? "bg-blue-50 dark:bg-blue-900/20 shadow-md border-0 ring-1 ring-blue-100 dark:ring-blue-800" : "bg-white dark:bg-muted shadow-md border-0 ring-1 ring-slate-100 dark:ring-slate-700"}>
                                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                     <CardTitle className="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide uppercase">
                                         Products Sold (This Month)
@@ -186,7 +176,7 @@ export default function PosSalesDetailDialog() {
                                 </CardContent>
                             </Card>
 
-                            <Card className={stats.lowStockItems > 0 ? "bg-amber-50 dark:bg-amber-900/20 shadow-md border-0 ring-1 ring-amber-100 dark:ring-amber-800 relative overflow-hidden" : "bg-white dark:bg-slate-800 shadow-md border-0 ring-1 ring-slate-100 dark:ring-slate-700 relative overflow-hidden"}>
+                            <Card className={stats.lowStockItems > 0 ? "bg-amber-50 dark:bg-amber-900/20 shadow-md border-0 ring-1 ring-amber-100 dark:ring-amber-800 relative overflow-hidden" : "bg-white dark:bg-muted shadow-md border-0 ring-1 ring-slate-100 dark:ring-slate-700 relative overflow-hidden"}>
                                 <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500"></div>
                                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 pl-6">
                                     <CardTitle className="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide uppercase">
@@ -202,7 +192,7 @@ export default function PosSalesDetailDialog() {
                                 </CardContent>
                             </Card>
 
-                            <Card className={stats.totalItems > 0 ? "bg-purple-50 dark:bg-purple-900/20 shadow-md border-0 ring-1 ring-purple-100 dark:ring-purple-800" : "bg-white dark:bg-slate-800 shadow-md border-0 ring-1 ring-slate-100 dark:ring-slate-700"}>
+                            <Card className={stats.totalItems > 0 ? "bg-purple-50 dark:bg-purple-900/20 shadow-md border-0 ring-1 ring-purple-100 dark:ring-purple-800" : "bg-white dark:bg-muted shadow-md border-0 ring-1 ring-slate-100 dark:ring-slate-700"}>
                                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                     <CardTitle className="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide uppercase">
                                         Total Products Catalog

@@ -215,14 +215,7 @@ export default function AccountTransferDialog() {
                         <Label>Amount</Label>
                         <div className="relative">
                             <span className="absolute left-3 top-2.5 text-muted-foreground">₱</span>
-                            <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                className="pl-7"
-                                placeholder="0.00"
-                                value={amount}
-                                onChange={e => setAmount(e.target.value)}
+                            <Input type="number" step="0.01" min="0" className="pl-7" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)}
                             />
                         </div>
                     </div>
