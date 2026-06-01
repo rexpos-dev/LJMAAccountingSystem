@@ -24,15 +24,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { 
-  CalendarIcon, 
-  Edit3, 
-  Save, 
-  X, 
-  User, 
-  Hash, 
-  Layers, 
-  CheckCircle2,
+import {
+  CalendarIcon,
+  Edit3,
+  Save,
+  RefreshCw,
+  User,
+  Hash,
+  Layers,
   Clock,
   Navigation
 } from 'lucide-react';
@@ -40,19 +39,25 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import format from '@/lib/date-format';
 import type { Transaction } from '@/types/transaction';
-import { Timestamp } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
-export default function EditTransactionDialog({ transaction }: { transaction?: Transaction | null }) {
-  const { openDialogs, closeDialog } = useDialog();
+export default function EditTransactionDialog() {
+  const { openDialogs, closeDialog, getDialogData } = useDialog();
+  const { toast } = useToast();
+  const transaction = getDialogData('edit-transaction') as Transaction | null;
 
   const [formData, setFormData] = useState<Partial<Transaction>>({});
   const [date, setDate] = useState<Date | undefined>();
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (transaction) {
       setFormData(transaction);
       if (transaction.date) {
-        setDate(transaction.date.toDate());
+        const d = (transaction.date as any).toDate
+          ? (transaction.date as any).toDate()
+          : new Date(transaction.date as any);
+        if (!isNaN(d.getTime())) setDate(d);
       }
     } else {
       setFormData({});
@@ -67,18 +72,43 @@ export default function EditTransactionDialog({ transaction }: { transaction?: T
   const handleDateChange = (newDate: Date | undefined) => {
     setDate(newDate);
     if (newDate) {
-      handleInputChange('date', Timestamp.fromDate(newDate));
+      handleInputChange('date', newDate.toISOString() as any);
     }
   };
 
-  const handleSave = () => {
-    console.log('Mock transaction edit saved:', formData);
-    handleClose();
+  const handleSave = async () => {
+    if (!transaction?.id) return;
+    setIsSaving(true);
+    try {
+      const payload = {
+        ...formData,
+        id: transaction.id,
+        date: date ? date.toISOString() : undefined,
+      };
+      const res = await fetch('/api/transactions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to update transaction');
+      }
+      toast({ title: 'Transaction Updated', description: `Transaction "${transaction.transNo}" has been updated.` });
+      window.dispatchEvent(new CustomEvent('journal-refresh'));
+      handleClose();
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleClose = () => {
-    setFormData({});
-    closeDialog('edit-transaction');
+    if (!isSaving) {
+      setFormData({});
+      closeDialog('edit-transaction');
+    }
   };
 
   if (!transaction) return null;
@@ -224,12 +254,12 @@ export default function EditTransactionDialog({ transaction }: { transaction?: T
            </div>
 
            <div className="flex items-center gap-3">
-              <Button variant="ghost" onClick={handleClose} className="text-foreground/40 hover:text-foreground hover:bg-foreground/10 rounded-xl px-6 text-xs font-black uppercase tracking-widest" >
+              <Button variant="ghost" onClick={handleClose} disabled={isSaving} className="text-foreground/40 hover:text-foreground hover:bg-foreground/10 rounded-xl px-6 text-xs font-black uppercase tracking-widest disabled:opacity-50" >
                 Discard Changes
               </Button>
-              <Button onClick={handleSave} className="bg-primary text-black hover:bg-primary/90 font-black rounded-xl px-8 text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95" >
-                <Save className="h-4 w-4 mr-2" />
-                Commit Updates
+              <Button onClick={handleSave} disabled={isSaving} className="bg-primary text-black hover:bg-primary/90 font-black rounded-xl px-8 text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50" >
+                {isSaving ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                {isSaving ? 'Saving...' : 'Commit Updates'}
               </Button>
            </div>
         </div>

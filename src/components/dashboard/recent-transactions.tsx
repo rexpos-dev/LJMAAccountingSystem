@@ -72,7 +72,7 @@ export function RecentTransactions() {
                                     {t.particulars || t.accountName || t.code || "Transaction"}
                                 </div>
                                 <div className="col-span-3 flex justify-end">
-                                    <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isIncome ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                                    <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isIncome ? 'bg-emerald-500/10 text-black dark:text-white' : 'bg-red-500/10 text-red-600 dark:text-red-400'}`}>
                                         {isIncome
                                             ? <ArrowUpRight className="h-3 w-3 shrink-0" />
                                             : <ArrowDownRight className="h-3 w-3 shrink-0" />

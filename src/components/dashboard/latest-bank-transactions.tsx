@@ -39,7 +39,7 @@ export function LatestBankTransactions() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="p-1.5 rounded-lg bg-emerald-500/10">
-                            <ListOrdered className="h-4 w-4 text-emerald-400" />
+                            <ListOrdered className="h-4 w-4 text-black dark:text-white" />
                         </div>
                         <div>
                             <CardTitle className="font-headline text-foreground text-base">Latest Transactions</CardTitle>
@@ -69,8 +69,8 @@ export function LatestBankTransactions() {
                                     <div className="flex items-center gap-3 min-w-0">
                                         <div className={`p-1.5 rounded-full shrink-0 ${isInflow ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
                                             {isInflow
-                                                ? <ArrowUpCircle className="h-3.5 w-3.5 text-emerald-400" />
-                                                : <ArrowDownCircle className="h-3.5 w-3.5 text-red-400" />
+                                                ? <ArrowUpCircle className="h-3.5 w-3.5 text-black dark:text-white" />
+                                                : <ArrowDownCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                                             }
                                         </div>
                                         <div className="min-w-0">
@@ -89,7 +89,7 @@ export function LatestBankTransactions() {
                                         </div>
                                     </div>
                                     <div className="text-right shrink-0 pl-2">
-                                        <p className={`text-xs font-bold ${isInflow ? 'text-emerald-400' : 'text-red-400'}`}>
+                                        <p className={`text-xs font-bold ${isInflow ? 'text-black dark:text-white' : 'text-red-600 dark:text-red-400'}`}>
                                             {isInflow ? '+' : '-'}{formatCurrency(Math.abs(tx.amount))}
                                         </p>
                                         <p className="text-[10px] text-muted-foreground mt-0.5 uppercase tracking-tight">

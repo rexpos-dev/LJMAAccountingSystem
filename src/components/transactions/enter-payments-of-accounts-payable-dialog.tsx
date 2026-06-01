@@ -261,7 +261,7 @@ export function EnterPaymentsOfAccountsPayableDialog() {
               <Banknote className="h-6 w-6" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Settlement Protocol</DialogTitle>
+              <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Settlement</DialogTitle>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-400 border border-amber-400/20">Accounts Payable</span>
                 <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">Liability Liquidation</span>
@@ -287,7 +287,7 @@ export function EnterPaymentsOfAccountsPayableDialog() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-amber-400 rounded-full" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Target Node</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Target Supplier</h3>
                 </div>
                 <div className="bg-foreground/5 border border-foreground/10 p-6 rounded-2xl space-y-4">
                   <div className="space-y-2">

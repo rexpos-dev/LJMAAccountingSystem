@@ -423,7 +423,7 @@ export default function EnterApPage() {
                               <SelectContent>
                                 {accounts
                                   .filter(account =>
-                                    account.account_name.toLowerCase().includes(accountNameFilter.toLowerCase()) && account.account_no
+                                    account.account_name?.toLowerCase().includes(accountNameFilter.toLowerCase()) && account.account_no
                                   )
                                   .map(account => (
                                     <SelectItem key={account.id ?? account.account_no} value={account.account_no!.toString()}>
@@ -444,7 +444,7 @@ export default function EnterApPage() {
                               <SelectContent>
                                 {accounts
                                   .filter(account =>
-                                    account.account_name.toLowerCase().includes(accountNameFilter.toLowerCase())
+                                    account.account_name?.toLowerCase().includes(accountNameFilter.toLowerCase())
                                   )
                                   .map(account => (
                                     <SelectItem key={account.id ?? account.account_no ?? account.account_name} value={account.account_name}>

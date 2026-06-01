@@ -52,7 +52,7 @@ export function AccountBalances() {
             accent: "bg-blue-500",
             iconBg: "bg-blue-500/10",
             iconColor: "text-blue-400",
-            valueColor: "text-blue-400",
+            valueColor: "text-black dark:text-white",
         },
         {
             label: "Savings",
@@ -63,7 +63,7 @@ export function AccountBalances() {
             accent: "bg-emerald-500",
             iconBg: "bg-emerald-500/10",
             iconColor: "text-emerald-400",
-            valueColor: "text-emerald-400",
+            valueColor: "text-black dark:text-white",
         },
         {
             label: "Credit Card",
@@ -74,7 +74,7 @@ export function AccountBalances() {
             accent: "bg-rose-500",
             iconBg: "bg-rose-500/10",
             iconColor: "text-rose-400",
-            valueColor: "text-rose-400",
+            valueColor: "text-red-600 dark:text-red-400",
         },
     ];
 

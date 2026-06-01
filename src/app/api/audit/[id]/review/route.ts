@@ -69,9 +69,10 @@ export async function POST(
                 const actionDesc = updatedLog.actionType || 'Audit Item';
                 const refNo = updatedLog.transactionId || id;
 
+                const auditLink = `/audit`;
                 await tx.$executeRaw`
-                    INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
-                    VALUES (${notifId}, 'AUDIT_ASSIGNMENT', 'New Audit assigned to you', ${`You have been assigned to audit ${actionDesc} (${refNo}).`}, ${id}, ${assigneeId}, 0, ${now})
+                    INSERT INTO notification (id, type, title, message, entityId, link, userId, isRead, createdAt)
+                    VALUES (${notifId}, 'AUDIT_ASSIGNMENT', 'New Audit assigned to you', ${`You have been assigned to audit ${actionDesc} (${refNo}).`}, ${id}, ${auditLink}, ${assigneeId}, 0, ${now})
                 `;
             }
 

@@ -248,10 +248,18 @@ export function useExternalProducts(page: number = 1, limit: number = 10, search
         return;
       }
 
-      setAllProducts(data.data);
+      // Deduplicate by SKU before storing
+      const seen = new Set<string>();
+      const deduped = data.data.filter(p => {
+        if (seen.has(p.sku)) return false;
+        seen.add(p.sku);
+        return true;
+      });
+
+      setAllProducts(deduped);
 
       // Apply local filtering for enhanced search
-      let filteredProducts = data.data;
+      let filteredProducts = deduped;
 
       // Apply search filtering (enhanced to include category and brand)
       if (search) {

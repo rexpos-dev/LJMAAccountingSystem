@@ -27,8 +27,9 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export default function ViewTransactionDialog({ transaction }: { transaction?: Transaction | null }) {
-  const { openDialogs, closeDialog } = useDialog();
+export default function ViewTransactionDialog() {
+  const { openDialogs, closeDialog, getDialogData } = useDialog();
+  const transaction = getDialogData('view-transaction') as Transaction | null;
 
   const handleClose = () => {
     closeDialog('view-transaction');
@@ -51,6 +52,398 @@ export default function ViewTransactionDialog({ transaction }: { transaction?: T
       style: 'currency',
       currency: 'PHP',
     }).format(amount);
+  };
+
+  const exportToPDF = () => {
+    if (!transaction) return;
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to export the PDF.');
+      return;
+    }
+
+    const formattedDate = formatTimestamp(transaction.date);
+    const formattedDateMatured = formatTimestamp(transaction.dateMatured);
+    const formattedDebit = formatCurrency(transaction.debit);
+    const formattedCredit = formatCurrency(transaction.credit);
+    const formattedBalance = formatCurrency(transaction.balance);
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Transaction Voucher - Seq #${transaction.seq || '---'}</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            color: #1e293b;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 30px;
+            font-size: 11px;
+            line-height: 1.4;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          }
+          .logo-section h1 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            color: #0f172a;
+          }
+          .logo-section p {
+            margin: 3px 0 0 0;
+            font-size: 9px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          }
+          .voucher-title {
+            text-align: right;
+          }
+          .voucher-title h2 {
+            font-size: 14px;
+            font-weight: 800;
+            margin: 0;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .voucher-title p {
+            margin: 3px 0 0 0;
+            font-size: 11px;
+            font-family: monospace;
+            color: #334155;
+            font-weight: bold;
+          }
+          .section-title {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #334155;
+            border-bottom: 1.5px solid #cbd5e1;
+            padding-bottom: 3px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+          }
+          .grid {
+            display: flex;
+            gap: 30px;
+          }
+          .col {
+            flex: 1;
+          }
+          .info-table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .info-table td {
+            padding: 4px 0;
+            vertical-align: top;
+            border-bottom: 1px dashed #e2e8f0;
+          }
+          .info-table tr:last-child td {
+            border-bottom: none;
+          }
+          .info-table td.label {
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            width: 35%;
+          }
+          .info-table td.value {
+            font-weight: 600;
+            color: #0f172a;
+            padding-left: 10px;
+          }
+          .particulars-section {
+            margin-top: 15px;
+          }
+          .particulars-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 5px;
+            color: #334155;
+            font-size: 11px;
+            line-height: 1.5;
+            min-height: 45px;
+            white-space: pre-wrap;
+          }
+          .financial-card {
+            border: 1px solid #0f172a;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 15px;
+          }
+          .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .financial-table th {
+            background-color: #f1f5f9;
+            padding: 8px;
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            border-bottom: 1px solid #0f172a;
+            text-align: right;
+          }
+          .financial-table th:first-child {
+            text-align: left;
+          }
+          .financial-table td {
+            padding: 10px 8px;
+            font-weight: 700;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+          }
+          .financial-table td:first-child {
+            text-align: left;
+            color: #475569;
+            font-size: 9px;
+            text-transform: uppercase;
+            font-weight: 800;
+          }
+          .financial-table tr:last-child td {
+            border-bottom: none;
+            background-color: #f8fafc;
+          }
+          .financial-table .debit {
+            color: #047857;
+          }
+          .financial-table .credit {
+            color: #b91c1c;
+          }
+          .financial-table .balance {
+            color: #1d4ed8;
+            font-size: 13px;
+            font-weight: 900;
+          }
+          .signatures-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-top: 45px;
+          }
+          .signature-block {
+            flex: 1;
+            text-align: center;
+          }
+          .signature-line {
+            border-bottom: 1.5px solid #0f172a;
+            height: 30px;
+            margin-bottom: 6px;
+          }
+          .signature-label {
+            font-size: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+          }
+          .signature-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 2px;
+          }
+          .footer {
+            margin-top: 45px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 8px;
+            color: #94a3b8;
+            font-weight: 500;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+            .no-print {
+              display: none;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo-section">
+            <h1>LJMA Accounting</h1>
+            <p>Financial Intelligence Module</p>
+          </div>
+          <div class="voucher-title">
+            <h2>Transaction Voucher</h2>
+            <p>Seq #${transaction.seq || '---'}</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col">
+            <div class="section-title">Primary & Account Identification</div>
+            <table class="info-table">
+              <tr>
+                <td class="label">Sequence No.</td>
+                <td class="value">${transaction.seq || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Transaction No.</td>
+                <td class="value">${transaction.transNo || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Invoice Number</td>
+                <td class="value">${transaction.invoiceNumber || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Reference Code</td>
+                <td class="value">${transaction.code || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Account Name</td>
+                <td class="value" style="color: #2563eb;">${transaction.accountName || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Account Number</td>
+                <td class="value">${transaction.accountNumber || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Ledger Group</td>
+                <td class="value">${transaction.ledger || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Coincide Status</td>
+                <td class="value">${transaction.isCoincide !== null ? (transaction.isCoincide ? 'Yes' : 'No') : 'N/A'}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="col">
+            <div class="section-title">Temporal & Banking Routing</div>
+            <table class="info-table">
+              <tr>
+                <td class="label">Transaction Date</td>
+                <td class="value">${formattedDate}</td>
+              </tr>
+              <tr>
+                <td class="label">Date Matured</td>
+                <td class="value">${formattedDateMatured}</td>
+              </tr>
+              <tr>
+                <td class="label">Daily Closing</td>
+                <td class="value">${transaction.dailyClosing || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Bank Name</td>
+                <td class="value">${transaction.bankName || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Bank Branch</td>
+                <td class="value">${transaction.bankBranch || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Check Account</td>
+                <td class="value">${transaction.checkAccountNumber || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">Check Number</td>
+                <td class="value">${transaction.checkNumber || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">System User</td>
+                <td class="value">${transaction.user || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">FT To Ledger</td>
+                <td class="value">${transaction.ftToLedger || '---'}</td>
+              </tr>
+              <tr>
+                <td class="label">FT To Account</td>
+                <td class="value">${transaction.ftToAccount || '---'}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="particulars-section">
+          <div class="section-title">Transaction Particulars</div>
+          <div class="particulars-box">${transaction.particulars || 'No detailed particulars recorded for this transaction.'}</div>
+        </div>
+
+        <div class="financial-card">
+          <table class="financial-table">
+            <thead>
+              <tr>
+                <th>Classification</th>
+                <th>Debit Amount</th>
+                <th>Credit Amount</th>
+                <th>Running Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Financial Values</td>
+                <td class="debit">${formattedDebit}</td>
+                <td class="credit">${formattedCredit}</td>
+                <td class="balance">${formattedBalance}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="signatures-section">
+          <div class="signature-block">
+            <div class="signature-line"></div>
+            <div class="signature-name">${transaction.user || '---'}</div>
+            <div class="signature-label">Prepared By (System User)</div>
+          </div>
+          <div class="signature-block">
+            <div class="signature-line"></div>
+            <div class="signature-name">&nbsp;</div>
+            <div class="signature-label">Verified By</div>
+          </div>
+          <div class="signature-block">
+            <div class="signature-line"></div>
+            <div class="signature-name">${transaction.approval || '---'}</div>
+            <div class="signature-label">Approval Status / Approved By</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span>Printed on ${new Date().toLocaleString('en-PH', { dateStyle: 'long', timeStyle: 'short' })}</span>
+          <span>Confidential &mdash; LJMA Accounting System</span>
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   if (!transaction) return null;
@@ -192,7 +585,7 @@ export default function ViewTransactionDialog({ transaction }: { transaction?: T
            </div>
 
            <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={() => window.print()}
+              <Button variant="outline" onClick={exportToPDF}
                 className="h-11 border-foreground/10 bg-foreground/5 hover:bg-foreground/10 rounded-xl px-6 text-xs font-black uppercase tracking-widest text-foreground/60"
               >
                 <Printer className="h-4 w-4 mr-2" />

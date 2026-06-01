@@ -370,6 +370,7 @@ model Notification {
   title     String
   message   String?
   entityId  String?
+  link      String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   userId    String?
@@ -820,6 +821,92 @@ model ApiCache {
   updatedAt DateTime @updatedAt
 
   @@map("api_cache")
+}
+
+model ApiConnection {
+  id            String       @id @default(cuid())
+  name          String
+  endpoint_url  String       @db.Text
+  method        String       @default("GET")
+  auth_type     String       @default("NONE")
+  auth_key      String?
+  auth_value    String?      @db.Text
+  custom_headers String?     @db.Text
+  description   String?      @db.Text
+  is_active     Boolean      @default(true)
+  last_tested   DateTime?
+  last_status   String?
+  response_time Int?
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  call_logs     ApiCallLog[]
+
+  @@map("api_connections")
+}
+
+model ApiCallLog {
+  id            String        @id @default(cuid())
+  connection_id String
+  connection    ApiConnection @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+  status        String
+  status_code   Int?
+  response_time Int?
+  error_message String?       @db.Text
+  called_at     DateTime      @default(now())
+
+  @@index([connection_id, called_at])
+  @@map("api_call_logs")
+}
+
+model MachineStatus {
+  id                       String    @id @default(cuid())
+  machine_name             String
+  ip_address               String
+  machine_type             String    @default("CLIENT")
+  location                 String?
+  status                   String    @default("OFFLINE")
+  last_seen                DateTime?
+  offline_threshold_seconds Int      @default(120)
+  os_info                  String?
+  notes                    String?   @db.Text
+  created_at               DateTime  @default(now())
+  updated_at               DateTime  @updatedAt
+
+  @@map("machine_status")
+}
+
+model DirectPayment {
+  id               String                    @id @default(cuid())
+  transaction_date DateTime
+  pay_to           String?
+  account_paid_from String
+  method           String                    @default("Cash")
+  amount           Float
+  reference_number String?
+  check_number     String?
+  journal_memo     String?                   @db.Text
+  status           String                    @default("POSTED")
+  created_by       String?
+  created_at       DateTime                  @default(now())
+  updated_at       DateTime                  @updatedAt
+  allocations      DirectPaymentAllocation[]
+
+  @@index([transaction_date])
+  @@index([status])
+  @@map("direct_payments")
+}
+
+model DirectPaymentAllocation {
+  id           String        @id @default(cuid())
+  payment_id   String
+  payment      DirectPayment @relation(fields: [payment_id], references: [id], onDelete: Cascade)
+  account_name String
+  amount       Float
+  entry_type   String
+  created_at   DateTime      @default(now())
+
+  @@index([payment_id])
+  @@map("direct_payment_allocations")
 }
 
 model ChatRoom {

@@ -37,7 +37,7 @@ export function UpcomingBillsWidget() {
                 </div>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-                <div className="text-xl font-bold font-headline text-amber-400">{formatCurrency(data.total)}</div>
+                <div className="text-xl font-bold font-headline text-red-600 dark:text-red-400">{formatCurrency(data.total)}</div>
                 <p className="text-[10px] text-muted-foreground mt-1">Total Upcoming</p>
             </CardContent>
         </Card>

@@ -28,8 +28,8 @@ export async function POST(request: Request) {
         for (const admin of superAdmins) {
             const id = crypto.randomUUID();
             await prisma.$executeRaw`
-                INSERT INTO notification (id, type, title, message, userId, isRead, createdAt)
-                VALUES (${id}, 'ACCESS_REQUEST', 'New Account Request', ${`New account request from ${name} (${phone})`}, ${admin.id}, 0, ${now})
+                INSERT INTO notification (id, type, title, message, link, userId, isRead, createdAt)
+                VALUES (${id}, 'ACCESS_REQUEST', 'New Account Request', ${`New account request from ${name} (${phone})`}, '/configuration/user-permissions', ${admin.id}, 0, ${now})
             `;
         }
 

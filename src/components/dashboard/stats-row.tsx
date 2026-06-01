@@ -171,41 +171,41 @@ export function StatsRow() {
             title: "Total Income",
             value: stats.totalIncome,
             icon: PhilippinePesoIcon,
-            color: "text-emerald-500",
+            color: "text-black dark:text-white",
             trend: "+12% This Month", // Mock trend for now
-            trendColor: "text-emerald-500",
+            trendColor: "text-black dark:text-white",
             trendIcon: ArrowUpIcon
         },
         {
             title: "Total Expenses",
             value: stats.totalExpenses,
             icon: Wallet,
-            color: "text-red-500",
+            color: "text-red-600 dark:text-red-400",
             trend: "+8% This Month",
-            trendColor: "text-red-500",
+            trendColor: "text-red-600 dark:text-red-400",
             trendIcon: ArrowUpIcon
         },
         {
             title: "Net Profit",
             value: stats.netProfit,
             icon: Activity,
-            color: "text-emerald-500",
+            color: "text-black dark:text-white",
             trend: "+15% This Month",
-            trendColor: "text-emerald-500",
+            trendColor: "text-black dark:text-white",
             trendIcon: ArrowUpIcon
         },
         {
             title: "Outstanding Receivables",
             value: stats.receivables,
             icon: CreditCard,
-            color: "text-blue-500",
+            color: "text-black dark:text-white",
             subtitle: "Pending Collections"
         },
         {
             title: "Outstanding Payables",
             value: stats.payables,
             icon: CreditCard,
-            color: "text-amber-500",
+            color: "text-red-600 dark:text-red-400",
             subtitle: "Upcoming Payments"
         }
     ];
@@ -215,29 +215,30 @@ export function StatsRow() {
             title: "POS All Time Revenue",
             value: posStats?.totalRevenueAllTime ?? 0,
             icon: PhilippinePesoIcon,
-            color: "text-indigo-600",
+            color: "text-black dark:text-white",
             subtitle: posStats ? "Total Synchronized from POS" : "No POS Connection (Offline)"
         },
         {
             title: "POS Monthly Revenue",
             value: posStats?.totalRevenueMonth ?? 0,
             icon: PhilippinePesoIcon,
-            color: "text-indigo-500",
+            color: "text-black dark:text-white",
             subtitle: posStats ? "Sales from POS System" : "No POS Connection (Offline)"
         },
         {
             title: "POS Products Sold",
             value: posStats?.productsSoldMonth ?? 0,
             icon: Activity,
-            color: "text-purple-500",
+            color: "text-black dark:text-white",
             subtitle: posStats ? "Units Moved This Month" : "No POS Connection (Offline)",
             isNumber: true
         }
     ];
 
     const iconBg: Record<string, string> = {
+        "text-black dark:text-white": "bg-foreground/10",
+        "text-red-600 dark:text-red-400": "bg-red-500/10",
         "text-emerald-500": "bg-emerald-500/10",
-        "text-red-500": "bg-red-500/10",
         "text-blue-500": "bg-blue-500/10",
         "text-amber-500": "bg-amber-500/10",
         "text-indigo-600": "bg-indigo-500/10",
@@ -246,8 +247,9 @@ export function StatsRow() {
     };
 
     const cardGradient: Record<string, string> = {
+        "text-black dark:text-white": "from-foreground/10 to-foreground/0 border-foreground/20",
+        "text-red-600 dark:text-red-400": "from-red-500/10 to-red-500/0 border-red-500/20",
         "text-emerald-500": "from-emerald-500/10 to-emerald-500/0 border-emerald-500/20",
-        "text-red-500": "from-red-500/10 to-red-500/0 border-red-500/20",
         "text-blue-500": "from-blue-500/10 to-blue-500/0 border-blue-500/20",
         "text-amber-500": "from-amber-500/10 to-amber-500/0 border-amber-500/20",
         "text-indigo-600": "from-indigo-500/10 to-indigo-500/0 border-indigo-500/20",
@@ -256,8 +258,9 @@ export function StatsRow() {
     };
 
     const topAccent: Record<string, string> = {
+        "text-black dark:text-white": "bg-foreground",
+        "text-red-600 dark:text-red-400": "bg-red-500",
         "text-emerald-500": "bg-emerald-500",
-        "text-red-500": "bg-red-500",
         "text-blue-500": "bg-blue-500",
         "text-amber-500": "bg-amber-500",
         "text-indigo-600": "bg-indigo-500",
