@@ -152,9 +152,10 @@ export async function POST(req: Request) {
 
         for (const verifier of notifiedVerifiers) {
             const notifId = crypto.randomUUID();
+            const notifLink = `/requests?id=${id}`;
             await prisma.$executeRaw`
-                INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
-                VALUES (${notifId}, 'REQUEST_VERIFICATION', 'New Request to Verify', ${`A new ${formName} (${requestNumber}) requires your verification.`}, ${id}, ${verifier.id}, false, ${now})
+                INSERT INTO notification (id, type, title, message, entityId, link, userId, isRead, createdAt)
+                VALUES (${notifId}, 'REQUEST_VERIFICATION', 'New Request to Verify', ${`A new ${formName} (${requestNumber}) requires your verification.`}, ${id}, ${notifLink}, ${verifier.id}, false, ${now})
             `;
         }
 

@@ -4,39 +4,41 @@
 
 @layer base {
   :root {
-    --background: 0 0% 97.8%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 209 100% 55%;
+    --popover-foreground: 0 0% 5%;
+    --primary: 0 84% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 260 80% 56%;
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 210 14% 83%;
-    --muted-foreground: 215 16% 36%;
-    --accent: 183 100% 46%;
+    --muted: 0 0% 93%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 84% 45%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 14% 89%;
-    --input: 210 14% 89%;
-    --ring: 209 100% 55%;
+    --border: 0 0% 82%;
+    --input: 0 0% 82%;
+    --ring: 0 84% 45%;
     --radius: 1rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 99%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 209 100% 55%;
+    --chart-1: 0 84% 45%;
+    --chart-2: 0 60% 30%;
+    --chart-3: 0 0% 10%;
+    --chart-4: 0 0% 45%;
+    --chart-5: 0 84% 65%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 5%;
+    --sidebar-primary: 0 84% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 80% 56%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 210 14% 89%;
-    --sidebar-ring: 209 100% 55%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 5%;
+    --sidebar-border: 0 0% 82%;
+    --sidebar-ring: 0 84% 45%;
+    --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.32);
   }
 
   .dark {
@@ -72,6 +74,8 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 13% 20%;
     --sidebar-ring: 209 100% 60%;
+    --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -96,13 +100,13 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--scrollbar-thumb);
     border-radius: 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--scrollbar-thumb-hover);
   }
 
   ::-webkit-scrollbar-thumb:active {
@@ -113,7 +117,7 @@
 @layer components {
   /* --- Premium Design Utilities --- */
   .glass-panel {
-    @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-lg rounded-xl;
+    @apply bg-white/90 backdrop-blur-lg border border-black/15 shadow-lg rounded-xl;
   }
 
   .dark .glass-panel {
@@ -121,7 +125,7 @@
   }
 
   .glass-card {
-    @apply bg-white/60 backdrop-blur-md border border-slate-200/50 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg hover:border-slate-300;
+    @apply bg-white/80 backdrop-blur-md border border-black/10 shadow-md rounded-xl transition-all duration-300 hover:shadow-lg hover:border-black/20;
   }
 
   .dark .glass-card {
@@ -129,7 +133,7 @@
   }
 
   .premium-gradient {
-    @apply bg-gradient-to-br from-blue-50 via-transparent to-slate-100;
+    @apply bg-gradient-to-br from-red-50 via-transparent to-gray-100;
   }
 
   .dark .premium-gradient {
@@ -141,7 +145,7 @@
   }
 
   .premium-border-b {
-    @apply border-b border-slate-200 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-slate-300/20 after:to-transparent;
+    @apply border-b border-black/15 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-black/10 after:to-transparent;
   }
 
   .dark .premium-border-b {
@@ -150,7 +154,7 @@
 
   /* Card with better styling */
   .card-light {
-    @apply bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow;
+    @apply bg-white rounded-lg border border-black/15 shadow-sm hover:shadow-md transition-shadow;
   }
 
   .dark .card-light {
@@ -159,7 +163,7 @@
 
   /* Form inputs with better visibility */
   .input-field {
-    @apply bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all;
+    @apply bg-white border border-black/25 text-black placeholder:text-black/35 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all;
   }
 
   .dark .input-field {
@@ -168,36 +172,36 @@
 
   /* Button styles */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md hover:shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all;
+    @apply bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md hover:shadow-lg hover:from-red-700 hover:to-red-800 transition-all;
   }
 
   .dark .btn-primary {
-    @apply from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800;
+    @apply from-red-700 to-red-800 hover:from-red-800 hover:to-red-900;
   }
 
   /* Badge styles */
   .badge-info {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700;
   }
 
   .dark .badge-info {
-    @apply bg-blue-900/30 text-blue-300;
+    @apply bg-red-900/30 text-red-300;
   }
 
   .badge-success {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-black/8 text-black;
   }
 
   .dark .badge-success {
-    @apply bg-emerald-900/30 text-emerald-300;
+    @apply bg-white/10 text-white/80;
   }
 
   .badge-warning {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-200 text-red-900;
   }
 
   .dark .badge-warning {
-    @apply bg-amber-900/30 text-amber-300;
+    @apply bg-red-800/30 text-red-200;
   }
 }
 

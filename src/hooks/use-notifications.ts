@@ -9,6 +9,7 @@ export interface Notification {
     title: string;
     message: string | null;
     entityId: string | null;
+    link: string | null;
     isRead: boolean;
     createdAt: string;
 }

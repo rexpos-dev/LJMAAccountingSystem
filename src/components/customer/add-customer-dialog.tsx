@@ -218,7 +218,7 @@ export function AddCustomerDialog() {
             </div>
             <div>
               <DialogTitle className="text-2xl font-black italic tracking-tighter uppercase text-foreground">
-                {isEditing ? "Profile Modification" : "Customer Acquisition"}
+                {isEditing ? "Profile Modification" : "Customer Information"}
               </DialogTitle>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={cn(

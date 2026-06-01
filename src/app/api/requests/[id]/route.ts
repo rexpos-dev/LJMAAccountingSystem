@@ -150,9 +150,10 @@ export async function PATCH(
 
                     for (const user of eligible) {
                         const notifId = crypto.randomUUID();
+                        const notifLink = `/requests?id=${id}`;
                         await prisma.$executeRaw`
-                            INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
-                            VALUES (${notifId}, 'REQUEST_ASSIGNMENT', ${notifTitle}, ${notifMessage}, ${id}, ${user.id}, false, ${now})
+                            INSERT INTO notification (id, type, title, message, entityId, link, userId, isRead, createdAt)
+                            VALUES (${notifId}, 'REQUEST_ASSIGNMENT', ${notifTitle}, ${notifMessage}, ${id}, ${notifLink}, ${user.id}, false, ${now})
                         `;
                     }
                 }

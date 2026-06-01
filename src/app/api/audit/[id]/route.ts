@@ -55,9 +55,10 @@ export async function PATCH(
             const actionDesc = log.actionType || 'Audit Item';
             const refNo = log.transactionId || id;
 
+            const auditLink = `/audit`;
             await prisma.$executeRaw`
-                INSERT INTO notification (id, type, title, message, entityId, userId, isRead, createdAt)
-                VALUES (${notifId}, 'AUDIT_ASSIGNMENT', 'New Audit assigned to you', ${`You have been assigned to audit ${actionDesc} (${refNo}).`}, ${id}, ${assigneeId}, 0, ${now})
+                INSERT INTO notification (id, type, title, message, entityId, link, userId, isRead, createdAt)
+                VALUES (${notifId}, 'AUDIT_ASSIGNMENT', 'New Audit assigned to you', ${`You have been assigned to audit ${actionDesc} (${refNo}).`}, ${id}, ${auditLink}, ${assigneeId}, 0, ${now})
             `;
         }
 

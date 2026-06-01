@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     DndContext,
     DragOverlay,
@@ -105,6 +105,17 @@ export function AuditBoard() {
     const [originalColumn, setOriginalColumn] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isFiltering, setIsFiltering] = useState(false);
+
+    // Track breakpoint so only one set of columns is mounted at a time,
+    // preventing duplicate DnD droppable IDs inside the same DndContext.
+    const [isDesktop, setIsDesktop] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 1024px)");
+        setIsDesktop(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+    }, []);
 
     // Filter state
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -528,36 +539,12 @@ export function AuditBoard() {
                     onDragOver={handleDragOver}
                     onDragEnd={handleDragEnd}
                 >
-                    {/* Desktop: 4-column grid */}
-                    <div className="hidden lg:grid grid-cols-4 gap-3 flex-1 min-h-0">
-                        {COLUMNS.map((col) => (
-                            <AuditColumn
-                                key={col.id}
-                                id={col.id}
-                                title={col.title}
-                                items={filteredItems[col.id]}
-                                color={col.color}
-                                borderColor={col.borderColor}
-                                glowColor={col.glowColor}
-                                auditors={auditors}
-                                onViewHistory={handleViewHistory}
-                                onAssign={handleAssign}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Mobile: horizontal scrollable columns (supports DnD across all) */}
-                    <div
-                        className="lg:hidden flex-1 min-h-0 flex gap-3 overflow-x-auto pb-2"
-                        style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
-                    >
-                        {COLUMNS.map((col) => (
-                            <div
-                                key={col.id}
-                                className="shrink-0 flex flex-col min-h-0 h-full"
-                                style={{ width: "88vw", scrollSnapAlign: "start" }}
-                            >
+                    {isDesktop ? (
+                        /* Desktop: 4-column grid */
+                        <div className="grid grid-cols-4 gap-3 flex-1 min-h-0">
+                            {COLUMNS.map((col) => (
                                 <AuditColumn
+                                    key={col.id}
                                     id={col.id}
                                     title={col.title}
                                     items={filteredItems[col.id]}
@@ -568,9 +555,35 @@ export function AuditBoard() {
                                     onViewHistory={handleViewHistory}
                                     onAssign={handleAssign}
                                 />
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        /* Mobile: horizontal scrollable columns */
+                        <div
+                            className="flex-1 min-h-0 flex gap-3 overflow-x-auto pb-2"
+                            style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
+                        >
+                            {COLUMNS.map((col) => (
+                                <div
+                                    key={col.id}
+                                    className="shrink-0 flex flex-col min-h-0 h-full"
+                                    style={{ width: "88vw", scrollSnapAlign: "start" }}
+                                >
+                                    <AuditColumn
+                                        id={col.id}
+                                        title={col.title}
+                                        items={filteredItems[col.id]}
+                                        color={col.color}
+                                        borderColor={col.borderColor}
+                                        glowColor={col.glowColor}
+                                        auditors={auditors}
+                                        onViewHistory={handleViewHistory}
+                                        onAssign={handleAssign}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     <DragOverlay dropAnimation={dropAnimation}>
                         {activeItem ? (

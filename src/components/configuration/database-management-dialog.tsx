@@ -38,6 +38,8 @@ import {
     ArrowRight,
     ShieldCheck,
     AlertCircle,
+    Layers,
+    ServerCrash,
 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -151,6 +153,12 @@ export default function DatabaseManagementDialog() {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Overall operation state
+    const [showOverallConfirmation, setShowOverallConfirmation] = useState(false);
+    const [overallConfirmCode, setOverallConfirmCode] = useState('');
+    const [isOverallResetting, setIsOverallResetting] = useState(false);
+    const [isOverallBackupDownloading, setIsOverallBackupDownloading] = useState(false);
 
     const handleResetAction = useCallback(async (action: ResetAction) => {
         if (confirmationCode !== 'CONFIRM-RESET') {
@@ -348,6 +356,80 @@ export default function DatabaseManagementDialog() {
         }
     }, [toast, closeDialog, logout]);
 
+    const handleDownloadOverall = useCallback(async () => {
+        setIsOverallBackupDownloading(true);
+        try {
+            const res = await fetch('/api/database-management?module=overall');
+
+            if (res.status === 401) {
+                toast({ title: "Session Expired", description: "Your session has expired. Please login again.", variant: "destructive" });
+                closeDialog("database-management" as any);
+                setTimeout(() => logout(), 2000);
+                return;
+            }
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || 'Download failed');
+            }
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            a.href = url;
+            a.download = `backup-overall-${timestamp}.sql`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            toast({ title: "Download Started", description: "Full system backup is being downloaded." });
+        } catch (error: any) {
+            toast({ title: "Download Failed", description: error.message || "Could not connect to the server.", variant: "destructive" });
+        } finally {
+            setIsOverallBackupDownloading(false);
+        }
+    }, [toast, closeDialog, logout]);
+
+    const handleResetOverall = useCallback(async () => {
+        if (overallConfirmCode !== 'CONFIRM-RESET') {
+            toast({ title: "Invalid Confirmation", description: "Please type CONFIRM-RESET exactly to proceed.", variant: "destructive" });
+            return;
+        }
+
+        setIsOverallResetting(true);
+        try {
+            const res = await fetch('/api/database-management', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reset-overall', confirmationCode: overallConfirmCode }),
+            });
+
+            if (res.status === 401) {
+                toast({ title: "Session Expired", description: "Your session has expired. Please login again.", variant: "destructive" });
+                closeDialog("database-management" as any);
+                setTimeout(() => logout(), 2000);
+                return;
+            }
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast({ title: "Full System Reset Complete", description: data.message });
+                setShowOverallConfirmation(false);
+                setOverallConfirmCode('');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                toast({ title: "Reset Failed", description: data.error || data.details || 'Operation failed', variant: "destructive" });
+            }
+        } catch {
+            toast({ title: "Connection Error", description: "Could not connect to the server.", variant: "destructive" });
+        } finally {
+            setIsOverallResetting(false);
+        }
+    }, [overallConfirmCode, toast, closeDialog, logout]);
+
     const handleOpenBackupManager = () => {
         openDialog("backup-scheduler" as any);
     };
@@ -362,6 +444,8 @@ export default function DatabaseManagementDialog() {
                     closeDialog("database-management" as any);
                     setSelectedAction(null);
                     setConfirmationCode('');
+                    setShowOverallConfirmation(false);
+                    setOverallConfirmCode('');
                 }
             }}
         >
@@ -396,6 +480,98 @@ export default function DatabaseManagementDialog() {
 
                         {/* LEFT: Reset & Backup Matrix */}
                         <div className="lg:col-span-7 space-y-6">
+
+                            {/* Global Operations Panel */}
+                            <div className="relative overflow-hidden rounded-3xl border border-red-500/30 bg-red-500/5 p-6">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-red-500/10 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-red-500/20 rounded-xl border border-red-500/30">
+                                        <Layers className="w-5 h-5 text-red-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Global Operations</h3>
+                                        <p className="text-[10px] text-slate-500 font-medium tracking-wide">ALL MODULES — SYSTEM-WIDE SCOPE</p>
+                                    </div>
+                                    <Badge variant="destructive" className="ml-auto bg-red-500/15 text-red-500 border-red-500/25 text-[9px] font-black uppercase tracking-widest px-3">
+                                        Max Risk
+                                    </Badge>
+                                </div>
+                                <p className="text-[11px] text-slate-400 mb-5 leading-relaxed">
+                                    These operations affect every module simultaneously. Backup creates a full SQL snapshot of all tables. Reset wipes all data across every module — your admin account will be preserved.
+                                </p>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Button
+                                        className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black uppercase tracking-widest shadow-lg shadow-blue-900/20 transition-all"
+                                        onClick={handleDownloadOverall}
+                                        disabled={isOverallBackupDownloading}
+                                    >
+                                        {isOverallBackupDownloading ? (
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <Download className="w-4 h-4 mr-2" />
+                                        )}
+                                        {isOverallBackupDownloading ? 'Scanning...' : 'Backup Overall'}
+                                    </Button>
+
+                                    <Button
+                                        variant="destructive"
+                                        className="rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/20 transition-all hover:scale-[1.02] active:scale-95"
+                                        onClick={() => {
+                                            setShowOverallConfirmation(v => !v);
+                                            setOverallConfirmCode('');
+                                        }}
+                                        disabled={isOverallResetting}
+                                    >
+                                        <ServerCrash className="w-4 h-4 mr-2" />
+                                        Reset Overall
+                                    </Button>
+                                </div>
+
+                                {showOverallConfirmation && (
+                                    <div className="mt-5 p-5 rounded-2xl border border-red-500/40 bg-black/30 backdrop-blur-md animate-in zoom-in-95 fade-in duration-300">
+                                        <div className="flex items-start gap-3 mb-4">
+                                            <div className="p-2 bg-red-500/20 rounded-lg shrink-0">
+                                                <AlertTriangle className="w-5 h-5 text-red-500" />
+                                            </div>
+                                            <div>
+                                                <h5 className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">Critical — Full System Wipe</h5>
+                                                <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                                                    All transactions, accounts, customers, employees, sales users, bank accounts, and non-admin users will be permanently deleted. This action cannot be undone.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <div className="relative flex-1">
+                                                <Input
+                                                    value={overallConfirmCode}
+                                                    onChange={(e) => setOverallConfirmCode(e.target.value)}
+                                                    placeholder="CONFIRM-RESET"
+                                                    className="font-mono text-sm h-12 bg-black/40 border-foreground/10 text-foreground placeholder:text-slate-600 rounded-xl focus:ring-red-500/50"
+                                                    autoComplete="off"
+                                                />
+                                                <div className="absolute right-3 top-3.5 px-2 py-0.5 rounded bg-red-500/10 text-red-500 text-[9px] font-black font-mono">
+                                                    REQUIRED
+                                                </div>
+                                            </div>
+                                            <Button
+                                                variant="destructive"
+                                                className="px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/20 hover:scale-105 active:scale-95 transition-all"
+                                                disabled={overallConfirmCode !== 'CONFIRM-RESET' || isOverallResetting}
+                                                onClick={handleResetOverall}
+                                            >
+                                                {isOverallResetting ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                                ) : (
+                                                    <Trash2 className="w-4 h-4 mr-2" />
+                                                )}
+                                                {isOverallResetting ? 'Wiping...' : 'Execute Full Reset'}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="flex items-center justify-between">
                                 <div className="flex flex-col gap-1">
                                     <h3 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -656,6 +832,8 @@ export default function DatabaseManagementDialog() {
                             closeDialog("database-management" as any);
                             setSelectedAction(null);
                             setConfirmationCode('');
+                            setShowOverallConfirmation(false);
+                            setOverallConfirmCode('');
                         }}
                     >
                         Terminate Session

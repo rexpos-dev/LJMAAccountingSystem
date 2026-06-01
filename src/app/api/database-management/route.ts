@@ -13,7 +13,13 @@ const MODULE_TABLES: Record<string, string[]> = {
     'user-permissions': ['user_permission'],
     'sales-users': ['sales_user'],
     'customers': ['customer', 'loyalty_point', 'loyalty_point_setting'],
-    'employees': ['employee']
+    'employees': ['employee'],
+    'overall': [
+        'transactions', 'pos_sales', 'pos_sale_item', 'invoice', 'invoice_item',
+        'customer_payments', 'bank_transactions', 'bank_reconciliations', 'payables_ledger', 'audit_log',
+        'chart_of_account', 'account_type', 'bank_accounts', 'user_permission',
+        'sales_user', 'customer', 'loyalty_point', 'loyalty_point_setting', 'employee',
+    ],
 };
 
 // POST: Execute a database management action
@@ -119,6 +125,43 @@ export async function POST(request: NextRequest) {
             case 'reset-employees': {
                 const deleted = await prisma.employee.deleteMany({});
                 result = { message: 'Employee directory has been reset successfully.', deletedCount: deleted.count };
+                break;
+            }
+
+            case 'reset-overall': {
+                // Chat data first (FK to users)
+                await prisma.chatAttachment.deleteMany({});
+                await prisma.chatMessage.deleteMany({});
+                await prisma.chatParticipant.deleteMany({});
+                // Bank transactions (FK to bank accounts and transactions)
+                await prisma.bankTransaction.deleteMany({});
+                await prisma.bankReconciliation.deleteMany({});
+                // Transaction-related data
+                await prisma.payablesLedger.deleteMany({});
+                await prisma.posSaleItem.deleteMany({});
+                await prisma.posSale.deleteMany({});
+                await prisma.customerPayment.deleteMany({});
+                await prisma.invoiceItem.deleteMany({});
+                await prisma.invoice.deleteMany({});
+                await prisma.transaction.deleteMany({});
+                await prisma.auditLog.deleteMany({});
+                // Bank accounts (after bank transactions)
+                await prisma.bankAccount.deleteMany({});
+                // Chart of accounts (after bank accounts)
+                await prisma.account.deleteMany({});
+                // Customer-related
+                await prisma.loyaltyPoint.deleteMany({});
+                await prisma.customer.deleteMany({});
+                // Other standalone tables
+                await prisma.salesUser.deleteMany({});
+                await prisma.employee.deleteMany({});
+                // Users — preserve current admin
+                const deletedUsers = await prisma.userPermission.deleteMany({
+                    where: { NOT: { username: username } }
+                });
+                result = {
+                    message: `Full system reset completed. All modules cleared. Admin account preserved. ${deletedUsers.count} user(s) removed.`,
+                };
                 break;
             }
 

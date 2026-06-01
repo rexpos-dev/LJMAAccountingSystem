@@ -39,10 +39,10 @@ export function PendingInvoicesWidget() {
                 </div>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-                <div className="text-xl font-bold font-headline text-blue-400">{formatCurrency(data.total)}</div>
+                <div className="text-xl font-bold font-headline text-black dark:text-white">{formatCurrency(data.total)}</div>
                 <p className="text-[10px] text-muted-foreground mt-1">Total Pending</p>
                 <button
-                    className="flex items-center gap-0.5 text-[10px] text-blue-400 mt-2 hover:opacity-80 font-semibold transition-opacity"
+                    className="flex items-center gap-0.5 text-[10px] text-black dark:text-white mt-2 hover:opacity-80 font-semibold transition-opacity"
                     onClick={() => openDialog('invoice-list')}
                 >
                     View All <ChevronRight className="h-3 w-3" />

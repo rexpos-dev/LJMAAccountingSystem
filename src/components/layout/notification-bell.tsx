@@ -27,10 +27,16 @@ export function NotificationBell() {
     const hasNotifications = notifications.length > 0;
 
     const handleNotificationClick = async (notification: typeof notifications[0]) => {
-        // Mark notification as read
         await markAsRead(notification.id);
 
-        // Redirect based on type
+        // Use stored link first (new notifications carry a direct URL)
+        if (notification.link) {
+            router.push(notification.link);
+            return;
+        }
+
+        // Fallback: derive route from type + entityId (legacy notifications)
+        const id = notification.entityId;
         switch (notification.type) {
             case 'reminder_create':
             case 'reminder_update':
@@ -38,18 +44,18 @@ export function NotificationBell() {
                 router.push('/dashboard');
                 break;
             case 'REQUEST_VERIFICATION':
-                if (notification.entityId) {
-                    router.push(`/requests?id=${notification.entityId}`);
-                } else {
-                    router.push('/requests');
-                }
+            case 'REQUEST_ASSIGNMENT':
+                router.push(id ? `/requests?id=${id}` : '/requests');
                 break;
+            case 'AUDIT_ASSIGNMENT':
             case 'AuditAssignment':
             case 'AuditComment':
                 router.push('/audit');
                 break;
+            case 'ACCESS_REQUEST':
+                router.push('/configuration/user-permissions');
+                break;
             default:
-                // Default fallback
                 router.push('/dashboard');
         }
     };

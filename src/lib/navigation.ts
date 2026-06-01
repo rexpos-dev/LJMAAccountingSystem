@@ -180,7 +180,7 @@ export const navItems: NavItem[] = [
     permissions: ['Setup'],
     subItems: [
       { title: "Business Setup", href: "/setting/business-setup", dialogId: "business-setup" },
-      { title: "Set Up Web Access", href: "/todo/web-access" },
+      { title: "Set Up Web Access", href: "/configuration/web-access" },
       { title: "Database Management", href: "#", dialogId: "database-management", permissions: ['Backup Database'], roles: ['Super Admin', 'Administrator'] },
       { title: "Branch", href: "/setting/branches", dialogId: "branch-list" },
       { title: "History Logs", href: "/setting/history-logs", dialogId: "history-logs", roles: ['Super Admin', 'Admin', 'Administrator'] },

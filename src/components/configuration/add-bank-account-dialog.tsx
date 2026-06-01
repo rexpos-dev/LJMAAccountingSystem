@@ -42,9 +42,8 @@ export default function AddBankAccountDialog() {
     const [currency, setCurrency] = useState('PHP');
     const [branch, setBranch] = useState('');
     const [isActive, setIsActive] = useState(true);
-    const [initialBalance, setInitialBalance] = useState('0.00'); // Renamed from openingBalance to avoid conflict
+    const [openingBalance, setOpeningBalance] = useState('0.00');
     const [linkedGlId, setLinkedGlId] = useState('');
-    const [migrationOpeningBalance, setMigrationOpeningBalance] = useState('');
     const [openingDate, setOpeningDate] = useState('');
     const [auditStatus, setAuditStatus] = useState('DRAFT');
 
@@ -71,10 +70,10 @@ export default function AddBankAccountDialog() {
                     bank_name: bankName,
                     account_name: accountName,
                     account_number: bankAccountNo,
-                    account_type: accountType as any, // CASH or BANK
+                    account_type: accountType as any,
                     currency: currency,
                     gl_account_id: linkedGlId,
-                    opening_balance: parseFloat(migrationOpeningBalance.replace(/,/g, '')) || 0,
+                    opening_balance: parseFloat(openingBalance.replace(/,/g, '')) || 0,
                     opening_date: openingDate || null,
                     is_active: isActive,
                     audit_status: status || auditStatus,
@@ -101,9 +100,8 @@ export default function AddBankAccountDialog() {
             setCurrency('PHP');
             setBranch('');
             setIsActive(true);
-            setInitialBalance('0.00');
+            setOpeningBalance('0.00');
             setLinkedGlId('');
-            setMigrationOpeningBalance('');
             setOpeningDate('');
             setAuditStatus('DRAFT');
 
@@ -184,7 +182,7 @@ export default function AddBankAccountDialog() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="opening-balance">Opening Balance</Label>
-                            <Input id="opening-balance" value={initialBalance} onChange={(e) => setInitialBalance(e.target.value)}
+                            <Input id="opening-balance" value={openingBalance} onChange={(e) => setOpeningBalance(e.target.value)}
                                 placeholder="0.00"
                             />
                         </div>
@@ -231,12 +229,6 @@ export default function AddBankAccountDialog() {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="opening-balance-mig">Opening Balance (Migration)</Label>
-                                <Input id="opening-balance-mig" value={migrationOpeningBalance} onChange={(e) => setMigrationOpeningBalance(e.target.value)}
-                                    placeholder="0.00"
-                                />
                             </div>
                             <div className="space-y-2 col-span-2">
                                 <Label htmlFor="opening-date">Opening Date</Label>

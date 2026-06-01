@@ -78,21 +78,26 @@ interface ItemComboboxProps {
     onChange: (value: string) => void;
 }
 
-function ItemCombobox({ value, products, onChange }: ItemComboboxProps) {
+function ItemCombobox({ value, products = [], onChange }: ItemComboboxProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
 
-    const filteredProducts = products.filter((product) =>
-        product.sku.toLowerCase().includes(search.toLowerCase()) ||
-        product.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const safeProducts = Array.isArray(products) ? products : [];
+
+    const filteredProducts = safeProducts.filter((product) => {
+        if (!product) return false;
+        const sku = product.sku ? String(product.sku).toLowerCase() : "";
+        const name = product.name ? String(product.name).toLowerCase() : "";
+        const searchStr = (search || "").toLowerCase();
+        return sku.includes(searchStr) || name.includes(searchStr);
+    });
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between px-3 bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10 transition-all rounded-xl text-xs font-bold uppercase" >
                     {value
-                        ? products.find((product) => product.sku === value)?.sku || value
+                        ? safeProducts.find((product) => product?.sku === value)?.sku || value
                         : <span className="text-foreground/20">Select Item Code...</span>}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -111,7 +116,7 @@ function ItemCombobox({ value, products, onChange }: ItemComboboxProps) {
                             ) : (
                                 filteredProducts.map((product) => (
                                     <div
-                                        key={product.sku}
+                                        key={product.id || product.sku}
                                         className={cn(
                                             "relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-xs outline-none hover:bg-emerald-400 hover:text-black transition-all group",
                                             value === product.sku ? "bg-emerald-400/20 text-emerald-400" : "text-foreground/60"
@@ -196,11 +201,11 @@ export default function EnterCashSaleDialog() {
     };
 
     const handleItemChange = (id: string, productId: string) => {
-        const product = externalProducts.find(p => p.sku === productId);
+        const product = (externalProducts || []).find(p => p?.sku === productId);
         setItems(prev =>
             prev.map(item => {
                 if (item.id === id) {
-                    const price = product ? parseFloat(product.price.toString()) : 0;
+                    const price = product ? parseFloat((product.price || 0).toString()) : 0;
                     return {
                         ...item,
                         itemId: productId,

@@ -52,6 +52,7 @@ export async function POST(request: Request) {
           title: 'New Reminder',
           message: reminder.title,
           entityId: reminder.id,
+          link: '/dashboard',
         },
       });
     } catch (notifError: any) {
@@ -108,6 +109,7 @@ export async function PUT(request: Request) {
             title: 'Reminder Updated',
             message: reminder.title,
             entityId: reminder.id,
+            link: '/dashboard',
           },
         });
       } catch (notifError: any) {
@@ -160,6 +162,7 @@ export async function DELETE(request: Request) {
         title: 'Reminder Deleted',
         message: 'A reminder was deleted',
         entityId: id,
+        link: '/dashboard',
       },
     });
 
