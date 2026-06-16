@@ -992,3 +992,500 @@ model CostCenter {
   @@map("cost_centers")
 }
 
+// ─── PHASE 1: DOCUMENT ATTACHMENTS ───────────────────────────────────────────
+model Document {
+  id           String   @id @default(cuid())
+  entityType   String   // 'invoice', 'purchase_order', 'request', 'transaction', 'customer', etc.
+  entityId     String
+  fileName     String
+  originalName String
+  mimeType     String
+  size         Int
+  uploadedBy   String
+  createdAt    DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@map("documents")
+}
+
+// ─── PHASE 1: FIELD-LEVEL AUDIT TRAIL ────────────────────────────────────────
+model AuditFieldLog {
+  id          String   @id @default(cuid())
+  entityType  String
+  entityId    String
+  action      String   // 'CREATE' | 'UPDATE' | 'DELETE'
+  fieldName   String?
+  oldValue    String?  @db.Text
+  newValue    String?  @db.Text
+  changedBy   String
+  changedAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([changedAt])
+  @@map("audit_field_logs")
+}
+
+// ─── PHASE 1: BACKUP SCHEDULE ────────────────────────────────────────────────
+model AutoBackupLog {
+  id        String   @id @default(cuid())
+  fileName  String
+  filePath  String
+  sizeBytes BigInt
+  status    String   // 'success' | 'failed'
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("auto_backup_logs")
+}
+
+// ─── PHASE 1: EMAIL NOTIFICATION LOG ─────────────────────────────────────────
+model EmailLog {
+  id          String   @id @default(cuid())
+  to          String
+  subject     String
+  template    String
+  entityType  String?
+  entityId    String?
+  status      String   // 'sent' | 'failed'
+  error       String?  @db.Text
+  sentAt      DateTime @default(now())
+
+  @@map("email_logs")
+}
+
+// ─── PHASE 2: BUDGET MANAGEMENT ──────────────────────────────────────────────
+model BudgetItem {
+  id        String   @id @default(cuid())
+  accountNo Int
+  year      Int
+  month     Int      // 1-12 for monthly, 0 = annual total
+  amount    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([accountNo, year, month])
+  @@index([year, month])
+  @@map("budget_items")
+}
+
+// ─── PHASE 2: FIXED ASSETS ───────────────────────────────────────────────────
+model FixedAsset {
+  id                 String    @id @default(cuid())
+  assetCode          String    @unique
+  name               String
+  description        String?
+  category           String?
+  location           String?
+  purchaseDate       DateTime
+  cost               Float
+  salvageValue       Float     @default(0)
+  usefulLifeYears    Int
+  depreciationMethod String    @default("Straight-Line")
+  status             String    @default("Active")
+  disposalDate       DateTime?
+  disposalAmount     Float?
+  accountNo          Int?
+  accDepAccountNo    Int?
+  depExpAccountNo    Int?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  depreciationEntries AssetDepreciationEntry[]
+
+  @@map("fixed_assets")
+}
+
+model AssetDepreciationEntry {
+  id              String     @id @default(cuid())
+  assetId         String
+  year            Int
+  month           Int
+  depreciationAmt Float
+  bookValue       Float
+  posted          Boolean    @default(false)
+  postedAt        DateTime?
+  createdAt       DateTime   @default(now())
+
+  asset FixedAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, year, month])
+  @@index([assetId])
+  @@map("asset_depreciation_entries")
+}
+
+// ─── PHASE 2: RECURRING TRANSACTIONS ─────────────────────────────────────────
+model RecurringTransaction {
+  id              String    @id @default(cuid())
+  description     String
+  referencePrefix String    @default("REC")
+  frequency       String    // monthly | weekly | yearly
+  dayOfMonth      Int?      // 1-31 for monthly
+  nextRunDate     DateTime
+  lastRunDate     DateTime?
+  isActive        Boolean   @default(true)
+  lines           String    @db.Text // JSON: [{accountNo, debit, credit, particulars}]
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("recurring_transactions")
+}
+
+// ─── PHASE 2: AR AGING — DUNNING LOG ─────────────────────────────────────────
+model DunningLog {
+  id         String   @id @default(cuid())
+  customerId String
+  invoiceId  String?
+  level      Int      // 1 = 1st notice, 2 = 2nd notice, 3 = final
+  sentTo     String
+  sentAt     DateTime @default(now())
+
+  @@index([customerId])
+  @@map("dunning_logs")
+}
+
+// ─── PHASE 3: PAYROLL ─────────────────────────────────────────────────────────
+model PayrollPeriod {
+  id        String    @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  payDate   DateTime
+  status    String    @default("Draft") // Draft | Posted | Paid
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  entries PayrollEntry[]
+
+  @@map("payroll_periods")
+}
+
+model PayrollEntry {
+  id                  String        @id @default(cuid())
+  periodId            String
+  employeeId          String
+  employeeName        String
+  designation         String?
+  basicPay            Float
+  allowances          Float         @default(0)
+  grossPay            Float
+  sssEmployee         Float         @default(0)
+  sssEmployer         Float         @default(0)
+  philhealthEmployee  Float         @default(0)
+  philhealthEmployer  Float         @default(0)
+  pagibigEmployee     Float         @default(0)
+  pagibigEmployer     Float         @default(0)
+  withholdingTax      Float         @default(0)
+  otherDeductions     Float         @default(0)
+  totalDeductions     Float         @default(0)
+  netPay              Float
+  posted              Boolean       @default(false)
+
+  period PayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@index([periodId])
+  @@map("payroll_entries")
+}
+
+// ─── PHASE 3: GOODS RECEIPT NOTE (3-WAY MATCHING) ────────────────────────────
+model GoodsReceiptNote {
+  id           String   @id @default(cuid())
+  grnNumber    String   @unique
+  poId         String
+  supplierId   String
+  receivedDate DateTime
+  status       String   @default("Draft") // Draft | Confirmed | Matched
+  receivedBy   String
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  items GoodsReceiptItem[]
+
+  @@map("goods_receipt_notes")
+}
+
+model GoodsReceiptItem {
+  id          String   @id @default(cuid())
+  grnId       String
+  poItemId    String?
+  productId   String?
+  description String
+  orderedQty  Float
+  receivedQty Float
+  unitPrice   Float    @default(0)
+
+  grn GoodsReceiptNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+
+  @@index([grnId])
+  @@map("goods_receipt_items")
+}
+
+// ─── PHASE 3: STOCK TRANSFERS ─────────────────────────────────────────────────
+model StockTransfer {
+  id             String   @id @default(cuid())
+  transferNumber String   @unique
+  fromBranch     String
+  toBranch       String
+  transferDate   DateTime
+  status         String   @default("Pending") // Pending | Completed | Cancelled
+  transferredBy  String
+  notes          String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  items StockTransferItem[]
+
+  @@map("stock_transfers")
+}
+
+model StockTransferItem {
+  id         String   @id @default(cuid())
+  transferId String
+  productId  String
+  quantity   Float
+  unitCost   Float    @default(0)
+
+  transfer StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+
+  @@index([transferId])
+  @@map("stock_transfer_items")
+}
+
+// ─── PHASE 3: BANK STATEMENT IMPORT (RECONCILIATION) ─────────────────────────
+model BankStatementImport {
+  id            String   @id @default(cuid())
+  bankAccountId String
+  fileName      String
+  importedAt    DateTime @default(now())
+  lineCount     Int      @default(0)
+  matchedCount  Int      @default(0)
+
+  lines BankStatementLine[]
+
+  @@map("bank_statement_imports")
+}
+
+model BankStatementLine {
+  id          String   @id @default(cuid())
+  importId    String
+  txDate      DateTime
+  description String   @db.Text
+  debit       Float    @default(0)
+  credit      Float    @default(0)
+  balance     Float?
+  reference   String?
+  matched     Boolean  @default(false)
+  matchedTxId String?
+
+  import BankStatementImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  @@index([importId])
+  @@map("bank_statement_lines")
+}
+
+// ─── PHASE 5: APPROVAL WORKFLOW ENGINE ───────────────────────────────────────
+model ApprovalWorkflow {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  entityType  String   // 'request' | 'purchase_order' | 'invoice' | 'payment'
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  steps    ApprovalStep[]
+  requests ApprovalRequest[]
+
+  @@map("approval_workflows")
+}
+
+model ApprovalStep {
+  id           String @id @default(cuid())
+  workflowId   String
+  level        Int    // 1 = first approver, 2 = second, etc.
+  label        String // e.g. "Verify", "Approve", "Final Approval"
+  minAmount    Float? // null = no min
+  maxAmount    Float? // null = no max
+  requiredRole String // accountType or formPermission that can approve
+  escalateAfterHours Int @default(24) // escalate if not acted on
+
+  workflow  ApprovalWorkflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  decisions ApprovalDecision[]
+
+  @@index([workflowId])
+  @@map("approval_steps")
+}
+
+model ApprovalRequest {
+  id           String    @id @default(cuid())
+  workflowId   String
+  entityType   String
+  entityId     String
+  entityRef    String?   // human-readable reference number
+  amount       Float     @default(0)
+  currentLevel Int       @default(1)
+  status       String    @default("Pending") // Pending | Approved | Rejected | Cancelled
+  requestedBy  String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  workflow  ApprovalWorkflow @relation(fields: [workflowId], references: [id])
+  decisions ApprovalDecision[]
+
+  @@index([entityType, entityId])
+  @@index([status])
+  @@map("approval_requests")
+}
+
+model ApprovalDecision {
+  id         String   @id @default(cuid())
+  requestId  String
+  stepId     String
+  level      Int
+  decidedBy  String
+  decision   String   // 'Approved' | 'Rejected' | 'Returned'
+  remarks    String?  @db.Text
+  decidedAt  DateTime @default(now())
+
+  request ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  step    ApprovalStep    @relation(fields: [stepId], references: [id])
+
+  @@index([requestId])
+  @@map("approval_decisions")
+}
+
+// ─── PHASE 5: RBAC PER MODULE ────────────────────────────────────────────────
+model ModulePermission {
+  id        String   @id @default(cuid())
+  role      String   // accountType value
+  module    String   // 'invoices' | 'payroll' | 'reports' | etc.
+  canView   Boolean  @default(false)
+  canCreate Boolean  @default(false)
+  canEdit   Boolean  @default(false)
+  canDelete Boolean  @default(false)
+  canPost   Boolean  @default(false)   // post to GL
+  canApprove Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([role, module])
+  @@map("module_permissions")
+}
+
+// ─── PHASE 5: MULTI-CURRENCY ─────────────────────────────────────────────────
+model Currency {
+  id        String   @id @default(cuid())
+  code      String   @unique // USD, EUR, JPY etc.
+  name      String
+  symbol    String   @default("")
+  isBase    Boolean  @default(false) // PHP is base
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  rates ExchangeRate[]
+
+  @@map("currencies")
+}
+
+model ExchangeRate {
+  id           String   @id @default(cuid())
+  currencyId   String
+  rateDate     DateTime
+  rateToBase   Float    // 1 unit of this currency = X PHP
+  createdAt    DateTime @default(now())
+
+  currency Currency @relation(fields: [currencyId], references: [id])
+
+  @@unique([currencyId, rateDate])
+  @@index([rateDate])
+  @@map("exchange_rates")
+}
+
+// ─── PHASE 5: API GATEWAY ────────────────────────────────────────────────────
+model ApiKey {
+  id          String    @id @default(cuid())
+  name        String
+  keyHash     String    @unique
+  keyPrefix   String    // first 8 chars for display (e.g. "ljma_abc")
+  permissions String    @db.Text  // JSON array: ['invoices:read','customers:read']
+  isActive    Boolean   @default(true)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+
+  @@map("api_keys")
+}
+
+model WebhookSubscription {
+  id        String   @id @default(cuid())
+  name      String
+  url       String   @db.Text
+  events    String   @db.Text  // JSON: ['invoice.created','payment.received']
+  secret    String   // for HMAC signature verification
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deliveries WebhookDelivery[]
+
+  @@map("webhook_subscriptions")
+}
+
+model WebhookDelivery {
+  id             String   @id @default(cuid())
+  subscriptionId String
+  event          String
+  payload        String   @db.LongText
+  statusCode     Int?
+  responseBody   String?  @db.Text
+  success        Boolean  @default(false)
+  attemptCount   Int      @default(1)
+  deliveredAt    DateTime @default(now())
+
+  subscription WebhookSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@map("webhook_deliveries")
+}
+
+// ─── PHASE 5: POS INTEGRATION ────────────────────────────────────────────────
+model PosEodReconciliation {
+  id             String   @id @default(cuid())
+  date           DateTime
+  machineId      String?
+  totalSales     Float    @default(0)
+  totalReceipts  Int      @default(0)
+  journalPosted  Boolean  @default(false)
+  variance       Float    @default(0)
+  notes          String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  @@index([date])
+  @@map("pos_eod_reconciliations")
+}
+
+// ─── PHASE 5: AI ANOMALY LOG ─────────────────────────────────────────────────
+model AnomalyLog {
+  id          String   @id @default(cuid())
+  entityType  String   // 'transaction' | 'invoice' | 'expense'
+  entityId    String
+  entityRef   String?
+  anomalyType String   // 'amount_spike' | 'duplicate' | 'unusual_account' | 'weekend'
+  severity    String   // 'low' | 'medium' | 'high'
+  description String   @db.Text
+  amount      Float?
+  baseline    Float?   // expected/average amount
+  reviewed    Boolean  @default(false)
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([reviewed])
+  @@map("anomaly_logs")
+}
+
+

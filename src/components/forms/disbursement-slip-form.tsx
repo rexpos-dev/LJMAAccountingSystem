@@ -460,7 +460,7 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                                         )} />
                                         <FormField control={form.control} name="payTo" render={({ field }) => (
                                             <FormItem className="space-y-1.5">
-                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Payee Node</FormLabel>
+                                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-foreground/40 ml-1">Payee</FormLabel>
                                                 <Select value={field.value} onValueChange={field.onChange} disabled={isReadOnly}>
                                                     <FormControl>
                                                         <SelectTrigger className=" bg-foreground/5 border-foreground/10 text-foreground rounded-xl font-bold uppercase text-xs">
@@ -540,7 +540,7 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                                         <Button type="button" onClick={() => append({ qty: 1, unit: 'PC', particulars: '', amount: 0 })}
                                             className="h-9 bg-primary/10 border border-primary/20 text-primary hover:bg-primary hover:text-black rounded-xl font-black uppercase tracking-widest text-[10px] px-4 gap-2 transition-all"
                                         >
-                                            <Plus className="h-3.5 w-3.5" /> Initialize Node
+                                            <Plus className="h-3.5 w-3.5" /> Initialize
                                         </Button>
                                     )}
                                 </div>
@@ -623,10 +623,10 @@ export function DisbursementSlipForm({ initialData, mode = 'create', onSuccess, 
                         {/* Bottom Section: Authorization Protocols */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-8 border-t border-foreground/10 border-dashed">
                             {[
-                                { name: 'preparedBy', label: 'Preparation Node', icon: User, options: processors },
-                                { name: 'verifiedBy', label: 'Verification Node', icon: ShieldCheck, options: verifiers },
-                                { name: 'approvedBy', label: 'Approval Node', icon: Zap, options: approvers },
-                                { name: 'receivedBy', label: 'Recipients Node', icon: CheckCircle2, options: processors },
+                                { name: 'preparedBy', label: 'Preparation', icon: User, options: processors },
+                                { name: 'verifiedBy', label: 'Verification ', icon: ShieldCheck, options: verifiers },
+                                { name: 'approvedBy', label: 'Approval', icon: Zap, options: approvers },
+                                { name: 'receivedBy', label: 'Recipients', icon: CheckCircle2, options: processors },
                             ].map((sig) => (
                                 <FormField
                                     key={sig.name}

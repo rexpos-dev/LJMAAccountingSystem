@@ -10,7 +10,7 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from '@/components/ui/menubar';
-import { ListVideo, Printer, Save, Loader2 } from 'lucide-react';
+import { ListVideo, Printer, Save, Loader2, FileSpreadsheet } from 'lucide-react';
 import { useReportActions } from '@/hooks/use-report-actions';
 import { ReportPreviewModal } from './report-preview-modal';
 import { useDialog } from '@/components/layout/dialog-context';
@@ -40,6 +40,7 @@ export function ReportToolbar({
     handlePreview,
     handlePrint,
     handleSave,
+    handleExportCSV,
     isSaving,
   } = useReportActions({ contentRef, title, subtitle });
 
@@ -53,6 +54,7 @@ export function ReportToolbar({
             <MenubarItem onClick={handlePreview}>Print Preview</MenubarItem>
             <MenubarItem onClick={handlePrint}>Print</MenubarItem>
             <MenubarItem onClick={handleSave}>Save as PDF</MenubarItem>
+            <MenubarItem onClick={handleExportCSV}>Export to CSV / Excel</MenubarItem>
             <MenubarSeparator />
             <MenubarItem onClick={() => closeDialog(closeKey)}>Close</MenubarItem>
           </MenubarContent>
@@ -80,6 +82,11 @@ export function ReportToolbar({
             : <Save className="h-5 w-5" />
           }
           <span className="text-[10px]">{isSaving ? 'Saving…' : 'Save'}</span>
+        </Button>
+
+        <Button variant="ghost" size="sm" className="flex-col h-auto gap-0.5 px-3 hover:bg-primary/10" onClick={handleExportCSV} title="Export to CSV / Excel" >
+          <FileSpreadsheet className="h-5 w-5" />
+          <span className="text-[10px]">Export</span>
         </Button>
 
         {extra}

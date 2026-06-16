@@ -30,6 +30,43 @@ export async function POST(req: Request) {
             );
         }
 
+        // Validate customer exists — prevents FK constraint error
+        const customer = await prisma.customer.findUnique({
+            where: { id: String(customerId) },
+        });
+        if (!customer) {
+            return NextResponse.json(
+                { message: `Customer not found (id: ${customerId}). Please select a valid customer.` },
+                { status: 404 }
+            );
+        }
+
+        // Credit limit enforcement (only when creditLimit is set and > 0)
+        if ((customer.creditLimit ?? 0) > 0) {
+            const outstanding: any[] = await prisma.$queryRaw`
+                SELECT
+                    COALESCE(SUM(i.total), 0) -
+                    COALESCE(
+                        (SELECT SUM(cp.amount) FROM customer_payment cp
+                         JOIN invoice i2 ON i2.id = cp.invoiceId
+                         WHERE i2.customerId = ${customer.id} AND cp.status != 'Voided'),
+                    0) AS balance
+                FROM invoice i
+                WHERE i.customerId = ${customer.id}
+                AND i.status NOT IN ('Paid','Void','Cancelled')
+            `;
+            const currentBalance = Number(outstanding[0]?.balance ?? 0);
+            const invoiceTotal = parseFloat(String(total ?? 0));
+            if (currentBalance + invoiceTotal > (customer.creditLimit ?? 0)) {
+                return NextResponse.json({
+                    message: `Credit limit exceeded. Outstanding balance: ₱${currentBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}, Credit limit: ₱${(customer.creditLimit ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
+                    code: 'CREDIT_LIMIT_EXCEEDED',
+                    currentBalance,
+                    creditLimit: customer.creditLimit,
+                }, { status: 422 });
+            }
+        }
+
         // Create Invoice and Items in a transaction
         // First, verify which product IDs actually exist in our local database
         const itemIds = items.map((item: any) => item.id).filter((id: string) => id);

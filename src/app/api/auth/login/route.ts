@@ -1,52 +1,92 @@
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { setSession } from '@/lib/auth-server';
 
+// In-memory rate limiter: max 5 attempts per IP per 15 minutes
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIp(request: Request): string {
+    const forwarded = (request as any).headers?.get?.('x-forwarded-for');
+    return forwarded ? forwarded.split(',')[0].trim() : 'unknown';
+}
+
+function isRateLimited(ip: string): boolean {
+    const now = Date.now();
+    const record = loginAttempts.get(ip);
+
+    if (!record || now > record.resetAt) {
+        loginAttempts.set(ip, { count: 1, resetAt: now + 15 * 60 * 1000 });
+        return false;
+    }
+
+    record.count += 1;
+
+    if (record.count > 5) return true;
+
+    return false;
+}
+
+function clearAttempts(ip: string) {
+    loginAttempts.delete(ip);
+}
+
 export async function POST(request: Request) {
+    const ip = getClientIp(request);
+
+    if (isRateLimited(ip)) {
+        return NextResponse.json(
+            { error: 'Too many login attempts. Try again in 15 minutes.' },
+            { status: 429 }
+        );
+    }
+
     try {
         const { username, password } = await request.json();
 
         if (!username || !password) {
-            return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
+            return NextResponse.json(
+                { error: 'Username and password are required' },
+                { status: 400 }
+            );
         }
 
-        // Find user in the user_permission table
-        console.log(`Attempting login for: ${username}`);
-        const user = await prisma.userPermission.findUnique({
-            where: { username },
-        });
+        const user = await prisma.userPermission.findUnique({ where: { username } });
 
-        if (!user) {
-            console.log('User not found in database.');
+        if (!user || !user.isActive || !user.password) {
             return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
-        console.log('User found, verifying password...');
-        // Check password (plain text for now as requested/implied by existing schema, 
-        // but ideally should be hashed)
-        if (user.password !== password) {
-            console.log('Password mismatch.');
+        // Support both bcrypt hashes and legacy plaintext passwords.
+        // On a successful plaintext match, the password is re-hashed and saved
+        // so the account migrates automatically on first login.
+        let passwordValid = false;
+
+        if (user.password.startsWith('$2')) {
+            // Already a bcrypt hash
+            passwordValid = await bcrypt.compare(password, user.password);
+        } else {
+            // Legacy plaintext — compare then upgrade
+            if (user.password === password) {
+                passwordValid = true;
+                const hashed = await bcrypt.hash(password, 12);
+                await prisma.userPermission.update({
+                    where: { username },
+                    data: { password: hashed },
+                });
+            }
+        }
+
+        if (!passwordValid) {
             return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
-        if (!user.isActive) {
-            console.log('User account is inactive.');
-            return NextResponse.json({ error: 'Account is inactive' }, { status: 403 });
-        }
+        clearAttempts(ip);
 
-        console.log('Login successful.');
-
-        // Return user data (excluding password)
         const { password: _, ...userWithoutPassword } = user;
-
-        // Set secure session cookie
         await setSession(userWithoutPassword);
 
-        return NextResponse.json({
-            user: userWithoutPassword,
-            message: 'Login successful'
-        });
-
+        return NextResponse.json({ user: userWithoutPassword, message: 'Login successful' });
     } catch (error) {
         console.error('Login error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

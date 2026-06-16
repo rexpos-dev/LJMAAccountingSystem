@@ -1,16 +1,33 @@
+export interface BusinessInfo {
+  businessName?: string;
+  address?: string;
+  email?: string;
+  contactTel?: string;
+  contactPhone?: string;
+}
+
 export interface ReportPrintOptions {
   title: string;
   subtitle?: string;
   contentHtml: string;
-  companyName?: string;
+  business?: BusinessInfo;
 }
 
 export function buildPrintDocument({
   title,
   subtitle,
   contentHtml,
-  companyName = 'LJMA Accounting',
+  business,
 }: ReportPrintOptions): string {
+  const companyName = business?.businessName?.trim() || 'LJMA Accounting';
+
+  // Build contact line from whatever fields are set
+  const contactParts: string[] = [];
+  if (business?.email) contactParts.push(business.email);
+  if (business?.contactTel) contactParts.push(`Tel: ${business.contactTel}`);
+  if (business?.contactPhone) contactParts.push(`Mobile: ${business.contactPhone}`);
+  const contactLine = contactParts.join('&ensp;|&ensp;');
+
   const printedAt = new Date().toLocaleString('en-PH', {
     dateStyle: 'long',
     timeStyle: 'short',
@@ -76,11 +93,23 @@ export function buildPrintDocument({
       letter-spacing: 0.5px;
       text-transform: uppercase;
     }
+    .company-address {
+      font-size: 9.5px;
+      color: #374151;
+      margin-top: 2px;
+    }
+    .company-contact {
+      font-size: 9px;
+      color: #6b7280;
+      margin-top: 1px;
+    }
     .report-title {
       font-size: 13px;
       font-weight: 700;
       color: #374151;
-      margin-top: 3px;
+      margin-top: 6px;
+      padding-top: 5px;
+      border-top: 1px solid #e5e7eb;
     }
     .report-subtitle {
       font-size: 10px;
@@ -205,6 +234,8 @@ export function buildPrintDocument({
   <div class="doc-header">
     <div>
       <div class="company-name">${companyName}</div>
+      ${business?.address ? `<div class="company-address">${business.address}</div>` : ''}
+      ${contactLine ? `<div class="company-contact">${contactLine}</div>` : ''}
       <div class="report-title">${title}</div>
       ${subtitle ? `<div class="report-subtitle">${subtitle}</div>` : ''}
     </div>
@@ -221,7 +252,7 @@ export function buildPrintDocument({
 
   <!-- Footer -->
   <div class="doc-footer">
-    <span class="footer-conf">Confidential &mdash; LJMA Accounting System</span>
+    <span class="footer-conf">Confidential &mdash; ${companyName}</span>
     <span>This document contains proprietary and confidential information. Unauthorized disclosure is prohibited.</span>
   </div>
 

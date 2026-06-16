@@ -2,7 +2,8 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY || 'default-secret-key-change-this-in-env';
+const SECRET_KEY = process.env.JWT_SECRET_KEY;
+if (!SECRET_KEY) throw new Error('JWT_SECRET_KEY is not set in environment variables');
 const key = new TextEncoder().encode(SECRET_KEY);
 
 const ALG = 'HS256';

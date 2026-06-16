@@ -26,6 +26,7 @@ import { useAuth } from '@/components/providers/auth-provider';
 import { useDialog } from '@/components/layout/dialog-context';
 import { useConfirm } from '@/hooks/use-confirm';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { VoidAuthDialog } from '@/components/todo/void-auth-dialog';
 
 interface Request {
     id: string;
@@ -55,6 +56,9 @@ export function RequestTable() {
     const { user } = useAuth();
     const { openDialog, setDialogData } = useDialog();
     const { confirm, open: confirmOpen, options: confirmOptions, handleConfirm, handleCancel } = useConfirm();
+
+    // Void auth state
+    const [voidPending, setVoidPending] = useState<{ id: string; requestNumber: string } | null>(null);
 
     // Role checks
     const accountType = (user?.accountType || '').trim().toLowerCase();
@@ -103,9 +107,23 @@ export function RequestTable() {
         fetchRequests();
     }, []);
 
-    const handleAction = async (action: string, id: string) => {
-        console.log(`Action: ${action} on request ${id}`);
+    const handleVoidConfirmed = async (id: string, verifiedBy: string) => {
+        try {
+            const res = await fetch(`/api/requests/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'Void', voidAuthorizedBy: verifiedBy }),
+            });
+            if (res.ok) {
+                fetchRequests();
+                window.dispatchEvent(new CustomEvent('request-updated'));
+            }
+        } catch (error) {
+            console.error('Error voiding request:', error);
+        }
+    };
 
+    const handleAction = async (action: string, id: string) => {
         try {
             if (action === 'delete') {
                 const ok = await confirm({ description: 'Are you sure you want to delete this request?', title: 'Delete Request', variant: 'destructive' });
@@ -120,10 +138,16 @@ export function RequestTable() {
             }
 
             if (action === 'view' || action === 'edit') {
-                // These will be handled by a dialog in the parent or a local state
                 window.dispatchEvent(new CustomEvent('request-open-details', {
                     detail: { id, mode: action }
                 }));
+                return;
+            }
+
+            // Void requires Super Admin authorization — open the auth dialog
+            if (action === 'void') {
+                const target = requests.find((r) => r.id === id);
+                setVoidPending({ id, requestNumber: target?.requestNumber ?? id });
                 return;
             }
 
@@ -144,10 +168,6 @@ export function RequestTable() {
                     break;
                 case 'release':
                     newStatus = 'Received';
-                    updatePayload = { status: newStatus };
-                    break;
-                case 'void':
-                    newStatus = 'Void';
                     updatePayload = { status: newStatus };
                     break;
             }
@@ -180,6 +200,16 @@ export function RequestTable() {
             {...confirmOptions}
             onConfirm={handleConfirm}
             onCancel={handleCancel}
+        />
+        <VoidAuthDialog
+            open={!!voidPending}
+            requestNumber={voidPending?.requestNumber ?? ''}
+            onConfirm={(verifiedBy) => {
+                const id = voidPending!.id;
+                setVoidPending(null);
+                handleVoidConfirmed(id, verifiedBy);
+            }}
+            onCancel={() => setVoidPending(null)}
         />
         <div className="space-y-0">
             <div className="rounded-md border overflow-auto max-h-[600px]">
